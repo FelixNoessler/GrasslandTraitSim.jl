@@ -17,12 +17,13 @@ jobs:
       - uses: julia-actions/setup-julia@v1
         with:
           version: '1.9'
+      - uses: julia-actions/cache@v1
       - name: Install dependencies
         run: julia --project=docs/ -e '
           import Pkg;
           Pkg.develop(path=".");
           Pkg.instantiate();'
-      - name: Build and deploy 
+      - name: Build and deploy documentation 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # If authenticating with GitHub Actions token
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }} # If authenticating with SSH deploy key
