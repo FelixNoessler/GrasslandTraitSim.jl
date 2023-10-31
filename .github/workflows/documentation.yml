@@ -19,11 +19,11 @@ jobs:
           version: '1.9'
       - name: Install dependencies
         run: julia --project=docs/ -e '
-          import Pkg
-          Pkg.instantiate()
-          Pkg.develop(path="lib/GrasslandTraitVis/")
-          Pkg.develop(path="lib/GrasslandTraitValid/") 
-          Pkg.develop(path=".")'
+          import Pkg;
+          Pkg.develop(path="lib/GrasslandTraitVis/");
+          Pkg.develop(path="lib/GrasslandTraitValid/"); 
+          Pkg.develop(path=".");
+          Pkg.instantiate();'
       - name: Build and deploy 
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # If authenticating with GitHub Actions token
