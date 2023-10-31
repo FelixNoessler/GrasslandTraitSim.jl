@@ -3,7 +3,13 @@ module Vis
 import Dates
 
 using CairoMakie
-using GLMakie
+
+try
+    @eval using GLMakie
+catch e
+    @warn "error while importing GLMakie" e
+end
+
 using Setfield
 using Statistics
 using Unitful
