@@ -1,7 +1,11 @@
+```@meta
+CurrentModule=GrasslandTraitSim
+```
+
 # Water dynamics
 
-```@autodocs
-Modules = [GrasslandTraitSim.Water]
-Public = true
-Private = true
+```@docs
+change_water_reserve
+transpiration
+evaporation
 ```

@@ -1,6 +1,6 @@
 ####### build the documentation locally
 # julia --project=docs/ --startup-file=no
-# using Revise; import Pkg; Pkg.instantiate(); Pkg.develop(path="lib/GrasslandTraitVis/"); Pkg.develop(path="lib/GrasslandTraitValid/"); Pkg.develop(path="."); include("docs/make.jl")
+# using Revise; import Pkg; Pkg.instantiate(); Pkg.develop(path="."); include("docs/make.jl")
 ## to redo the documentation:
 # include("docs/make.jl")
 ## to clean everything for commits/push:
@@ -8,23 +8,18 @@
 
 using Documenter
 using DocumenterCitations
-
 using GrasslandTraitSim
-using GrasslandTraitSim.Growth
-using GrasslandTraitSim.Water
-using GrasslandTraitSim.Traits
 
 import GrasslandTraitSim as sim
-import GrasslandTraitVis as vis
-import GrasslandTraitValid as valid
+import GrasslandTraitSim.Valid as valid
+import GrasslandTraitSim.Vis as vis
 
 ####### Create Bilbiography
-
-bib = CitationBibliography("docs/src/lit.bib";
-    style = :numeric)
+bib = CitationBibliography("docs/src/lit.bib"; style = :numeric)
 
 ####### create images for the document
 docs_img = "docs/src/img"
+vis.set_cairomakie!()
 
 #### functional response
 vis.potential_growth(sim, valid; path = "$docs_img/sla_potential_growth.svg")
@@ -86,7 +81,7 @@ makedocs(;
     plugins = [bib],
     sitename = "GrasslandTraitSim.jl",
     format = Documenter.HTML(prettyurls = true, mathengine = MathJax3()),
-    modules = [GrasslandTraitSim],
+    modules = [GrasslandTraitSim, GrasslandTraitSim.Valid, GrasslandTraitSim.Vis],
     pages = Any["Home" => "index.md",
         "Model inputs and outputs" => "model_io.md",
         "Model calibration for Biodiversity Exploratories" => "calibration.md",

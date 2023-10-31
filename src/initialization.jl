@@ -159,23 +159,23 @@ Initialize the simulation object.
 function initialization(; input_obj, inf_p, calc)
     ################## Traits ##################
     # generate random traits
-    Traits.random_traits!(; calc, input_obj)
+    random_traits!(; calc, input_obj)
 
     # distance matrix for below ground competition
-    Traits.similarity_matrix!(; input_obj, calc)
+    similarity_matrix!(; input_obj, calc)
 
     ################## Parameters ##################
     # leaf senescence rate μ [d⁻¹]
-    Growth.senescence_rate!(; calc, inf_p)
+    senescence_rate!(; calc, inf_p)
 
     # palatability ρ [-]
-    Growth.grazing_parameter!(; calc, inf_p)
+    grazing_parameter!(; calc, inf_p)
 
     # functional response
-    amc_nut_lower = FunctionalResponse.amc_nut_response(; calc, inf_p)
-    rsa_above_water_lower = FunctionalResponse.rsa_above_water_response!(; calc, inf_p)
-    rsa_above_nut_lower = FunctionalResponse.rsa_above_nut_response!(; calc, inf_p)
-    sla_water_lower = FunctionalResponse.sla_water_response!(; calc, inf_p)
+    amc_nut_lower = amc_nut_response(; calc, inf_p)
+    rsa_above_water_lower = rsa_above_water_response!(; calc, inf_p)
+    rsa_above_nut_lower = rsa_above_nut_response!(; calc, inf_p)
+    sla_water_lower = sla_water_response!(; calc, inf_p)
 
     # WHC, PWP and nutrient index
     derive_WHC_PWP_nutrients!(; calc, input_obj)

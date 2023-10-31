@@ -16,7 +16,7 @@ function height_influence(sim, valid; path = nothing, nspecies = 25)
 
     for (i, height_strength) in enumerate(height_strengths)
         container = @set container.p.height_strength = height_strength
-        sim.Growth.height_influence!(; container, biomass)
+        sim.height_influence!(; container, biomass)
         ymat[:, i] .= container.calc.heightinfluence
     end
 

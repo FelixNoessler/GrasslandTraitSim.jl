@@ -1,8 +1,3 @@
-module FunctionalResponse
-
-using Unitful
-using UnPack
-
 """
     amc_nut_response(;
         mycorrhizal_colon,
@@ -160,6 +155,4 @@ function sla_water_response!(;
     A = 1 - max_SLA_water_reduction
 
     return A
-end
-
 end

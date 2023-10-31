@@ -61,7 +61,7 @@ Initialize the grazing parameter ρ.
   dependent on nitrogen per leaf mass (LNCM) [-]
 
 The function is excetued once at the start of the simulation.
-The grazing parameter ρ is used in the function [`Growth.grazing!`](@ref).
+The grazing parameter ρ is used in the function [`grazing!`](@ref).
 """
 function grazing_parameter!(; calc, inf_p)
     lncm = calc.traits.lncm
@@ -95,10 +95,10 @@ resulting in greater trampling damage (see parameter `relbiomass`).
 - `κ` daily consumption of one livestock unit [kg d⁻¹], follows [Gillet2008](@cite)
 - `ρ` appetence of the plant species for livestock,
   dependent on nitrogen per leaf mass (LNCM) [-],
-  initiliazed by the function [`Growth.grazing_parameter!`](@ref)
+  initiliazed by the function [`grazing_parameter!`](@ref)
 - `relbiomass`: relative biomass of the patch in relation to the mean
   biomass of the whole grassland,
-  is calculated by [`Growth.calculate_relbiomass!`](@ref) [-]
+  is calculated by [`calculate_relbiomass!`](@ref) [-]
 - `grazing_half_factor` is the half-saturation constant [kg ha⁻¹]
 - equation partly based on [Moulin2021](@cite)
 
@@ -167,7 +167,7 @@ Maximal the whole biomass of a plant species is removed by trampling.
 - `biomass` [$\frac{kg}{ha}$]
 - `relbiomass`: relative biomass of the patch in relation to the mean
   biomass of the whole grassland,
-  is calculated by [`Growth.calculate_relbiomass!`](@ref) [-]
+  is calculated by [`calculate_relbiomass!`](@ref) [-]
 - `LD` daily livestock density [$\frac{\text{livestock units}}{ha}$]
 - `trampling_factor` [ha m⁻¹]
 - height canopy height [$m$]

@@ -11,7 +11,7 @@ and the [initial conditions of the state variables](@ref "Set the initial condit
 are set.
 
 Furthermore, the neighbours and the surrounding (own patch and neighbours) are set for each patch with 
-[`set_neighbours_surroundings!`](@ref). This is needed for [clonal growth](@ref Growth.clonalgrowth!).
+[`set_neighbours_surroundings!`](@ref). This is needed for [clonal growth](@ref clonalgrowth!).
 
 ```@docs
 initialization
@@ -24,8 +24,8 @@ set_neighbours_surroundings!
 
 
 ```@docs
-Traits.random_traits!
-Traits.similarity_matrix!
+random_traits!
+similarity_matrix!
 ```
 
 ## Initialization of parameters
@@ -36,12 +36,12 @@ and are initialized at the start of the simulation.
 
 The species-specific parameters are:
 
-- `μ`: [senescence rate](@ref Growth.senescence_rate!) [d⁻¹]
-- `ρ`: [palatability](@ref Growth.grazing_parameter!) [-]
+- `μ`: [senescence rate](@ref senescence_rate!) [d⁻¹]
+- `ρ`: [palatability](@ref grazing_parameter!) [-]
 
 ```@docs
-Growth.senescence_rate!
-Growth.grazing_parameter!
+senescence_rate!
+grazing_parameter!
 ```
 
 **Initializing parameters for the functional response**
@@ -51,10 +51,10 @@ The species-specific parameters are:
 
 
 ```@docs
-FunctionalResponse.sla_water_response!
-FunctionalResponse.rsa_above_water_response!
-FunctionalResponse.rsa_above_nut_response!
-FunctionalResponse.amc_nut_response
+sla_water_response!
+rsa_above_water_response!
+rsa_above_nut_response!
+amc_nut_response
 ```
 
 **Initialization of patch-specific parameters**

@@ -1,11 +1,12 @@
-module GrasslandTraitVis
+module Vis
 
 import Dates
 
-using Statistics
 using CairoMakie
-using Unitful
+using GLMakie
 using Setfield
+using Statistics
+using Unitful
 
 makie_theme = Theme(fontsize = 18,
     Axis = (xgridvisible = false, ygridvisible = false,
@@ -18,6 +19,10 @@ end
 
 function __init__()
     set_global_theme()
+end
+
+function set_cairomakie!()
+    CairoMakie.activate!()
 end
 
 include("dashboard/dashboard.jl")

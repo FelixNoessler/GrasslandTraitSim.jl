@@ -20,7 +20,7 @@ function amc_nut_response(sim, valid;
 
     for (i, x) in enumerate(xs)
         container.calc.nutrients_splitted .= x
-        sim.Growth.amc_nut_reduction!(; container)
+        sim.amc_nut_reduction!(; container)
         ymat[i, :] .= container.calc.amc_nut
     end
 
@@ -108,7 +108,7 @@ function rsa_above_water_response(sim, valid; nspecies = 25,
 
     for (i, x) in enumerate(xs)
         container.calc.water_splitted .= x
-        sim.Growth.rsa_above_water_reduction!(; container)
+        sim.rsa_above_water_reduction!(; container)
         ymat[i, :] .= container.calc.rsa_above_water
     end
 
@@ -197,7 +197,7 @@ function rsa_above_nut_response(sim, valid;
     for (i, x) in enumerate(xs)
         container.calc.nutrients_splitted .= x
 
-        sim.Growth.rsa_above_nut_reduction!(; container)
+        sim.rsa_above_nut_reduction!(; container)
         ymat[i, :] .= container.calc.rsa_above_nut
     end
 
@@ -287,7 +287,7 @@ function sla_water_response(sim, valid;
 
     for (i, x) in enumerate(xs)
         container.calc.water_splitted .= x
-        sim.Growth.sla_water_reduction!(; container)
+        sim.sla_water_reduction!(; container)
         ymat[i, :] .= container.calc.sla_water
     end
 

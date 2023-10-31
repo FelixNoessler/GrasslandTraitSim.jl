@@ -1,13 +1,3 @@
-module Traits
-
-import Random
-
-using Unitful
-using Distributions
-using JLD2
-using LinearAlgebra
-using UnPack
-
 function load_gm(datapath)
     μ, Σ, ϕ = load("$datapath/input/traits_gaussian_mixture.jld2", "μ", "Σ", "ϕ")
 
@@ -167,6 +157,4 @@ function similarity_matrix!(; input_obj, calc)
     end
 
     return nothing
-end
-
 end

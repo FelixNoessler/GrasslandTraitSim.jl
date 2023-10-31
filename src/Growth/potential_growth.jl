@@ -9,7 +9,7 @@ The `PAR` value is the photosynthetically
 active radiation of the day.
 
 First, the leaf area indices of all species are calculated
-(see [`Growth.calculate_LAI`](@ref)). Then, the total leaf area is
+(see [`calculate_LAI`](@ref)). Then, the total leaf area is
 computed. An inverse exponential function is used to calculate
 the total primary production:
 

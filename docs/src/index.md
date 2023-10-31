@@ -11,11 +11,9 @@ Licence: [GPL-3.0](https://github.com/FelixNoessler/GrasslandTraitSim.jl/blob/ma
 
 2. Launch Julia and type
 
-```@repl
-using Pkg
-Pkg.add(url="github.com/felixnoessler/lib/GrasslandTraitValid")
-Pkg.add(url="github.com/felixnoessler/lib/GrasslandTraitVis")
-Pkg.add(url="github.com/felixnoessler/GrasslandTraitSim.jl")
+```@julia
+import Pkg
+Pkg.add(url="https://github.com/felixnoessler/GrasslandTraitSim.jl")
 ```
 
 !!! note
@@ -23,40 +21,22 @@ Pkg.add(url="github.com/felixnoessler/GrasslandTraitSim.jl")
     
 ## Run simulations
 
-```@example sim
+```@julia
 import GrasslandTraitSim as sim
-import GrasslandTraitValid as valid
+import GrasslandTraitSim.Valid as valid
 mp = valid.model_parameters();
 inf_p = (; zip(Symbol.(mp.names), mp.best)...);
 input_obj = valid.validation_input(; plotID = "HEG01", nspecies = 25,
                                      startyear = 2009, endyear = 2021,
                                      npatches = 1);
 sol = sim.solve_prob(; input_obj, inf_p);
-nothing # hide
 ```
-
-### the output biomass
-
-- with the dimension: time×patch×species
-
-```@example sim
-sol.o.biomass
-```
-
-### the output soil water content
- 
-- with the dimension: time×patch
- 
-```@example sim
-sol.o.water
-```
-
 
 ## Start the GUI
 
 ```@julia
 import GrasslandTraitSim as sim
-import GrasslandTraitValid as valid
-import GrasslandTraitVis as vis
+import GrasslandTraitSim.Valid as valid
+import GrasslandTraitSim.Vis as vis
 vis.dashboard(; sim, valid);
 ```

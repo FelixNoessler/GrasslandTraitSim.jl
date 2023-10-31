@@ -19,18 +19,18 @@ Density differences for water:
 
 if npatches > 1
 
-- [calculate relative biomass per patch](@ref Growth.calculate_relbiomass!),
+- [calculate relative biomass per patch](@ref calculate_relbiomass!),
   this is needed for grazing
-- [clonal growth](@ref Growth.clonalgrowth!) at day of the year = 250
+- [clonal growth](@ref clonalgrowth!) at day of the year = 250
 
 loop over patches:
 
 - set very low biomass (< 1e-30 kg ha⁻¹) to zero
-- defoliation ([mowing](@ref Growth.mowing!), [grazing](@ref Growth.grazing!),
-  [trampling](@ref Growth.trampling!))
-- [growth](@ref Growth.growth!)
-- [senescence](@ref Growth.senescence!)
-- [soil water dynamics](@ref Water.change_water_reserve)
+- defoliation ([mowing](@ref mowing!), [grazing](@ref grazing!),
+  [trampling](@ref trampling!))
+- [growth](@ref growth!)
+- [senescence](@ref senescence!)
+- [soil water dynamics](@ref change_water_reserve)
 """
 function one_day!(; t, container)
     @unpack doy, daily_input, traits = container
@@ -45,12 +45,12 @@ function one_day!(; t, container)
 
     ## -------- relative biomass per patch -> is needed for grazing
     if npatches > 1
-        Growth.calculate_relbiomass!(; container)
+        calculate_relbiomass!(; container)
     end
 
     ## -------- clonal growth
     if doy[t] == 250 && npatches > 1
-        Growth.clonalgrowth!(; container)
+        clonalgrowth!(; container)
     end
 
     for pa in Base.OneTo(npatches)
@@ -89,7 +89,7 @@ function one_day!(; t, container)
                             break
                         end
                     end
-                    Growth.mowing!(; container, mowing_height,
+                    mowing!(; container, mowing_height,
                         days_since_last_mowing,
                         biomass = patch_biomass)
                 end
@@ -99,17 +99,17 @@ function one_day!(; t, container)
             if included.grazing_included
                 LD = daily_input.grazing[t]
                 if !isnan(LD)
-                    Growth.grazing!(; container, LD,
+                    grazing!(; container, LD,
                         biomass = patch_biomass,
                         relbiomass = relbiomass[pa],)
-                    Growth.trampling!(; container, LD,
+                    trampling!(; container, LD,
                         biomass = patch_biomass,
                         relbiomass = relbiomass[pa])
                 end
             end
 
             # ------------------------------------------ growth
-            LAItot = Growth.growth!(; t, container,
+            LAItot = growth!(; t, container,
                 biomass = patch_biomass,
                 WR = u_water[pa],
                 nutrients = nutrients[pa],
@@ -118,7 +118,7 @@ function one_day!(; t, container)
 
             # ------------------------------------------ senescence
             if included.senescence_included
-                Growth.senescence!(; container,
+                senescence!(; container,
                     ST = daily_input.temperature_sum[t],
                     biomass = patch_biomass)
             end
@@ -136,15 +136,12 @@ function one_day!(; t, container)
         @. du_biomass[pa, :] = act_growth - sen - defoliation
 
         # --------------------- water dynamics
-        du_water[pa] = Water.change_water_reserve(;
-            container,
-            patch_biomass,
-            WR = u_water[pa],
-            precipitation = daily_input.precipitation[t],
-            LAItot,
-            PET = daily_input.PET[t],
-            WHC = WHC[pa],
-            PWP = PWP[pa])
+        du_water[pa] = change_water_reserve(; container, patch_biomass, LAItot,
+                                              WR = u_water[pa],
+                                              precipitation = daily_input.precipitation[t],
+                                              PET = daily_input.PET[t],
+                                              WHC = WHC[pa],
+                                              PWP = PWP[pa])
     end
 
     return nothing

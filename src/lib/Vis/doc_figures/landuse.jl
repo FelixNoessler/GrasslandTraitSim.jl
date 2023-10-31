@@ -24,7 +24,7 @@ function grazing(sim, valid;
 
     for (i, biomass) in enumerate(biomass_vec)
         container.calc.defoliation .= 0.0u"kg / (ha * d)"
-        sim.Growth.grazing!(; container, LD, biomass = repeat([biomass], nspecies),
+        sim.grazing!(; container, LD, biomass = repeat([biomass], nspecies),
             relbiomass = 1.0)
         grazing_mat[:, i] = ustrip.(container.calc.defoliation)
     end
@@ -115,7 +115,7 @@ function trampling(sim, valid; nspecies = 25, trampling_factor = 100, path = not
 
     for (i, LD) in enumerate(LDs)
         container.calc.defoliation .= 0.0u"kg / (ha * d)"
-        sim.Growth.trampling!(; container, LD, biomass, relbiomass = 1)
+        sim.trampling!(; container, LD, biomass, relbiomass = 1)
         trampling_mat_height[:, i] = ustrip.(container.calc.defoliation)
     end
     trampling_mat_height = trampling_mat_height ./ 100.0
@@ -173,7 +173,7 @@ function mowing(sim, valid; nspecies = 25, mowing_height = 0.07u"m",
 
     for (i, biomass) in enumerate(biomass_vec)
         container.calc.defoliation .= 0.0u"kg / (ha * d)"
-        sim.Growth.mowing!(; container, mowing_height, days_since_last_mowing, biomass)
+        sim.mowing!(; container, mowing_height, days_since_last_mowing, biomass)
 
         mowing_mat[:, i] = ustrip.(container.calc.defoliation)
     end

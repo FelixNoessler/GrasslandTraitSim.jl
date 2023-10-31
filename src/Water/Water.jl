@@ -1,8 +1,3 @@
-module Water
-
-using Unitful
-using UnPack
-
 @doc raw"""
     change_water_reserve(; container, patch_biomass, WR, precipitation,
                            LAItot, PET, WHC, PWP)
@@ -149,5 +144,3 @@ function evaporation(; WR, WHC, PET, LAItot)
     W = WR / WHC
     return W * PET * (1 - min(1, LAItot / 3))
 end
-
-end # of module

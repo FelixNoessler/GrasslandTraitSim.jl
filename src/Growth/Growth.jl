@@ -1,11 +1,3 @@
-module Growth
-
-import LinearAlgebra
-
-using Distributions
-using UnPack
-using Unitful
-
 include("growth_reducers.jl")
 include("defoliation.jl")
 include("senescence.jl")
@@ -64,5 +56,3 @@ function growth!(; t, container, biomass, WR, nutrients, WHC, PWP)
 
     return LAItot
 end
-
-end # of module

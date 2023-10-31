@@ -9,18 +9,18 @@ CurrentModule = GrasslandTraitSim
 ### Daily abiotic conditions
 | Variable          | Description                                       | used in |
 | ----------------- | ------------------------------------------------- | ------- |
-| `temperature`     | Temperature [°C]                                  | [`Growth.temperature_reduction`](@ref) |
-| `temperature_sum` | Yearly cumulative temperature [°C]                | [`Growth.seasonal_reduction`](@ref), [`Growth.seasonal_component_senescence`](@ref)         |
-| `precipitation`   | Precipitation [mm d⁻¹]                            | [`Water.change_water_reserve`](@ref) |
-| `PAR`             | Photosynthetically active radiation [MJ ha⁻¹ d⁻¹] | [`Growth.potential_growth!`](@ref), [`Growth.radiation_reduction`](@ref) |
-| `PET`             | Potential evapotranspiration [mm d⁻¹]             |[`Growth.water_reduction!`](@ref), [`Water.evaporation`](@ref), [`Water.transpiration`](@ref)        |
+| `temperature`     | Temperature [°C]                                  | [`temperature_reduction`](@ref) |
+| `temperature_sum` | Yearly cumulative temperature [°C]                | [`seasonal_reduction`](@ref), [`seasonal_component_senescence`](@ref)         |
+| `precipitation`   | Precipitation [mm d⁻¹]                            | [`change_water_reserve`](@ref) |
+| `PAR`             | Photosynthetically active radiation [MJ ha⁻¹ d⁻¹] | [`potential_growth!`](@ref), [`radiation_reduction`](@ref) |
+| `PET`             | Potential evapotranspiration [mm d⁻¹]             |[`water_reduction!`](@ref), [`evaporation`](@ref), [`transpiration`](@ref)        |
 
 
 ### Daily management variables
 | Variable  | Description                                                                     | used in                                                |
 | --------- | ------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| `mowing`  | Height of mowing event, `NaN` means no mowing [m]                               | [`Growth.mowing!`](@ref)                               |
-| `grazing` | Grazing intensity measured in livestock units, `NaN` means no grazing [LD ha⁻¹] | [`Growth.grazing!`](@ref), [`Growth.trampling!`](@ref) |
+| `mowing`  | Height of mowing event, `NaN` means no mowing [m]                               | [`mowing!`](@ref)                               |
+| `grazing` | Grazing intensity measured in livestock units, `NaN` means no grazing [LD ha⁻¹] | [`grazing!`](@ref), [`trampling!`](@ref) |
 
 
 ### Raw time invariant site variables
@@ -42,9 +42,9 @@ CurrentModule = GrasslandTraitSim
 
 | Variable          | Description                                  | used in                                                                   |
 | ----------------- | -------------------------------------------- | ------------------------------------------------------------------------- |
-| `PWP[patch]`      | Permanent wilting point [mm]                 | [`Growth.water_reduction!`](@ref)                                         |
-| `WHC[patch]`      | Water holding capacity [mm]                  | [`Growth.water_reduction!`](@ref)                                         |
-| `nutindex[patch]` | Nutrients index ranging from zero to one [-] | [`Growth.amc_nut_reduction!`](@ref), [`Growth.rsa_above_nut_reduction!`](@ref) |
+| `PWP[patch]`      | Permanent wilting point [mm]                 | [`water_reduction!`](@ref)                                         |
+| `WHC[patch]`      | Water holding capacity [mm]                  | [`water_reduction!`](@ref)                                         |
+| `nutindex[patch]` | Nutrients index ranging from zero to one [-] | [`amc_nut_reduction!`](@ref), [`rsa_above_nut_reduction!`](@ref) |
 
 ---
 

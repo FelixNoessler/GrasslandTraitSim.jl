@@ -5,7 +5,7 @@ function temperatur_reducer(sim;
 
     y = Float64[]
     for T in Ts
-        g = sim.Growth.temperature_reduction(; T, temperature_red = true)
+        g = sim.temperature_reduction(; T, temperature_red = true)
         push!(y, g)
     end
 
@@ -42,7 +42,7 @@ function radiation_reducer(sim;
     y = Float64[]
 
     for PAR in PARs
-        g = sim.Growth.radiation_reduction(; PAR, radiation_red = true)
+        g = sim.radiation_reduction(; PAR, radiation_red = true)
         push!(y, g)
     end
 
@@ -94,7 +94,7 @@ function below_influence(sim, valid; nspecies = 25, path = nothing)
 
     for (i, below_effect) in enumerate(below_effects)
         container = @set container.p.belowground_density_effect = below_effect
-        sim.Growth.below_ground_competition!(; container, biomass)
+        sim.below_ground_competition!(; container, biomass)
         ymat[:, i] .= container.calc.nut_density_factor
     end
 
@@ -118,7 +118,7 @@ function below_influence(sim, valid; nspecies = 25, path = nothing)
     # for i in eachindex(mean_traitsim)
     #     biomass1[u1[i]] *= i
     # end
-    # sim.Growth.below_ground_competition!(; container, biomass=biomass1)
+    # sim.below_ground_competition!(; container, biomass=biomass1)
     # belowsplit_biomass1 = copy(container.calc.nut_density_factor)
 
     # u2 = sortperm(mean_traitsim, rev=true)
@@ -127,7 +127,7 @@ function below_influence(sim, valid; nspecies = 25, path = nothing)
     # for i in eachindex(mean_traitsim)
     #     biomass2[u2[i]] *= i
     # end
-    # sim.Growth.below_ground_competition!(; container, biomass=biomass2)
+    # sim.below_ground_competition!(; container, biomass=biomass2)
     # belowsplit_biomass2 = copy(container.calc.nut_density_factor)
 
     ##################### artficial example
@@ -146,7 +146,7 @@ function below_influence(sim, valid; nspecies = 25, path = nothing)
             p = (; belowground_density_effect = artificial_below[i],
                 nut_dens = 80,
                 water_dens = 80))
-        sim.Growth.below_ground_competition!(; container = c, biomass)
+        sim.below_ground_competition!(; container = c, biomass)
 
         artificial_mat[:, i] = c.calc.nut_density_factor
     end
@@ -227,7 +227,7 @@ function seasonal_effect(sim;
         path = nothing)
     y = Float64[]
     for ST in STs
-        g = sim.Growth.seasonal_reduction(; ST, season_red = true)
+        g = sim.seasonal_reduction(; ST, season_red = true)
         push!(y, g)
     end
 
@@ -265,7 +265,7 @@ function seasonal_component_senescence(sim;
 
     y = Float64[]
     for ST in STs
-        g = sim.Growth.seasonal_component_senescence(; ST)
+        g = sim.seasonal_component_senescence(; ST)
         push!(y, g)
     end
 

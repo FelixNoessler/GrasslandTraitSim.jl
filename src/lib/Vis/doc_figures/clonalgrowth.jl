@@ -30,8 +30,8 @@ function plot_clonalgrowth(sim; path = nothing)
     container.u.u_biomass[13, :] .= 10.0u"kg / ha"
     startcondition = copy(ustrip.(container.u.u_biomass[:, 1]))
 
-    sim.Growth.calculate_relbiomass!(; container)
-    sim.Growth.clonalgrowth!(; container)
+    sim.calculate_relbiomass!(; container)
+    sim.clonalgrowth!(; container)
 
     endcondition = copy(ustrip.(container.u.u_biomass[:, 1]))
 
