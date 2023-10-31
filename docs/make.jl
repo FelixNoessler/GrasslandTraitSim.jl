@@ -19,7 +19,6 @@ bib = CitationBibliography("docs/src/lit.bib"; style = :numeric)
 
 ####### create images for the document
 docs_img = "docs/src/img"
-vis.set_cairomakie!()
 
 #### functional response
 vis.potential_growth(sim, valid; path = "$docs_img/sla_potential_growth.svg")

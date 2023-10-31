@@ -3,13 +3,6 @@ module Vis
 import Dates
 
 using CairoMakie
-
-try
-    @eval using GLMakie
-catch e
-    @warn "error while importing GLMakie" e
-end
-
 using Setfield
 using Statistics
 using Unitful
@@ -25,10 +18,6 @@ end
 
 function __init__()
     set_global_theme()
-end
-
-function set_cairomakie!()
-    CairoMakie.activate!()
 end
 
 include("dashboard/dashboard.jl")
