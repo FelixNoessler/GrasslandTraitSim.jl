@@ -20,8 +20,6 @@ jobs:
       - name: Install dependencies
         run: julia --project=docs/ -e '
           import Pkg;
-          Pkg.develop(path="lib/GrasslandTraitVis/");
-          Pkg.develop(path="lib/GrasslandTraitValid/"); 
           Pkg.develop(path=".");
           Pkg.instantiate();'
       - name: Build and deploy 
