@@ -6,6 +6,8 @@
 ## to clean everything for commits/push:
 # include("docs/clean_local_doc.jl")
 
+ENV["DISPLAY"] = ":0"
+
 using Documenter
 using DocumenterCitations
 using GrasslandTraitSim
