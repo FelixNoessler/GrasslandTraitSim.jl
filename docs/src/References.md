@@ -1,0 +1,6 @@
+**Acknowledgement**\
+We thank the managers of the three Exploratories, Max Müller, Julia Bass, Robert Künast, Miriam Teuscher, Anna K. Franke, Franca Marian and all former managers for their work in maintaining the plot and project infrastructure; Victoria Grießmeier for giving support through the central office, Andreas Ostrowski for managing the central data base, and Markus Fischer, Eduard Linsenmair, Dominik Hessenmöller, Daniel Prati, Ingo Schöning, François Buscot, Ernst-Detlef Schulze, Wolfgang W. Weisser and the late Elisabeth Kalko for their role in setting up the Biodiversity Exploratories project. We thank the administration of the Hainich national park, the UNESCO Biosphere Reserve Swabian Alb and the UNESCO Biosphere Reserve Schorfheide-Chorin as well as all land owners for the excellent collaboration. The work has been (partly) funded by the DFG Priority Program 1374 "Biodiversity-Exploratories". Field work permits were issued by the responsible state environmental offices of Baden-Württemberg, Thüringen, and Brandenburg.
+
+**References**
+```@bibliography
+```
