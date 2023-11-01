@@ -20,7 +20,7 @@ Density differences for water:
 if npatches > 1
 
 - [calculate relative biomass per patch](@ref calculate_relbiomass!),
-  this is needed for grazing
+  this is needed for [grazing](@ref grazing!) and [trampling](@ref trampling!)
 - [clonal growth](@ref clonalgrowth!) at day of the year = 250
 
 loop over patches:

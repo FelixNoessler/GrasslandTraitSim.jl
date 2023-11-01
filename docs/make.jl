@@ -81,10 +81,15 @@ makedocs(;
     sitename = "GrasslandTraitSim.jl",
     format = Documenter.HTML(prettyurls = true, mathengine = MathJax3()),
     modules = [GrasslandTraitSim, GrasslandTraitSim.Valid, GrasslandTraitSim.Vis],
-    pages = Any["Home" => "index.md",
+    pages = Any[
+        "Home" => "index.md",
+        "Tutorials" => Any[
+            "Prepare inputs" => "tutorials/how_to_prepare_input.md",
+            "Calculate likelihood" => "tutorials/how_to_calculate_likelihood.md"],
         "Model inputs and outputs" => "model_io.md",
         "Model calibration for Biodiversity Exploratories" => "calibration.md",
-        "Modelling API" => Any["Difference equation" => "Modelling_API/main_equations.md",
+        "Modelling API" => Any[
+            "Difference equation" => "Modelling_API/main_equations.md",
             "Initialization" => "Modelling_API/initialization.md",
             "Growth" => "Modelling_API/growth.md",
             "Water dynamics" => "Modelling_API/water.md",

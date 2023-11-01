@@ -1,5 +1,4 @@
 function dashboard(; sim::Module, valid::Module, posterior = nothing)
-    GLMakie.activate!()
     Makie.inline!(false)
 
     plot_obj = dashboard_layout(; valid)

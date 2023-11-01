@@ -6,7 +6,7 @@ CurrentModule = GrasslandTraitSim
 
 ## Inputs
 
-### Daily abiotic conditions
+### [Daily abiotic conditions](@id climate_input)
 | Variable          | Description                                       | used in |
 | ----------------- | ------------------------------------------------- | ------- |
 | `temperature`     | Temperature [°C]                                  | [`temperature_reduction`](@ref) |
@@ -16,14 +16,14 @@ CurrentModule = GrasslandTraitSim
 | `PET`             | Potential evapotranspiration [mm d⁻¹]             |[`water_reduction!`](@ref), [`evaporation`](@ref), [`transpiration`](@ref)        |
 
 
-### Daily management variables
+### [Daily management variables](@id management_input)
 | Variable  | Description                                                                     | used in                                                |
 | --------- | ------------------------------------------------------------------------------- | ------------------------------------------------------ |
 | `mowing`  | Height of mowing event, `NaN` means no mowing [m]                               | [`mowing!`](@ref)                               |
 | `grazing` | Grazing intensity measured in livestock units, `NaN` means no grazing [LD ha⁻¹] | [`grazing!`](@ref), [`trampling!`](@ref) |
 
 
-### Raw time invariant site variables
+### [Raw time invariant site variables](@id site_input)
 
 | Variable    | Description                       | used in                   |
 | ----------- | --------------------------------- | ------------------------- |
