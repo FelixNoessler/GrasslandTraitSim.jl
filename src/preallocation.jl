@@ -87,8 +87,7 @@ function preallocate_vectors(; input_obj)
             nutgradient = Matrix{dtype}(undef, patch_xdim, patch_ydim),
 
             ## below ground competition
-            nut_density_factor = fill(val, nspecies),
-            water_density_factor = fill(val, nspecies),
+            biomass_density_factor = fill(val, nspecies),
             TS_biomass = fill(val, nspecies)u"kg / ha",
 
             ## height influence

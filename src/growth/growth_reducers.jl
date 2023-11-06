@@ -100,7 +100,7 @@ See for details: [Water stress](@ref water_stress)
 """
 function water_reduction!(; container, WR, water_red, PET, PWP, WHC)
     @unpack water_splitted, sla_water, rsa_above_water, Waterred = container.calc
-    @unpack water_density_factor = container.calc
+    @unpack biomass_density_factor = container.calc
 
     if !water_red
         @info "No water reduction!" maxlog=1
@@ -119,7 +119,7 @@ function water_reduction!(; container, WR, water_red, PET, PWP, WHC)
     β₂ = 7.623e-8
     exp_fun = -(β₂ * PET / PETₘₐₓ + (1 - PET / PETₘₐₓ) * β₁)
     x = (1 - exp(exp_fun * W)) / (1 - exp(exp_fun))
-    @. water_splitted = x * water_density_factor
+    @. water_splitted = x * biomass_density_factor
 
     ### ------------ species specific functional response
     sla_water_reduction!(; container)
@@ -176,7 +176,7 @@ end
 See for details: [Nutrient stress](@ref nut_stress)
 """
 function nutrient_reduction!(; container, nutrient_red, nutrients)
-    @unpack Nutred, nutrients_splitted, nut_density_factor = container.calc
+    @unpack Nutred, nutrients_splitted, biomass_density_factor = container.calc
     @unpack amc_nut, rsa_above_nut = container.calc
 
     if !nutrient_red
@@ -185,7 +185,7 @@ function nutrient_reduction!(; container, nutrient_red, nutrients)
         return nothing
     end
 
-    @. nutrients_splitted = nutrients * nut_density_factor
+    @. nutrients_splitted = nutrients * biomass_density_factor
 
     ### ------------ species specific functional response
     amc_nut_reduction!(; container)

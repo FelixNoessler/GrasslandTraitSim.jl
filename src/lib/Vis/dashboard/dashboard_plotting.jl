@@ -14,13 +14,18 @@ function band_patch(;
     thin = 7
 
     t = sol.numeric_date
-    biomass_sum = (vec(sum(ustrip.(sol.o.biomass); dims = 2:3))
-                   ./
-                   sol.simp.npatches)
+    biomass_μ = vec(sum(ustrip.(sol.o.biomass); dims = 2:3)) ./
+                sol.simp.npatches
+    biomass_dist = truncated.(Laplace.(biomass_μ, sol.p.b_biomass); lower = 0)
+    biomass_median = median.(biomass_dist)
+    biomass_lower = quantile.(biomass_dist, 0.025)
+    biomass_upper = quantile.(biomass_dist, 0.975)
+    biomass_lower5 = quantile.(biomass_dist, 0.25)
+    biomass_upper5 = quantile.(biomass_dist, 0.75)
 
     show_grazmow = plot_obj.obs.toggle_grazmow.active.val
     if show_grazmow
-        ymax = maximum(biomass_sum) * 1.5
+        ymax = maximum(biomass_median) * 1.5
         add_grazing!(ax, sol; ymax)
         add_mowing!(ax, sol; ymax)
     end
@@ -45,13 +50,18 @@ function band_patch(;
             biomass_cumsum += biomass_i
         end
     else
-        lines!(ax, t[1:thin:end], biomass_sum[1:thin:end]; color = :orange)
+        band!(ax, t[1:thin:end], biomass_lower[1:thin:end],
+            biomass_upper[1:thin:end]; color = (:black, 0.1))
+        band!(ax, t[1:thin:end], biomass_lower5[1:thin:end],
+            biomass_upper5[1:thin:end]; color = (:black, 0.1))
+        lines!(ax, t[1:thin:end], biomass_median[1:thin:end]; color = :orange)
     end
 
     if !isnothing(valid_data)
-        mdata = values(valid_data.measured_biomass.biomass)
-        mdata_t = values(valid_data.measured_biomass.numeric_date)
-        scatter!(ax, mdata_t, mdata, color = :black, markersize = 8)
+        biomass = ustrip.(valid_data.biomass)
+        num_t = sol.numeric_date[LookupArrays.index(valid_data.biomass, :time)]
+
+        scatter!(ax, num_t, biomass, color = :black, markersize = 8)
     end
 
     if !isnothing(predictive_data)
@@ -82,6 +92,12 @@ function trait_time_plot(;
     weighted_trait = trait_vals .* relative_biomass'
     cwm_trait = vec(sum(weighted_trait; dims = 1))
 
+    # biomass_median = median.(biomass_dist)
+    # biomass_lower = quantile.(biomass_dist, 0.025)
+    # biomass_upper = quantile.(biomass_dist, 0.975)
+    # biomass_lower5 = quantile.(biomass_dist, 0.25)
+    # biomass_upper5 = quantile.(biomass_dist, 0.75)
+
     ax.xlabel = "Time [years]"
 
     show_traitvar = plot_obj.obs.toggle_traitvar.active.val
@@ -91,6 +107,16 @@ function trait_time_plot(;
         weighted_trait_diff = trait_diff .* relative_biomass
         cwv_trait = vec(sum(weighted_trait_diff; dims = 2))
 
+        cwv_trait_dist = truncated.(Laplace.(cwv_trait, sol.p[Symbol("b_var_$trait")]);
+            lower = 0)
+        median_trait = median.(cwv_trait_dist)
+        lower_trait = quantile.(cwv_trait_dist, 0.025)
+        upper_trait = quantile.(cwv_trait_dist, 0.975)
+        lower5_trait = quantile.(cwv_trait_dist, 0.25)
+        upper5_trait = quantile.(cwv_trait_dist, 0.75)
+
+        band!(ax, t, lower_trait, upper_trait; color = (:black, 0.1))
+        band!(ax, t, lower5_trait, upper5_trait; color = (:black, 0.1))
         lines!(ax, t, cwv_trait, color = :red)
         ax.ylabel = "Var: $trait_name"
     else
@@ -99,21 +125,32 @@ function trait_time_plot(;
             trait_i = trait_vals[i]
             lines!(ax, [t[1], t[end]], [trait_i, trait_i], color = (:grey, 0.2))
         end
-        lines!(ax, t, cwm_trait, color = :blue)
+
+        cwm_trait_dist = truncated.(Laplace.(cwm_trait, sol.p[Symbol("b_$trait")]);
+            lower = 0)
+        median_trait = median.(cwm_trait_dist)
+        lower_trait = quantile.(cwm_trait_dist, 0.025)
+        upper_trait = quantile.(cwm_trait_dist, 0.975)
+        lower5_trait = quantile.(cwm_trait_dist, 0.25)
+        upper5_trait = quantile.(cwm_trait_dist, 0.75)
+
+        band!(ax, t, lower_trait, upper_trait; color = (:black, 0.1))
+        band!(ax, t, lower5_trait, upper5_trait; color = (:black, 0.1))
+        lines!(ax, t, median_trait, color = :blue)
         ax.ylabel = "Mean: $trait_name"
     end
 
     if !isnothing(valid_data)
-        x = valid_data.traits.num_t
+        num_t = sol.numeric_date[LookupArrays.index(valid_data.traits, :time)]
         y = nothing
 
         if !show_traitvar
-            y = vec(valid_data.traits.cwm[:, trait .== valid_data.traits.dim])
+            y = vec(valid_data.traits[type = At(:cwm), trait = At(trait)])
         else
-            y = vec(valid_data.traits.cwv[:, trait .== valid_data.traits.dim])
+            y = vec(valid_data.traits[type = At(:cwv), trait = At(trait)])
         end
 
-        scatter!(ax, x, y, color = :black, markersize = 8)
+        scatter!(ax, num_t, y, color = :black, markersize = 8)
     end
 end
 
@@ -151,10 +188,20 @@ function soilwater_plot(; sol, valid_data, predictive_data, plot_obj, ax_num = 4
     empty!(ax)
 
     thin = 7
-    t = sol.numeric_date
-    scatterlines!(ax, t[1:thin:end],
-        ustrip.(sol.o.water[:, 1])[1:thin:end];
-        color = :turquoise3, markersize = 6, linewidth = 0.5)
+    t = sol.numeric_date[1:thin:end]
+
+    water_μ = mean(ustrip.(sol.o.water); dims = 2)[1:thin:end]
+    water_dist = truncated.(Laplace.(water_μ, sol.p.b_soilmoisture); lower = 0)
+    water_median = median.(water_dist)
+    water_lower = quantile.(water_dist, 0.025)
+    water_upper = quantile.(water_dist, 0.975)
+    water_lower5 = quantile.(water_dist, 0.25)
+    water_upper5 = quantile.(water_dist, 0.75)
+
+    band!(ax, t, water_lower5, water_upper5; color = (:black, 0.1))
+    band!(ax, t, water_lower, water_upper; color = (:black, 0.1))
+    lines!(ax, t, water_median; color = :turquoise3, markersize = 6, linewidth = 2)
+
     PWP = mean(ustrip(sol.patch.PWP))
     WHC = mean(ustrip(sol.patch.WHC))
     lines!(ax, [sol.numeric_date[1], sol.numeric_date[end]], [PWP, PWP];
@@ -166,15 +213,16 @@ function soilwater_plot(; sol, valid_data, predictive_data, plot_obj, ax_num = 4
     ylims!(ax, 0.0, nothing)
 
     if !isnothing(valid_data)
-        moist = @. sol.p.moistureconv_alpha +
-                   sol.p.moistureconv_beta * valid_data.soilmoisture.val *
-                   sol.site.rootdepth
-        scatter!(ax, valid_data.soilmoisture.num_t[1:thin:end],
-            moist[1:thin:end]; color = :black, markersize = 4)
+        moist = @. sol.site.rootdepth * (sol.p.moistureconv_alpha +
+                    sol.p.moistureconv_beta * valid_data.soilmoisture)
+
+        num_t = sol.numeric_date[LookupArrays.index(valid_data.soilmoisture, :time)]
+
+        scatter!(ax, num_t[1:thin:end], moist[1:thin:end]; color = :black, markersize = 4)
     end
 
     if !isnothing(predictive_data)
-        scatter!(ax, t[predictive_data.t_soilwater][1:thin:end],
+        scatter!(ax, sol.numeric_date[predictive_data.t_soilwater][1:thin:end],
             predictive_data.soilwater[1:thin:end]; color = :red, markersize = 4)
     end
 end

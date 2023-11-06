@@ -22,7 +22,7 @@ include("parameter.jl")
 include("predictive_check.jl")
 
 function __init__()
-    @info "Loading data of GrasslandTraitValid"
+    @info "Loading grassland data from the Biodiversity Exploratories"
     datapath = joinpath(@__DIR__, "..", "..", "..", "assets", "data")
     load_data(datapath)
     return nothing
@@ -42,8 +42,7 @@ function load_data(datapath)
     mtraits = CSV.read("$datapath/validation/cwm_cwv_traits.csv",
         DataFrame)
 
-    traits = (
-        cwm = [mtraits.cwm_sla mtraits.cwm_lncm mtraits.cwm_amc mtraits.cwm_rsa_above mtraits.cwm_height],
+    traits = (cwm = [mtraits.cwm_sla mtraits.cwm_lncm mtraits.cwm_amc mtraits.cwm_rsa_above mtraits.cwm_height],
         cwv = [mtraits.cwv_sla mtraits.cwv_lncm mtraits.cwv_amc mtraits.cwv_rsa_above mtraits.cwv_height],
         dim = [:sla, :lncm, :amc, :rsa_above, :height],
         t = mtraits.date,

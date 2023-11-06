@@ -3,6 +3,8 @@ module Vis
 import Dates
 
 using CairoMakie
+using DimensionalData
+using Distributions
 using Setfield
 using Statistics
 using Unitful

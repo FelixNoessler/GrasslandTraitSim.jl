@@ -137,11 +137,11 @@ function one_day!(; t, container)
 
         # --------------------- water dynamics
         du_water[pa] = change_water_reserve(; container, patch_biomass, LAItot,
-                                              WR = u_water[pa],
-                                              precipitation = daily_input.precipitation[t],
-                                              PET = daily_input.PET[t],
-                                              WHC = WHC[pa],
-                                              PWP = PWP[pa])
+            WR = u_water[pa],
+            precipitation = daily_input.precipitation[t],
+            PET = daily_input.PET[t],
+            WHC = WHC[pa],
+            PWP = PWP[pa])
     end
 
     return nothing

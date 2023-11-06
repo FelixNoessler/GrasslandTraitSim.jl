@@ -8,39 +8,40 @@ function get_validation_data_plots(; plotIDs, startyear)
     return valid_data
 end
 
+function date_to_solt(d; startyear)
+    Dates.value(d - Dates.Date(startyear)) + 1
+end
+
 function get_validation_data(; plotID, startyear)
-    measuredbiomass_sub = @subset data.valid.measuredbiomass :plotID .==
-                                                             plotID.&&
+    # ---------------------------- biomass
+    biomass_sub = @subset data.valid.measuredbiomass :plotID .==
+                                                     plotID.&&
     Dates.year.(:date) .<= 2021
-    measured_biomass = TimeArray((;
-            biomass = measuredbiomass_sub.biomass,
-            numeric_date = to_numeric.(measuredbiomass_sub.date),
-            date = measuredbiomass_sub.date),
-        timestamp = :date)
 
-    ##############
-    ##############
-    ### soil moisture
+    biomass = DimArray(biomass_sub.biomass,
+        (; time = date_to_solt.(biomass_sub.date; startyear)))
+
+    # ---------------------------- soil moisture
     soilmoisture_sub = @subset data.valid.soilmoisture :plotID .==
-                                                       plotID.&&Dates.year.(:date) .<= 2021
-    soilmoisture = (;
-        val = soilmoisture_sub.soilmoisture,
-        t = Dates.value.(soilmoisture_sub.date .- Dates.Date(startyear)) .+ 1,
-        num_t = to_numeric.(soilmoisture_sub.date))
+                                                       plotID.&&
+    Dates.year.(:date) .<= 2021
 
-    ##############
-    ##############
-    ### traits
+    soilmoisture = DimArray(soilmoisture_sub.soilmoisture,
+        (; time = date_to_solt.(soilmoisture_sub.date; startyear)))
+
+    # ---------------------------- traits
     f = plotID .== data.valid.traits.plotID
-    traits = (;
-        cwm = data.valid.traits.cwm[f, :],
-        cwv = data.valid.traits.cwv[f, :],
-        t = Dates.value.(data.valid.traits.t[f] .- Dates.Date(startyear)) .+ 1,
-        num_t = data.valid.traits.num_t[f],
-        dim = data.valid.traits.dim)
+    cwm = data.valid.traits.cwm[f, :]
+    cwv = data.valid.traits.cwv[f, :]
 
-    return (;
-        soilmoisture,
-        traits,
-        measured_biomass)
+    mat = Array{Float64, 3}(undef, 2, size(cwm)...)
+    mat[1, :, :] = cwm
+    mat[2, :, :] = cwv
+
+    traits = DimArray(mat,
+        (type = [:cwm, :cwv],
+            time = date_to_solt.(data.valid.traits.t[f]; startyear),
+            trait = data.valid.traits.dim))
+
+    return (; soilmoisture, traits, biomass)
 end

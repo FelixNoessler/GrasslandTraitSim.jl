@@ -16,7 +16,7 @@ import Pkg
 Pkg.add(url="https://github.com/felixnoessler/GrasslandTraitSim.jl")
 ```
 
-!!! note
+!!! compat
     The simulations were tested with `Julia` 1.9.3. I recommend using this version.
     
 ## Run simulations

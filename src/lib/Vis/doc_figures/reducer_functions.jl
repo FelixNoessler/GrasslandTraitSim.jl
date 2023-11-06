@@ -95,7 +95,7 @@ function below_influence(sim, valid; nspecies = 25, path = nothing)
     for (i, below_effect) in enumerate(below_effects)
         container = @set container.p.belowground_density_effect = below_effect
         sim.below_ground_competition!(; container, biomass)
-        ymat[:, i] .= container.calc.nut_density_factor
+        ymat[:, i] .= container.calc.biomass_density_factor
     end
 
     traitsimmat = ustrip.(copy(container.traits.TS))
@@ -107,29 +107,6 @@ function below_influence(sim, valid; nspecies = 25, path = nothing)
     colormap = :viridis
     #####################
 
-    ##################### belowground_density_effect = 1, unequal biomass, random traits
-    # below_density_effect = 1.5
-    # container = @set container.p.belowground_density_effect = below_density_effect
-    # mean_traitsim = vec(mean(traitsimmat; dims=2))
-
-    # u1 = sortperm(mean_traitsim)
-    # biomass1 = fill(1.0, nspecies)u"kg / ha"
-    # # biomass1[u1[1]] = 1000u"kg / ha"
-    # for i in eachindex(mean_traitsim)
-    #     biomass1[u1[i]] *= i
-    # end
-    # sim.below_ground_competition!(; container, biomass=biomass1)
-    # belowsplit_biomass1 = copy(container.calc.nut_density_factor)
-
-    # u2 = sortperm(mean_traitsim, rev=true)
-    # biomass2 = fill(1.0, nspecies)u"kg / ha"
-    # # biomass2[u1[end]] = 1000u"kg / ha"
-    # for i in eachindex(mean_traitsim)
-    #     biomass2[u2[i]] *= i
-    # end
-    # sim.below_ground_competition!(; container, biomass=biomass2)
-    # belowsplit_biomass2 = copy(container.calc.nut_density_factor)
-
     ##################### artficial example
     mat = [1 0.8 0.2; 0.8 1 0.5; 0.2 0.5 1]
     biomass = [100.0, 10.0, 10.0]u"kg / ha"
@@ -140,15 +117,13 @@ function below_influence(sim, valid; nspecies = 25, path = nothing)
     for i in eachindex(artificial_below)
         c = (; traits = (; TS = mat),
             calc = (; TS_biomass = zeros(3)u"kg / ha",
-                nut_density_factor = zeros(3),
-                water_density_factor = zeros(3)),
+                biomass_density_factor = zeros(3)),
             simp = (; included = (; below_included = true)),
             p = (; belowground_density_effect = artificial_below[i],
-                nut_dens = 80,
-                water_dens = 80))
+                biomass_dens = 80))
         sim.below_ground_competition!(; container = c, biomass)
 
-        artificial_mat[:, i] = c.calc.nut_density_factor
+        artificial_mat[:, i] = c.calc.biomass_density_factor
     end
 
     artificial_labels = [

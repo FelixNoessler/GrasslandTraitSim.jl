@@ -81,19 +81,18 @@ makedocs(;
     sitename = "GrasslandTraitSim.jl",
     format = Documenter.HTML(prettyurls = true, mathengine = MathJax3()),
     modules = [GrasslandTraitSim, GrasslandTraitSim.Valid, GrasslandTraitSim.Vis],
-    pages = Any[
-        "Home" => "index.md",
-        "Tutorials" => Any[
-            "Prepare inputs" => "tutorials/how_to_prepare_input.md",
-            "Calculate likelihood" => "tutorials/how_to_calculate_likelihood.md"],
-        "Model inputs and outputs" => "model_io.md",
-        "Model calibration for Biodiversity Exploratories" => "calibration.md",
-        "Modelling API" => Any[
-            "Difference equation" => "Modelling_API/main_equations.md",
+    pages = Any["Home" => "index.md",
+        "Model input and output" => "model_io.md",
+        "Tutorials" => Any["Prepare input and run simulation" => "tutorials/how_to_prepare_input.md",
+            "Analyse model output" => "tutorials/how_to_analyse_output.md"],
+        "Model description" => Any["Difference equation" => "Modelling_API/main_equations.md",
             "Initialization" => "Modelling_API/initialization.md",
             "Growth" => "Modelling_API/growth.md",
             "Water dynamics" => "Modelling_API/water.md",
             "Functional response" => "Modelling_API/functional_response.md"],
+        "Calibration to grasslands of the Biodiversity Exploratories" => Any["Calibration data" => "biodiversity_exploratories/calibration_data.md",
+            "Likelihood" => "biodiversity_exploratories/likelihood.md",
+            "Priors" => "biodiversity_exploratories/priors.md"],
         "TOC all functions" => "all_functions.md",
         "References" => "References.md"])
 

@@ -2,7 +2,7 @@ function predictive_check(; sol, valid_data)
     p = sol.p
 
     # ------------------------ biomass ------------------------
-    date_filter = sol.date .∈ Ref(timestamp(valid_data.measured_biomass))
+    date_filter = sol.date .∈ LookupArrays.index(valid_data.biomass, :time)
     t_biomass = sol.ts[date_filter]
     biomass_filtered = sol.o.biomass[t_biomass, :, :]
     meanbiomass_per_patch = mean(biomass_filtered; dims = 2)

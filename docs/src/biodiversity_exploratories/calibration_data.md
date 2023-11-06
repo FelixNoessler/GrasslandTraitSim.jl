@@ -1,4 +1,4 @@
-# Model calibration for Biodiversity Exploratories
+# Model calibration data from the Biodiversity Exploratories
 
 ## Input data
 

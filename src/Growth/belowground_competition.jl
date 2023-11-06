@@ -64,11 +64,11 @@ TS \cdot B =
 The factors are then calculated as follows:
 ```math
 \begin{align}
-\text{water_density_factor} &=
-    \left(\frac{TS \cdot B}{\text{water_dens}}\right) ^
+\text{biomass_density_factor} &=
+    \left(\frac{TS \cdot B}{\text{biomass_dens}}\right) ^
     {- \text{belowground_density_effect}} \\
-\text{nut_density_factor} &=
-    \left(\frac{TS \cdot B}{\text{nut_dens}}\right) ^
+\text{biomass_density_factor} &=
+    \left(\frac{TS \cdot B}{\text{biomass_dens}}\right) ^
     {- \text{belowground_density_effect}} \\
 \end{align}
 ```
@@ -82,8 +82,7 @@ The `TS` matrix is computed before the start of the simulation
 and includes the traits arbuscular mycorrhizal colonisation rate (`amc`)
 and the root surface area devided by the above ground biomass (`rsa_above`).
 
-- `water_density_factor` is the factor that adjusts the plant available water [-]
-- `nut_density_factor` is the factor that adjusts the plant available nutrients [-]
+- `biomass_density_factor` is the factor that adjusts the plant available nutrients and soil water [-]
 - `TS` is the trait similarity matrix, $TS \in [0,1]^{N \times N}$ [-]
 - `B` is the biomass vector, $B \in [0, ∞]^{N}$ [kg ha⁻¹]
 - `belowground_density_effect` is the exponent of the below ground
@@ -92,23 +91,20 @@ and the root surface area devided by the above ground biomass (`rsa_above`).
 ![](../img/below_influence.svg)
 """
 function below_ground_competition!(; container, biomass)
-    @unpack water_density_factor, nut_density_factor, TS_biomass = container.calc
+    @unpack biomass_density_factor, TS_biomass = container.calc
     @unpack below_included = container.simp.included
-    @unpack belowground_density_effect, nut_dens, water_dens = container.p
+    @unpack belowground_density_effect, biomass_dens = container.p
     @unpack TS = container.traits
 
     if !below_included
         @info "No below ground competition for resources!" maxlog=1
-        @. water_density_factor = 1.0
-        @. nut_density_factor = 1.0
+        @. biomass_density_factor = 1.0
         return nothing
     end
 
     LinearAlgebra.mul!(TS_biomass, TS, biomass)
-    water_density_factor .= (TS_biomass ./ (water_dens * u"kg / ha")) .^
-                            -belowground_density_effect
-    nut_density_factor .= (TS_biomass ./ (nut_dens * u"kg / ha")) .^
-                          -belowground_density_effect
+    biomass_density_factor .= (TS_biomass ./ (biomass_dens * u"kg / ha")) .^
+                              -belowground_density_effect
 
     return nothing
 end

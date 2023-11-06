@@ -284,8 +284,8 @@ function dashboard_layout(; valid)
     ############# Parameter values
     mp = valid.model_parameters()
     param_slider_prep = [(label = string(name),
-        range = LinRange(p1 + 1e-10, p2, 100),
-        format = "{:.3f}",
+        range = LinRange(p1 + 1e-10, p2, 1000),
+        format = "{:.5f}",
         height = 15,
         linewidth = 15,
         startvalue = val) for (name, val, p1, p2) in zip(mp.names, mp.best, mp.lb, mp.ub)]

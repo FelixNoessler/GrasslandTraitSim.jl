@@ -1,8 +1,6 @@
-# Likelihood calculation
+# Likelihood calculation for the Biodiversity Exploratories data set
 
 We can compute the probability of observing the data ``x``, given the simulation of the model with the parameters ``\theta``, by calculating the likelihood function ``\mathcal{L}(\theta \mid x)``.
-
-
 
 ## Soil water content
 
@@ -11,7 +9,7 @@ In the Biodiversity Exploratories, data of the soil moisture ``SM_m`` is in ``\%
 ```math
 \begin{align}
     SWC_{m} &= \text{moistureconv_alpha} + \text{moistureconv_beta} \cdot \text{rootdepth} \cdot SM_{m} \\
-    SWC_{m} &\sim \text{truncated}(\text{Laplace}(\mu = SWC_{sim}, b = \text{b_soilmoisture}); \text{lower}=0)
+    SWC_{m} &\sim \text{truncated}(\text{Laplace}(\mu = SWC_{sim}, b = \text{b_soilmoisture}); \text{ lower}=0)
 \end{align}
 ```
 
@@ -20,18 +18,18 @@ In the Biodiversity Exploratories, data of the soil moisture ``SM_m`` is in ``\%
 We calculate the likelihood of observing the measured biomass ``B_{m}`` given the simulated biomass ``B_{sim}`` (both in ``\frac{kg}{ha}``): 
 
 ```math
-    B_{m} \sim \text{truncated}(\text{Laplace}(\mu = B_{sim}, b = \text{b_biomass}); \text{lower}=0)
+    B_{m} \sim \text{truncated}(\text{Laplace}(\mu = B_{sim}, b = \text{b_biomass}); \text{ lower}=0)
 ```
 
 ## Community weighted mean traits
 
-We can calculate community weighted mean traits from the observed community composition by weighting species mean trait values by their cover. In the same way, we can calculate community weighted mean traits for our simulated plant community (see [here](@ref "Derived outputs (community weighted mean traits)")). Then, we can calculate the likelihood of observing the measured community weighted mean trait ``CWM_{m}`` given the simulated community weighted mean trait ``CWM_{sim}``:
+We can calculate community weighted mean traits from the observed community composition by weighting species mean trait values by their cover. In the same way, we can calculate community weighted mean traits for our simulated plant community (see [here](@ref "Derived outputs (community weighted mean traits)")). Then, we can calculate the likelihood of observing the measured community weighted mean trait ``CWM_{m}`` (e.g. ``sla_m``) given the simulated community weighted mean trait ``CWM_{sim}`` (e.g. ``sla_{sim}``):
 
 ```math
-    CWM_{m} \sim \text{truncated}(\text{Laplace}(\mu = CWM_{sim}, b = \text{b_cwm}); \text{lower}=0)
+    CWM_{m} \sim \text{truncated}(\text{Laplace}(\mu = CWM_{sim}, b = b\_cwm); \text{ lower}=0)
 ```
 
-This can be done for all five traits that were part of the simulation model. All the traits have an own variance parameter.
+This can be done for all five traits that were part of the simulation model. All the traits have an own variance parameter (e.g. ``b\_sla``).
 
 
 ## Downweighting the likelihood
@@ -42,8 +40,8 @@ Measured soil moisture content is available with a daily resolution. The other d
 
 Moreover, we downweight the likelihood of the community weighted mean traits by the number of traits ``n_{traits}``.
 
-```math
-    \mathcal{L}(\theta \mid x) = \mathcal{L}_{B}(\theta \mid x) + \frac{1}{n_{SM}} \cdot \mathcal{L}_{SWC}(\theta \mid x) + \frac{1}{n_{traits}}\cdot \mathcal{L}_{CWM}(\theta \mid x)
-```
+In this process, we emulate a scenario where each of the three calibration aspects (biomass, soil water content, and community weighted mean traits) is measured only once per year.
 
-Because of the downweighting, the likelihood isn't anymore a real likelihood. However, this has advantages in the calibration process.
+```math
+    \text{log } \mathcal{L}(\theta \mid x) = \text{log }\mathcal{L}_{B}(\theta \mid x) + \frac{1}{n_{SM}} \cdot \text{log }\mathcal{L}_{SWC}(\theta \mid x) + \frac{1}{n_{traits}}\cdot \text{log }\mathcal{L}_{CWM}(\theta \mid x)
+```
