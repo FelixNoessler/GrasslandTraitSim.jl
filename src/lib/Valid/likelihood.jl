@@ -8,6 +8,7 @@ function loglikelihood_model(sim::Module;
         return_seperate = false,
         include_traits = true,
         include_soilmoisture = true,
+        include_trait_var = true,
         data = nothing,
         sol = nothing)
     if isnothing(data)
@@ -86,7 +87,6 @@ function loglikelihood_model(sim::Module;
                     trait_var = -Inf,
                     soilmoisture = ll_soilmoisture)
             end
-
             return -Inf
         end
 
@@ -101,14 +101,8 @@ function loglikelihood_model(sim::Module;
             weighted_trait = trait_vals .* relative_biomass'
             sim_cwm_trait = vec(sum(weighted_trait; dims = 1))
 
-            ### calculate cwv
-            trait_diff = (trait_vals' .- sim_cwm_trait) .^ 2
-            weighted_trait_diff = trait_diff .* relative_biomass
-            sim_cwv_trait = vec(sum(weighted_trait_diff; dims = 2))
-
             ### "measured" traits (calculated cwm from observed vegetation)
             measured_cwm = data.traits[trait = At(trait_symbol), type = At(:cwm)]
-            measured_cwv = data.traits[trait = At(trait_symbol), type = At(:cwv)]
 
             ### CWM Likelihood
             cwm_traitscale = Symbol(:b_, trait_symbol)
@@ -117,12 +111,22 @@ function loglikelihood_model(sim::Module;
             ll = logpdf(cwmtrait_d, measured_cwm)
             ll_trait += ll / ntraits
 
-            ### CWV Likelihood
-            cwv_traitscale = Symbol(:b_var_, trait_symbol)
-            cwvtrait_d = Product(truncated.(Laplace.(sim_cwv_trait, sol.p[cwv_traitscale]);
-                lower = 0.0))
-            ll = logpdf(cwvtrait_d, measured_cwv)
-            ll_trait_var += ll / ntraits
+            ### "measured" traits (calculated cwv from observed vegetation)
+            measured_cwv = data.traits[trait = At(trait_symbol), type = At(:cwv)]
+
+            if include_trait_var
+                ### calculate cwv
+                trait_diff = (trait_vals' .- sim_cwm_trait) .^ 2
+                weighted_trait_diff = trait_diff .* relative_biomass
+                sim_cwv_trait = vec(sum(weighted_trait_diff; dims = 2))
+
+                ### CWV Likelihood
+                cwv_traitscale = Symbol(:b_var_, trait_symbol)
+                cwvtrait_d = Product(truncated.(Laplace.(sim_cwv_trait, sol.p[cwv_traitscale]);
+                    lower = 0.0))
+                ll = logpdf(cwvtrait_d, measured_cwv)
+                ll_trait_var += ll / ntraits
+            end
         end
     end
 
@@ -130,7 +134,6 @@ function loglikelihood_model(sim::Module;
     ################## total likelihood
     ########################################################################
     ll = ll_biomass + ll_trait + ll_trait_var + ll_soilmoisture
-    # ll = ll_trait_var
 
     ########################################################################
     ################## printing

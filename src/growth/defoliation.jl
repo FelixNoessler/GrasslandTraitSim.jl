@@ -31,7 +31,7 @@ function mowing!(; container, mowing_height, days_since_last_mowing, biomass)
 
     # --------- mowing parameter λ
     mown_height .= height .- mowing_height
-    mown_height .= max.(mown_height, 0.01u"m")
+    mown_height .= max.(mown_height, 0.0u"m")
     mowing_λ .= mown_height ./ height
 
     # --------- if meadow is too often mown, less biomass is removed

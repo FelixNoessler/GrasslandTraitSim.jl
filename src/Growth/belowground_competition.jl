@@ -63,14 +63,9 @@ TS \cdot B =
 
 The factors are then calculated as follows:
 ```math
-\begin{align}
-\text{biomass_density_factor} &=
+\text{biomass_density_factor} =
     \left(\frac{TS \cdot B}{\text{biomass_dens}}\right) ^
     {- \text{belowground_density_effect}} \\
-\text{biomass_density_factor} &=
-    \left(\frac{TS \cdot B}{\text{biomass_dens}}\right) ^
-    {- \text{belowground_density_effect}} \\
-\end{align}
 ```
 
 The reduction factors control the density and increases the "functional dispersion"
@@ -78,15 +73,16 @@ of the root surface area per aboveground biomass and the arbuscular
 mycorrhizal colonisation.
 
 The `TS` matrix is computed before the start of the simulation
-([calculation of traits similarity](@ref "Initialization of traits"))
+([calculation of trait similarity](@ref similarity_matrix!))
 and includes the traits arbuscular mycorrhizal colonisation rate (`amc`)
 and the root surface area devided by the above ground biomass (`rsa_above`).
 
-- `biomass_density_factor` is the factor that adjusts the plant available nutrients and soil water [-]
+- `biomass_density_factor` is the factor that adjusts the
+  plant available nutrients and soil water [-]
 - `TS` is the trait similarity matrix, $TS \in [0,1]^{N \times N}$ [-]
 - `B` is the biomass vector, $B \in [0, ∞]^{N}$ [kg ha⁻¹]
 - `belowground_density_effect` is the exponent of the below ground
-    competition factor [-]
+  competition factor [-]
 
 ![](../img/below_influence.svg)
 """

@@ -83,6 +83,7 @@ makedocs(;
     modules = [GrasslandTraitSim, GrasslandTraitSim.Valid, GrasslandTraitSim.Vis],
     pages = Any["Home" => "index.md",
         "Model input and output" => "model_io.md",
+        "Parameter" => "parameter.md",
         "Tutorials" => Any["Prepare input and run simulation" => "tutorials/how_to_prepare_input.md",
             "Analyse model output" => "tutorials/how_to_analyse_output.md"],
         "Model description" => Any["Difference equation" => "Modelling_API/main_equations.md",

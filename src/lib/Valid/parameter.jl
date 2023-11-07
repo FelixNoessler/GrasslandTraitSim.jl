@@ -13,8 +13,7 @@ function model_parameters()
         "max_AMC_nut_reduction", "max_rsa_above_nut_reduction",
         "b_biomass", "b_soilmoisture",
         "b_sla", "b_lncm", "b_amc", "b_height", "b_rsa_above",
-        "b_var_sla", "b_var_lncm", "b_var_amc", "b_var_height", "b_var_rsa_above",
-    ]
+        "b_var_sla", "b_var_lncm", "b_var_amc", "b_var_height", "b_var_rsa_above",]
     best = [
         0.02037577320704022, 1.3344031835366224, 9.594548519615396, 11.793866321332152,
         0.009908918158486471, 2.4959875375040887, 905.1894196309725, 1.243431419474298,
@@ -46,11 +45,13 @@ function model_parameters()
 
         #### lower bounds for the scale parameters
         b_biomass = 0.0,
-        b_soilmoisture = 0.0, b_sla = 0.0,
+        b_soilmoisture = 0.0,
+        b_sla = 0.0,
         b_lncm = 0.0,
         b_amc = 0.0,
         b_height = 0.0,
-        b_rsa_above = 0.0, b_var_sla = 0.0,
+        b_rsa_above = 0.0,
+        b_var_sla = 0.0,
         b_var_lncm = 0.0,
         b_var_amc = 0.0,
         b_var_height = 0.0,
@@ -70,10 +71,10 @@ function model_parameters()
         trampling_factor = 200.0,
         grazing_half_factor = 50.0,
         mowing_mid_days = 10.0,
-        max_rsa_above_water_reduction = 0.5,
-        max_SLA_water_reduction = 0.5,
-        max_AMC_nut_reduction = 0.5,
-        max_rsa_above_nut_reduction = 0.5,
+        max_rsa_above_water_reduction = 5.0,
+        max_SLA_water_reduction = 5.0,
+        max_AMC_nut_reduction = 5.0,
+        max_rsa_above_nut_reduction = 5.0,
 
         #### sd for the scale parameters
         b_biomass = 1000.0,
@@ -142,18 +143,18 @@ function model_parameters()
         max_rsa_above_nut_reduction = 1.0,
 
         #### upper bounds for the scale parameters
-        b_biomass = 10_000.0,
-        b_soilmoisture = 200.0,
-        b_sla = 0.2,
-        b_lncm = 100.0,
-        b_amc = 10.0,
-        b_height = 10.0,
-        b_rsa_above = 0.1,
-        b_var_sla = 0.0005,
-        b_var_lncm = 100.0,
-        b_var_amc = 0.1,
-        b_var_height = 0.5,
-        b_var_rsa_above = 0.01)
+        b_biomass = Inf,
+        b_soilmoisture = Inf,
+        b_sla = Inf,
+        b_lncm = Inf,
+        b_amc = Inf,
+        b_height = Inf,
+        b_rsa_above = Inf,
+        b_var_sla = Inf,
+        b_var_lncm = Inf,
+        b_var_amc = Inf,
+        b_var_height = Inf,
+        b_var_rsa_above = Inf)
 
     order_correct = collect(keys(lb_tuple)) == collect(keys(ub_tuple)) == Symbol.(names)
     if !order_correct
@@ -172,7 +173,16 @@ function model_parameters()
         error("Standard deviations are not positive")
     end
 
-    return (; names, best,
-        lb = collect(lb_tuple), ub = collect(ub_tuple),
-        mean = collect(mean_tuple), sd = collect(sd_tuple))
+
+    exclude_parameters = [
+        "moistureconv_alpha", "moistureconv_beta",
+        "b_soilmoisture",
+        "b_var_sla", "b_var_lncm", "b_var_amc", "b_var_height", "b_var_rsa_above",
+    ]
+    f = names .∉ Ref(exclude_parameters)
+
+    return (;
+            names = names[f], best = best[f],
+            lb = collect(lb_tuple)[f], ub = collect(ub_tuple)[f],
+            mean = collect(mean_tuple)[f], sd = collect(sd_tuple)[f])
 end
