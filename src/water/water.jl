@@ -69,7 +69,7 @@ end
 @doc raw"""
     transpiration(; container, patch_biomass, WR, PWP, WHC, PET, LAItot)
 
-Transpiration of water from the soil.
+Transpiration of water from the plants.
 
 The transpiration is dependent on the plant available water (`W`),
 potential evapotranspiration (`PET`) and a effect of the community

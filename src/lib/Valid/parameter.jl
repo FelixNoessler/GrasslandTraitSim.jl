@@ -1,7 +1,7 @@
 function model_parameters()
     names = [
         "moistureconv_alpha", "moistureconv_beta",
-        "senescence_intercept", "senescence_rate",
+        "sen_α", "sen_leaflifespan",
         "sla_tr", "sla_tr_exponent",
         "biomass_dens",
         "belowground_density_effect",
@@ -24,11 +24,48 @@ function model_parameters()
         6.613912654470809e-5, 20.544957165043726, 0.007630530303688995, 0.0406815972546423,
         0.0011803171892367265]
 
+
+    prior_dists = (;
+        moistureconv_alpha = truncated(Normal(1.0, 10.0); lower=0),# TODO
+        moistureconv_beta = truncated(Normal(1.0, 0.5); lower=0),# TODO
+        sen_α = truncated(Normal(5.0, 10.0); lower=0),
+        sen_leaflifespan = truncated(Normal(5.0, 10.0); lower=0),
+        sla_tr = truncated(Normal(0.02, 0.01); lower=0),
+        sla_tr_exponent = truncated(Normal(1.0, 5.0); lower=0),
+        biomass_dens = truncated(Normal(1000.0, 1000.0); lower=0),
+        belowground_density_effect = truncated(Normal(1.0, 0.5); lower=0),
+        height_strength = truncated(Normal(0.2, 0.5); lower=0),
+        leafnitrogen_graz_exp = truncated(Normal(1.0, 5.0); lower=0),
+        trampling_factor = truncated(Normal(200.0, 100.0); lower=0),
+        grazing_half_factor = truncated(Normal(150.0, 50.0); lower=0),
+        mowing_mid_days = truncated(Normal(10.0, 10.0); lower=0),
+        max_rsa_above_water_reduction = Uniform(0.0, 1.0),
+        max_SLA_water_reduction = Uniform(0.0, 1.0),
+        max_AMC_nut_reduction = Uniform(0.0, 1.0),
+        max_rsa_above_nut_reduction = Uniform(0.0, 1.0),
+        b_biomass = InverseGamma(0.5, 1000.0),
+        b_soilmoisture = Normal(0.0, 15.0),# TODO
+        b_sla = InverseGamma(10.0, 0.1),
+        b_lncm = InverseGamma(2.0, 5.0),
+        b_amc = InverseGamma(10.0, 3.0),
+        b_height = InverseGamma(10.0, 3.0),
+        b_rsa_above = InverseGamma(20.0, 0.2),
+        b_var_sla = Normal(0.0, 0.0005), # TODO
+        b_var_lncm = Normal(0.0, 10.0),# TODO
+        b_var_amc = Normal(0.0, 0.005),# TODO
+        b_var_height = Normal(0.0, 0.02),# TODO
+        b_var_rsa_above = Normal(0.0, 0.0005)# TODO
+    )
+
+
+    lb = zeros(length(names))
+    ub = quantile.(collect(prior_dists), 0.9999)
+
     mean_tuple = (;
         moistureconv_alpha = 1.0,
         moistureconv_beta = 1.0,
-        senescence_intercept = 5.0,
-        senescence_rate = 5.0,
+        sen_α = 5.0,
+        sen_leaflifespan = 5.0,
         sla_tr = 0.02,
         sla_tr_exponent = 1.0,
         biomass_dens = 1000.0,
@@ -60,8 +97,8 @@ function model_parameters()
     sd_tuple = (;
         moistureconv_alpha = 10.0,
         moistureconv_beta = 0.5,
-        senescence_intercept = 5.0,
-        senescence_rate = 5.0,
+        sen_α = 5.0,
+        sen_leaflifespan = 5.0,
         sla_tr = 0.01,
         sla_tr_exponent = 1.0,
         biomass_dens = 200.0,
@@ -90,89 +127,10 @@ function model_parameters()
         b_var_height = 0.02,
         b_var_rsa_above = 0.0005)
 
-    lb_tuple = (;
-        moistureconv_alpha = 0.0,
-        moistureconv_beta = 0.0,
-        senescence_intercept = 0.0,
-        senescence_rate = 0.0,
-        sla_tr = 0.0,
-        sla_tr_exponent = 0.0,
-        biomass_dens = 500.0,
-        belowground_density_effect = 0.0,
-        height_strength = 0.0,
-        leafnitrogen_graz_exp = 0.0,
-        trampling_factor = 0.0,
-        grazing_half_factor = 0.0,
-        mowing_mid_days = 0.0,
-        max_rsa_above_water_reduction = 0.0,
-        max_SLA_water_reduction = 0.0,
-        max_AMC_nut_reduction = 0.0,
-        max_rsa_above_nut_reduction = 0.0,
-
-        #### lower bounds for the scale parameters
-        b_biomass = 0.0,
-        b_soilmoisture = 0.0,
-        b_sla = 0.0,
-        b_lncm = 0.0,
-        b_amc = 0.0,
-        b_height = 0.0,
-        b_rsa_above = 0.0,
-        b_var_sla = 0.0,
-        b_var_lncm = 0.0,
-        b_var_amc = 0.0,
-        b_var_height = 0.0,
-        b_var_rsa_above = 0.0)
-
-    ub_tuple = (;
-        moistureconv_alpha = 2.0,
-        moistureconv_beta = 2.0,
-        senescence_intercept = 10.0,
-        senescence_rate = 20.0,
-        sla_tr = 0.1,
-        sla_tr_exponent = 5.0,
-        biomass_dens = 2500.0,
-        belowground_density_effect = 4.0,
-        height_strength = 1.0,
-        leafnitrogen_graz_exp = 5.0,
-        trampling_factor = 300.0,
-        grazing_half_factor = 200.0,
-        mowing_mid_days = 50.0,
-        max_rsa_above_water_reduction = 1.0,
-        max_SLA_water_reduction = 1.0,
-        max_AMC_nut_reduction = 1.0,
-        max_rsa_above_nut_reduction = 1.0,
-
-        #### upper bounds for the scale parameters
-        b_biomass = Inf,
-        b_soilmoisture = Inf,
-        b_sla = Inf,
-        b_lncm = Inf,
-        b_amc = Inf,
-        b_height = Inf,
-        b_rsa_above = Inf,
-        b_var_sla = Inf,
-        b_var_lncm = Inf,
-        b_var_amc = Inf,
-        b_var_height = Inf,
-        b_var_rsa_above = Inf)
-
-    order_correct = collect(keys(lb_tuple)) == collect(keys(ub_tuple)) == Symbol.(names)
+    order_correct = collect(keys(prior_dists)) == Symbol.(names)
     if !order_correct
         error("Order of parameters is not correct")
     end
-
-    if any(collect(lb_tuple) .> collect(mean_tuple))
-        error("Lower bounds are not smaller than mean")
-    end
-
-    if any(collect(mean_tuple) .> collect(ub_tuple))
-        error("Upper bounds are not larger than mean")
-    end
-
-    if any(.!(collect(sd_tuple) .> 0.0))
-        error("Standard deviations are not positive")
-    end
-
 
     exclude_parameters = [
         "moistureconv_alpha", "moistureconv_beta",
@@ -183,6 +141,7 @@ function model_parameters()
 
     return (;
             names = names[f], best = best[f],
-            lb = collect(lb_tuple)[f], ub = collect(ub_tuple)[f],
+            prior_dists = collect(prior_dists)[f],
+            lb = lb[f], ub = ub[f],
             mean = collect(mean_tuple)[f], sd = collect(sd_tuple)[f])
 end

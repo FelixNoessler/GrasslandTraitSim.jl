@@ -81,9 +81,7 @@ function input_nutrients!(; calc, input_obj, nutheterog, totalN, CNratio)
     maxtotal_N = 50.0
     minCN_ratio = 5.0
     maxCN_ratio = 25.0
-
-    β₁ = β₂ = 0.1
-    β₃ = 10.0 * nutheterog
+    totalN_β = CN_β = 0.1
 
     N = (totalN - mintotal_N) / (maxtotal_N - mintotal_N)
     CN = (CNratio - minCN_ratio) / (maxCN_ratio - minCN_ratio)
@@ -91,8 +89,8 @@ function input_nutrients!(; calc, input_obj, nutheterog, totalN, CNratio)
     for x in Base.OneTo(patch_xdim)
         for y in Base.OneTo(patch_ydim)
             nutrients[get_patchindex(x, y; patch_xdim)] = 1 /
-                                                          (1 + exp(-β₁ * N - β₂ * 1 / CN -
-                                                               β₃ *
+                                                          (1 + exp(-totalN_β * N - CN_β * 1 / CN -
+                                                          nutheterog *
                                                                (nutgradient[x, y] - 0.5)))
         end
     end

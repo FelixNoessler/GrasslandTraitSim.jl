@@ -14,10 +14,16 @@ end
 function prior_logpdf(obj, x)
     nparameter = length(obj.names)
 
+    if any(x .< 0)
+        return -Inf
+    end
+
     lprior = 0.0
     for i in 1:nparameter
-        d = truncated(Normal(obj.mean[i], obj.sd[i]);
-            lower = obj.lb[i], upper = obj.ub[i])
+        d = obj.prior_dists[i]
+
+        # d = truncated(Normal(obj.mean[i], obj.sd[i]);
+        #     lower = obj.lb[i], upper = obj.ub[i])
         lprior += logpdf(d, x[i])
     end
 

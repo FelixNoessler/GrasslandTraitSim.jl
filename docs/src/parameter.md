@@ -6,10 +6,36 @@ CurrentModule = GrasslandTraitSim
 
 | Parameter                     | Description                                 | used in                             | calibrated, reference |
 | ----------------------------- | ------------------------------------------- | ----------------------------------- | --------------------- |
-| `nspecies`                      | Number of species (plant functional types)  | e.g. [`random_traits!`](@ref)       | fixed                 |
-| `npatches`                      | Number of quadratic patches within one site |                                     | fixed                 |
-| `senescence_intercept`          |                                             |                                     | ☑                      |
-| `senescence_rate`               |                                             |                                     | ☑                      |
+| `nspecies`                    | number of species (plant functional types)  | e.g. [`random_traits!`](@ref)       | fixed                 |
+| `npatches`                    | number of quadratic patches within one site |                                     | fixed                 |
+| `mintotal_N`  |   | [`input_nutrients!`](@ref) | fixed |
+| `maxtotal_N`  |   | [`input_nutrients!`](@ref) | fixed |
+| `minCN_ratio`  |  | [`input_nutrients!`](@ref) | fixed |
+| `maxCN_ratio`  |  | [`input_nutrients!`](@ref) | fixed |
+| `totalN_β`  |     | [`input_nutrients!`](@ref) | fixed |
+| `CN_β`  |         | [`input_nutrients!`](@ref) | fixed |
+| `nutheterog`  |   | [`input_nutrients!`](@ref) | fixed |
+| `α`  |  extinction coefficient | [`potential_growth!`](@ref) | fixed |
+| `RUE_max`  | maximum radiation use efficiency  | [`potential_growth!`](@ref) | fixed |
+| `γ1`  |  | [`radiation_reduction`](@ref) | fixed |
+| `γ2`  |   | [`radiation_reduction`](@ref) | fixed |
+| `T₀`  |   | [`temperature_reduction`](@ref) | fixed |
+| `T₁`  |   | [`temperature_reduction`](@ref) | fixed |
+| `T₂`  |   | [`temperature_reduction`](@ref) | fixed |
+| `T₃`  |   | [`temperature_reduction`](@ref) | fixed |
+| `PETₘₐₓ`  |   | [`water_reduction!`](@ref) | fixed |
+| `β₁`  |   | [`water_reduction!`](@ref) | fixed |
+| `β₂`  |   | [`water_reduction!`](@ref) | fixed |
+| `SEAₘᵢₙ`  |   | [`seasonal_reduction`](@ref) | fixed |
+| `SEAₘₐₓ`  |   | [`seasonal_reduction`](@ref) | fixed |
+| `ST₁`  |   | [`seasonal_reduction`](@ref) | fixed |
+| `ST₂`  |   | [`seasonal_reduction`](@ref) | fixed |
+| `sen_α` | α value of a linear equation that relate the leaf life span to the senescence rate | [`senescence_rate!`](@ref)  | ☑                      |
+| `sen_leaflifespan` | slope of a linear equation that relates the leaf life span to the senescence rate |  [`senescence_rate!`](@ref)  | ☑                      |
+| `SENₘᵢₙ`  | | [`seasonal_component_senescence`](@ref) |  fixed|
+| `SENₘₐₓ`  | | [`seasonal_component_senescence`](@ref) |  fixed|
+| `Ψ₁` | | [`seasonal_component_senescence`](@ref) | fixed|
+| `Ψ₂` | | [`seasonal_component_senescence`](@ref) |fixed |
 | `sla_tr`                        | reference community weighted mean specific leaf area, if the community weighted mean specific leaf area is equal to `sla_tr` then transpiration will not increase or decrease | [`transpiration`](@ref) | ☑ |
 | `sla_tr_exponent`               | controls how strongly a community mean specific leaf area that deviates from `sla_tr` is affecting the transpiration  | [`transpiration`](@ref) | ☑ |
 | `biomass_dens`                  | if the matrix multiplication between the trait similarity matrix and the biomass equals `biomass_dens` the available water and nutrients for growth are not in- or decreased | [`below_ground_competition!`](@ref) | ☑ |
@@ -24,6 +50,10 @@ CurrentModule = GrasslandTraitSim
 | `max_SLA_water_reduction`       |                                             |                                     |                       |
 | `max_AMC_nut_reduction`         |                                             |                                     |                       |
 | `max_rsa_above_nut_reduction`   |                                             |                                     |                       |
+
+In addition, regression equation by [Reich1992](@cite) used to calculate the leaf life span from the specific leaf area (see [`senescence_rate!`](@ref)). Regression equation from [Gupta1979](@cite) used to derive
+the water holding capacity and the permanent wilting point (see [`input_WHC_PWP`](@ref))
+
 
 
 ### Parameters that are only used for calibration

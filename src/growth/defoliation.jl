@@ -48,7 +48,7 @@ end
 @doc raw"""
     grazing_parameter!(; calc, LNCM, leafnitrogen_graz_exp)
 
-Initialize the grazing parameter ρ.
+Initialize the grazing parameter ρ (palatability).
 
 ```math
 \rho =  \left(\frac{LNCM}{\overline{LNCM}}\right) ^ {\text{leafnitrogen_graz_exp}}
