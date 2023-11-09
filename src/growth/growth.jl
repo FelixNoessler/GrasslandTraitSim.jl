@@ -15,7 +15,7 @@ function growth!(; t, container, biomass, WR, nutrients, WHC, PWP)
     @unpack daily_input, traits = container
     @unpack included = container.simp
     @unpack species_specific_red, heightinfluence, Waterred, Nutred = container.calc
-    @unpack act_growth, pot_growth, neg_act_growth = container.calc
+    @unpack act_growth, potgrowth, neg_act_growth = container.calc
 
     #### potential growth
     LAItot = potential_growth!(; container,
@@ -47,7 +47,7 @@ function growth!(; t, container, biomass, WR, nutrients, WHC, PWP)
     reduction = Rred * Tred * Seasonalred
 
     #### final growth
-    @. act_growth = pot_growth * reduction * species_specific_red
+    @. act_growth = potgrowth * reduction * species_specific_red
 
     @. neg_act_growth = act_growth < 0u"kg / (ha * d)"
     if any(neg_act_growth)

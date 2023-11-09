@@ -23,7 +23,7 @@ function potential_growth(sim, valid;
     for (i, PAR) in enumerate(PARs)
         sim.potential_growth!(; container, sla, biomass, PAR,
             potgrowth_included = true)
-        ymat[:, i] .= ustrip.(container.calc.pot_growth)
+        ymat[:, i] .= ustrip.(container.calc.potgrowth)
     end
 
     idx = sortperm(container.traits.sla)

@@ -24,7 +24,7 @@ function planar_gradient!(; mat, direction = 100)
 end
 
 """
-    derive_WHC_PWP_nutrients!(; calc, input_obj)
+    derive_WHC_PWP_nutrients!(; calc, input_obj, inf_p)
 
 Derive water holding capacity (WHC), permanent wilting point (PWP) and nutrients
 for all patches.
@@ -34,7 +34,7 @@ This function calls the functions [`input_WHC_PWP`](@ref) and [`input_nutrients!
 A gradient of nutrients within the site can be added by setting `nutheterog` to a
 value larger than zero. The gradient is created with [`planar_gradient!`](@ref).
 """
-function derive_WHC_PWP_nutrients!(; calc, input_obj)
+function derive_WHC_PWP_nutrients!(; calc, input_obj, inf_p)
     @unpack patch_xdim, patch_ydim, nutheterog, = input_obj.simp
     @unpack sand, silt, clay, organic, bulk, rootdepth, totalN, CNratio = input_obj.site
     @unpack nutgradient = calc.calc
@@ -46,7 +46,7 @@ function derive_WHC_PWP_nutrients!(; calc, input_obj)
     end
 
     WHC, PWP = input_WHC_PWP(; sand, silt, clay, organic, bulk, rootdepth)
-    input_nutrients!(; calc, input_obj, nutheterog, totalN, CNratio)
+    input_nutrients!(; calc, input_obj, inf_p, nutheterog, totalN, CNratio)
 
     calc.patch.WHC .= WHC * u"mm"
     calc.patch.PWP .= PWP * u"mm"
@@ -55,43 +55,69 @@ function derive_WHC_PWP_nutrients!(; calc, input_obj)
 end
 
 @doc raw"""
-    input_nutrients(; gradientm, total_N, CN_ratio)
+    input_nutrients!(; calc, input_obj, inf_p, nutheterog, totalN, CNratio)
 
 Derive a nutrient index by combining total nitrogen and carbon to nitrogen ratio.
 
 ```math
-    N = \frac{1}{1 + exp(-β₁ ⋅ \text{total_N} -β₂ ⋅ \text{CN_ratio}⁻¹)}
+\begin{align*}
+\text{CN_scaled} &= \frac{\text{CNratio} - \text{minCNratio}}
+                    {\text{maxCNratio} - \text{minCN_ratio}} \\
+\text{totalN_scaled} &= \frac{\text{totalN} - \text{mintotalN}}
+                        {\text{maxtotalN} - \text{mintotalN}} \\
+\text{nutrients} &= \frac{1}{1 + exp(-\text{totalN_β} ⋅ \text{totalN_scaled}
+                                     -\text{CN_β} ⋅ \text{CN_scaled}⁻¹)}
+\end{align*}
 ```
 
 - `CNratio`: carbon to nitrogen ratio [-]
 - `totalN`: total nitrogen [g kg⁻¹]
+- `minCNratio`: minimum carbon to nitrogen ratio [-]
+- `maxCNratio`: maximum carbon to nitrogen ratio [-]
+- `mintotalN`: minimum total nitrogen [g kg⁻¹]
+- `maxtotalN`: maximum total nitrogen [g kg⁻¹]
+- `totalN_β`: scaling parameter for total nitrogen [-]
+- `CN_β`: scaling parameter for carbon to nitrogen ratio [-]
+- `nutrients`: nutrient index [-]
+
+Additionally if more than one patch is simulated a gradient of nutrients can be added
+and the last equations changes to:
+
+```math
+\text{nutrients} = \frac{1}{1 + exp(-\text{totalN_β} ⋅ \text{totalN_scaled}
+                                    -\text{CN_β} ⋅ \text{CN_scaled}⁻¹
+                                    -\text{nutheterog} * (\text{nutgradient} - 0.5))}
+```
+
+- `nutheterog`: heterogeneity of nutrients [-]
+- `nutgradient`: gradient of nutrients between 0 and 1 [-],
+  created by [`planar_gradient!`](@ref)
 """
-function input_nutrients!(; calc, input_obj, nutheterog, totalN, CNratio)
+function input_nutrients!(; calc, input_obj, inf_p, nutheterog, totalN, CNratio)
     @unpack patch_xdim, patch_ydim = input_obj.simp
     @unpack nutgradient = calc.calc
     @unpack nutrients = calc.patch
+    @unpack totalN_β, CN_β = inf_p
 
     #### data from the biodiversity exploratories
-    # mintotal_N = 1.2525
-    # maxtotal_N = 30.63
-    # minCN_ratio = 9.0525
-    # maxCN_ratio = 13.6025
+    # mintotalN = 1.2525
+    # maxtotalN = 30.63
+    # minCNratio = 9.0525
+    # maxCNratio = 13.6025
 
-    mintotal_N = 0.0
-    maxtotal_N = 50.0
-    minCN_ratio = 5.0
-    maxCN_ratio = 25.0
-    totalN_β = CN_β = 0.1
+    mintotalN = 0.0
+    maxtotalN = 50.0
+    minCNratio = 5.0
+    maxCNratio = 25.0
 
-    N = (totalN - mintotal_N) / (maxtotal_N - mintotal_N)
-    CN = (CNratio - minCN_ratio) / (maxCN_ratio - minCN_ratio)
+    totalN_scaled = (totalN - mintotalN) / (maxtotalN - mintotalN)
+    CN_scaled = (CNratio - minCNratio) / (maxCNratio - minCNratio)
 
     for x in Base.OneTo(patch_xdim)
         for y in Base.OneTo(patch_ydim)
-            nutrients[get_patchindex(x, y; patch_xdim)] = 1 /
-                                                          (1 + exp(-totalN_β * N - CN_β * 1 / CN -
-                                                          nutheterog *
-                                                               (nutgradient[x, y] - 0.5)))
+            nutrients[get_patchindex(x, y; patch_xdim)] =
+                1 / (1 + exp(-totalN_β * totalN_scaled - CN_β * 1 / CN_scaled -
+                    nutheterog * (nutgradient[x, y] - 0.5)))
         end
     end
 
@@ -176,7 +202,7 @@ function initialization(; input_obj, inf_p, calc)
     sla_water_lower = sla_water_response!(; calc, inf_p)
 
     # WHC, PWP and nutrient index
-    derive_WHC_PWP_nutrients!(; calc, input_obj)
+    derive_WHC_PWP_nutrients!(; calc, input_obj, inf_p)
 
     ################## Patch neighbours ##################
     set_neighbours_surroundings!(; calc, input_obj)

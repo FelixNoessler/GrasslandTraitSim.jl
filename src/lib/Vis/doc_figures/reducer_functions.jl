@@ -82,7 +82,7 @@ function below_influence(sim, valid; nspecies = 25, path = nothing)
         plotID = "HEG01", nspecies,
         startyear = 2009, endyear = 2021,
         npatches = 1, nutheterog = 0.0,
-        constant_seed = false)
+        trait_seed = missing)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
     #####################

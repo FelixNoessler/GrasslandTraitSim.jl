@@ -47,16 +47,15 @@ Overview of the traits:
 | `rsa_above` | m² g⁻¹ | root surface area per aboveground biomass | -              |
 """
 function random_traits!(; calc, input_obj)
-    @unpack constant_seed, nspecies = input_obj.simp
+    @unpack trait_seed, nspecies = input_obj.simp
     @unpack traitmat = calc.calc
     @unpack traits = calc
 
     ### set seed
-    seed = 88675
-    if !constant_seed
-        seed = rand(1:100000)
+    if ismissing(trait_seed)
+        trait_seed = rand(1:100000)
     end
-    rng = Random.Xoshiro(seed)
+    rng = Random.Xoshiro(trait_seed)
 
     ## generate random traits
     for i in Base.OneTo(nspecies)

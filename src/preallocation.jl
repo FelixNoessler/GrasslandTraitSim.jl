@@ -59,7 +59,7 @@ function preallocate_vectors(; input_obj)
             negbiomass = fill(false, ntimesteps, npatches, nspecies),
 
             ############ preallaocated vectors that are used in the calculations
-            pot_growth = fill(val, nspecies)u"kg / (ha * d)",
+            potgrowth = fill(val, nspecies)u"kg / (ha * d)",
             act_growth = fill(val, nspecies)u"kg / (ha * d)",
             defoliation = fill(val, nspecies)u"kg / (ha * d)",
             sen = zeros(nspecies)u"kg / (ha * d)",

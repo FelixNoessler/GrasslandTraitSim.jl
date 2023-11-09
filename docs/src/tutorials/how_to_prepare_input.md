@@ -121,7 +121,7 @@ simp = (
     patch_xdim = 1, 
     patch_ydim = 1, 
     nutheterog = 0.0, 
-    constant_seed = false, 
+    trait_seed = missing, 
     startyear = year[1], 
     endyear = year[end], 
     
@@ -180,6 +180,8 @@ inf_p = (
     trampling_factor = 198.9975, 
     grazing_half_factor = 102.4847, 
     mowing_mid_days = 46.11971, 
+    totalN_β = 0.1,
+    CN_β = 0.1,
     max_rsa_above_water_reduction = 0.4799059,
     max_SLA_water_reduction = 0.6447272, 
     max_AMC_nut_reduction = 0.7082366, 

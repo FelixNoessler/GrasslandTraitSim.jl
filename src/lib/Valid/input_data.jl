@@ -26,7 +26,7 @@ function validation_input(;
         season_red = true,
         radiation_red = true,
         constant_init_biomass = true,
-        constant_seed = false)
+        trait_seed = missing)
     yearrange = Ref(startyear:endyear)
 
     ###### daily data
@@ -106,7 +106,7 @@ function validation_input(;
             patch_xdim = Int(sqrt(npatches)),
             patch_ydim = Int(sqrt(npatches)),
             nutheterog,
-            constant_seed,
+            trait_seed,
             constant_init_biomass,
             startyear,
             endyear,
