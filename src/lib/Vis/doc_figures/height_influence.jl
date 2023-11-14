@@ -4,7 +4,6 @@ function height_influence(sim, valid; path = nothing, nspecies = 25)
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies,
-        startyear = 2009, endyear = 2021,
         npatches = 1, nutheterog = 0.0)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)

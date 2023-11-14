@@ -1,5 +1,8 @@
-# How to prepare the input data to start a simulation
+```@meta
+CurrentModule = GrasslandTraitSim
+```
 
+# How to prepare the input data to start a simulation
 
 Which input is needed (see also [here](@ref "Model inputs and outputs")):
 - daily climatic variables (PET, PAR, temperature, precipitation)
@@ -108,7 +111,8 @@ site_tuple = (;
     organic = 6.0,     # %
     bulk = 0.7,        # g cm⁻³
     rootdepth = 160.0, # mm
-    initbiomass = 1500u"kg / ha"
+    initbiomass = 1500u"kg / ha",
+    initsoilwater = 80u"mm"
 )           
 ```
 
@@ -116,14 +120,12 @@ site_tuple = (;
 ```@example input_creation
 simp = (
     ntimesteps, 
-    nspecies = 25, 
+    nspecies = 5, 
     npatches = 1, 
     patch_xdim = 1, 
     patch_ydim = 1, 
     nutheterog = 0.0, 
-    trait_seed = missing, 
-    startyear = year[1], 
-    endyear = year[end], 
+    trait_seed = missing,  
     
     ## these variables are used to debug the model
     included = 
@@ -158,9 +160,25 @@ to create the same object:**
 ```@example
 import GrasslandTraitSim.Valid as valid
 input_obj_HEG01 = valid.validation_input(;
-    plotID = "HEG01", nspecies = 25,
-    startyear = 2009, endyear = 2021,
+    plotID = "HEG01", nspecies = 5,
     npatches = 1, nutheterog = 0.0);
+```
+
+## Traits
+
+If no input traits are specified, the model will generate for each simulation new traits from a Gaussian Mixture model that was fitted to grassland plant species in Germany (see [`random_traits!`](@ref)).
+
+If you want to use your own traits, you can specify them in the following way:
+
+```@example input_creation
+trait_input = (;
+    amc = [0.12, 0.52, 0.82, 0.13, 0.16],
+    sla = [0.021, 0.026, 0.014, 0.016, 0.0191]u"m^2/g",
+    height = [0.38, 0.08, 0.06, 0.51, 0.27]u"m",
+    rsa_above = [0.108, 0.163, 0.117, 0.132, 0.119]u"m^2/g",
+    ampm = [0.63, 0.52, 0.65, 0.58, 0.72],
+    lmpm = [0.55, 0.49, 0.62, 0.38, 0.68],
+    lncm = [19.6, 20.7, 22.7, 20.1, 23.6]u"mg/g")
 ```
 
 ## Simulation parameters that are adapted in the calibration process
@@ -193,5 +211,13 @@ inf_p = (
 ## Run a simulation
 
 ```@example input_creation
+# if you will run many simulations, it is recommended to preallocated the vectors
+# but the simulation will also run without preallocation 
+calc = sim.preallocate_vectors(; input_obj);
+
+# traits will be generated, no preallocation
 sol = sim.solve_prob(; input_obj, inf_p)
+
+# with static traits, with preallocation
+sol = sim.solve_prob(; input_obj, calc, inf_p, trait_input)
 ```

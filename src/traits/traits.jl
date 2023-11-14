@@ -1,10 +1,6 @@
 function load_gm(datapath)
-    μ, Σ, ϕ = load("$datapath/input/traits_gaussian_mixture.jld2", "μ", "Σ", "ϕ")
-
-    global mm_normald = [
-        MvNormal(μ[1, :], Hermitian(Σ[1, :, :])),
-        MvNormal(μ[2, :], Hermitian(Σ[2, :, :]))]
-    global mm_prior = ϕ[1]
+    global traits_μ, traits_Σ, traits_ϕ = load(
+        "$datapath/input/traits_gaussian_mixture.jld2", "μ", "Σ", "ϕ")
 
     return nothing
 end
@@ -22,29 +18,25 @@ The traits are generated using a bivariate Gaussian mixture model
 with full covariance matrices. For each species
 either the first or the second Gaussian distribution is used to
 generate the log/logit-transformed traits. The traits are then backtransformed
-to the original scale and the units are added. Furthermore, the
-two traits specific leaf area (`sla`) and the root surface area per
-aboveground biomass (`rsa_above`) are calculated.
+to the original scale and the units are added. If the proportion of the leaf mass
+of the total plant mass (`lmpm`) is larger than 0.95 % of the proportion of the
+aboveground mass of the total mass (`ampm`), `lmpm` is set to 0.95 % of `ampm`.
 
 The Gaussian mixture model was fitted to the data with the function
 `BayesianGaussianMixture` of [scikit-learn](@cite).
-
 
 Overview of the traits:
 
 | trait       | unit   | description                               | transformation |
 | ----------- | ------ | ----------------------------------------- | -------------- |
-| `la`        | mm²    | leaf area                                 | log            |
-| `lfm`       | mg     | leaf fresh mass                           | log            |
-| `ldm`       | mg     | leaf dry mass                             | log            |
-| `ba`        | -      | biomass allocation                        | log            |
-| `srsa`      | m² g⁻¹ | specific root surface area                | log            |
-| `amc`       | -      | arbuscular mycorrhizal colonisation rate  | logit          |
+| `sla`       | m² g⁻¹ | specific   leaf area                      | log            |
 | `height`    | m      | plant height                              | log            |
-| `ldmpm`     | g g⁻¹  | leaf dry mass per plant dry mass          | log            |
 | `lncm`      | mg g⁻¹ | leaf nitrogen content per leaf dry mass   | log            |
-| `sla`       | m² g⁻¹ | specific leaf area                        | -              |
-| `rsa_above` | m² g⁻¹ | root surface area per aboveground biomass | -              |
+| `rsa_above` | m² g⁻¹ | root surface area per aboveground biomass | log            |
+| `amc`       | -      | arbuscular mycorrhizal colonisation rate  | logit          |
+| `ampm`      | -      | aboveground dry mass per plant dry mass   | logit          |
+| `lmpm`      | -      | leaf dry mass per plant dry mass          | logit          |
+
 """
 function random_traits!(; calc, input_obj)
     @unpack trait_seed, nspecies = input_obj.simp
@@ -57,37 +49,33 @@ function random_traits!(; calc, input_obj)
     end
     rng = Random.Xoshiro(trait_seed)
 
+    d1 = MvNormal(traits_μ[1, :], Hermitian(traits_Σ[1, :, :]))
+    d2 = MvNormal(traits_μ[2, :], Hermitian(traits_Σ[2, :, :]))
+
     ## generate random traits
     for i in Base.OneTo(nspecies)
-        if rand(rng) < mm_prior
-            Random.rand!(rng, mm_normald[1], @view traitmat[:, i])
+        if rand(rng) < traits_ϕ[1]
+            Random.rand!(rng, d1, @view traitmat[:, i])
         else
-            Random.rand!(rng, mm_normald[2], @view traitmat[:, i])
+            Random.rand!(rng, d2, @view traitmat[:, i])
         end
     end
 
-    ### backtransform the trait values
-    for i in 1:5
-        @views traitmat[i, :] .= exp.(traitmat[i, :])
-    end
-    @views traitmat[6, :] .= inverse_logit.(traitmat[6, :])
-    for i in 7:9
-        @views traitmat[i, :] .= exp.(traitmat[i, :])
-    end
+    ### backtransformation and add units
+    @. traits.sla = exp(@view traitmat[1, :]) * u"m^2/g"
+    @. traits.height = exp(@view traitmat[2, :]) * u"m"
+    @. traits.lncm = exp(@view traitmat[3, :]) * u"mg/g"
+    @. traits.rsa_above = exp(@view traitmat[4, :]) * u"m^2/g"
+    @. traits.amc = inverse_logit(@view traitmat[5, :])
+    @. traits.ampm = inverse_logit(@view traitmat[6, :])
+    @. traits.lmpm = inverse_logit(@view traitmat[7, :])
 
-    ### add units
-    @. traits[:la] = u"mm^2" * @view traitmat[1, :]
-    @. traits[:lfm] = u"mg" * @view traitmat[2, :]
-    @. traits[:ldm] = u"mg" * @view traitmat[3, :]
-    @. traits[:ba] = @view traitmat[4, :]
-    @. traits[:srsa] = u"m^2/g" * @view traitmat[5, :]
-    @. traits[:amc] = @view traitmat[6, :]
-    @. traits[:height] = u"m" * @view traitmat[7, :]
-    @. traits[:ldmpm] = u"g/g" * @view traitmat[8, :]
-    @. traits[:lncm] = u"mg/g" * @view traitmat[9, :]
-
-    @. traits[:sla] = uconvert(u"m^2/g", traits[:la] / traits[:ldm])
-    @. traits[:rsa_above] = traits[:srsa] * traits[:ba]
+    # proportion of leaf biomass cannot be larger than 0.95 % of aboveground biomass
+    for i in Base.OneTo(nspecies)
+        if traits.lmpm[i] > 0.95 * traits.ampm[i]
+            traits.lmpm[i] = 0.95 * traits.ampm[i]
+        end
+    end
 
     return nothing
 end

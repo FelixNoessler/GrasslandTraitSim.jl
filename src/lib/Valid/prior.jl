@@ -4,9 +4,7 @@ function sample_prior()
     vals = Array{Float64}(undef, nparameter)
 
     for i in 1:nparameter
-        d = truncated(Normal(obj.mean[i], obj.sd[i]);
-            lower = obj.lb[i], upper = obj.ub[i])
-        vals[i] = rand(d)
+        vals[i] = rand(obj.prior_dists[i])
     end
     return vals
 end
@@ -20,11 +18,7 @@ function prior_logpdf(obj, x)
 
     lprior = 0.0
     for i in 1:nparameter
-        d = obj.prior_dists[i]
-
-        # d = truncated(Normal(obj.mean[i], obj.sd[i]);
-        #     lower = obj.lb[i], upper = obj.ub[i])
-        lprior += logpdf(d, x[i])
+        lprior += logpdf(obj.prior_dists[i], x[i])
     end
 
     return lprior

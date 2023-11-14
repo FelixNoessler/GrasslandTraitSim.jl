@@ -49,8 +49,6 @@ function prepare_valid_input(; included, plot_obj, valid)
         nspecies = plot_obj.obs.nspecies.val,
         npatches = plot_obj.obs.npatches.val,
         nutheterog = plot_obj.obs.slider_nutheterog.value.val,
-        startyear = 2009,
-        endyear = 2021,
         included...)
 
     return input_obj

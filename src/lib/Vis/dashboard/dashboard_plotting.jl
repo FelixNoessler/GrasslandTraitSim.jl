@@ -26,8 +26,20 @@ function band_patch(;
     show_grazmow = plot_obj.obs.toggle_grazmow.active.val
     if show_grazmow
         ymax = maximum(biomass_median) * 1.5
-        add_grazing!(ax, sol; ymax)
-        add_mowing!(ax, sol; ymax)
+
+        # -------------- grazing
+        ylower = fill(0.0, length(sol.daily_input.grazing))
+        yupper = (.! isnan.(sol.daily_input.grazing)) .* ymax
+        band!(ax, sol.numeric_date, ylower, yupper;
+            color = (:steelblue4, 0.6))
+
+        # -------------- mowing
+        mowing_f = .! isnan.(sol.daily_input.mowing)
+        xs = sol.numeric_date[mowing_f]
+
+        for x in xs
+            lines!(ax, [x, x], [0.0, ymax]; color = :magenta3)
+        end
     end
 
     show_bands = plot_obj.obs.toggle_bands.active.val

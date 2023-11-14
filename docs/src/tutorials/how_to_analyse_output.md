@@ -13,7 +13,6 @@ using Unitful
 
 input_obj = valid.validation_input(;
     plotID = "HEG01", nspecies = 25,
-    startyear = 2009, endyear = 2021,
     npatches = 1, nutheterog = 0.0);
 
 mp = valid.model_parameters();

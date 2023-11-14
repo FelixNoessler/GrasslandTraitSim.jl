@@ -180,10 +180,17 @@ end
 
 Initialize the simulation object.
 """
-function initialization(; input_obj, inf_p, calc)
+function initialization(; input_obj, inf_p, calc, trait_input = nothing)
     ################## Traits ##################
-    # generate random traits
-    random_traits!(; calc, input_obj)
+    if isnothing(trait_input)
+        # generate random traits
+        random_traits!(; calc, input_obj)
+    else
+        # use traits from input
+        for key in keys(trait_input)
+            calc.traits[key] .= trait_input[key]
+        end
+    end
 
     # distance matrix for below ground competition
     similarity_matrix!(; input_obj, calc)
@@ -234,12 +241,13 @@ the initial biomass (`initbiomass`). The soil water content
 - `u_biomass`: state variable biomass [kg ha⁻¹]
 - `u_water`: state variable soil water content [mm]
 - `initbiomass`: initial biomass [kg ha⁻¹]
+- `initsoilwater`: initial soil water content [mm]
 """
 function set_initialconditions!(; container)
     @unpack u_biomass, u_water = container.u
-    @unpack initbiomass = container.site
+    @unpack initbiomass, initsoilwater = container.site
     @unpack nspecies = container.simp
 
     u_biomass .= initbiomass / nspecies
-    u_water .= 180.0u"mm"
+    u_water .= initsoilwater
 end

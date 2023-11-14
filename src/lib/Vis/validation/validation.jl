@@ -16,9 +16,7 @@
 
 #     for _ in 1:5
 #         data, sol = valid.get_plottingdata(sim;
-#             plotID, inf_p,
-#             startyear = 2012,
-#             endyear = 2021)
+#             plotID, inf_p)
 
 #         biomass_sim = vec(sum(ustrip.(sol.biomass); dims = 3))
 #         sim_t = 2012 .+ sol.t ./ 365
@@ -27,9 +25,7 @@
 #     end
 
 #     data, sol = valid.get_plottingdata(sim;
-#         plotID, inf_p,
-#         startyear = 2012,
-#         endyear = 2021)
+#         plotID, inf_p)
 
 #     mdata_t = 2012 .+ data.measured_biomass_t ./ 365
 #     mdata = data.measured_biomass

@@ -80,7 +80,6 @@ function below_influence(sim, valid; nspecies = 25, path = nothing)
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies,
-        startyear = 2009, endyear = 2021,
         npatches = 1, nutheterog = 0.0,
         trait_seed = missing)
     calc = sim.preallocate_vectors(; input_obj)

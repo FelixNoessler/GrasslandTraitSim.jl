@@ -8,7 +8,6 @@ function potential_growth(sim, valid;
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies,
-        startyear = 2009, endyear = 2021,
         npatches = 1, nutheterog = 0.0)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
@@ -17,18 +16,17 @@ function potential_growth(sim, valid;
     par_values = 10
     biomass = repeat([1], nspecies)u"kg / ha"
     PARs = LinRange(0, 12, par_values)u"MJ * d^-1 * m^-2"
-    sla = container.traits.sla
     ymat = Array{Float64}(undef, nspecies, par_values)
 
     for (i, PAR) in enumerate(PARs)
-        sim.potential_growth!(; container, sla, biomass, PAR,
+        sim.potential_growth!(; container, biomass, PAR,
             potgrowth_included = true)
         ymat[:, i] .= ustrip.(container.calc.potgrowth)
     end
 
     idx = sortperm(container.traits.sla)
     ymat = ymat[idx, :]
-    sla = ustrip.(sla[idx])
+    sla = ustrip.(container.traits.sla[idx])
     colorrange = (minimum(sla), maximum(sla))
     colormap = :viridis
 

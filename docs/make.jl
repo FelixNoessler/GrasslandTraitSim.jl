@@ -84,14 +84,22 @@ makedocs(;
     pages = Any["Home" => "index.md",
         "Model input and output" => "model_io.md",
         "Parameter" => "parameter.md",
-        "Tutorials" => Any["Prepare input and run simulation" => "tutorials/how_to_prepare_input.md",
+        "Tutorials" => Any[
+            "Prepare input and run simulation" => "tutorials/how_to_prepare_input.md",
             "Analyse model output" => "tutorials/how_to_analyse_output.md"],
-        "Model description" => Any["Difference equation" => "Modelling_API/main_equations.md",
+        "Model description" => Any[
+            "Difference equation" => "Modelling_API/main_equations.md",
             "Initialization" => "Modelling_API/initialization.md",
-            "Growth" => "Modelling_API/growth.md",
-            "Water dynamics" => "Modelling_API/water.md",
-            "Functional response" => "Modelling_API/functional_response.md"],
-        "Calibration to grasslands of the Biodiversity Exploratories" => Any["Calibration data" => "biodiversity_exploratories/calibration_data.md",
+            "Biomass dynamic" => Any[
+                "Overview" => "Modelling_API/biomass_dynamic.md",
+                "Growth" => "Modelling_API/growth.md",
+                "Senescence" => "Modelling_API/senescence.md",
+                "Mowing, grazing, and trampling" => "Modelling_API/defoliation.md",
+                "Clonal growth" => "Modelling_API/clonalgrowth.md",
+            ],
+            "Water dynamics" => "Modelling_API/water.md"],
+        "Calibration to grasslands of the Biodiversity Exploratories" => Any[
+            "Calibration data" => "biodiversity_exploratories/calibration_data.md",
             "Likelihood" => "biodiversity_exploratories/likelihood.md",
             "Priors" => "biodiversity_exploratories/priors.md"],
         "TOC all functions" => "all_functions.md",

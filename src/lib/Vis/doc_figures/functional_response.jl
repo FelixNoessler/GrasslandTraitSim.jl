@@ -9,7 +9,7 @@ function amc_nut_response(sim, valid;
     inf_p = @set inf_p.max_AMC_nut_reduction = max_AMC_nut_reduction
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies,
-        startyear = 2009, endyear = 2021,
+
         npatches = 1, nutheterog = 0.0)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
@@ -97,7 +97,6 @@ function rsa_above_water_response(sim, valid; nspecies = 25,
     inf_p = @set inf_p.max_rsa_above_water_reduction = max_rsa_above_water_reduction
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies,
-        startyear = 2009, endyear = 2021,
         npatches = 1, nutheterog = 0.0)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
@@ -185,7 +184,6 @@ function rsa_above_nut_response(sim, valid;
     inf_p = @set inf_p.max_rsa_above_nut_reduction = max_rsa_above_nut_reduction
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies,
-        startyear = 2009, endyear = 2021,
         npatches = 1, nutheterog = 0.0)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
@@ -276,7 +274,6 @@ function sla_water_response(sim, valid;
     inf_p = @set inf_p.max_SLA_water_reduction = max_SLA_water_reduction
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies,
-        startyear = 2009, endyear = 2021,
         npatches = 1, nutheterog = 0.0)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)

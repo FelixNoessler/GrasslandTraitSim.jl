@@ -1,5 +1,5 @@
 @doc raw"""
-    potential_growth!(; calc, SLA, biomass, PAR, potgrowth_included)
+    potential_growth!(; container, biomass, PAR, potgrowth_included)
 
 Calculates the potential growth of all plant species
 in a specific patch.
@@ -34,10 +34,10 @@ leaf area index of the individual species
 
 ![Influence of the specific leaf area on the potential growth](../img/sla_potential_growth.svg)
 """
-function potential_growth!(; container, sla, biomass, PAR, potgrowth_included)
+function potential_growth!(; container, biomass, PAR, potgrowth_included)
     @unpack LAIs, potgrowth = container.calc
 
-    LAItot = calculate_LAI(; LAIs, sla, biomass)
+    LAItot = calculate_LAI(; container, biomass, LAIs)
     if LAItot < 0
         @error "LAItot below zero: $LAItot" maxlog=10
     end
@@ -57,7 +57,7 @@ function potential_growth!(; container, sla, biomass, PAR, potgrowth_included)
 end
 
 @doc raw"""
-    calculate_LAI(; SLA, biomass, LAIs)
+    calculate_LAI(; container, biomass, LAIs)
 
 Calculate the leaf area index of all species of one habitat patch.
 
@@ -77,8 +77,10 @@ to the unitless `LAI` involved.
 
 The array `LAIs` is mutated inplace.
 """
-function calculate_LAI(; sla, biomass, LAIs)
-    LAM = 0.62 # Proportion of laminae in green biomass
-    LAIs .= uconvert.(NoUnits, sla .* biomass .* LAM)
+function calculate_LAI(; container, biomass, LAIs)
+    @unpack sla, lmpm, ampm = container.traits
+
+    # LAM = 0.62 # Proportion of laminae in green biomass
+    @. LAIs .= uconvert(NoUnits, sla * biomass * lmpm / ampm)
     return sum(LAIs)
 end

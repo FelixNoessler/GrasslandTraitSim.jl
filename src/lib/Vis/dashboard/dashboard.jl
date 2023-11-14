@@ -16,7 +16,7 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing)
             inf_p, input_obj = prepare_input(; plot_obj, valid, posterior)
             sol = sim.solve_prob(; input_obj, inf_p)
             valid_data = get_valid_data(;
-                plot_obj, startyear = Dates.year(sol.date[1]), valid)
+                plot_obj, valid)
 
             show_predictive = plot_obj.obs.toggle_predcheck.active.val
             predictive_data = nothing
@@ -84,7 +84,7 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing)
         valid_data = nothing
         if n
             valid_data = get_valid_data(;
-                plot_obj, startyear = Dates.year(sol.date[1]), valid)
+                plot_obj, valid)
         end
         band_patch(; plot_obj, sol, valid_data, predictive_data)
         trait_time_plot(; plot_obj, sol, valid_data)
@@ -107,11 +107,10 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing)
     return nothing
 end
 
-function get_valid_data(; plot_obj, startyear, valid)
+function get_valid_data(; plot_obj, valid)
     plotID = plot_obj.obs.menu_plotID.selection.val
 
-    data = valid.get_validation_data(;
-        plotID, startyear)
+    data = valid.get_validation_data(; plotID)
 
     return data
 end

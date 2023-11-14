@@ -27,7 +27,6 @@ import GrasslandTraitSim.Valid as valid
 mp = valid.model_parameters();
 inf_p = (; zip(Symbol.(mp.names), mp.best)...);
 input_obj = valid.validation_input(; plotID = "HEG01", nspecies = 25,
-                                     startyear = 2009, endyear = 2021,
                                      npatches = 1);
 sol = sim.solve_prob(; input_obj, inf_p);
 ```

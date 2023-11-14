@@ -20,20 +20,20 @@ function preallocate_vectors(; input_obj)
             TS = fill(val, nspecies, nspecies),
 
             ## traits from gaussian mixture
-            la = fill(val, nspecies)u"mm^2",
-            lfm = fill(val, nspecies)u"mg",
-            ldm = fill(val, nspecies)u"mg",
-            ba = Array{dtype}(undef, nspecies),
-            srsa = fill(val, nspecies)u"m^2/g",
+            # la = fill(val, nspecies)u"mm^2",
+            # lfm = fill(val, nspecies)u"mg",
+            # ldm = fill(val, nspecies)u"mg",
+            # ba = Array{dtype}(undef, nspecies),
+            # srsa = fill(val, nspecies)u"m^2/g",
             amc = Array{dtype}(undef, nspecies),
             height = fill(val, nspecies)u"m",
-            ldmpm = fill(val, nspecies)u"g/g",
+            lmpm = Array{dtype}(undef, nspecies),
             lncm = fill(val, nspecies)u"mg/g",
-
-            ## derived
             sla = fill(val, nspecies)u"m^2 / g",
             rsa_above = fill(val, nspecies)u"m^2 / g",
+
             leaflifespan = fill(val, nspecies)u"d",
+            ampm = Array{dtype}(undef, nspecies),
             μ = fill(val, nspecies)u"d^-1",
             ρ = Array{dtype}(undef, nspecies),),
         funresponse = (;
@@ -78,7 +78,7 @@ function preallocate_vectors(; input_obj)
             denominator = Array{dtype}(undef, nspecies),
 
             ## helper variables for generation of traits
-            traitmat = Matrix{dtype}(undef, 9, nspecies),
+            traitmat = Matrix{dtype}(undef, 7, nspecies),
             similarity_matprep = Array{dtype}(undef, nspecies, nspecies),
             amc_resid = Array{dtype}(undef, nspecies),
             rsa_above_resid = Array{dtype}(undef, nspecies),

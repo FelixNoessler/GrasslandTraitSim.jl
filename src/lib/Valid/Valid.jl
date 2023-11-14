@@ -56,11 +56,12 @@ function load_data(datapath)
         measuredbiomass)
 
     ########### input data
-    initbiomass = CSV.read("$datapath/input/init_biomass.csv",
-        DataFrame)
-
     ## time dependent 2009-2022
     clim = CSV.read("$datapath/input/temperature_precipitation.csv",
+        DataFrame)
+
+    ## time dependent 2006-2008, temperature & precipitation
+    dwd_clim = CSV.read("$datapath/input/dwd_temperature_precipitation.csv",
         DataFrame)
 
     ## time dependent 2006-2022
@@ -88,8 +89,8 @@ function load_data(datapath)
         DataFrame)
 
     input = (;
-        initbiomass,
         clim,
+        dwd_clim,
         pet,
         par,
         nut,
@@ -107,15 +108,14 @@ end
 function get_plottingdata(sim::Module;
         input_objs,
         inf_p,
-        plotID,
-        startyear)
+        plotID)
 
     ########################## Run model
     sol = sim.solve_prob(; input_obj = input_objs[plotID], inf_p)
 
     ########################## Measured data
     ## I shouldn't call this function each time...
-    data = get_validation_data(; plotID, startyear)
+    data = get_validation_data(; plotID)
 
     return data, sol
 end

@@ -6,9 +6,9 @@ function loglikelihood_model(sim::Module;
         plotID,
         pretty_print = false,
         return_seperate = false,
-        include_traits = true,
-        include_soilmoisture = true,
-        include_trait_var = true,
+        use_likelihood_traits = true,
+        use_likelihood_soilwater = true,
+        use_likelihood_trait_var = true,
         data = nothing,
         sol = nothing)
     if isnothing(data)
@@ -50,7 +50,7 @@ function loglikelihood_model(sim::Module;
     ################## soil moisture
     ########################################################################
     ll_soilmoisture = 0
-    if include_soilmoisture
+    if use_likelihood_soilwater
         #### downweight the likelihood because there are many observations
         data_soilmoisture_t = LookupArrays.index(data.soilmoisture, :time)
         weight = length(data.soilmoisture) / 13
@@ -77,7 +77,7 @@ function loglikelihood_model(sim::Module;
     species_biomass = ustrip.(species_biomass)
     site_biomass = vec(sum(species_biomass; dims = 2))
 
-    if include_traits
+    if use_likelihood_traits
         ## cannot calculate cwm trait for zero biomass
         if any(iszero.(site_biomass))
             if return_seperate
@@ -114,7 +114,7 @@ function loglikelihood_model(sim::Module;
             ### "measured" traits (calculated cwv from observed vegetation)
             measured_cwv = data.traits[trait = At(trait_symbol), type = At(:cwv)]
 
-            if include_trait_var
+            if use_likelihood_trait_var
                 ### calculate cwv
                 trait_diff = (trait_vals' .- sim_cwm_trait) .^ 2
                 weighted_trait_diff = trait_diff .* relative_biomass

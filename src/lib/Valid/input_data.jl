@@ -11,7 +11,6 @@ end
 function validation_input(;
         plotID,
         nspecies,
-        startyear, endyear,
         nutheterog = 0.0,
         npatches = 1,
         senescence_included = true,
@@ -25,24 +24,33 @@ function validation_input(;
         temperature_red = true,
         season_red = true,
         radiation_red = true,
-        constant_init_biomass = true,
         trait_seed = missing)
-    yearrange = Ref(startyear:endyear)
+
+
+    yearrange = Ref(2006:2021)
 
     ###### daily data
-    clim_sub = @subset data.input.clim :plotID .== plotID.&&:year .∈ yearrange
-    pet_sub = @subset data.input.pet first.(:explo) .== first(plotID).&&:year .∈ yearrange
-    par_sub = @subset data.input.par first.(:explo) .== first(plotID).&&:year .∈ yearrange
-    mow_sub = @subset data.input.mow :plotID .== plotID.&&:year .∈ yearrange
-    graz_sub = @subset data.input.graz :plotID .== plotID.&&:year .∈ yearrange
+    clim_init = @chain data.input.dwd_clim begin
+        @subset first.(:explo) .== first(plotID)
+        @select(:date, :temperature, :precipitation)
+    end
 
-    daily_data_prep = @chain clim_sub begin
+    clim_sub = @chain data.input.clim begin
+        @subset :plotID .== plotID .&&:year .∈ yearrange
+        @select(:date, :temperature, :precipitation)
+    end
+
+    pet_sub = @subset data.input.pet first.(:explo) .== first(plotID) .&& :year .∈ yearrange
+    par_sub = @subset data.input.par first.(:explo) .== first(plotID) .&& :year .∈ yearrange
+    mow_sub = @subset data.input.mow :plotID .== plotID .&& :year .∈ yearrange
+    graz_sub = @subset data.input.graz :plotID .== plotID .&& :year .∈ yearrange
+
+    daily_data_prep = @chain vcat(clim_init, clim_sub)  begin
         innerjoin(_, pet_sub, on = :date, makeunique = true)
         innerjoin(_, par_sub, on = :date, makeunique = true)
         @transform begin
-            :temperature_sum = yearly_temp_cumsum(clim_sub) .* u"°C"
+            :temperature_sum = yearly_temp_cumsum(:temperature, :date) .* u"°C"
             :temperature = :temperature .* u"°C"
-            :soiltemperature = :soiltemperature .* u"°C"
             :precipitation = :precipitation .* u"mm / d"
             :PET = :PET .* u"mm / d"
             :PAR = :PAR .* 10000 .* u"MJ / (d * ha)"
@@ -53,19 +61,18 @@ function validation_input(;
         @orderby :date
     end
 
+
     daily_input_df = @select(daily_data_prep,
-        :temperature, :temperature_sum, :soiltemperature,
+        :temperature,
+        :temperature_sum,
         :precipitation, :PET,
         :PAR,
         :mowing, :grazing)
     daily_input = (; zip(Symbol.(names(daily_input_df)), eachcol(daily_input_df))...)
 
-    ### ----------------- initial biomass
+    ### ----------------- initial biomass and soilwater content
     initbiomass = 1500u"kg / ha"
-    if !constant_init_biomass
-        initbiomass_sub = @subset data.input.initbiomass :plotID.==plotID
-        initbiomass = initbiomass_sub.biomass_init[1] * u"kg / ha"
-    end
+    initsoilwater = 180.0u"mm"
 
     ### ----------------- abiotic
     nut_sub = @subset data.input.nut :plotID.==plotID
@@ -94,7 +101,8 @@ function validation_input(;
         season_red,
         radiation_red)
 
-    return (doy = daily_data_prep.doy,
+    return (
+        doy = daily_data_prep.doy,
         date = daily_data_prep.date[1]:daily_data_prep.date[end],
         numeric_date = to_numeric.(daily_data_prep.date),
         ts = Base.OneTo(nrow(daily_data_prep)),
@@ -107,12 +115,11 @@ function validation_input(;
             patch_ydim = Int(sqrt(npatches)),
             nutheterog,
             trait_seed,
-            constant_init_biomass,
-            startyear,
-            endyear,
+
             included,),
         site = (;
             initbiomass,
+            initsoilwater,
             totalN,
             CNratio,
             clay,
@@ -129,13 +136,14 @@ function to_numeric(d)
     return Dates.year(d) + (Dates.dayofyear(d) - 1) / daysinyear
 end
 
-function yearly_temp_cumsum(d::DataFrame)
-    unqiue_years = unique(d.year)
+function yearly_temp_cumsum(data, date)
+    all_years = Dates.year.(date)
+    unqiue_years = unique(all_years)
     yearly_cumsum = Float64[]
 
     for y in unqiue_years
-        d_sub = @subset d d.year.==y
-        append!(yearly_cumsum, cumsum(d_sub.temperature))
+        f = all_years .== y
+        append!(yearly_cumsum, cumsum(data[f]))
     end
 
     return yearly_cumsum

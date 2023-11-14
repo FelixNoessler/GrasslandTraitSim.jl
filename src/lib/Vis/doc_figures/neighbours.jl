@@ -4,7 +4,6 @@ function neighbours_surroundings(sim, valid; path = nothing)
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies = 25,
-        startyear = 2009, endyear = 2021,
         npatches = 25, nutheterog = 0.0)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)

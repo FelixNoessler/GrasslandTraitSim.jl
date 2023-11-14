@@ -1,4 +1,6 @@
-function model_parameters()
+function model_parameters(; use_likelihood_traits = true,
+                            use_likelihood_soilwater = true,
+                            use_likelihood_trait_var = true)
     names = [
         "moistureconv_alpha", "moistureconv_beta",
         "sen_α", "sen_leaflifespan",
@@ -53,102 +55,116 @@ function model_parameters()
         b_amc = InverseGamma(10.0, 3.0),
         b_height = InverseGamma(10.0, 3.0),
         b_rsa_above = InverseGamma(20.0, 0.2),
-        b_var_sla = Normal(0.0, 0.0005), # TODO
-        b_var_lncm = Normal(0.0, 10.0),# TODO
-        b_var_amc = Normal(0.0, 0.005),# TODO
-        b_var_height = Normal(0.0, 0.02),# TODO
-        b_var_rsa_above = Normal(0.0, 0.0005)# TODO
+        b_var_sla = truncated(Normal(0.0, 0.0005); lower = 0), # TODO
+        b_var_lncm = truncated(Normal(0.0, 10.0); lower = 0),# TODO
+        b_var_amc = truncated(Normal(0.0, 0.005); lower = 0),# TODO
+        b_var_height = truncated(Normal(0.0, 0.02); lower = 0),# TODO
+        b_var_rsa_above = truncated(Normal(0.0, 0.0005); lower = 0)# TODO
     )
 
 
     lb = zeros(length(names))
-    ub = quantile.(collect(prior_dists), 0.9999)
+    ub = quantile.(collect(prior_dists), 0.999)
 
-    mean_tuple = (;
-        moistureconv_alpha = 1.0,
-        moistureconv_beta = 1.0,
-        sen_α = 5.0,
-        sen_leaflifespan = 5.0,
-        sla_tr = 0.02,
-        sla_tr_exponent = 1.0,
-        biomass_dens = 1000.0,
-        belowground_density_effect = 1.0,
-        height_strength = 0.2,
-        leafnitrogen_graz_exp = 1.0,
-        trampling_factor = 200.0,
-        grazing_half_factor = 150.0,
-        mowing_mid_days = 10.0,
-        totalN_β = 0.1,
-        CN_β = 0.1,
-        max_rsa_above_water_reduction = 0.5,
-        max_SLA_water_reduction = 0.5,
-        max_AMC_nut_reduction = 0.5,
-        max_rsa_above_nut_reduction = 0.5,
+    # mean_tuple = (;
+    #     moistureconv_alpha = 1.0,
+    #     moistureconv_beta = 1.0,
+    #     sen_α = 5.0,
+    #     sen_leaflifespan = 5.0,
+    #     sla_tr = 0.02,
+    #     sla_tr_exponent = 1.0,
+    #     biomass_dens = 1000.0,
+    #     belowground_density_effect = 1.0,
+    #     height_strength = 0.2,
+    #     leafnitrogen_graz_exp = 1.0,
+    #     trampling_factor = 200.0,
+    #     grazing_half_factor = 150.0,
+    #     mowing_mid_days = 10.0,
+    #     totalN_β = 0.1,
+    #     CN_β = 0.1,
+    #     max_rsa_above_water_reduction = 0.5,
+    #     max_SLA_water_reduction = 0.5,
+    #     max_AMC_nut_reduction = 0.5,
+    #     max_rsa_above_nut_reduction = 0.5,
 
-        #### lower bounds for the scale parameters
-        b_biomass = 0.0,
-        b_soilmoisture = 0.0,
-        b_sla = 0.0,
-        b_lncm = 0.0,
-        b_amc = 0.0,
-        b_height = 0.0,
-        b_rsa_above = 0.0,
-        b_var_sla = 0.0,
-        b_var_lncm = 0.0,
-        b_var_amc = 0.0,
-        b_var_height = 0.0,
-        b_var_rsa_above = 0.0)
+    #     #### lower bounds for the scale parameters
+    #     b_biomass = 0.0,
+    #     b_soilmoisture = 0.0,
+    #     b_sla = 0.0,
+    #     b_lncm = 0.0,
+    #     b_amc = 0.0,
+    #     b_height = 0.0,
+    #     b_rsa_above = 0.0,
+    #     b_var_sla = 0.0,
+    #     b_var_lncm = 0.0,
+    #     b_var_amc = 0.0,
+    #     b_var_height = 0.0,
+    #     b_var_rsa_above = 0.0)
 
-    sd_tuple = (;
-        moistureconv_alpha = 10.0,
-        moistureconv_beta = 0.5,
-        sen_α = 5.0,
-        sen_leaflifespan = 5.0,
-        sla_tr = 0.01,
-        sla_tr_exponent = 1.0,
-        biomass_dens = 200.0,
-        belowground_density_effect = 0.5,
-        height_strength = 0.5,
-        leafnitrogen_graz_exp = 1.0,
-        trampling_factor = 200.0,
-        grazing_half_factor = 50.0,
-        mowing_mid_days = 10.0,
-        totalN_β = 0.1,
-        CN_β = 0.1,
-        max_rsa_above_water_reduction = 5.0,
-        max_SLA_water_reduction = 5.0,
-        max_AMC_nut_reduction = 5.0,
-        max_rsa_above_nut_reduction = 5.0,
+    # sd_tuple = (;
+    #     moistureconv_alpha = 10.0,
+    #     moistureconv_beta = 0.5,
+    #     sen_α = 5.0,
+    #     sen_leaflifespan = 5.0,
+    #     sla_tr = 0.01,
+    #     sla_tr_exponent = 1.0,
+    #     biomass_dens = 200.0,
+    #     belowground_density_effect = 0.5,
+    #     height_strength = 0.5,
+    #     leafnitrogen_graz_exp = 1.0,
+    #     trampling_factor = 200.0,
+    #     grazing_half_factor = 50.0,
+    #     mowing_mid_days = 10.0,
+    #     totalN_β = 0.1,
+    #     CN_β = 0.1,
+    #     max_rsa_above_water_reduction = 5.0,
+    #     max_SLA_water_reduction = 5.0,
+    #     max_AMC_nut_reduction = 5.0,
+    #     max_rsa_above_nut_reduction = 5.0,
 
-        #### sd for the scale parameters
-        b_biomass = 1000.0,
-        b_soilmoisture = 15.0,
-        b_sla = 0.01,
-        b_lncm = 5.0,
-        b_amc = 0.2,
-        b_height = 0.2,
-        b_rsa_above = 0.005,
-        b_var_sla = 0.0005,
-        b_var_lncm = 10.0,
-        b_var_amc = 0.005,
-        b_var_height = 0.02,
-        b_var_rsa_above = 0.0005)
+    #     #### sd for the scale parameters
+    #     b_biomass = 1000.0,
+    #     b_soilmoisture = 15.0,
+    #     b_sla = 0.01,
+    #     b_lncm = 5.0,
+    #     b_amc = 0.2,
+    #     b_height = 0.2,
+    #     b_rsa_above = 0.005,
+    #     b_var_sla = 0.0005,
+    #     b_var_lncm = 10.0,
+    #     b_var_amc = 0.005,
+    #     b_var_height = 0.02,
+    #     b_var_rsa_above = 0.0005)
 
+    # ------------------------ check order
     order_correct = collect(keys(prior_dists)) == Symbol.(names)
     if !order_correct
         error("Order of parameters is not correct")
     end
 
-    exclude_parameters = [
-        "moistureconv_alpha", "moistureconv_beta",
-        "b_soilmoisture",
-        "b_var_sla", "b_var_lncm", "b_var_amc", "b_var_height", "b_var_rsa_above",
-    ]
+    # ------------------------ exclude parameters
+    exclude_parameters = String[]
+    if !use_likelihood_traits
+        trait_names = ["b_sla", "b_lncm", "b_amc", "b_height", "b_rsa_above"]
+        append!(exclude_parameters, trait_names)
+    end
+
+    if !use_likelihood_soilwater
+        soilwater_names = ["moistureconv_alpha", "moistureconv_beta", "b_soilmoisture"]
+        append!(exclude_parameters, soilwater_names)
+    end
+
+    if !use_likelihood_trait_var
+        trait_var_names = ["b_var_sla", "b_var_lncm", "b_var_amc",
+                           "b_var_height", "b_var_rsa_above"]
+        append!(exclude_parameters, trait_var_names)
+    end
     f = names .∉ Ref(exclude_parameters)
 
+
+    # ------------------------ final parameter tuple
     return (;
             names = names[f], best = best[f],
             prior_dists = collect(prior_dists)[f],
-            lb = lb[f], ub = ub[f],
-            mean = collect(mean_tuple)[f], sd = collect(sd_tuple)[f])
+            lb = lb[f], ub = ub[f])
 end

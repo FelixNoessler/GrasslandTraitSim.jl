@@ -12,7 +12,7 @@ include("height_influence.jl")
 Calculates the actual growth of the plant species.
 """
 function growth!(; t, container, biomass, WR, nutrients, WHC, PWP)
-    @unpack daily_input, traits = container
+    @unpack daily_input = container
     @unpack included = container.simp
     @unpack species_specific_red, heightinfluence, Waterred, Nutred = container.calc
     @unpack act_growth, potgrowth, neg_act_growth = container.calc
@@ -20,7 +20,6 @@ function growth!(; t, container, biomass, WR, nutrients, WHC, PWP)
     #### potential growth
     LAItot = potential_growth!(; container,
         potgrowth_included = included.potgrowth_included,
-        sla = traits.sla,
         biomass,
         PAR = daily_input.PAR[t])
 
