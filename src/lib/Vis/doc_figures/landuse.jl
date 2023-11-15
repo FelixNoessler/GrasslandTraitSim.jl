@@ -23,8 +23,9 @@ function grazing(sim, valid;
 
     for (i, biomass) in enumerate(biomass_vec)
         container.calc.defoliation .= 0.0u"kg / (ha * d)"
-        sim.grazing!(; container, LD, biomass = repeat([biomass], nspecies),
-            relbiomass = 1.0)
+        sim.grazing!(; t = 1, pa = 1, container, LD,
+                     biomass = repeat([biomass], nspecies),
+                     relbiomass = 1.0)
         grazing_mat[:, i] = ustrip.(container.calc.defoliation)
     end
 
@@ -170,7 +171,8 @@ function mowing(sim, valid; nspecies = 25, mowing_height = 0.07u"m",
 
     for (i, biomass) in enumerate(biomass_vec)
         container.calc.defoliation .= 0.0u"kg / (ha * d)"
-        sim.mowing!(; container, mowing_height, days_since_last_mowing, biomass)
+        sim.mowing!(; t = 1, pa = 1, container, mowing_height,
+                      days_since_last_mowing, biomass)
 
         mowing_mat[:, i] = ustrip.(container.calc.defoliation)
     end

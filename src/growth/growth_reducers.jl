@@ -87,20 +87,12 @@ function temperature_reduction(; T, temperature_red)
 end
 
 """
-    water_reduction!(;
-        calc,
-        fun_response,
-        WR,
-        water_red,
-        PET,
-        PWP,
-        WHC)
+    water_reduction!(; container, water, water_red, PET, PWP, WHC)
 
 See for details: [Water stress](@ref water_stress)
 """
-function water_reduction!(; container, WR, water_red, PET, PWP, WHC)
-    @unpack water_splitted, sla_water, rsa_above_water, Waterred = container.calc
-    @unpack biomass_density_factor = container.calc
+function water_reduction!(; container, water, water_red, PET, PWP, WHC)
+    @unpack sla_water, rsa_above_water, Waterred = container.calc
 
     if !water_red
         @info "No water reduction!" maxlog=1
@@ -108,18 +100,7 @@ function water_reduction!(; container, WR, water_red, PET, PWP, WHC)
         return nothing
     end
 
-    ## option 1: water reduction purely by water availability
-    # x = WR > WHC ? 1.0 : WR > PWP ? (WR - PWP) / (WHC - PWP) : 0.0
-
-    ## option 2: water reduction by water availability and
-    ##           potential evapotranspiration
-    W = WR > WHC ? 1.0 : WR > PWP ? (WR - PWP) / (WHC - PWP) : 0.0
-    PETₘₐₓ = 8u"mm / d"
-    β₁ = 6.467
-    β₂ = 7.623e-8
-    exp_fun = -(β₂ * PET / PETₘₐₓ + (1 - PET / PETₘₐₓ) * β₁)
-    x = (1 - exp(exp_fun * W)) / (1 - exp(exp_fun))
-    @. water_splitted = x * biomass_density_factor
+    plant_available_water!(; container, water, PWP, WHC, PET)
 
     ### ------------ species specific functional response
     sla_water_reduction!(; container)
@@ -129,6 +110,49 @@ function water_reduction!(; container, WR, water_red, PET, PWP, WHC)
 
     return nothing
 end
+
+@doc raw"""
+    plant_available_water!(; container, water, PWP, WHC, PET)
+
+Derives the plant available water.
+
+The plant availabe water is dependent on the soil water content,
+the water holding capacity (`WHC`), the permanent
+wilting point (`PWP`), the potential evaporation (`PET`) and a
+belowground competition factor:
+
+```math
+\begin{align*}
+W &= \frac{\text{water} - \text{PWP}}{\text{WHC} - \text{PWP}} \\
+x₀ &= \frac{log(\frac{1}{1 - W} - 1)}{βₚₑₜ} + PETₘ \\
+x &= 1 - \frac{1}{1 + e^{-βₚₑₜ (PET - x₀)}} \\
+\text{water_splitted} &= x \cdot  \text{biomass_density_factor} \\
+\end{align*}
+```
+
+
+![](../img/pet.svg)
+"""
+function plant_available_water!(; container, water, PWP, WHC, PET)
+    @unpack water_splitted, sla_water, rsa_above_water, Waterred = container.calc
+    @unpack biomass_density_factor = container.calc
+    @unpack βₚₑₜ = container.p
+
+    ## option 1: water reduction purely by water availability
+    # x = water > WHC ? 1.0 : water > PWP ? (water - PWP) / (WHC - PWP) : 0.0
+
+    ## option 2: water reduction by water availability and
+    ##           potential evapotranspiration
+    PETₘ = 2.0u"mm / d"
+    W = water > WHC ? 1.0 : water > PWP ? (water - PWP) / (WHC - PWP) : 0.0
+    x₀ = log(1/(1-W) - 1) / βₚₑₜ * u"mm /d" + PETₘ
+    x = 1 - 1 / (1 + exp(-βₚₑₜ * (PET - x₀) * u"d/mm"))
+    @. water_splitted = x * biomass_density_factor
+
+    return nothing
+end
+
+
 
 """
     sla_water_reduction!(; container)

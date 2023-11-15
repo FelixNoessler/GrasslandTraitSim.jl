@@ -18,22 +18,15 @@ function preallocate_vectors(; input_obj)
         traits = (;
             ## trait similarity matrix
             TS = fill(val, nspecies, nspecies),
-
-            ## traits from gaussian mixture
-            # la = fill(val, nspecies)u"mm^2",
-            # lfm = fill(val, nspecies)u"mg",
-            # ldm = fill(val, nspecies)u"mg",
-            # ba = Array{dtype}(undef, nspecies),
-            # srsa = fill(val, nspecies)u"m^2/g",
             amc = Array{dtype}(undef, nspecies),
             height = fill(val, nspecies)u"m",
             lmpm = Array{dtype}(undef, nspecies),
             lncm = fill(val, nspecies)u"mg/g",
             sla = fill(val, nspecies)u"m^2 / g",
             rsa_above = fill(val, nspecies)u"m^2 / g",
+            ampm = Array{dtype}(undef, nspecies),
 
             leaflifespan = fill(val, nspecies)u"d",
-            ampm = Array{dtype}(undef, nspecies),
             μ = fill(val, nspecies)u"d^-1",
             ρ = Array{dtype}(undef, nspecies),),
         funresponse = (;
@@ -54,6 +47,8 @@ function preallocate_vectors(; input_obj)
         o = (;
             ############ output vectors of the state variables
             biomass = fill(val, ntimesteps, npatches, nspecies)u"kg/ha",
+            mown_biomass = fill(dtype(0.0), ntimesteps, npatches)u"kg/ha",
+            grazed_biomass = fill(dtype(0.0), ntimesteps, npatches)u"kg/ha",
             water = fill(val, ntimesteps, npatches)u"mm",),
         calc = (;
             negbiomass = fill(false, ntimesteps, npatches, nspecies),

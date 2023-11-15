@@ -171,6 +171,7 @@ If no input traits are specified, the model will generate for each simulation ne
 If you want to use your own traits, you can specify them in the following way:
 
 ```@example input_creation
+# the number of values per array has to be equal to the number of species
 trait_input = (;
     amc = [0.12, 0.52, 0.82, 0.13, 0.16],
     sla = [0.021, 0.026, 0.014, 0.016, 0.0191]u"m^2/g",
@@ -191,6 +192,7 @@ inf_p = (
     sen_leaflifespan = 2.131722, 
     sla_tr = 0.0209188, 
     sla_tr_exponent = 1.122322, 
+    βₚₑₜ = 0.5,
     biomass_dens = 1072.062, 
     belowground_density_effect = 2.054232, 
     height_strength = 0.616476, 

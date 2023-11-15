@@ -46,6 +46,8 @@ vis.sla_water_response(sim, valid;
 vis.sla_water_response(sim, valid;
     path = "$docs_img/sla_water_response_0_5.svg",
     max_SLA_water_reduction = 0.5)
+vis.plant_available_water(sim, valid;
+    path = "$docs_img/pet.svg")
 
 #### reducer functions
 vis.temperatur_reducer(sim; path = "$docs_img/temperature_reducer.svg")

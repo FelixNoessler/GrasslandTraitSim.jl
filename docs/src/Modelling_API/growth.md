@@ -145,6 +145,7 @@ It is implemented in [`water_reduction!`](@ref).
 
 ```@docs
 water_reduction!
+plant_available_water!
 ```
 
 ---

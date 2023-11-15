@@ -89,7 +89,7 @@ function one_day!(; t, container)
                             break
                         end
                     end
-                    mowing!(; container, mowing_height,
+                    mowing!(; t, pa, container, mowing_height,
                         days_since_last_mowing,
                         biomass = patch_biomass)
                 end
@@ -99,7 +99,7 @@ function one_day!(; t, container)
             if included.grazing_included
                 LD = daily_input.grazing[t]
                 if !isnan(LD)
-                    grazing!(; container, LD,
+                    grazing!(; t, pa, container, LD,
                         biomass = patch_biomass,
                         relbiomass = relbiomass[pa],)
                     trampling!(; container, LD,
@@ -111,7 +111,7 @@ function one_day!(; t, container)
             # ------------------------------------------ growth
             LAItot = growth!(; t, container,
                 biomass = patch_biomass,
-                WR = u_water[pa],
+                water = u_water[pa],
                 nutrients = nutrients[pa],
                 WHC = WHC[pa],
                 PWP = PWP[pa])
@@ -137,7 +137,7 @@ function one_day!(; t, container)
 
         # --------------------- water dynamics
         du_water[pa] = change_water_reserve(; container, patch_biomass, LAItot,
-            WR = u_water[pa],
+            water = u_water[pa],
             precipitation = daily_input.precipitation[t],
             PET = daily_input.PET[t],
             WHC = WHC[pa],
