@@ -79,8 +79,7 @@ Intialize the senescence rate based on the specific leaf area
 ```math
 \begin{align}
 \text{leaflifespan} &= 10^{(2.41 - log_{10}(\text{sla_conv})) / 0.38} \cdot \frac{365.25}{12} \\
-\mu &= \frac{\text{sen_α}}{1000} + \frac{\text{sen_leaflifespan}}{1000}
-    \cdot \frac{1}{\text{leaflifespan}}
+\mu &= \text{sen_α} + \text{sen_leaflifespan} \cdot \frac{1}{\text{leaflifespan}}
 \end{align}
 ```
 
@@ -111,7 +110,7 @@ function senescence_rate!(; calc, inf_p)
 
     @. leaflifespan = 10^( (2.41 - log10(sla * 10000u"g/m^2")) / 0.38) *
         365.25 / 12 * u"d"
-    μ .= sen_α / 1000 * u"d^-1" .+ sen_leaflifespan / 1000 ./ leaflifespan
+    μ .= sen_α * u"d^-1" .+ sen_leaflifespan ./ leaflifespan
 
     return nothing
 end
