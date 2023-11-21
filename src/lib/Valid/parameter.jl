@@ -20,20 +20,19 @@ function model_parameters(; use_likelihood_biomass = true,
         "b_sla", "b_lncm", "b_amc", "b_height", "b_rsa_above",
         "b_var_sla", "b_var_lncm", "b_var_amc", "b_var_height", "b_var_rsa_above",]
 
-    best = [0.005770219242443869, 2.8251458862680428e-5, 13.596882651330734, 3.560535466315811, 0.013357368106485636, 1.3046128930533996, 0.5101369905784072, 1076.2884929478287, 1.0071358076972758, 0.08840626237979175, 1.4404761159967254, 199.2494880452916, 116.0077387268054, 15.757511543381788, 0.03832368437919404, 0.09822840663519905, 0.5036506531583642, 0.6032352808142815, 0.15850272303492818, 0.3757056647419493, 1102.776745565195, 3.9672282211666547,
-    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+    best = [0.21651602851309687, 0.009080524259062913, 0.0022507510254258373, 0.4182589039462492, 0.029649325167562544, 3.082555885130148, 0.02049211588764277, 854.4614603568936, 1.100089893534349, 0.17993881467364325, 9.341204546398654, 124.78994460980397, 158.78495903196819, 22.08006294455497, 0.18650959184142935, 0.07936480911148232, 0.9707610587585661, 0.7121330159290473, 0.3877113437861343, 0.42223360948269534, 1046.5984727631396, 4.936100774508173, 0.013943348787610315, 4.3167910984713105, 0.20720690473608316, 0.6404617014196398, 0.014366500360505423, 0.0, 0.0, 0.0, 0.0, 0.0]
 
     prior_dists = (;
         moistureconv_alpha = Normal(0.0, 1.0),# TODO
         moistureconv_beta = Normal(0.0, 1.0),# TODO
-        sen_α = truncated(Normal(5.0, 10.0); lower=0),
-        sen_leaflifespan = truncated(Normal(5.0, 10.0); lower=0),
+        sen_α = truncated(Normal(0.0, 1.0); lower=0),
+        sen_leaflifespan = truncated(Normal(0.0, 1.0); lower=0),
         sla_tr = truncated(Normal(0.02, 0.01); lower=0),
         sla_tr_exponent = truncated(Normal(1.0, 5.0); lower=0),
         βₚₑₜ = truncated(Normal(1.0, 1.0); lower=0),
         biomass_dens = truncated(Normal(1000.0, 1000.0); lower=0),
         belowground_density_effect = truncated(Normal(1.0, 0.5); lower=0),
-        height_strength = truncated(Normal(0.2, 0.5); lower=0),
+        height_strength = Uniform(0.0, 1.0),
         leafnitrogen_graz_exp = truncated(Normal(1.0, 5.0); lower=0),
         trampling_factor = truncated(Normal(200.0, 100.0); lower=0),
         grazing_half_factor = truncated(Normal(150.0, 50.0); lower=0),
@@ -59,7 +58,7 @@ function model_parameters(; use_likelihood_biomass = true,
     )
 
 
-    lb = zeros(length(names))
+    lb = quantile.(collect(prior_dists), 0.001)
     ub = quantile.(collect(prior_dists), 0.999)
 
     # ------------------------ check order

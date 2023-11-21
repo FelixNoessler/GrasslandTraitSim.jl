@@ -28,7 +28,7 @@ function mowing!(; t, pa, container, mowing_height, days_since_last_mowing, biom
     @unpack height = container.traits
     @unpack mowing_mid_days = container.p
     @unpack defoliation, mown_height, mowing_λ = container.calc
-    @unpack mown_biomass = container.o
+    @unpack mown = container.o
 
     # --------- mowing parameter λ
     mown_height .= height .- mowing_height
@@ -41,7 +41,7 @@ function mowing!(; t, pa, container, mowing_height, days_since_last_mowing, biom
     mow_factor = 1 / (1 + exp(-0.05 * (days_since_last_mowing - mowing_mid_days)))
 
     # --------- add the removed biomass to the defoliation vector
-    mown_biomass[t, pa] = sum(mow_factor .* mowing_λ .* biomass)
+    mown[t, pa] = sum(mow_factor .* mowing_λ .* biomass)
     defoliation .+= mow_factor .* mowing_λ .* biomass .* u"d^-1"
 
     return nothing
@@ -121,7 +121,7 @@ function grazing!(; t, pa,container, LD, biomass, relbiomass)
     @unpack ρ = container.traits
     @unpack grazing_half_factor = container.p
     @unpack defoliation, biomass_ρ, grazed_share = container.calc
-    @unpack grazed_biomass = container.o
+    @unpack grazed = container.o
 
     κ = 22u"kg / d"
     k_exp = 2
@@ -141,7 +141,7 @@ function grazing!(; t, pa,container, LD, biomass, relbiomass)
     grazed_share .= biomass_ρ ./ sum(biomass)
 
     #### add grazed biomass to defoliation
-    grazed_biomass[t, pa] = total_grazed * u"d"
+    grazed[t, pa] = total_grazed * u"d"
     @. defoliation += grazed_share * total_grazed
 
     return nothing

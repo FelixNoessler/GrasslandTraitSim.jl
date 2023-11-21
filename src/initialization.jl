@@ -240,9 +240,15 @@ the initial biomass (`initbiomass`). The soil water content
 """
 function set_initialconditions!(; container)
     @unpack u_biomass, u_water = container.u
+    @unpack grazed, mown = container.o
     @unpack initbiomass, initsoilwater = container.site
     @unpack nspecies = container.simp
 
     u_biomass .= initbiomass / nspecies
     u_water .= initsoilwater
+
+    grazed .= 0.0u"kg / ha"
+    mown .= 0.0u"kg / ha"
+
+    return nothing
 end

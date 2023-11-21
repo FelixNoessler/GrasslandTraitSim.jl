@@ -13,7 +13,8 @@ using Unitful
 
 input_obj = valid.validation_input(;
     plotID = "HEG01", nspecies = 25,
-    npatches = 1, nutheterog = 0.0);
+    npatches = 1, nutheterog = 0.0,
+    trait_seed = 99);
 
 mp = valid.model_parameters();
 inf_p = (; zip(Symbol.(mp.names), mp.best)...);
@@ -27,7 +28,7 @@ sol = sim.solve_prob(; input_obj, inf_p)
 We can look at the simulated biomass:
 
 ```@example output
-size(sol.o.biomass)
+sol.o.biomass
 ```
 
 The three dimension of the array are: daily time step, patch within site, species. 
@@ -35,8 +36,8 @@ For plotting the values with `Makie.jl`, we have to remove the units with `ustri
 
 ```@example output
 # if we have more than one patch per site, we have to first calculate the mean biomass per site
-species_biomass = dropdims(mean(sol.o.biomass; dims=2); dims = 2)
-total_biomass = vec(sum(species_biomass; dims=2))
+species_biomass = dropdims(mean(sol.o.biomass; dims = :patch); dims = :patch)
+total_biomass = vec(sum(species_biomass; dims = :species))
 
 lines(sol.numeric_date, ustrip.(total_biomass), color = :darkgreen, linewidth = 2;
       axis = (; ylabel = "Aboveground dry biomass [kg ha⁻¹]", 
@@ -96,7 +97,7 @@ Similarly, we plot the soil water content over time:
 ```@example output
 # if we have more than one patch per site, 
 # we have to first calculate the mean soil water content per site
-soil_water_per_site = dropdims(mean(sol.o.water; dims=2); dims = 2)
+soil_water_per_site = dropdims(mean(sol.o.water; dims = :patch); dims = :patch)
 
 lines(sol.numeric_date, ustrip.(soil_water_per_site), color = :blue, linewidth = 2;
       axis = (; ylabel = "Soil water content [mm]", xlabel = "Date [year]"))
@@ -104,18 +105,33 @@ lines(sol.numeric_date, ustrip.(soil_water_per_site), color = :blue, linewidth =
 
 ## Community weighted mean traits
 
-We calculate for all traits the community weighted mean over time. 
-As an example, we show here the specific leaf area (SLA):
+We can calculate for all traits the community weighted mean over time:
 
 ```@example output
 relative_biomass = species_biomass ./ total_biomass
-trait_vals = sol.traits.sla
-weighted_trait = trait_vals .* relative_biomass'
-cwm_trait = vec(sum(weighted_trait; dims = 1))
+traits = [:height, :sla, :lncm, :rsa_above, :amc, :ampm, :lmpm]
 
-lines(sol.numeric_date, ustrip.(cwm_trait), color = :black, linewidth = 2;
-      axis = (; ylabel = "Community weighted mean\nspecific leaf area [m² kg⁻¹]", 
-                xlabel = "Date [year]"))
+begin
+    fig = Figure(; resolution = (500, 1000))
+
+    for i in eachindex(traits)
+        trait_vals = sol.traits[traits[i]]
+        weighted_trait = trait_vals .* relative_biomass'
+        cwm_trait = vec(sum(weighted_trait; dims = 1))
+
+        Axis(fig[i, 1];
+                xlabel = i == length(traits) ? "Date [year]" : "",
+                xticklabelsvisible = i == length(traits) ? true : false,
+                ylabel = string(traits[i]))
+        lines!(sol.numeric_date, ustrip.(cwm_trait);
+                color = :black, linewidth = 2)
+        
+    end
+    
+    [rowgap!(fig.layout, i, 5) for i in 1:length(traits)-1]
+    
+    fig
+end
 ```
 
 ## Grazed and mown biomass
@@ -124,21 +140,21 @@ We can look at the grazed and mown biomass over time:
 
 ```@example output
 # total 
-sum(sol.o.mown_biomass)
-sum(sol.o.grazed_biomass)
+sum(sol.o.mown)
+sum(sol.o.grazed)
 
 # plot the grazed and mown biomass over time
-grazed_site = dropdims(mean(sol.o.grazed_biomass; dims=2); dims=2)
+grazed_site = dropdims(mean(sol.o.grazed; dims=:patch); dims=:patch)
 cum_grazed = cumsum(grazed_site)
 
-mown_site = dropdims(mean(sol.o.mown_biomass; dims=2); dims=2)
+mown_site = dropdims(mean(sol.o.mown; dims=:patch); dims=:patch)
 cum_mown = cumsum(mown_site)
 begin
       fig = Figure()
       Axis(fig[1,1]; ylabel = "Cummulative grazed\nbiomass [kg ha⁻¹]")
-      lines!(sol.numeric_date, ustrip.(cum_grazed), color = :black, linewidth = 2;)
+      lines!(sol.numeric_date, ustrip.(vec(cum_grazed)), color = :black, linewidth = 2;)
       Axis(fig[2,1]; ylabel = "Cummulative mown\nbiomass [kg ha⁻¹]", xlabel = "Date [year]")
-      lines!(sol.numeric_date, ustrip.(cum_mown), color = :black, linewidth = 2;)
+      lines!(sol.numeric_date, ustrip.(vec(cum_mown)), color = :black, linewidth = 2;)
       fig
 end
 ```
@@ -148,7 +164,7 @@ end
 We can calculate the Shannon and Simpson diversity over time:
 
 ```@example output
-biomass_site = dropdims(mean(sol.o.biomass; dims = 2); dims = 2)
+biomass_site = dropdims(mean(sol.o.biomass; dims = :patch); dims = :patch)
 tend = size(biomass_site, 1)
 shannon = Array{Float64}(undef, tend)
 simpson = Array{Float64}(undef, tend)

@@ -5,6 +5,25 @@ function preallocate_vectors(; input_obj)
     dtype = Float64
     val = dtype(NaN)
 
+
+    ############# output variables
+    biomass = DimArray(
+        fill(val, ntimesteps, npatches, nspecies)u"kg/ha",
+        (time = input_obj.date, patch = 1:npatches, species = 1:nspecies),
+        name = :biomass)
+    mown_biomass = DimArray(
+        fill(dtype(0.0), ntimesteps, npatches)u"kg/ha",
+        (time = input_obj.date, patch = 1:npatches),
+        name = :mown)
+    grazed_biomass = DimArray(
+        fill(dtype(0.0), ntimesteps, npatches)u"kg/ha",
+        (time = input_obj.date, patch = 1:npatches),
+        name = :grazed)
+    water = DimArray(fill(val, ntimesteps, npatches)u"mm",
+                     (time = input_obj.date, patch = 1:npatches),
+                     name = :water)
+    o = DimStack(biomass, mown_biomass, grazed_biomass, water)
+
     arraytuple = (;
         patch = (;
             xs = Array{Int64}(undef, npatches),
@@ -43,13 +62,11 @@ function preallocate_vectors(; input_obj)
         du = (;
             ############ vectors that store the change of the state variables
             du_biomass = zeros(npatches, nspecies)u"kg / (ha * d)",
-            du_water = zeros(npatches)u"mm / d",),
-        o = (;
-            ############ output vectors of the state variables
-            biomass = fill(val, ntimesteps, npatches, nspecies)u"kg/ha",
-            mown_biomass = fill(dtype(0.0), ntimesteps, npatches)u"kg/ha",
-            grazed_biomass = fill(dtype(0.0), ntimesteps, npatches)u"kg/ha",
-            water = fill(val, ntimesteps, npatches)u"mm",),
+            # du_water = DimArray(zeros(npatches)u"mm / d", (:patch,)),
+
+            du_water = zeros(npatches)u"mm / d",
+            ),
+        o = o,
         calc = (;
             negbiomass = fill(false, ntimesteps, npatches, nspecies),
 
