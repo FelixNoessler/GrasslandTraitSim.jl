@@ -50,7 +50,7 @@ function growth!(; t, container, biomass, water, nutrients, WHC, PWP)
 
     @. neg_act_growth = act_growth < 0u"kg / (ha * d)"
     if any(neg_act_growth)
-        @warn "act_growth below zero: $(container.calc.act_growth)" maxlog=10
+        @warn "act_growth below zero: $(container.calc.act_growth)"
         @show container.p
         @show container.simp
     end
