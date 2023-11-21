@@ -25,7 +25,6 @@ flowchart LR
 </div>
 ```
 
-
 ```@docs
 growth!
 ```
@@ -111,7 +110,7 @@ below_ground_competition!
 ```
 
 ----
-### [Water stress](@id water_stress)
+### Water stress
 
 ```@raw html
 <div class="mermaid">
@@ -139,7 +138,7 @@ flowchart LR
 </div>
 ```
 
-The species differ in the response to water stress by the different [specific leaf areas](@ref sla) and [root surface areas per above ground biomass](@ref rsa_above_water). The values of both response curves are multiplied to get factor that reduces the plant available water.
+The species differ in the response to water stress by the different [specific leaf areas](@ref "Specific leaf area linked to water stress") and [root surface areas per above ground biomass](@ref "Root surface area / aboveground biomass linked to water stress"). The values of both response curves are multiplied to get factor that reduces the plant available water.
 
 It is implemented in [`water_reduction!`](@ref).
 
@@ -149,38 +148,20 @@ plant_available_water!
 ```
 
 ---
-#### [Specific leaf area linked to water stress](@id sla) 
-
-- the core of the functional response is build in [`sla_water_response!`](@ref)
-- the strength of the reduction is modified by the parameter `max_SLA_water_reduction` in [`sla_water_reduction!`](@ref)
-
-`max_SLA_water_reduction` equals 1:
-![Graphical overview of the functional response](../img/sla_water_response.svg)
-
-`max_SLA_water_reduction` equals 0.5:
-![Graphical overview of the functional response](../img/sla_water_response_0_5.svg)
+#### Specific leaf area linked to water stress
 
 ```@docs
 sla_water_reduction!
 ```
 
 --- 
-#### [Root surface area / aboveground biomass linked to water stress](@id rsa_above_water)
-
-- the core of the functional response is build in [`rsa_above_water_response!`](@ref)
-- the strength of the reduction is modified by the parameter `max_rsa_above_water_reduction` in [`rsa_above_water_reduction!`](@ref)
-
-`max_rsa_above_water_reduction` equals 1:
-![Graphical overview of the functional response](../img/rsa_above_water_response.svg)
-
-`max_rsa_above_water_reduction` equals 0.5:
-![Graphical overview of the functional response](../img/rsa_above_water_response_0_5.svg)
+#### Root surface area / aboveground biomass linked to water stress
 
 ```@docs
 rsa_above_water_reduction!
 ```
 
-### [Nutrient stress](@id nut_stress)
+### Nutrient stress
 
 ```@raw html
 <div class="mermaid">
@@ -200,7 +181,7 @@ flowchart LR
 </div>
 ```
 
-The species differ in the response to nutrient availability by different proportion of [mycorrhizal colonisations ](@ref amc) and [root surface per above ground biomass](@ref rsa_above_nut). The maximum of both response curves is used for the nutrient reduction function. It is assumed that the plants needs either many fine roots per above ground biomass or have a strong symbiosis with mycorrhizal fungi. 
+The species differ in the response to nutrient availability by different proportion of [mycorrhizal colonisations ](@ref "Arbuscular mycorrhizal colonisation linked to nutrient stress") and [root surface per above ground biomass](@ref "Root surface area / aboveground biomass linked to nutrient stress"). The maximum of both response curves is used for the nutrient reduction function. It is assumed that the plants needs either many fine roots per above ground biomass or have a strong symbiosis with mycorrhizal fungi. 
 
 It is implemented in [`nutrient_reduction!`](@ref).
 
@@ -209,34 +190,14 @@ nutrient_reduction!
 ```
 
 ---
-#### [Arbuscular mycorrhizal colonisation linked to nutrient stress](@id amc)
-
-- the core of the functional response is build in [`amc_nut_response`](@ref)
-- the strength of the reduction is modified by the parameter `max_AMC_nut_reduction` in [`amc_nut_reduction!`](@ref)
-
-`max_AMC_nut_reduction` equals 1:
-![Graphical overview of the AMC functional response](../img/amc_nut_response.svg)
-
-`max_AMC_nut_reduction` equals 0.5:
-![Graphical overview of the AMC functional response](../img/amc_nut_response_0_5.svg)
+#### Arbuscular mycorrhizal colonisation linked to nutrient stress
 
 ```@docs
 amc_nut_reduction!
 ```
 
-
 ---
-#### [Root surface area / aboveground biomass linked to nutrient stress](@id rsa_above_nut)
-
-- the core of the functional response is build in [`rsa_above_nut_response!`](@ref)
-- the strength of the reduction is modified by the parameter `max_rsa_above_nut_reduction` in [`rsa_above_nut_reduction!`](@ref)
-
-`max_rsa_above_nut_reduction` equals 1:
-![Graphical overview of the functional response](../img/rsa_above_nut_response.svg)
-
-`max_rsa_above_nut_reduction` equals 0.5:
-![Graphical overview of the functional response](../img/rsa_above_nut_response_0_5.svg)
-
+#### Root surface area / aboveground biomass linked to nutrient stress
 
 ```@docs
 rsa_above_nut_reduction!

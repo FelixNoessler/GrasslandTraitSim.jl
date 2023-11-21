@@ -36,16 +36,16 @@ vis.rsa_above_nut_response(sim, valid;
     max_rsa_above_nut_reduction = 0.5)
 vis.amc_nut_response(sim, valid;
     path = "$docs_img/amc_nut_response.svg",
-    max_AMC_nut_reduction = 1)
+    max_amc_nut_reduction = 1)
 vis.amc_nut_response(sim, valid;
     path = "$docs_img/amc_nut_response_0_5.svg",
-    max_AMC_nut_reduction = 0.5)
+    max_amc_nut_reduction = 0.5)
 vis.sla_water_response(sim, valid;
     path = "$docs_img/sla_water_response.svg",
-    max_SLA_water_reduction = 1.0)
+    max_sla_water_reduction = 1.0)
 vis.sla_water_response(sim, valid;
     path = "$docs_img/sla_water_response_0_5.svg",
-    max_SLA_water_reduction = 0.5)
+    max_sla_water_reduction = 0.5)
 vis.plant_available_water(sim, valid;
     path = "$docs_img/pet.svg")
 

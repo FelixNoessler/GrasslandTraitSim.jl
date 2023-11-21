@@ -1,12 +1,12 @@
 function amc_nut_response(sim, valid;
         nspecies = 50,
-        max_AMC_nut_reduction,
+        max_amc_nut_reduction,
         path = nothing)
 
     ######## input prep
     mp = valid.model_parameters()
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
-    inf_p = @set inf_p.max_AMC_nut_reduction = max_AMC_nut_reduction
+    inf_p = @set inf_p.max_amc_nut_reduction = max_amc_nut_reduction
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies,
 
@@ -27,7 +27,7 @@ function amc_nut_response(sim, valid;
     idx = sortperm(container.traits.amc)
     Ks = container.funresponse.amc_nut_upper[idx]
     x0s = container.funresponse.amc_nut_midpoint[idx]
-    A = container.p.amc_nut_lower
+    A = 1 - container.p.max_amc_nut_reduction
     amc = container.traits.amc[idx]
     ymat = ymat[:, idx]
 
@@ -114,7 +114,7 @@ function rsa_above_water_response(sim, valid; nspecies = 25,
     idx = sortperm(container.traits.rsa_above)
     Ks = container.funresponse.rsa_above_water_upper[idx]
     x0s = container.funresponse.rsa_above_midpoint[idx]
-    A = container.p.rsa_above_water_lower
+    A = 1 - container.p.max_rsa_above_water_reduction
     rsa_above = container.traits.rsa_above[idx]
     ymat = ymat[:, idx]
 
@@ -203,7 +203,7 @@ function rsa_above_nut_response(sim, valid;
     idx = sortperm(container.traits.rsa_above)
     Ks = container.funresponse.rsa_above_nut_upper[idx]
     x0s = container.funresponse.rsa_above_midpoint[idx]
-    A = container.p.rsa_above_nut_lower
+    A = 1 - container.p.max_rsa_above_nut_reduction
     rsa_above = container.traits.rsa_above[idx]
     ymat = ymat[:, idx]
     ##################
@@ -265,13 +265,13 @@ end
 
 function sla_water_response(sim, valid;
         nspecies = 25,
-        max_SLA_water_reduction,
+        max_sla_water_reduction,
         path = nothing)
 
     #####################
     mp = valid.model_parameters()
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
-    inf_p = @set inf_p.max_SLA_water_reduction = max_SLA_water_reduction
+    inf_p = @set inf_p.max_sla_water_reduction = max_sla_water_reduction
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies,
         npatches = 1, nutheterog = 0.0)
@@ -297,9 +297,9 @@ function sla_water_response(sim, valid;
 
     fig = Figure(resolution = (900, 400))
     Axis(fig[1, 1];
-        xlabel = "Scaled water availability",
+        xlabel = "Scaled water availability (water_splitted)",
         ylabel = "Growth reduction factor\n← no growth, less reduction →",
-        title = "Influence of the specific leaf area")
+        title = "")
 
     for i in eachindex(x0s)
         lines!(xs, ymat[:, i];
@@ -307,7 +307,7 @@ function sla_water_response(sim, valid;
             colorrange = (1, nspecies))
 
         ##### midpoint
-        x0_y = 1 - max_SLA_water_reduction / 2
+        x0_y = 1 - max_sla_water_reduction / 2
         scatter!([x0s[i]], [x0_y];
             marker = :x,
             color = i,

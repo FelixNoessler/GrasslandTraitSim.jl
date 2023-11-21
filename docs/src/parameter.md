@@ -27,10 +27,10 @@ CurrentModule = GrasslandTraitSim
 | `grazing_half_factor` | total biomass  [kg ha⁻¹] when the daily consumption by grazers reaches half of their maximal consumption defined by κ $\cdot$ livestock density | [`grazing!`](@ref) | 
 | `trampling_factor` | defines together with the height of the plants and the livestock density the proportion of biomass that is trampled $\cdot 10^{-3}$ [ha m⁻¹] | [`trampling!`](@ref) | 
 | `mowing_mid_days` | number of days after a mowing event when the plants are grown back to half of their normal size | [`mowing!`](@ref) | 
-| `max_rsa_above_water_reduction` | maximal reduction of the plant-available water linked to the trait root surface area / aboveground biomass | [`rsa_above_water_response!`](@ref) | 
-| `max_SLA_water_reduction` | maximal reduction of the plant-available water linked to the trait specific leaf area | [`sla_water_response!`](@ref) | 
-| `max_AMC_nut_reduction` | maximal reduction of the plant-available nutrients linked to the trait arbuscular mycorrhizal colonisation rate | [`amc_nut_response`](@ref) | 
-| `max_rsa_above_nut_reduction` | maximal reduction of the plant-available nutrients linked to the trait root surface area / aboveground biomass | [`rsa_above_nut_response!`](@ref) | 
+| `max_rsa_above_water_reduction` | maximal reduction of the plant-available water linked to the trait root surface area / aboveground biomass | [`rsa_above_water_init!`](@ref) | 
+| `max_sla_water_reduction` | maximal reduction of the plant-available water linked to the trait specific leaf area | [`sla_water_init!`](@ref) | 
+| `max_amc_nut_reduction` | maximal reduction of the plant-available nutrients linked to the trait arbuscular mycorrhizal colonisation rate | [`amc_nut_init`](@ref) | 
+| `max_rsa_above_nut_reduction` | maximal reduction of the plant-available nutrients linked to the trait root surface area / aboveground biomass | [`rsa_above_nut_init!`](@ref) | 
 | `sen_leaflifespan` | slope of a linear equation that relates the leaf life span to the senescence rate |  [`senescence_rate!`](@ref)  | 
 | `totalN_β` | slope parameter for total N in logistic function to calculate nutrient index | [`input_nutrients!`](@ref) |  |
 | `CN_β` | slope parameter for the inverse of the CN ratio in logistic function to calculate nutrient index  | [`input_nutrients!`](@ref) |  |

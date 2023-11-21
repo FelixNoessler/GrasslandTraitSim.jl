@@ -6,11 +6,13 @@ function loglikelihood_model(sim::Module;
         plotID,
         pretty_print = false,
         return_seperate = false,
+        use_likelihood_biomass = true,
         use_likelihood_traits = true,
         use_likelihood_soilwater = true,
         use_likelihood_trait_var = true,
         data = nothing,
         sol = nothing)
+
     if isnothing(data)
         data = valid_data[plotID]
     end
@@ -20,8 +22,6 @@ function loglikelihood_model(sim::Module;
         sol = sim.solve_prob(; input_obj, inf_p, calc)
     end
 
-    selected_patch = 1
-
     ########################################################################
     ########################################################################
     ########################## Calculate likelihood
@@ -29,22 +29,26 @@ function loglikelihood_model(sim::Module;
     ########################################################################
     ################## measured biomass
     ########################################################################
-    data_biomass_t = LookupArrays.index(data.biomass, :time)
-    species_biomass = dropdims(mean(sol.o.biomass[data_biomass_t, :, :]; dims = 2);
-        dims = 2)
-    species_biomass = ustrip.(species_biomass)
-    site_biomass = vec(sum(species_biomass; dims = 2))
+    ll_biomass = 0.0
 
-    if any(isnan.(species_biomass))
-        @warn "Biomass NaN, parameters:"
-        display(plotID)
-        @show sol.p
-        return -Inf
+    if use_likelihood_biomass
+        data_biomass_t = LookupArrays.index(data.biomass, :time)
+        species_biomass = dropdims(mean(sol.o.biomass[data_biomass_t, :, :]; dims = 2);
+            dims = 2)
+        species_biomass = ustrip.(species_biomass)
+        site_biomass = vec(sum(species_biomass; dims = 2))
+
+        if any(isnan.(species_biomass))
+            @warn "Biomass NaN, parameters:"
+            display(plotID)
+            @show sol.p
+            return -Inf
+        end
+
+        ### calculate the likelihood
+        biomass_d = Product(truncated.(Laplace.(site_biomass, sol.p.b_biomass); lower = 0.0))
+        ll_biomass = logpdf(biomass_d, vec(data.biomass))
     end
-
-    ### calculate the likelihood
-    biomass_d = Product(truncated.(Laplace.(site_biomass, sol.p.b_biomass); lower = 0.0))
-    ll_biomass = logpdf(biomass_d, vec(data.biomass))
 
     ########################################################################
     ################## soil moisture
@@ -56,15 +60,21 @@ function loglikelihood_model(sim::Module;
         weight = length(data.soilmoisture) / 13
 
         sim_soilwater = dropdims(mean(sol.o.water[data_soilmoisture_t, :]; dims = 2);
-            dims = 2)
-        sim_soilwater = ustrip.(sim_soilwater)
+                                 dims = 2)
+        sim_soilwater = min.(sim_soilwater ./ mean(sol.patch.WHC), 1.0)
 
-        transformed_data = @. sol.site.rootdepth * (sol.p.moistureconv_alpha +
-                               sol.p.moistureconv_beta * data.soilmoisture)
+        x = @. sol.p.moistureconv_alpha + sol.p.moistureconv_beta * sim_soilwater
+        μ = @. exp(x)/(1+exp(x))
+        φ = sol.p.b_soilmoisture
+        α = @. μ * φ
+        β = @. (1.0 - μ) * φ
 
-        soilmoisture_d = Product(truncated.(Laplace.(sim_soilwater, sol.p.b_soilmoisture);
-            lower = 0.0))
-        ll_soilmoisture += logpdf(soilmoisture_d, transformed_data) / weight
+        if any(iszero.(α)) || any(iszero.(β))
+            ll_soilmoisture += -Inf
+        else
+            soilmoisture_d = Product(Beta.(α, β))
+            ll_soilmoisture += logpdf(soilmoisture_d, vec(data.soilmoisture)) / weight
+        end
     end
 
     ########################################################################

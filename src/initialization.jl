@@ -202,11 +202,11 @@ function initialization(; input_obj, inf_p, calc, trait_input = nothing)
     # palatability ρ [-]
     grazing_parameter!(; calc, inf_p)
 
-    # functional response
-    amc_nut_lower = amc_nut_response(; calc, inf_p)
-    rsa_above_water_lower = rsa_above_water_response!(; calc, inf_p)
-    rsa_above_nut_lower = rsa_above_nut_response!(; calc, inf_p)
-    sla_water_lower = sla_water_response!(; calc, inf_p)
+    # linking traits to water and nutrient stress
+    amc_nut_init(; calc, inf_p)
+    rsa_above_water_init!(; calc, inf_p)
+    rsa_above_nut_init!(; calc, inf_p)
+    sla_water_init!(; calc, inf_p)
 
     # WHC, PWP and nutrient index
     derive_WHC_PWP_nutrients!(; calc, input_obj, inf_p)
@@ -215,12 +215,7 @@ function initialization(; input_obj, inf_p, calc, trait_input = nothing)
     set_neighbours_surroundings!(; calc, input_obj)
 
     ################## Store everything in one object ##################
-    p = (;
-        p = (; inf_p...,
-            amc_nut_lower,
-            rsa_above_water_lower,
-            rsa_above_nut_lower,
-            sla_water_lower))
+    p = (; p = inf_p)
     container = tuplejoin(p, input_obj, calc)
 
     ################## Initial conditions ##################

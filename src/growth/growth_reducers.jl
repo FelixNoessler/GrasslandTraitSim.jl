@@ -89,7 +89,9 @@ end
 """
     water_reduction!(; container, water, water_red, PET, PWP, WHC)
 
-See for details: [Water stress](@ref water_stress)
+Reduction of growth based on the plant available water
+and the traits specific leaf area and root surface area
+per aboveground biomass.
 """
 function water_reduction!(; container, water, water_red, PET, PWP, WHC)
     @unpack sla_water, rsa_above_water, Waterred = container.calc
@@ -130,7 +132,6 @@ x &= 1 - \frac{1}{1 + e^{-βₚₑₜ (PET - x₀)}} \\
 \end{align*}
 ```
 
-
 ![](../img/pet.svg)
 """
 function plant_available_water!(; container, water, PWP, WHC, PET)
@@ -154,50 +155,126 @@ end
 
 
 
-"""
+@doc raw"""
     sla_water_reduction!(; container)
 
-Reduction of growth due to stronger water stress for higher specific leaf area (SLA).
+Derive the water stress based on the specific leaf area and the
+plant availabe water.
+
+It is assumed, that plants with a higher specific leaf area have a higher
+transpiration per biomass and are therefore more sensitive to water stress.
+A transfer function is used to link the specific leaf area to the water
+stress reduction. The function is initialized in [`sla_water_init!`](@ref)
+and the actual reduction based on the plant availabel water
+is calculated for each timestep in [`sla_water_reduction!`](@ref).
+
+**Initialization:**
+
+The specicies-specifc parameter `sla_water_midpoint` is initialized
+and later used in the reduction function.
+
+```math
+\text{sla_water_midpoint} = \text{min_sla_mid} +
+    \frac{\text{max_sla_mid} - \text{min_sla_mid}}
+    {1 + exp(-\text{β_sla_mid} \cdot (sla - \text{mid_sla}))}
+```
+
+- `sla` is the specific leaf area of the species [m² g⁻¹]
+- `min_sla_mid` is the minimum of `sla_water_midpoint` that
+  can be reached with a very low specific leaf area [-]
+- `max_sla_mid` is the maximum of `sla_water_midpoint` that
+  can be reached with a very high specific leaf area [-]
+- `mid_sla` is a mean specific leaf area [m² g⁻¹]
+- `β_sla_mid` is a parameter that defines the steepness
+  of function that relate the `sla` to `sla_water_midpoint`
+
+
+**Reduction factor based on the plant availabe water:**
+```math
+\text{sla_water} = 1 - \text{max_sla_water_reduction} +
+    \frac{\text{max_sla_water_reduction}}
+    {1 + exp(-\text{k_sla} \cdot
+        (\text{water_splitted} - \text{sla_water_midpoint}))}
+```
+
+- `sla_water` is the reduction factor for the growth based on the
+  specific leaf area [-]
+- `sla_water_midpoint` is the value of the plant available water
+  at which the reduction factor is in the middle between
+  1 - `max_sla_water_reduction` and 1 [-]
+- `max_sla_water_reduction` is the maximal reduction of the
+  growth based on the specific leaf area
+- `water_splitted` is the plant available water [-], see [`plant_available_water!`](@ref)
+- `k_sla` is a parameter that defines the steepness of the reduction function
+
+**Overview over the parameters:**
+
+| Parameter                 | Type                      | Value          |
+| ------------------------- | ------------------------- | -------------- |
+| `min_sla_mid`             | fixed                     | -0.8 [-]       |
+| `max_sla_mid`             | fixed                     | 0.8  [-]       |
+| `mid_sla`                 | fixed                     | 0.025 [m² g⁻¹] |
+| `β_sla_mid`               | fixed                     | 75 [g m⁻²]     |
+| `k_sla`                   | fixed                     | 5 [-]          |
+| `max_sla_water_reduction` | calibrated                | -              |
+| `sla_water_midpoint`      | species-specific, derived | -              |
+
+**Influence of the `max_sla_water_reduction`:**
+
+`max_sla_water_reduction` equals 1:
+![](../img/sla_water_response.svg)
+
+`max_sla_water_reduction` equals 0.5:
+![](../img/sla_water_response_0_5.svg)
 """
 function sla_water_reduction!(; container)
     @unpack sla_water_midpoint = container.funresponse
-    @unpack sla_water_lower = container.p
+    @unpack max_sla_water_reduction = container.p
     @unpack sla_water, water_splitted = container.calc
-    k_SLA = 5
 
-    @. sla_water = sla_water_lower +
-                   (1 - sla_water_lower) /
-                   (1 + exp(-k_SLA * (water_splitted - sla_water_midpoint)))
+    k_sla = 5
+
+    @. sla_water =
+        1 - max_sla_water_reduction +
+        max_sla_water_reduction / (1 + exp(-k_sla * (water_splitted - sla_water_midpoint)))
 
     return nothing
 end
 
 """
-    rsa_above_water_reduction!(; calc, fun_response)
+    rsa_above_water_reduction!(; container)
 
 Reduction of growth due to stronger water stress for lower specific
 root surface area per above ground biomass (`rsa_above`).
+
+- the core of the functional response is build in [`rsa_above_water_init!`](@ref)
+- the strength of the reduction is modified by the parameter `max_rsa_above_water_reduction` in [`rsa_above_water_reduction!`](@ref)
+
+`max_rsa_above_water_reduction` equals 1:
+![Graphical overview of the functional response](../img/rsa_above_water_response.svg)
+
+`max_rsa_above_water_reduction` equals 0.5:
+![Graphical overview of the functional response](../img/rsa_above_water_response_0_5.svg)
 """
 function rsa_above_water_reduction!(; container)
     @unpack rsa_above_water_upper, rsa_above_midpoint = container.funresponse
-    @unpack rsa_above_water_lower = container.p
+    @unpack max_rsa_above_water_reduction = container.p
     @unpack rsa_above_water, water_splitted = container.calc
     k_rsa_above = 7
 
-    @. rsa_above_water = rsa_above_water_lower +
-                         (rsa_above_water_upper - rsa_above_water_lower) /
+    lower_bound = 1 - max_rsa_above_water_reduction
+    @. rsa_above_water = lower_bound +
+                         (rsa_above_water_upper - lower_bound) /
                          (1 + exp(-k_rsa_above * (water_splitted - rsa_above_midpoint)))
     return nothing
 end
 
 """
-    nutrient_reduction!(;
-        calc,
-        fun_response,
-        nutrient_red,
-        nutrients)
+    nutrient_reduction!(; container, nutrient_red, nutrients)
 
-See for details: [Nutrient stress](@ref nut_stress)
+Reduction of growth based on plant available nutrients and
+the traits arbuscular mycorrhizal colonisation and
+root surface area / aboveground biomass.
 """
 function nutrient_reduction!(; container, nutrient_red, nutrients)
     @unpack Nutred, nutrients_splitted, biomass_density_factor = container.calc
@@ -224,35 +301,56 @@ end
     amc_nut_reduction!(; container)
 
 Reduction of growth due to stronger nutrient stress for lower
-arbuscular mycorrhizal colonization (`AMC`).
+arbuscular mycorrhizal colonisation (`AMC`).
+
+- the core of the functional response is build in [`amc_nut_init`](@ref)
+- the strength of the reduction is modified by the parameter `max_amc_nut_reduction` in [`amc_nut_reduction!`](@ref)
+
+`max_amc_nut_reduction` equals 1:
+![Graphical overview of the AMC functional response](../img/amc_nut_response.svg)
+
+`max_amc_nut_reduction` equals 0.5:
+![Graphical overview of the AMC functional response](../img/amc_nut_response_0_5.svg)
+
 """
 function amc_nut_reduction!(; container)
     @unpack amc_nut_upper, amc_nut_midpoint = container.funresponse
-    @unpack amc_nut_lower = container.p
+    @unpack max_amc_nut_reduction = container.p
     @unpack amc_nut, nutrients_splitted = container.calc
 
     k_AMC = 7
-    @. amc_nut = amc_nut_lower +
-                 (amc_nut_upper - amc_nut_lower) /
+    lower_bound =  1 - max_amc_nut_reduction
+    @. amc_nut = lower_bound +
+                 (amc_nut_upper - lower_bound) /
                  (1 + exp(-k_AMC * (nutrients_splitted - amc_nut_midpoint)))
 
     return nothing
 end
 
 """
-    rsa_above_nut_reduction!(;  calc, fun_response)
+    rsa_above_nut_reduction!(; container)
 
 Reduction of growth due to stronger nutrient stress for lower specific
 root surface area per above ground biomass (`rsa_above`).
+
+- the core of the functional response is build in [`rsa_above_nut_init!`](@ref)
+- the strength of the reduction is modified by the parameter `max_rsa_above_nut_reduction` in [`rsa_above_nut_reduction!`](@ref)
+
+`max_rsa_above_nut_reduction` equals 1:
+![Graphical overview of the functional response](../img/rsa_above_nut_response.svg)
+
+`max_rsa_above_nut_reduction` equals 0.5:
+![Graphical overview of the functional response](../img/rsa_above_nut_response_0_5.svg)
 """
 function rsa_above_nut_reduction!(; container)
     @unpack rsa_above_nut_upper, rsa_above_midpoint = container.funresponse
-    @unpack rsa_above_nut_lower = container.p
+    @unpack max_rsa_above_nut_reduction = container.p
     @unpack rsa_above_nut, nutrients_splitted = container.calc
 
     k_rsa_above = 7
-    @. rsa_above_nut = rsa_above_nut_lower +
-                       (rsa_above_nut_upper - rsa_above_nut_lower) /
+    lower_bound = 1 - max_rsa_above_nut_reduction
+    @. rsa_above_nut = lower_bound +
+                       (rsa_above_nut_upper - lower_bound) /
                        (1 + exp(-k_rsa_above * (nutrients_splitted - rsa_above_midpoint)))
 
     return nothing

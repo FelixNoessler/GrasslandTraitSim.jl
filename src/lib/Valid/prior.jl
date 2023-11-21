@@ -12,7 +12,8 @@ end
 function prior_logpdf(obj, x)
     nparameter = length(obj.names)
 
-    if any(x .< 0)
+    neg_filter = obj.names .∉ Ref(["moistureconv_alpha", "moistureconv_beta"])
+    if any(x[neg_filter] .< 0)
         return -Inf
     end
 

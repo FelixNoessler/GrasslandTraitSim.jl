@@ -20,9 +20,6 @@ set_neighbours_surroundings!
 
 ## Initialization of traits
 
-
-
-
 ```@docs
 random_traits!
 similarity_matrix!
@@ -48,13 +45,11 @@ grazing_parameter!
 
 The species-specific parameters are:
 
-
-
 ```@docs
-sla_water_response!
-rsa_above_water_response!
-rsa_above_nut_response!
-amc_nut_response
+sla_water_init!
+rsa_above_water_init!
+rsa_above_nut_init!
+amc_nut_init
 ```
 
 **Initialization of patch-specific parameters**
@@ -73,6 +68,7 @@ planar_gradient!
 ```
 
 ## Set the initial conditions of the state variables
+
 ```@docs
 set_initialconditions!
 ```

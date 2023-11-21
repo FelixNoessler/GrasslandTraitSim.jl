@@ -12,7 +12,7 @@ function date_to_solt(d; )
     Dates.value(d - Dates.Date(2006)) + 1
 end
 
-function get_validation_data(; plotID, )
+function get_validation_data(; plotID)
     # ---------------------------- biomass
     biomass_sub = @subset data.valid.measuredbiomass :plotID .==
                                                      plotID.&&

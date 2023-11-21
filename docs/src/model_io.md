@@ -22,6 +22,18 @@ CurrentModule = GrasslandTraitSim
 | `mowing`  | Height of mowing event, `NaN` means no mowing [m]                               | [`mowing!`](@ref)                               |
 | `grazing` | Grazing intensity measured in livestock units, `NaN` means no grazing [LD ha⁻¹] | [`grazing!`](@ref), [`trampling!`](@ref) |
 
+### Traits of the plant species
+
+| Variable    | Description                                      | used in |
+| ----------- | ------------------------------------------------ | ------- |
+| `amc`       | Arbuscular mycorrhizal colonisation rate [-]     |         |
+| `sla`       | Specific leaf area [m² g⁻¹]                      |         |
+| `height`    | Plant height [m]                                 |         |
+| `rsa_above` | Root surface area / aboveground biomass [m² g⁻¹] |         |
+| `ampm`      | Aboveground biomass / total biomass [-]          |         |
+| `lmpm`      | Leaf mass / total biomass [-]                    |         |
+| `lncm`      | Leaf nitrogen content per leaf mass [mg g⁻¹]     |         |
+    
 
 ### [Raw time invariant site variables](@id site_input)
 

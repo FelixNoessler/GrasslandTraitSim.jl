@@ -203,8 +203,8 @@ inf_p = (
     totalN_β = 0.1,
     CN_β = 0.1,
     max_rsa_above_water_reduction = 0.4799059,
-    max_SLA_water_reduction = 0.6447272, 
-    max_AMC_nut_reduction = 0.7082366, 
+    max_sla_water_reduction = 0.6447272, 
+    max_amc_nut_reduction = 0.7082366, 
     max_rsa_above_nut_reduction = 0.4069509
 )
 ```
