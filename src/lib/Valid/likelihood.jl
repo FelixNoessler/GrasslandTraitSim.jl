@@ -9,7 +9,6 @@ function loglikelihood_model(sim::Module;
         use_likelihood_biomass = true,
         use_likelihood_traits = true,
         use_likelihood_soilwater = true,
-        use_likelihood_trait_var = true,
         data = nothing,
         sol = nothing)
 
@@ -81,7 +80,6 @@ function loglikelihood_model(sim::Module;
     ################## cwm/cwv trait likelihood
     ########################################################################
     ll_trait = 0.0
-    ll_trait_var = 0.0
     data_trait_t = LookupArrays.index(data.traits, :time)
     species_biomass = dropdims(mean(sol.o.biomass[data_trait_t, :, :]; dims = 2); dims = 2)
     species_biomass = ustrip.(species_biomass)
@@ -120,43 +118,26 @@ function loglikelihood_model(sim::Module;
                 lower = 0.0))
             ll = logpdf(cwmtrait_d, measured_cwm)
             ll_trait += ll / ntraits
-
-            ### "measured" traits (calculated cwv from observed vegetation)
-            measured_cwv = data.traits[trait = At(trait_symbol), type = At(:cwv)]
-
-            if use_likelihood_trait_var
-                ### calculate cwv
-                trait_diff = (trait_vals' .- sim_cwm_trait) .^ 2
-                weighted_trait_diff = trait_diff .* relative_biomass
-                sim_cwv_trait = vec(sum(weighted_trait_diff; dims = 2))
-
-                ### CWV Likelihood
-                cwv_traitscale = Symbol(:b_var_, trait_symbol)
-                cwvtrait_d = Product(truncated.(Laplace.(sim_cwv_trait, sol.p[cwv_traitscale]);
-                    lower = 0.0))
-                ll = logpdf(cwvtrait_d, measured_cwv)
-                ll_trait_var += ll / ntraits
-            end
         end
     end
 
     ########################################################################
     ################## total likelihood
     ########################################################################
-    ll = ll_biomass + ll_trait + ll_trait_var + ll_soilmoisture
+    ll = ll_biomass + ll_trait + ll_soilmoisture
 
     ########################################################################
     ################## printing
     ########################################################################
     if pretty_print
-        bl, tl, tlv = round(ll_biomass), round(ll_trait), round(ll_trait_var)
+        bl, tl = round(ll_biomass), round(ll_trait)
         sl = round(ll_soilmoisture)
-        @info "biomass: $(bl) trait cwm, cwv: $tl, $tlv moi: $(sl)" maxlog=1000
+        @info "biomass: $(bl) trait cwm: $tl moi: $(sl)" maxlog=1000
     end
 
     if return_seperate
-        return (; biomass = ll_biomass, trait = ll_trait, trait_var = ll_trait_var,
-            soilmoisture = ll_soilmoisture)
+        return (biomass = ll_biomass, trait = ll_trait,
+                soilmoisture = ll_soilmoisture)
     end
 
     return ll
