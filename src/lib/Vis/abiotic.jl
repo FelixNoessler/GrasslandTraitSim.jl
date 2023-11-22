@@ -1,5 +1,5 @@
 function climate_series(; sol)
-    fig = Figure(resolution = (800, 1500))
+    fig = Figure(size = (800, 1500))
 
     bax = Axis(fig[1, 1];
         ylabel = "Total green bio-\nmass of all patches\n[t DM ha⁻¹]",

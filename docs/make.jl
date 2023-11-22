@@ -74,8 +74,8 @@ vis.trampling(sim, valid; path = "$docs_img/trampling.svg")
 
 ## with patches
 vis.planar_gradient(sim; path = "$docs_img/gradient.svg")
-vis.neighbours_surroundings(sim, valid; path = "$docs_img/neighbours.svg")
-vis.plot_clonalgrowth(sim; path = "$docs_img/clonalgrowth.svg")
+# vis.neighbours_surroundings(sim, valid; path = "$docs_img/neighbours.svg")
+vis.plot_clonalgrowth(sim, valid; path = "$docs_img/clonalgrowth.svg")
 
 # for prettyurls you need locally a live server
 makedocs(;
@@ -88,7 +88,8 @@ makedocs(;
         "Parameter" => "parameter.md",
         "Tutorials" => Any[
             "Prepare input and run simulation" => "tutorials/how_to_prepare_input.md",
-            "Analyse model output" => "tutorials/how_to_analyse_output.md"],
+            "Analyse model output" => "tutorials/how_to_analyse_output.md",
+            "Heterogenous site or management conditions" => "tutorials/how_to_heterogeneous_site_management.md" ],
         "Model description" => Any[
             "Difference equation" => "Modelling_API/main_equations.md",
             "Initialization" => "Modelling_API/initialization.md",

@@ -79,8 +79,11 @@ The array `LAIs` is mutated inplace.
 """
 function calculate_LAI(; container, biomass, LAIs)
     @unpack sla, lmpm, ampm = container.traits
+    @unpack nspecies = container.simp
 
-    # LAM = 0.62 # Proportion of laminae in green biomass
-    @. LAIs .= uconvert(NoUnits, sla * biomass * lmpm / ampm)
+    for s in Base.OneTo(nspecies)
+        LAIs[s] = uconvert(NoUnits, sla[s] * biomass[s] * lmpm[s] / ampm[s])
+    end
+
     return sum(LAIs)
 end

@@ -303,7 +303,7 @@ end
 Reduction of growth due to stronger nutrient stress for lower
 arbuscular mycorrhizal colonisation (`AMC`).
 
-- the core of the functional response is build in [`amc_nut_init`](@ref)
+- the core of the functional response is build in [`amc_nut_init!`](@ref)
 - the strength of the reduction is modified by the parameter `max_amc_nut_reduction` in [`amc_nut_reduction!`](@ref)
 
 `max_amc_nut_reduction` equals 1:

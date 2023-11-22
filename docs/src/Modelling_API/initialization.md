@@ -10,12 +10,8 @@ The [traits](@ref "Initialization of traits") of the species are generated, the
 and the [initial conditions of the state variables](@ref "Set the initial conditions of the state variables") 
 are set.
 
-Furthermore, the neighbours and the surrounding (own patch and neighbours) are set for each patch with 
-[`set_neighbours_surroundings!`](@ref). This is needed for [clonal growth](@ref clonalgrowth!).
-
 ```@docs
 initialization
-set_neighbours_surroundings!
 ```
 
 ## Initialization of traits
@@ -49,7 +45,7 @@ The species-specific parameters are:
 sla_water_init!
 rsa_above_water_init!
 rsa_above_nut_init!
-amc_nut_init
+amc_nut_init!
 ```
 
 **Initialization of patch-specific parameters**
@@ -61,8 +57,7 @@ The patch specific parameters are:
 - nutrients [-]
 
 ```@docs
-derive_WHC_PWP_nutrients!
-input_WHC_PWP
+input_WHC_PWP!
 input_nutrients!
 planar_gradient!
 ```

@@ -32,35 +32,66 @@ This is done for all patches once per year.
 ![](../img/clonalgrowth.svg)
 """
 function clonalgrowth!(; container)
-    @unpack npatches = container.simp
-    @unpack nneighbours, neighbours, surroundings = container.patch
+    @unpack patch_xdim, patch_ydim, nspecies = container.simp
     @unpack clonalgrowth, biomass_per_patch = container.calc
     @unpack u_biomass = container.u
 
     clonalgrowth_factor = 0.05
     clonalgrowth .= 0.0u"kg / ha"
 
-    for pa in Base.OneTo(npatches)
-        nneighbours_patch = nneighbours[pa]
-        surrounding_index = surroundings[pa][.!ismissing.(surroundings[pa])]
-        surrounded_biomass = @view biomass_per_patch[surrounding_index]
-        msurrounded_biomass = mean(surrounded_biomass)
+    x_add = [0, 1, 0, -1, 0]
+    y_add = [0, 0, 1, 0, -1]
 
-        for n in @view neighbours[pa, :]
-            if ismissing(n)
-                continue
+    for x in Base.OneTo(patch_xdim)
+        for y in Base.OneTo(patch_ydim)
+
+
+            #### mean biomass of the home and the (upto 4) neighbour patches
+            nsurroundings = 0
+            surrounded_biomass = 0.0u"kg / ha"
+            for i in 1:5
+                x_neighbour = x + x_add[i]
+                y_neighbour = y + y_add[i]
+
+                if x_neighbour < 1 || x_neighbour > patch_xdim ||
+                   y_neighbour < 1 || y_neighbour > patch_ydim
+                     continue
+                end
+
+                nsurroundings += 1
+                surrounded_biomass += biomass_per_patch[x_neighbour, y_neighbour]
             end
-            crowded_factor = msurrounded_biomass / biomass_per_patch[n]
-            crowded_factor = min(crowded_factor, 2.0)
-            growth_factor = clonalgrowth_factor / nneighbours_patch
 
-            ## growth to neighbour patch (n)
-            @views clonalgrowth[n, :] .+= u_biomass[pa, :] .* growth_factor .*
-                                          crowded_factor
+            nneighbours_patch = nsurroundings - 1
+            msurrounded_biomass = surrounded_biomass / nsurroundings
 
-            ## biomass is removed from own patch (pa)
-            @views clonalgrowth[pa, :] .-= u_biomass[pa, :] .* growth_factor .*
-                                           crowded_factor
+            #### clonal growth to neighbour patches
+            for i in 2:5
+                x_neighbour = x + x_add[i]
+                y_neighbour = y + y_add[i]
+
+                if x_neighbour < 1 || x_neighbour > patch_xdim ||
+                   y_neighbour < 1 || y_neighbour > patch_ydim
+                    continue
+                end
+
+                crowded_factor =
+                    msurrounded_biomass / biomass_per_patch[x_neighbour, y_neighbour]
+                crowded_factor = min(crowded_factor, 2.0)
+                growth_factor = clonalgrowth_factor / nneighbours_patch
+
+
+                for s in Base.OneTo(nspecies)
+                    ## growth to neighbour patch
+                    clonalgrowth[x_neighbour, y_neighbour, s] +=
+                        u_biomass[x, y, s] * growth_factor * crowded_factor
+
+                    ## biomass is removed from own patch
+                    clonalgrowth[x, y, s] -=
+                       u_biomass[x, y, s] * growth_factor * crowded_factor
+                end
+            end
+
         end
     end
 

@@ -16,7 +16,8 @@ function solve_prob(; input_obj, inf_p, calc = nothing, trait_input = nothing)
 
     main_loop!(; container)
 
-    @unpack biomass = container.o
+
+    @unpack biomass = container.u
     @unpack negbiomass = container.calc
 
     ## set negative values to zero
@@ -39,18 +40,26 @@ Calls the function [`one_day!`](@ref) for each day and set the
 calculated density differences to the output variables.
 """
 function main_loop!(; container)
-    @unpack u_biomass, u_water = container.u
-    @unpack du_biomass, du_water = container.du
-    @unpack biomass, water = container.o
+    @unpack u_biomass, u_water, du_biomass, du_water, biomass, water = container.u
+    @unpack patch_xdim, patch_ydim, nspecies = container.simp
 
     for t in container.ts
         one_day!(; t, container)
 
-        u_biomass .+= du_biomass .* u"d"
-        u_water .+= du_water .* u"d"
-        biomass[t, :, :] .= u_biomass
-        water[t, :] .= u_water
+        for x in Base.OneTo(patch_xdim)
+            for y in Base.OneTo(patch_ydim)
+                for s in Base.OneTo(nspecies)
+                    u_biomass[x, y, s] += du_biomass[x, y, s] * u"d"
+                    biomass[t, x, y, s] = u_biomass[x, y, s]
+                end
+
+                u_water[x, y] += du_water[x, y] * u"d"
+                water[t, x, y] = u_water[x, y]
+            end
+        end
     end
+
+    return nothing
 end
 
 ### helper functions

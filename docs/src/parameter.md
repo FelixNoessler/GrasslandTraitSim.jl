@@ -29,7 +29,7 @@ CurrentModule = GrasslandTraitSim
 | `mowing_mid_days` | number of days after a mowing event when the plants are grown back to half of their normal size | [`mowing!`](@ref) | 
 | `max_rsa_above_water_reduction` | maximal reduction of the plant-available water linked to the trait root surface area / aboveground biomass | [`rsa_above_water_init!`](@ref) | 
 | `max_sla_water_reduction` | maximal reduction of the plant-available water linked to the trait specific leaf area | [`sla_water_init!`](@ref) | 
-| `max_amc_nut_reduction` | maximal reduction of the plant-available nutrients linked to the trait arbuscular mycorrhizal colonisation rate | [`amc_nut_init`](@ref) | 
+| `max_amc_nut_reduction` | maximal reduction of the plant-available nutrients linked to the trait arbuscular mycorrhizal colonisation rate | [`amc_nut_init!`](@ref) | 
 | `max_rsa_above_nut_reduction` | maximal reduction of the plant-available nutrients linked to the trait root surface area / aboveground biomass | [`rsa_above_nut_init!`](@ref) | 
 | `sen_leaflifespan` | slope of a linear equation that relates the leaf life span to the senescence rate |  [`senescence_rate!`](@ref)  | 
 | `totalN_β` | slope parameter for total N in logistic function to calculate nutrient index | [`input_nutrients!`](@ref) |  |
@@ -65,7 +65,7 @@ CurrentModule = GrasslandTraitSim
 | `κ` | 22 [kg d⁻¹] | consumption of a livestock unit per day | [`grazing!`](@ref)  |  |
 
 In addition, regression equation by [Reich1992](@cite) used to calculate the leaf life span from the specific leaf area (see [`senescence_rate!`](@ref)). Regression equation from [Gupta1979](@cite) used to derive
-the water holding capacity and the permanent wilting point (see [`input_WHC_PWP`](@ref))
+the water holding capacity and the permanent wilting point (see [`input_WHC_PWP!`](@ref))
 
 
 

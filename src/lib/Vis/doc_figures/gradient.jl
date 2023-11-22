@@ -3,7 +3,7 @@ function planar_gradient(sim; path = nothing)
     sim.planar_gradient!(; mat, direction = 100)
 
     ############################
-    fig = Figure(; resolution = (400, 300))
+    fig = Figure(; size = (400, 300))
     Axis(fig[1, 1];
         ylabel = "y patch index",
         xlabel = "x patch index",

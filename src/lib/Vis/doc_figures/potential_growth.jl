@@ -7,8 +7,7 @@ function potential_growth(sim, valid;
     mp = valid.model_parameters()
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies,
-        npatches = 1, nutheterog = 0.0)
+        plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
     #####################
@@ -30,7 +29,7 @@ function potential_growth(sim, valid;
     colorrange = (minimum(sla), maximum(sla))
     colormap = :viridis
 
-    fig = Figure(; resolution = (800, 400))
+    fig = Figure(; size = (800, 400))
     Axis(fig[1, 1],
         xlabel = "Photosynthetically active radiation [MJ m⁻² d⁻¹]",
         ylabel = "Potential growth per biomass\n[kg kg⁻¹ ha⁻¹ d⁻¹]",

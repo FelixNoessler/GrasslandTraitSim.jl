@@ -54,7 +54,7 @@
 
 #     sim_t = 2012 .+ sol.t ./ 365
 
-#     fig = Figure(; resolution = (900, 600))
+#     fig = Figure(; size = (900, 600))
 #     ax = Axis(fig[1, 1];
 #         title = "$plotID, WHC: $(round(typeof(1u"mm"), sol.p.site.WHC)), PWP: $(round(typeof(1u"mm"), sol.p.site.PWP)), Nut: $(round(sol.p.site.nutrient_index; digits=2))",
 #         xticks = 2012:2:2022,

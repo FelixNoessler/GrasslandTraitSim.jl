@@ -3,8 +3,7 @@ function height_influence(sim, valid; path = nothing, nspecies = 25)
     mp = valid.model_parameters()
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies,
-        npatches = 1, nutheterog = 0.0)
+        plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
     #####################
@@ -25,7 +24,7 @@ function height_influence(sim, valid; path = nothing, nspecies = 25)
     colorrange = (minimum(height), maximum(height))
     colormap = :viridis
 
-    fig = Figure(; resolution = (700, 400))
+    fig = Figure(; size = (700, 400))
     ax = Axis(fig[1, 1];
         ylabel = "Plant height growth factor (heightinfluence)",
         xlabel = "Influence strength of the plant height (height_strength)")

@@ -13,7 +13,7 @@ Transforms the mycorrhizal colonisation into parameters
 of the response curve of growth in relation to nutrient
 availability.
 """
-function amc_nut_init(; calc, inf_p,
+function amc_nut_init!(; calc, inf_p,
         max_right_upper_bound = 1,
         min_right_upper_bound = 0.7,
         max_AMC_half_response = 0.6,

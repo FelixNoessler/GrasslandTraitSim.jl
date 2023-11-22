@@ -1,5 +1,5 @@
 function dashboard_layout(; valid)
-    fig = Figure(; resolution = (1700, 950))
+    fig = Figure(; size = (1700, 950))
 
     top_menu = fig[1, 1:2] = GridLayout()
     plots_layout = fig[2, 1] = GridLayout()

@@ -4,7 +4,7 @@ function neighbours_surroundings(sim, valid; path = nothing)
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies = 25,
-        npatches = 25, nutheterog = 0.0)
+        patch_xdim = 5, patch_ydim = 5, nutheterog = 0.0)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
 
@@ -20,7 +20,7 @@ function neighbours_surroundings(sim, valid; path = nothing)
     s_color[surroundings] .= 2
 
     #####################
-    fig = Figure(; resolution = (600, 300))
+    fig = Figure(; size = (600, 300))
 
     Axis(fig[1, 1];
         ylabel = "y patch index",

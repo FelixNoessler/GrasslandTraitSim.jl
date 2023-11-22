@@ -39,12 +39,12 @@ CurrentModule = GrasslandTraitSim
 
 | Variable    | Description                       | used in                   |
 | ----------- | --------------------------------- | ------------------------- |
-| `sand`      | Sand content [%]                  | [`input_WHC_PWP`](@ref)   |
-| `silt`      | Silt content [%]                  | [`input_WHC_PWP`](@ref)   |
-| `clay`      | Clay content [%]                  | [`input_WHC_PWP`](@ref)   |
-| `rootdepth` | Mean rooting depth of plants [mm] | [`input_WHC_PWP`](@ref)   |
-| `bulk`      | Bulk density [g cm⁻³]             | [`input_WHC_PWP`](@ref)   |
-| `organic`   | Organic matter content [%]        | [`input_WHC_PWP`](@ref)   |
+| `sand`      | Sand content [%]                  | [`input_WHC_PWP!`](@ref)   |
+| `silt`      | Silt content [%]                  | [`input_WHC_PWP!`](@ref)   |
+| `clay`      | Clay content [%]                  | [`input_WHC_PWP!`](@ref)   |
+| `rootdepth` | Mean rooting depth of plants [mm] | [`input_WHC_PWP!`](@ref)   |
+| `bulk`      | Bulk density [g cm⁻³]             | [`input_WHC_PWP!`](@ref)   |
+| `organic`   | Organic matter content [%]        | [`input_WHC_PWP!`](@ref)   |
 | `totalN`    | Total nitrogen [g kg⁻¹]           | [`input_nutrients!`](@ref) |
 | `CNratio`   | Carbon to nitrogen ratio [-]      | [`input_nutrients!`](@ref) |
 

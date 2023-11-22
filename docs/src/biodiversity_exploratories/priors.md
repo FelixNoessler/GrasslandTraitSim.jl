@@ -9,7 +9,7 @@ import GrasslandTraitSim.Valid as valid
 mp = valid.model_parameters()
 
 begin
-    fig = Figure(; resolution = (600, 6000))
+    fig = Figure(; size = (600, 6000))
 
     for p in eachindex(mp.names)
         Axis(fig[p, 1]; title = mp.names[p])

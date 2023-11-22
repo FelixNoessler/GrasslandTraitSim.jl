@@ -8,9 +8,7 @@ function amc_nut_response(sim, valid;
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     inf_p = @set inf_p.max_amc_nut_reduction = max_amc_nut_reduction
     input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies,
-
-        npatches = 1, nutheterog = 0.0)
+        plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
     ########
@@ -31,7 +29,7 @@ function amc_nut_response(sim, valid;
     amc = container.traits.amc[idx]
     ymat = ymat[:, idx]
 
-    fig = Figure(resolution = (900, 500))
+    fig = Figure(size = (900, 500))
     Axis(fig[1:2, 1];
         xlabel = "Nutrient index",
         ylabel = "Growth reduction factor\n← no growth, less reduction →",
@@ -96,8 +94,7 @@ function rsa_above_water_response(sim, valid; nspecies = 25,
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     inf_p = @set inf_p.max_rsa_above_water_reduction = max_rsa_above_water_reduction
     input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies,
-        npatches = 1, nutheterog = 0.0)
+        plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
     #####################
@@ -118,7 +115,7 @@ function rsa_above_water_response(sim, valid; nspecies = 25,
     rsa_above = container.traits.rsa_above[idx]
     ymat = ymat[:, idx]
 
-    fig = Figure(resolution = (900, 500))
+    fig = Figure(size = (900, 500))
     Axis(fig[1:2, 1],
         xlabel = "Scaled water availability",
         ylabel = "Growth reduction factor\n← no growth, less reduction →")
@@ -183,8 +180,7 @@ function rsa_above_nut_response(sim, valid;
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     inf_p = @set inf_p.max_rsa_above_nut_reduction = max_rsa_above_nut_reduction
     input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies,
-        npatches = 1, nutheterog = 0.0)
+        plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
     #####################
@@ -208,7 +204,7 @@ function rsa_above_nut_response(sim, valid;
     ymat = ymat[:, idx]
     ##################
 
-    fig = Figure(resolution = (900, 500))
+    fig = Figure(size = (900, 500))
     Axis(fig[1:2, 1],
         xlabel = "Nutrient index",
         ylabel = "Growth reduction factor\n← no growth, less reduction →")
@@ -273,8 +269,7 @@ function sla_water_response(sim, valid;
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     inf_p = @set inf_p.max_sla_water_reduction = max_sla_water_reduction
     input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies,
-        npatches = 1, nutheterog = 0.0)
+        plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
     #####################
@@ -295,7 +290,7 @@ function sla_water_response(sim, valid;
     ymat = ymat[:, idx]
     ##################
 
-    fig = Figure(resolution = (900, 400))
+    fig = Figure(size = (900, 400))
     Axis(fig[1, 1];
         xlabel = "Scaled water availability (water_splitted)",
         ylabel = "Growth reduction factor\n← no growth, less reduction →",

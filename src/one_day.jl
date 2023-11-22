@@ -34,10 +34,8 @@ loop over patches:
 """
 function one_day!(; t, container)
     @unpack doy, daily_input, traits = container
-    @unpack npatches, included = container.simp
-    @unpack WHC, PWP, nutrients = container.patch
-    @unpack u_biomass, u_water = container.u
-    @unpack du_biomass, du_water = container.du
+    @unpack npatches, patch_xdim, patch_ydim, included = container.simp
+    @unpack u_biomass, u_water, du_biomass, du_water, WHC, PWP, nutrients = container.u
     @unpack very_low_biomass, nan_biomass = container.calc
     @unpack act_growth, sen, defoliation, relbiomass = container.calc
 
@@ -53,95 +51,112 @@ function one_day!(; t, container)
         clonalgrowth!(; container)
     end
 
-    for pa in Base.OneTo(npatches)
-        # --------------------- biomass dynamics
-        ### this line is needed because it is possible
-        ## that there are numerical errors
-        patch_biomass = @view u_biomass[pa, :]
-        very_low_biomass .= patch_biomass .< 1e-30u"kg / ha" .&&
-                            .!iszero.(patch_biomass)
-        for i in eachindex(very_low_biomass)
-            if very_low_biomass[i]
-                patch_biomass[i] = 0u"kg / ha"
+    for x in Base.OneTo(patch_xdim)
+        for y in Base.OneTo(patch_ydim)
+
+            # --------------------- biomass dynamics
+            ### this line is needed because it is possible
+            ## that there are numerical errors
+            patch_biomass = @view u_biomass[x, y, :]
+            very_low_biomass .= patch_biomass .< 1e-30u"kg / ha" .&&
+                                .!iszero.(patch_biomass)
+            for i in eachindex(very_low_biomass)
+                if very_low_biomass[i]
+                    patch_biomass[i] = 0u"kg / ha"
+                end
             end
-        end
 
-        defoliation .= 0.0u"kg / (ha * d)"
+            defoliation .= 0.0u"kg / (ha * d)"
 
-        nan_biomass .= isnan.(patch_biomass)
-        if any(nan_biomass)
-            @error "Patch biomass isnan: $patch_biomass" maxlog=20
-        end
+            nan_biomass .= isnan.(patch_biomass)
+            if any(nan_biomass)
+                @error "Patch biomass isnan: $patch_biomass" maxlog=20
+            end
 
-        if !iszero(sum(patch_biomass))
+            if !iszero(sum(patch_biomass))
 
-            # ------------------------------------------ mowing
-            if included.mowing_included
-                mowing_height = daily_input.mowing[t]
-                if !isnan(mowing_height)
-                    tstart = t - 200
-                    tstart = tstart < 1 ? 1 : tstart
-                    mowing_last200 = @view daily_input.mowing[tstart:t]
-                    days_since_last_mowing = 200
-                    for i in reverse(eachindex(mowing_last200))
-                        if !iszero(mowing_last200[i]) && i != 201
-                            days_since_last_mowing = 201 - i
-                            break
-                        end
+                # ------------------------------------------ mowing
+                if included.mowing_included
+                    mowing_height = NaN * u"m"
+
+                    if daily_input.mowing isa Vector
+                        mowing_height = daily_input.mowing[t]
+                    else
+                        mowing_height = daily_input.mowing[t, x, y]
                     end
-                    mowing!(; t, pa, container, mowing_height,
-                        days_since_last_mowing,
+
+                    if !isnan(mowing_height)
+                        tstart = t - 200
+                        tstart = tstart < 1 ? 1 : tstart
+                        mowing_last200 = @view daily_input.mowing[tstart:t]
+                        days_since_last_mowing = 200
+                        for i in reverse(eachindex(mowing_last200))
+                            if !iszero(mowing_last200[i]) && i != 201
+                                days_since_last_mowing = 201 - i
+                                break
+                            end
+                        end
+                        mowing!(; t, x, y, container, mowing_height,
+                            days_since_last_mowing,
+                            biomass = patch_biomass)
+                    end
+                end
+
+                # ------------------------------------------ grazing & trampling
+                if included.grazing_included
+                    LD = NaN * u"1 / ha"
+
+                    if daily_input.grazing isa Vector
+                        LD = daily_input.grazing[t]
+                    else
+                        LD = daily_input.grazing[t, x, y]
+                    end
+
+                    if !isnan(LD)
+                        grazing!(; t, x, y, container, LD,
+                            biomass = patch_biomass,
+                            relbiomass = relbiomass[x, y],)
+                        trampling!(; container, LD,
+                            biomass = patch_biomass,
+                            relbiomass = relbiomass[x, y])
+                    end
+                end
+
+                # ------------------------------------------ growth
+                LAItot = growth!(; t, container,
+                    biomass = patch_biomass,
+                    water = u_water[x, y],
+                    nutrients = nutrients[x, y],
+                    WHC = WHC[x, y],
+                    PWP = PWP[x, y])
+
+                # ------------------------------------------ senescence
+                if included.senescence_included
+                    senescence!(; container,
+                        ST = daily_input.temperature_sum[t],
                         biomass = patch_biomass)
                 end
+
+            else
+                @warn "Sum of patch biomass = 0" maxlog=10
+                act_growth .= 0.0u"kg / (ha * d)"
+                sen .= 0.0u"kg / (ha * d)"
+
+                ## is already 0:
+                # defoliation .= 0.0u"kg / (ha * d)"
             end
 
-            # ------------------------------------------ grazing & trampling
-            if included.grazing_included
-                LD = daily_input.grazing[t]
-                if !isnan(LD)
-                    grazing!(; t, pa, container, LD,
-                        biomass = patch_biomass,
-                        relbiomass = relbiomass[pa],)
-                    trampling!(; container, LD,
-                        biomass = patch_biomass,
-                        relbiomass = relbiomass[pa])
-                end
-            end
+            # -------------- net growth
+            @. du_biomass[x, y, :] = act_growth - sen - defoliation
 
-            # ------------------------------------------ growth
-            LAItot = growth!(; t, container,
-                biomass = patch_biomass,
-                water = u_water[pa],
-                nutrients = nutrients[pa],
-                WHC = WHC[pa],
-                PWP = PWP[pa])
-
-            # ------------------------------------------ senescence
-            if included.senescence_included
-                senescence!(; container,
-                    ST = daily_input.temperature_sum[t],
-                    biomass = patch_biomass)
-            end
-
-        else
-            @warn "Sum of patch biomass = 0" maxlog=10
-            act_growth .= 0.0u"kg / (ha * d)"
-            sen .= 0.0u"kg / (ha * d)"
-
-            ## is already 0:
-            # defoliation .= 0.0u"kg / (ha * d)"
+            # --------------------- water dynamics
+            du_water[x, y] = change_water_reserve(; container, patch_biomass, LAItot,
+                water = u_water[x, y],
+                precipitation = daily_input.precipitation[t],
+                PET = daily_input.PET[t],
+                WHC = WHC[x, y],
+                PWP = PWP[x, y])
         end
-
-        # -------------- net growth
-        @. du_biomass[pa, :] = act_growth - sen - defoliation
-
-        # --------------------- water dynamics
-        du_water[pa] = change_water_reserve(; container, patch_biomass, LAItot,
-            water = u_water[pa],
-            precipitation = daily_input.precipitation[t],
-            PET = daily_input.PET[t],
-            WHC = WHC[pa],
-            PWP = PWP[pa])
     end
 
     return nothing

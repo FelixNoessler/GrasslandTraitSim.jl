@@ -23,36 +23,7 @@ function planar_gradient!(; mat, direction = 100)
     return nothing
 end
 
-"""
-    derive_WHC_PWP_nutrients!(; calc, input_obj, inf_p)
 
-Derive water holding capacity (WHC), permanent wilting point (PWP) and nutrients
-for all patches.
-
-This function calls the functions [`input_WHC_PWP`](@ref) and [`input_nutrients!`](@ref).
-
-A gradient of nutrients within the site can be added by setting `nutheterog` to a
-value larger than zero. The gradient is created with [`planar_gradient!`](@ref).
-"""
-function derive_WHC_PWP_nutrients!(; calc, input_obj, inf_p)
-    @unpack patch_xdim, patch_ydim, nutheterog, = input_obj.simp
-    @unpack sand, silt, clay, organic, bulk, rootdepth, totalN, CNratio = input_obj.site
-    @unpack nutgradient = calc.calc
-
-    if isone(patch_xdim) && isone(patch_ydim)
-        nutgradient .= 0.5
-    else
-        planar_gradient!(; mat = nutgradient)
-    end
-
-    WHC, PWP = input_WHC_PWP(; sand, silt, clay, organic, bulk, rootdepth)
-    input_nutrients!(; calc, input_obj, inf_p, nutheterog, totalN, CNratio)
-
-    calc.patch.WHC .= WHC * u"mm"
-    calc.patch.PWP .= PWP * u"mm"
-
-    return nothing
-end
 
 @doc raw"""
     input_nutrients!(; calc, input_obj, inf_p, nutheterog, totalN, CNratio)
@@ -93,10 +64,9 @@ and the last equations changes to:
 - `nutgradient`: gradient of nutrients between 0 and 1 [-],
   created by [`planar_gradient!`](@ref)
 """
-function input_nutrients!(; calc, input_obj, inf_p, nutheterog, totalN, CNratio)
-    @unpack patch_xdim, patch_ydim = input_obj.simp
-    @unpack nutgradient = calc.calc
-    @unpack nutrients = calc.patch
+function input_nutrients!(; calc, input_obj, inf_p)
+    @unpack nutrients = calc.u
+    @unpack totalN, CNratio = input_obj.site
     @unpack totalN_β, CN_β = inf_p
 
     #### data from the biodiversity exploratories
@@ -110,22 +80,16 @@ function input_nutrients!(; calc, input_obj, inf_p, nutheterog, totalN, CNratio)
     minCNratio = 5.0
     maxCNratio = 25.0
 
-    totalN_scaled = (totalN - mintotalN) / (maxtotalN - mintotalN)
-    CN_scaled = (CNratio - minCNratio) / (maxCNratio - minCNratio)
+    totalN_scaled = @. (totalN - mintotalN) / (maxtotalN - mintotalN)
+    CN_scaled = @. (CNratio - minCNratio) / (maxCNratio - minCNratio)
 
-    for x in Base.OneTo(patch_xdim)
-        for y in Base.OneTo(patch_ydim)
-            nutrients[get_patchindex(x, y; patch_xdim)] =
-                1 / (1 + exp(-totalN_β * totalN_scaled - CN_β * 1 / CN_scaled -
-                    nutheterog * (nutgradient[x, y] - 0.5)))
-        end
-    end
+    @. nutrients = 1 / (1 + exp(-totalN_β * totalN_scaled - CN_β * 1 / CN_scaled ))
 
     return nothing
 end
 
 @doc raw"""
-    input_WHC_PWP(; sand, silt, clay, organic, bulk, rootdepth)
+    input_WHC_PWP!(; calc, input_obj)
 
 Derive walter holding capacity (WHC) and
 permanent wilting point (PWP) from soil properties.
@@ -163,16 +127,22 @@ can be seen in the folling table:
 - `WHC`: water holding capacity [mm]
 - `PWP`: permanent wilting point [mm]
 """
-function input_WHC_PWP(; sand, silt, clay, organic, bulk, rootdepth)
-    θ₁ = 0.005678 * sand + 0.009228 * silt + 0.009135 * clay +
-         0.006103 * organic - 0.2696 * bulk
-    WHC = θ₁ * rootdepth
+function input_WHC_PWP!(; calc, input_obj)
+    @unpack WHC, PWP = calc.u
+    @unpack sand, silt, clay, organic, bulk, rootdepth, totalN, CNratio = input_obj.site
 
-    θ₂ = -5.9e-5 * sand + 0.001142 * silt + 0.005766 * clay +
-         0.002228 * organic + 0.02671 * bulk
-    PWP = θ₂ * rootdepth
+    @. WHC = (0.005678 * sand +
+              0.009228 * silt +
+              0.009135 * clay +
+              0.006103 * organic -
+              0.2696 * bulk) * rootdepth * u"mm"
+    @. PWP = (-5.9e-5 * sand +
+              0.001142 * silt +
+              0.005766 * clay +
+              0.002228 * organic +
+              0.02671 * bulk) * rootdepth * u"mm"
 
-    return WHC, PWP
+    return nothing
 end
 
 """
@@ -203,16 +173,14 @@ function initialization(; input_obj, inf_p, calc, trait_input = nothing)
     grazing_parameter!(; calc, inf_p)
 
     # linking traits to water and nutrient stress
-    amc_nut_init(; calc, inf_p)
+    amc_nut_init!(; calc, inf_p)
     rsa_above_water_init!(; calc, inf_p)
     rsa_above_nut_init!(; calc, inf_p)
     sla_water_init!(; calc, inf_p)
 
     # WHC, PWP and nutrient index
-    derive_WHC_PWP_nutrients!(; calc, input_obj, inf_p)
-
-    ################## Patch neighbours ##################
-    set_neighbours_surroundings!(; calc, input_obj)
+    input_WHC_PWP!(; calc, input_obj)
+    input_nutrients!(; calc, input_obj, inf_p)
 
     ################## Store everything in one object ##################
     p = (; p = inf_p)
@@ -239,16 +207,27 @@ the initial biomass (`initbiomass`). The soil water content
 - `initsoilwater`: initial soil water content [mm]
 """
 function set_initialconditions!(; container)
-    @unpack u_biomass, u_water = container.u
-    @unpack grazed, mown = container.o
+    @unpack u_biomass, u_water, grazed, mown = container.u
     @unpack initbiomass, initsoilwater = container.site
     @unpack nspecies = container.simp
 
-    u_biomass .= initbiomass / nspecies
-    u_water .= initsoilwater
+    @. u_biomass = initbiomass / nspecies
+    @. u_water = initsoilwater
 
     grazed .= 0.0u"kg / ha"
     mown .= 0.0u"kg / ha"
 
     return nothing
+end
+
+function cumulative_temperature(; temperature, year)
+    temperature = ustrip.(temperature)
+    temperature_sum = Float64[]
+
+    for y in year
+        year_filter = y .== year
+        append!(temperature_sum, cumsum(temperature[year_filter]))
+    end
+
+    return temperature_sum * u"°C"
 end

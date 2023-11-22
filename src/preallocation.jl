@@ -1,42 +1,62 @@
 function preallocate_vectors(; input_obj)
-    @unpack npatches, nspecies, patch_xdim, patch_ydim, ntimesteps = input_obj.simp
+    @unpack nspecies, patch_xdim, patch_ydim, ntimesteps = input_obj.simp
     @unpack initbiomass = input_obj.site
 
     dtype = Float64
     val = dtype(NaN)
 
-
     ############# output variables
     biomass = DimArray(
-        fill(val, ntimesteps, npatches, nspecies)u"kg/ha",
-        (time = input_obj.date, patch = 1:npatches, species = 1:nspecies),
+        fill(val, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        (time = input_obj.date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :biomass)
-    mown_biomass = DimArray(
-        fill(dtype(0.0), ntimesteps, npatches)u"kg/ha",
-        (time = input_obj.date, patch = 1:npatches),
+    mown = DimArray(
+        fill(val, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        (time = input_obj.date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :mown)
-    grazed_biomass = DimArray(
-        fill(dtype(0.0), ntimesteps, npatches)u"kg/ha",
-        (time = input_obj.date, patch = 1:npatches),
+    grazed = DimArray(
+        fill(val, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        (time = input_obj.date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :grazed)
-    water = DimArray(fill(val, ntimesteps, npatches)u"mm",
-                     (time = input_obj.date, patch = 1:npatches),
+    water = DimArray(fill(val, ntimesteps, patch_xdim, patch_ydim)u"mm",
+                     (time = input_obj.date, x = 1:patch_xdim, y = 1:patch_ydim),
                      name = :water)
-    o = DimStack(biomass, mown_biomass, grazed_biomass, water)
+
+    ############# change and state variables
+    du_biomass = DimArray(
+        fill(val, patch_xdim, patch_ydim, nspecies)u"kg / (ha * d)",
+        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :du_biomass)
+    du_water = DimArray(
+        fill(val, patch_xdim, patch_ydim)u"mm / d",
+        (x = 1:patch_xdim, y = 1:patch_ydim), name = :du_water)
+    u_biomass = DimArray(
+        fill(val, patch_xdim, patch_ydim, nspecies)u"kg / ha",
+        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :u_biomass)
+    u_water = DimArray(
+        fill(val, patch_xdim, patch_ydim)u"mm",
+        (x = 1:patch_xdim, y = 1:patch_ydim),
+        name = :u_water)
+
+    ############# patch variables
+    WHC = DimArray(
+        fill(val, patch_xdim, patch_ydim,)u"mm",
+        (x = 1:patch_xdim, y = 1:patch_ydim), name = :WHC)
+    PWP = DimArray(
+        fill(val, patch_xdim, patch_ydim,)u"mm",
+        (x = 1:patch_xdim, y = 1:patch_ydim), name = :PWP)
+    nutrients = DimArray(
+        fill(val, patch_xdim, patch_ydim),
+        (x = 1:patch_xdim, y = 1:patch_ydim), name = :nutrients)
+
+
+    u = (; biomass, mown, grazed, water, du_biomass, du_water,
+                 u_biomass, u_water, WHC, PWP, nutrients)
 
     arraytuple = (;
-        patch = (;
-            xs = Array{Int64}(undef, npatches),
-            ys = Array{Int64}(undef, npatches),
-            WHC = fill(val, npatches)u"mm",
-            PWP = fill(val, npatches)u"mm",
-            nutrients = fill(val, npatches),
-            nneighbours = fill(0, npatches),
-            neighbours = Matrix{Union{Missing, Int64}}(undef, npatches, 4),
-            surroundings = Matrix{Union{Missing, Int64}}(undef, npatches, 5),),
+        u = u,
         traits = (;
-            ## trait similarity matrix
-            TS = fill(val, nspecies, nspecies),
             amc = Array{dtype}(undef, nspecies),
             height = fill(val, nspecies)u"m",
             lmpm = Array{dtype}(undef, nspecies),
@@ -44,10 +64,10 @@ function preallocate_vectors(; input_obj)
             sla = fill(val, nspecies)u"m^2 / g",
             rsa_above = fill(val, nspecies)u"m^2 / g",
             ampm = Array{dtype}(undef, nspecies),
-
             leaflifespan = fill(val, nspecies)u"d",
             μ = fill(val, nspecies)u"d^-1",
-            ρ = Array{dtype}(undef, nspecies),),
+            ρ = Array{dtype}(undef, nspecies),
+            TS = fill(val, nspecies, nspecies),),
         funresponse = (;
             amc_nut_upper = Array{dtype}(undef, nspecies),
             amc_nut_midpoint = Array{dtype}(undef, nspecies),
@@ -55,20 +75,8 @@ function preallocate_vectors(; input_obj)
             rsa_above_nut_upper = Array{dtype}(undef, nspecies),
             rsa_above_midpoint = Array{dtype}(undef, nspecies),
             sla_water_midpoint = Array{dtype}(undef, nspecies),),
-        u = (;
-            ############ vectors that store the state variables
-            u_biomass = fill(val, npatches, nspecies)u"kg / ha",
-            u_water = fill(val, npatches)u"mm",),
-        du = (;
-            ############ vectors that store the change of the state variables
-            du_biomass = zeros(npatches, nspecies)u"kg / (ha * d)",
-            # du_water = DimArray(zeros(npatches)u"mm / d", (:patch,)),
-
-            du_water = zeros(npatches)u"mm / d",
-            ),
-        o = o,
         calc = (;
-            negbiomass = fill(false, ntimesteps, npatches, nspecies),
+            negbiomass = fill(false, ntimesteps, patch_xdim, patch_ydim, nspecies),
 
             ############ preallaocated vectors that are used in the calculations
             potgrowth = fill(val, nspecies)u"kg / (ha * d)",
@@ -77,8 +85,8 @@ function preallocate_vectors(; input_obj)
             sen = zeros(nspecies)u"kg / (ha * d)",
             species_specific_red = fill(val, nspecies),
             LAIs = fill(val, nspecies),
-            biomass_per_patch = fill(val, npatches)u"kg / ha",
-            relbiomass = fill(1.0, npatches),
+            biomass_per_patch = fill(val, patch_xdim, patch_ydim)u"kg / ha",
+            relbiomass = fill(1.0, patch_xdim, patch_ydim),
 
             ## warnings, debugging, avoid numerical errors
             very_low_biomass = fill(false, nspecies),
@@ -131,10 +139,10 @@ function preallocate_vectors(; input_obj)
             trampled_biomass = fill(val, nspecies)u"kg / ha",
 
             ## clonal growth
-            clonalgrowth = fill(val, npatches, nspecies)u"kg / ha",
+            clonalgrowth = fill(val, patch_xdim, patch_ydim, nspecies)u"kg / ha",
 
             ## sla transpiration effect
-            relative_sla = fill(val, nspecies)u"m^2 / g",),)
+            relative_sla = fill(val, nspecies)u"m^2 / g",))
 
     return arraytuple
 end

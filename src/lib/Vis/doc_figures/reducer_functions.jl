@@ -9,7 +9,7 @@ function temperatur_reducer(sim;
         push!(y, g)
     end
 
-    fig = Figure(; resolution = (700, 400))
+    fig = Figure(; size = (700, 400))
     Axis(fig[1, 1];
         ylabel = "Growth reduction",
         xlabel = "Air temperature [°C]",
@@ -46,7 +46,7 @@ function radiation_reducer(sim;
         push!(y, g)
     end
 
-    fig = Figure(; resolution = (700, 400))
+    fig = Figure(; size = (700, 400))
     Axis(fig[1, 1];
         ylabel = "Growth reduction (Rred)",
         xlabel = "Photosynthetically active radiation (PAR) [MJ m⁻² d⁻¹]",
@@ -79,9 +79,7 @@ function below_influence(sim, valid; nspecies = 25, path = nothing)
     mp = valid.model_parameters()
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies,
-        npatches = 1, nutheterog = 0.0,
-        trait_seed = missing)
+        plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
     #####################
@@ -132,7 +130,7 @@ function below_influence(sim, valid; nspecies = 25, path = nothing)
 
     #####################
 
-    fig = Figure(; resolution = (900, 800))
+    fig = Figure(; size = (900, 800))
     Axis(fig[1, 1];
         # xlabel = "Strength of resource partitioning\n(belowground_density_effect)",
         xticklabelsvisible = false,
@@ -205,7 +203,7 @@ function seasonal_effect(sim;
         push!(y, g)
     end
 
-    fig = Figure(; resolution = (700, 400))
+    fig = Figure(; size = (700, 400))
     Axis(fig[1, 1];
         ylabel = "Seasonal factor (seasonal)",
         xlabel = "Accumulated degree days (ST) [°C]",
@@ -243,7 +241,7 @@ function seasonal_component_senescence(sim;
         push!(y, g)
     end
 
-    fig = Figure(; resolution = (700, 400))
+    fig = Figure(; size = (700, 400))
     Axis(fig[1, 1];
         ylabel = "Seasonal factor (SEN)",
         xlabel = "Accumulated degree days (ST) [°C]",

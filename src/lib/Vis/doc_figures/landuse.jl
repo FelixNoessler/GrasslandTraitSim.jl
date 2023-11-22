@@ -10,8 +10,7 @@ function grazing(sim, valid;
     inf_p = @set inf_p.grazing_half_factor = grazing_half_factor
     inf_p = @set inf_p.leafnitrogen_graz_exp = leafnitrogen_graz_exp
     input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies,
-        npatches = 1, nutheterog = 0.0)
+        plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
     #####################
@@ -23,7 +22,7 @@ function grazing(sim, valid;
 
     for (i, biomass) in enumerate(biomass_vec)
         container.calc.defoliation .= 0.0u"kg / (ha * d)"
-        sim.grazing!(; t = 1, pa = 1, container, LD,
+        sim.grazing!(; t = 1, x = 1, y = 1, container, LD,
                      biomass = repeat([biomass], nspecies),
                      relbiomass = 1.0)
         grazing_mat[:, i] = ustrip.(container.calc.defoliation)
@@ -36,7 +35,7 @@ function grazing(sim, valid;
     colorrange = (minimum(lncm), maximum(lncm))
     yend = ustrip(biomass_vec[end])
 
-    fig = Figure(; resolution = (700, 400))
+    fig = Figure(; size = (700, 400))
     Axis(fig[1, 1],
         xlabel = "Biomass per species [kg ha⁻¹]",
         ylabel = "Grazed biomass per species (graz)\n[kg ha⁻¹ d⁻¹]",
@@ -62,7 +61,7 @@ function grazing(sim, valid;
 end
 
 function grazing_half_factor(; path = nothing)
-    fig = Figure(; resolution = (700, 400))
+    fig = Figure(; size = (700, 400))
     Axis(fig[1, 1],
         xlabel = "Total biomass [green dry mass kg ha⁻¹]",
         ylabel = "Grazed biomass (totgraz)\n[green dry mass kg ha⁻¹ d⁻¹]",
@@ -100,8 +99,7 @@ function trampling(sim, valid; nspecies = 25, trampling_factor = 100, path = not
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     inf_p = @set inf_p.trampling_factor = trampling_factor
     input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies,
-        npatches = 1, nutheterog = 0.0)
+        plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
     #####################
@@ -126,7 +124,7 @@ function trampling(sim, valid; nspecies = 25, trampling_factor = 100, path = not
     colorrange = (minimum(height), maximum(height))
     colormap = :viridis
 
-    fig = Figure(; resolution = (700, 400))
+    fig = Figure(; size = (700, 400))
     Axis(fig[1, 1],
         ylabel = "Proportion of biomass that is\nremoved by trampling [d⁻¹]",
         xlabel = "Livestock density [ha⁻¹]",
@@ -159,8 +157,7 @@ function mowing(sim, valid; nspecies = 25, mowing_height = 0.07u"m",
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     inf_p = @set inf_p.mowing_mid_days = mowing_mid_days
     input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies,
-        npatches = 1, nutheterog = 0.0)
+        plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
     #####################
@@ -171,7 +168,7 @@ function mowing(sim, valid; nspecies = 25, mowing_height = 0.07u"m",
 
     for (i, biomass) in enumerate(biomass_vec)
         container.calc.defoliation .= 0.0u"kg / (ha * d)"
-        sim.mowing!(; t = 1, pa = 1, container, mowing_height,
+        sim.mowing!(; t = 1, x = 1, y = 1, container, mowing_height,
                       days_since_last_mowing, biomass)
 
         mowing_mat[:, i] = ustrip.(container.calc.defoliation)
@@ -183,7 +180,7 @@ function mowing(sim, valid; nspecies = 25, mowing_height = 0.07u"m",
     colorrange = (minimum(height), maximum(height))
     colormap = :viridis
 
-    fig = Figure(; resolution = (700, 400))
+    fig = Figure(; size = (700, 400))
     Axis(fig[1, 1],
         xlabel = "Biomass per species [kg ha⁻¹]",
         ylabel = """Maximal amount of biomass that is
@@ -209,7 +206,7 @@ end
 
 function mow_factor(;
         path = nothing)
-    fig = Figure(; resolution = (700, 400))
+    fig = Figure(; size = (700, 400))
     Axis(fig[1, 1],
         xlabel = "Time since last mowing event [day]\n(days_since_last_mowing)",
         ylabel = "Regrowth of plants (mow_factor)",

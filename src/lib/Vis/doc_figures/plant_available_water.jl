@@ -3,14 +3,13 @@ function plant_available_water(sim, valid; path = nothing)
     mp = valid.model_parameters()
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies = 25,
-        npatches = 1, nutheterog = 0.0)
+        plotID = "HEG01", nspecies = 25)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
     container.calc.biomass_density_factor .= 1
     #####################
 
-    fig = Figure(; resolution = (900, 800))
+    fig = Figure(; size = (900, 800))
 
     WHC = 100u"mm"
     PWP = 0u"mm"

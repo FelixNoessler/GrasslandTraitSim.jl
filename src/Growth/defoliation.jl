@@ -24,11 +24,11 @@ Influence of mowing for plant species with different heights ($height$):
 Visualisation of the `mow_factor`:
 ![](../img/mow_factor.svg)
 """
-function mowing!(; t, pa, container, mowing_height, days_since_last_mowing, biomass)
+function mowing!(; t, x, y, container, mowing_height, days_since_last_mowing, biomass)
     @unpack height = container.traits
     @unpack mowing_mid_days = container.p
     @unpack defoliation, mown_height, mowing_λ = container.calc
-    @unpack mown = container.o
+    @unpack mown = container.u
 
     # --------- mowing parameter λ
     mown_height .= height .- mowing_height
@@ -41,7 +41,7 @@ function mowing!(; t, pa, container, mowing_height, days_since_last_mowing, biom
     mow_factor = 1 / (1 + exp(-0.05 * (days_since_last_mowing - mowing_mid_days)))
 
     # --------- add the removed biomass to the defoliation vector
-    mown[t, pa] = sum(mow_factor .* mowing_λ .* biomass)
+    @. mown[t, x, y, :] = mow_factor * mowing_λ * biomass
     defoliation .+= mow_factor .* mowing_λ .* biomass .* u"d^-1"
 
     return nothing
@@ -117,11 +117,11 @@ and a leaf nitrogen content of 15, 30 and 40 mg/g:
 Influence of `grazing_half_factor`:
 ![](../img/grazing_half_factor.svg)
 """
-function grazing!(; t, pa,container, LD, biomass, relbiomass)
+function grazing!(; t, x, y, container, LD, biomass, relbiomass)
     @unpack ρ = container.traits
     @unpack grazing_half_factor = container.p
     @unpack defoliation, biomass_ρ, grazed_share = container.calc
-    @unpack grazed = container.o
+    @unpack grazed = container.u
 
     κ = 22u"kg / d"
     k_exp = 2
@@ -141,7 +141,7 @@ function grazing!(; t, pa,container, LD, biomass, relbiomass)
     grazed_share .= biomass_ρ ./ sum(biomass)
 
     #### add grazed biomass to defoliation
-    grazed[t, pa] = total_grazed * u"d"
+    @. grazed[t, x, y, :] = grazed_share * total_grazed * u"d"
     @. defoliation += grazed_share * total_grazed
 
     return nothing
@@ -207,10 +207,12 @@ Relative biomass of the patches in relation to the mean biomass of the overall g
 function calculate_relbiomass!(; container)
     @unpack biomass_per_patch, relbiomass = container.calc
     @unpack u_biomass = container.u
-    @unpack npatches = container.simp
+    @unpack patch_xdim, patch_ydim = container.simp
 
-    for pa in Base.OneTo(npatches)
-        biomass_per_patch[pa] = mean(@view u_biomass[pa, :])
+    for x in Base.OneTo(patch_xdim)
+        for y in Base.OneTo(patch_ydim)
+            biomass_per_patch[x, y] = mean(@view u_biomass[x, y, :])
+        end
     end
     relbiomass .= biomass_per_patch ./ mean(biomass_per_patch)
 

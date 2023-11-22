@@ -46,18 +46,7 @@ precipitation = ones(ntimesteps)u"mm / d"
 temperature = ones(ntimesteps)u"°C"
 
 # --------------- yearly temperature sum [°C]
-function cumulative_temperature(; temperature, year)
-    temperature = ustrip.(temperature)
-    temperature_sum = Float64[]
-    
-    for y in year
-        year_filter = y .== year
-        append!(temperature_sum, cumsum(temperature[year_filter]))
-    end
-
-    return temperature_sum * u"°C"
-end
-temperature_sum = cumulative_temperature(; temperature, year)
+temperature_sum = sim.cumulative_temperature(; temperature, year) 
 
 # --------------- final tuple of climatic inputs
 climatic_inputs = (; temperature, temperature_sum, PAR, PET, precipitation)
@@ -120,10 +109,10 @@ site_tuple = (;
 ```@example input_creation
 simp = (
     ntimesteps, 
-    nspecies = 5, 
-    npatches = 1, 
+    nspecies = 5,  
     patch_xdim = 1, 
     patch_ydim = 1, 
+    npatches = 1,
     nutheterog = 0.0, 
     trait_seed = missing,  
     
@@ -160,8 +149,7 @@ to create the same object:**
 ```@example
 import GrasslandTraitSim.Valid as valid
 input_obj_HEG01 = valid.validation_input(;
-    plotID = "HEG01", nspecies = 5,
-    npatches = 1, nutheterog = 0.0);
+    plotID = "HEG01", nspecies = 5);
 ```
 
 ## Traits
@@ -186,8 +174,6 @@ trait_input = (;
 
 ```@example input_creation
 inf_p = (
-    moistureconv_alpha = 5.757897, 
-    moistureconv_beta = 1.642053, 
     sen_α = 5.568529, 
     sen_leaflifespan = 2.131722, 
     sla_tr = 0.0209188, 
