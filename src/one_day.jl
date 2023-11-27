@@ -41,11 +41,6 @@ function one_day!(; t, container)
 
     LAItot = 0.0
 
-    ## -------- relative biomass per patch -> is needed for grazing
-    if npatches > 1
-        calculate_relbiomass!(; container)
-    end
-
     ## -------- clonal growth
     if doy[t] == 250 && npatches > 1
         clonalgrowth!(; container)
@@ -114,11 +109,9 @@ function one_day!(; t, container)
 
                     if !isnan(LD)
                         grazing!(; t, x, y, container, LD,
-                            biomass = patch_biomass,
-                            relbiomass = relbiomass[x, y],)
+                            biomass = patch_biomass)
                         trampling!(; container, LD,
-                            biomass = patch_biomass,
-                            relbiomass = relbiomass[x, y])
+                            biomass = patch_biomass)
                     end
                 end
 

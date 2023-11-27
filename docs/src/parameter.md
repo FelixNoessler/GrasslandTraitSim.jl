@@ -23,7 +23,7 @@ CurrentModule = GrasslandTraitSim
 | `biomass_dens` | if the matrix multiplication between the trait similarity matrix and the biomass equals `biomass_dens` the available water and nutrients for growth are not in- or decreased | [`below_ground_competition!`](@ref) | 
 | `belowground_density_efffect`| controls how strongly the available water and nutrients are in- or decreased if the matrix multiplication between the trait similarity matrix and the biomass of the species is above or below of `biomass_dens` | [`below_ground_competition!`](@ref) | 
 | `height_strength` | controls how strongly taller plants gets more light for growth | [`height_influence!`](@ref) | 
-| `leafnitrogen_graz_exp` | controls how strongly grazers prefer plant species with high leaf nitrogen content | [`grazing_parameter!`](@ref) |       |
+| `leafnitrogen_graz_exp` | controls how strongly grazers prefer plant species with high leaf nitrogen content | [`grazing!`](@ref) |       |
 | `grazing_half_factor` | total biomass  [kg ha⁻¹] when the daily consumption by grazers reaches half of their maximal consumption defined by κ $\cdot$ livestock density | [`grazing!`](@ref) | 
 | `trampling_factor` | defines together with the height of the plants and the livestock density the proportion of biomass that is trampled $\cdot 10^{-3}$ [ha m⁻¹] | [`trampling!`](@ref) | 
 | `mowing_mid_days` | number of days after a mowing event when the plants are grown back to half of their normal size | [`mowing!`](@ref) | 

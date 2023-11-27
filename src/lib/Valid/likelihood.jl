@@ -32,10 +32,10 @@ function loglikelihood_model(sim::Module;
 
     if use_likelihood_biomass
         data_biomass_t = LookupArrays.index(data.biomass, :time)
-        species_biomass = dropdims(mean(sol.o.biomass[data_biomass_t, :, :]; dims = 2);
-            dims = 2)
+        species_biomass = dropdims(mean(sol.u.biomass[data_biomass_t, :, :, :]; dims = (:x, :y));
+            dims = (:x, :y))
         species_biomass = ustrip.(species_biomass)
-        site_biomass = vec(sum(species_biomass; dims = 2))
+        site_biomass = vec(sum(species_biomass; dims = (:species)))
 
         if any(isnan.(species_biomass))
             @warn "Biomass NaN, parameters:"
@@ -58,9 +58,9 @@ function loglikelihood_model(sim::Module;
         data_soilmoisture_t = LookupArrays.index(data.soilmoisture, :time)
         weight = length(data.soilmoisture) / 13
 
-        sim_soilwater = dropdims(mean(sol.o.water[data_soilmoisture_t, :]; dims = 2);
-                                 dims = 2)
-        sim_soilwater = min.(sim_soilwater ./ mean(sol.patch.WHC), 1.0)
+        sim_soilwater = dropdims(mean(sol.u.water[data_soilmoisture_t, :, :]; dims = (:x, :y));
+                                 dims = (:x, :y))
+        sim_soilwater = min.(sim_soilwater ./ mean(sol.u.WHC), 1.0)
 
         x = @. sol.p.moistureconv_alpha + sol.p.moistureconv_beta * sim_soilwater
         μ = @. exp(x)/(1+exp(x))
@@ -80,12 +80,14 @@ function loglikelihood_model(sim::Module;
     ################## cwm/cwv trait likelihood
     ########################################################################
     ll_trait = 0.0
-    data_trait_t = LookupArrays.index(data.traits, :time)
-    species_biomass = dropdims(mean(sol.o.biomass[data_trait_t, :, :]; dims = 2); dims = 2)
-    species_biomass = ustrip.(species_biomass)
-    site_biomass = vec(sum(species_biomass; dims = 2))
-
     if use_likelihood_traits
+        data_trait_t = LookupArrays.index(data.traits, :time)
+        species_biomass = dropdims(mean(sol.u.biomass[data_trait_t, :, :, :];
+                                        dims = (:x, :y));
+                                   dims = (:x, :y))
+        species_biomass = ustrip.(species_biomass)
+        site_biomass = vec(sum(species_biomass; dims = (:species)))
+
         ## cannot calculate cwm trait for zero biomass
         if any(iszero.(site_biomass))
             if return_seperate

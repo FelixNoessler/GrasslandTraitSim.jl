@@ -9,7 +9,7 @@ Then, run the main loop and store the results with all parameters in a container
 """
 function solve_prob(; input_obj, inf_p, calc = nothing, trait_input = nothing)
     if isnothing(calc)
-        calc = preallocate_vectors(; input_obj)
+        calc = preallocate_vectors(; input_obj, dtype = typeof(inf_p[1]))
     end
 
     container = initialization(; input_obj, inf_p, calc, trait_input)

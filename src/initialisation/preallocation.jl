@@ -1,8 +1,7 @@
-function preallocate_vectors(; input_obj)
+function preallocate_vectors(; input_obj, dtype = Float64)
     @unpack nspecies, patch_xdim, patch_ydim, ntimesteps = input_obj.simp
     @unpack initbiomass = input_obj.site
 
-    dtype = Float64
     val = dtype(NaN)
 
     ############# output variables
@@ -66,7 +65,6 @@ function preallocate_vectors(; input_obj)
             ampm = Array{dtype}(undef, nspecies),
             leaflifespan = fill(val, nspecies)u"d",
             μ = fill(val, nspecies)u"d^-1",
-            ρ = Array{dtype}(undef, nspecies),
             TS = fill(val, nspecies, nspecies),),
         funresponse = (;
             amc_nut_upper = Array{dtype}(undef, nspecies),
@@ -113,6 +111,10 @@ function preallocate_vectors(; input_obj)
             ## height influence
             heightinfluence = fill(val, nspecies),
             relative_height = fill(val, nspecies)u"m",
+
+            # leaf nitrogen (palatability) --> grazing
+            relative_lncm = fill(val, nspecies)u"mg/g",
+            ρ = Array{dtype}(undef, nspecies),
 
             ## nutrient reducer function
             nutrients_splitted = fill(val, nspecies),

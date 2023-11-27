@@ -51,7 +51,7 @@ The texture classes of [explo14686v10](@cite) were partly collapsed:
 | `bulk`      | Bulk density [g cm⁻³]                       | [explo17086v4](@cite)  |
 | `organic`   | Organic matter content [%]                  | [explo14446v19](@cite) |
 | `totalN`    | Total nitrogen [g kg⁻¹]                     | [explo14446v19](@cite)[explo18787v6](@cite)[explo23846v10](@cite)[explo31210v6](@cite) |
-| `CNratio`   | Carbon to nitrogen ratio [-]                | [explo14446v19](@cite) |
+| `CNratio`   | Carbon to nitrogen ratio [-]                | [explo14446v19](@cite)[explo18787v6](@cite)[explo23846v10](@cite)[explo31210v6](@cite) |
 
 
 

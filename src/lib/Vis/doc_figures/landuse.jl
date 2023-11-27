@@ -23,17 +23,14 @@ function grazing(sim, valid;
     for (i, biomass) in enumerate(biomass_vec)
         container.calc.defoliation .= 0.0u"kg / (ha * d)"
         sim.grazing!(; t = 1, x = 1, y = 1, container, LD,
-                     biomass = repeat([biomass], nspecies),
-                     relbiomass = 1.0)
+                     biomass = repeat([biomass], nspecies))
         grazing_mat[:, i] = ustrip.(container.calc.defoliation)
     end
 
-    idx = sortperm(container.traits.ρ)
-    ρ = ustrip.(container.traits.ρ)[idx]
+    idx = sortperm(container.calc.ρ)
     lncm = ustrip.(container.traits.lncm)[idx]
     grazing_mat = grazing_mat[idx, :]
     colorrange = (minimum(lncm), maximum(lncm))
-    yend = ustrip(biomass_vec[end])
 
     fig = Figure(; size = (700, 400))
     Axis(fig[1, 1],
@@ -112,7 +109,7 @@ function trampling(sim, valid; nspecies = 25, trampling_factor = 100, path = not
 
     for (i, LD) in enumerate(LDs)
         container.calc.defoliation .= 0.0u"kg / (ha * d)"
-        sim.trampling!(; container, LD, biomass, relbiomass = 1)
+        sim.trampling!(; container, LD, biomass)
         trampling_mat_height[:, i] = ustrip.(container.calc.defoliation)
     end
     trampling_mat_height = trampling_mat_height ./ 100.0

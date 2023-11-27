@@ -30,11 +30,9 @@ and are initialized at the start of the simulation.
 The species-specific parameters are:
 
 - `μ`: [senescence rate](@ref senescence_rate!) [d⁻¹]
-- `ρ`: [palatability](@ref grazing_parameter!) [-]
 
 ```@docs
 senescence_rate!
-grazing_parameter!
 ```
 
 **Initializing parameters for the functional response**
