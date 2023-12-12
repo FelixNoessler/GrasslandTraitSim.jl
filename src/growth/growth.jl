@@ -11,7 +11,7 @@ include("height_influence.jl")
 
 Calculates the actual growth of the plant species.
 """
-function growth!(; t, container, biomass, water, nutrients, WHC, PWP)
+function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     @unpack daily_input = container
     @unpack included = container.simp
     @unpack species_specific_red, heightinfluence, Waterred, Nutred = container.calc
@@ -30,7 +30,7 @@ function growth!(; t, container, biomass, water, nutrients, WHC, PWP)
     below_ground_competition!(; container, biomass)
 
     #### growth reducer
-    water_reduction!(; container, water, PWP, WHC,
+    water_reduction!(; container, W, PWP, WHC,
         water_red = included.water_red,
         PET = daily_input.PET[t])
     nutrient_reduction!(; container, nutrients,

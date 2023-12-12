@@ -118,7 +118,7 @@ function one_day!(; t, container)
                 # ------------------------------------------ growth
                 LAItot = growth!(; t, container,
                     biomass = patch_biomass,
-                    water = u_water[x, y],
+                    W = u_water[x, y],
                     nutrients = nutrients[x, y],
                     WHC = WHC[x, y],
                     PWP = PWP[x, y])

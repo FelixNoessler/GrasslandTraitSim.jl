@@ -93,7 +93,7 @@ Reduction of growth based on the plant available water
 and the traits specific leaf area and root surface area
 per aboveground biomass.
 """
-function water_reduction!(; container, water, water_red, PET, PWP, WHC)
+function water_reduction!(; container, W, water_red, PET, PWP, WHC)
     @unpack sla_water, rsa_above_water, Waterred = container.calc
 
     if !water_red
@@ -102,7 +102,7 @@ function water_reduction!(; container, water, water_red, PET, PWP, WHC)
         return nothing
     end
 
-    plant_available_water!(; container, water, PWP, WHC, PET)
+    plant_available_water!(; container, W, PWP, WHC, PET)
 
     ### ------------ species specific functional response
     sla_water_reduction!(; container)
@@ -125,16 +125,25 @@ belowground competition factor:
 
 ```math
 \begin{align*}
-W &= \frac{\text{water} - \text{PWP}}{\text{WHC} - \text{PWP}} \\
-x₀ &= \frac{log(\frac{1}{1 - W} - 1)}{βₚₑₜ} + PETₘ \\
-x &= 1 - \frac{1}{1 + e^{-βₚₑₜ (PET - x₀)}} \\
-\text{water_splitted} &= x \cdot  \text{biomass_density_factor} \\
+    W_{sc, txy} &= \frac{W_{txy} - PWP_{xy}}{WHC_{xy}-PWP_{xy}} \\
+    W_{p, txys} &= D_{txys} \cdot 1 \bigg/ \left(1 + \frac{\text{exp}\left(\beta_{pet} \cdot \left(PET_{txy} - \alpha_{pet} \right) \right)}{ 1 / (1-W_{sc, txy}) - 1}\right)
 \end{align*}
 ```
 
+- ``W_{sc, txy}`` is the scaled soil water content ``\in [0, 1]`` [-]
+- ``W_{txy}`` is the soil water content [mm]
+- ``PWP_{xy}`` is the permanent wilting point [mm]
+- ``WHC_{xy}`` is the water holding capacity [mm]
+- ``W_{p, txys}`` is the plant available water [-]
+- ``D_{txys}`` is the belowground competition factor [-], in the programming code
+  is is called `biomass_density_factor`
+- ``PET_{txy}`` is the potential evapotranspiration [mm]
+- ``β_{pet}`` is a parameter that defines the steepness of the reduction function
+- ``α_{pet}`` is a parameter that defines the midpoint of the reduction function
+
 ![](../img/pet.svg)
 """
-function plant_available_water!(; container, water, PWP, WHC, PET)
+function plant_available_water!(; container, W, PWP, WHC, PET)
     @unpack water_splitted, sla_water, rsa_above_water, Waterred = container.calc
     @unpack biomass_density_factor = container.calc
     @unpack βₚₑₜ = container.p
@@ -144,10 +153,11 @@ function plant_available_water!(; container, water, PWP, WHC, PET)
 
     ## option 2: water reduction by water availability and
     ##           potential evapotranspiration
-    PETₘ = 2.0u"mm / d"
-    W = water > WHC ? 1.0 : water > PWP ? (water - PWP) / (WHC - PWP) : 0.0
-    x₀ = log(1/(1-W) - 1) / βₚₑₜ * u"mm /d" + PETₘ
-    x = 1 - 1 / (1 + exp(-βₚₑₜ * (PET - x₀) * u"d/mm"))
+    # TODO: move parameter out of function
+    αₚₑₜ = 2.0u"mm / d"
+    Wsc = W > WHC ? 1.0 : W > PWP ? (W - PWP) / (WHC - PWP) : 0.0
+    x = 1 / (1 + exp(βₚₑₜ * u"d/mm" * (PET - αₚₑₜ)) / (1/(1-Wsc) - 1))
+
     @. water_splitted = x * biomass_density_factor
 
     return nothing
