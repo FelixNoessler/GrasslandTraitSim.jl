@@ -56,7 +56,7 @@ CurrentModule = GrasslandTraitSim
 | ----------------- | -------------------------------------------- | ------------------------------------------------------------------------- |
 | `PWP[patch]`      | Permanent wilting point [mm]                 | [`water_reduction!`](@ref)                                         |
 | `WHC[patch]`      | Water holding capacity [mm]                  | [`water_reduction!`](@ref)                                         |
-| `nutindex[patch]` | Nutrients index ranging from zero to one [-] | [`amc_nut_reduction!`](@ref), [`rsa_above_nut_reduction!`](@ref) |
+| `nutindex[patch]` | Nutrients index ranging from zero to one [-] | [`nutrient_reduction!`](@ref) |
 
 ---
 

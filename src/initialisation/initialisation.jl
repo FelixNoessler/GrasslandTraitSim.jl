@@ -90,6 +90,10 @@ end
 function fixed_parameter()
     # TODO add all parameters with a fixed value
     p = (
+        # potential growth
+        RUE_max = 3 // 1000 * u"kg / MJ", # Maximum radiation use efficiency 3 g DM MJ-1
+        α = 0.6,   # Extinction coefficient
+
         # potential evaporation --> plant available water
         α_pet = 2.0u"mm / d",
 
@@ -113,7 +117,8 @@ function fixed_parameter()
         β_κη_rsa = 40u"g / m^2 ",
         β_η_sla = 75u"g / m^2",
         β_sla = 5,
-        β_rsa = 7
+        β_rsa = 7,
+        β_amc = 7
     )
 
     return p

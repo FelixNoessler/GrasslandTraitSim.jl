@@ -11,14 +11,14 @@ function amc_nut_response(sim, valid;
         plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
+    container.calc.biomass_density_factor .= 1.0
     ########
 
     xs = 0:0.01:1
     ymat = fill(0.0, length(xs), nspecies)
 
     for (i, x) in enumerate(xs)
-        container.calc.nutrients_splitted .= x
-        sim.amc_nut_reduction!(; container)
+        sim.nutrient_reduction!(; container, nutrient_red = true, nutrients = x)
         ymat[i, :] .= container.calc.amc_nut
     end
 
@@ -185,15 +185,14 @@ function rsa_above_nut_response(sim, valid;
         plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, inf_p, calc)
+    container.calc.biomass_density_factor .= 1.0
     #####################
 
     xs = 0:0.01:1
     ymat = fill(0.0, length(xs), nspecies)
 
     for (i, x) in enumerate(xs)
-        container.calc.nutrients_splitted .= x
-
-        sim.rsa_above_nut_reduction!(; container)
+        sim.nutrient_reduction!(; container, nutrient_red = true, nutrients = x)
         ymat[i, :] .= container.calc.rsa_above_nut
     end
 

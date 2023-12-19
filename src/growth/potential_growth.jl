@@ -36,6 +36,7 @@ leaf area index of the individual species
 """
 function potential_growth!(; container, biomass, PAR, potgrowth_included)
     @unpack LAIs, potgrowth = container.calc
+    @unpack RUE_max, α = container.p
 
     LAItot = calculate_LAI(; container, biomass, LAIs)
     if LAItot < 0
@@ -48,8 +49,6 @@ function potential_growth!(; container, biomass, PAR, potgrowth_included)
         return LAItot
     end
 
-    RUE_max = 3 // 1000 * u"kg / MJ" # Maximum radiation use efficiency 3 g DM MJ-1
-    α = 0.6   # Extinction coefficient, unitless
     potgrowth_total = PAR * RUE_max * (1 - exp(-α * LAItot))
     @. potgrowth = potgrowth_total * LAIs / LAItot
 

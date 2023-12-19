@@ -250,10 +250,35 @@ end
 Reduction of growth based on plant available nutrients and
 the traits arbuscular mycorrhizal colonisation and
 root surface area / aboveground biomass.
+
+Reduction of growth due to stronger nutrient stress for lower
+arbuscular mycorrhizal colonisation (`AMC`).
+
+- the strength of the reduction is modified by the parameter `δ_amc`
+
+`δ_amc` equals 1:
+![Graphical overview of the AMC functional response](../img/amc_nut_response.svg)
+
+`δ_amc` equals 0.5:
+![Graphical overview of the AMC functional response](../img/amc_nut_response_0_5.svg)
+
+Reduction of growth due to stronger nutrient stress for lower specific
+root surface area per above ground biomass (`rsa_above`).
+
+- the strength of the reduction is modified by the parameter `δ_nrsa`
+
+`δ_nrsa` equals 1:
+![Graphical overview of the functional response](../img/rsa_above_nut_response.svg)
+
+`δ_nrsa` equals 0.5:
+![Graphical overview of the functional response](../img/rsa_above_nut_response_0_5.svg)
 """
 function nutrient_reduction!(; container, nutrient_red, nutrients)
-    @unpack Nutred, nutrients_splitted, biomass_density_factor = container.calc
-    @unpack amc_nut, rsa_above_nut = container.calc
+    @unpack K_amc, H_amc, K_nrsa, H_rsa = container.funresponse
+    @unpack δ_amc, δ_nrsa, β_amc, β_rsa = container.p
+    @unpack Nutred, nutrients_splitted, biomass_density_factor,
+            amc_nut, nutrients_splitted, rsa_above_nut,
+            nutrients_splitted = container.calc
 
     if !nutrient_red
         @info "No nutrient reduction!" maxlog=1
@@ -262,69 +287,11 @@ function nutrient_reduction!(; container, nutrient_red, nutrients)
     end
 
     @. nutrients_splitted = nutrients * biomass_density_factor
-
-    ### ------------ species specific functional response
-    amc_nut_reduction!(; container)
-    rsa_above_nut_reduction!(; container)
-
+    @. amc_nut = 1 - δ_amc + (K_amc + δ_amc - 1) /
+                 (1 + exp(-β_amc * (nutrients_splitted - H_amc)))
+    @. rsa_above_nut = 1 - δ_nrsa + (K_nrsa + δ_nrsa - 1) /
+                       (1 + exp(-β_rsa * (nutrients_splitted - H_rsa)))
     @. Nutred = max(amc_nut, rsa_above_nut)
-
-    return nothing
-end
-
-"""
-    amc_nut_reduction!(; container)
-
-Reduction of growth due to stronger nutrient stress for lower
-arbuscular mycorrhizal colonisation (`AMC`).
-
-- the strength of the reduction is modified by the parameter `δ_amc` in [`amc_nut_reduction!`](@ref)
-
-`δ_amc` equals 1:
-![Graphical overview of the AMC functional response](../img/amc_nut_response.svg)
-
-`δ_amc` equals 0.5:
-![Graphical overview of the AMC functional response](../img/amc_nut_response_0_5.svg)
-
-"""
-function amc_nut_reduction!(; container)
-    @unpack K_amc, H_amc = container.funresponse
-    @unpack δ_amc = container.p
-    @unpack amc_nut, nutrients_splitted = container.calc
-
-    k_AMC = 7
-    lower_bound =  1 - δ_amc
-    @. amc_nut = lower_bound +
-                 (K_amc - lower_bound) /
-                 (1 + exp(-k_AMC * (nutrients_splitted - H_amc)))
-
-    return nothing
-end
-
-"""
-    rsa_above_nut_reduction!(; container)
-
-Reduction of growth due to stronger nutrient stress for lower specific
-root surface area per above ground biomass (`rsa_above`).
-
-- the strength of the reduction is modified by the parameter `δ_nrsa` in [`rsa_above_nut_reduction!`](@ref)
-
-`δ_nrsa` equals 1:
-![Graphical overview of the functional response](../img/rsa_above_nut_response.svg)
-
-`δ_nrsa` equals 0.5:
-![Graphical overview of the functional response](../img/rsa_above_nut_response_0_5.svg)
-"""
-function rsa_above_nut_reduction!(; container)
-    @unpack K_nrsa, H_rsa = container.funresponse
-    @unpack δ_nrsa = container.p
-    @unpack rsa_above_nut, nutrients_splitted = container.calc
-
-    k_rsa_above = 7
-    lower_bound = 1 - δ_nrsa
-    @. rsa_above_nut = lower_bound +
-                       (K_nrsa - lower_bound) /
-                       (1 + exp(-k_rsa_above * (nutrients_splitted - H_rsa)))
 
     return nothing
 end

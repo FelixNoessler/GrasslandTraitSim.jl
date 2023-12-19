@@ -179,7 +179,7 @@ flowchart LR
 </div>
 ```
 
-The species differ in the response to nutrient availability by different proportion of [mycorrhizal colonisations ](@ref "Arbuscular mycorrhizal colonisation linked to nutrient stress") and [root surface per above ground biomass](@ref "Root surface area / aboveground biomass linked to nutrient stress"). The maximum of both response curves is used for the nutrient reduction function. It is assumed that the plants needs either many fine roots per above ground biomass or have a strong symbiosis with mycorrhizal fungi. 
+The species differ in the response to nutrient availability by different proportion of mycorrhizal colonisations and root surface per above ground biomass. The maximum of both response curves is used for the nutrient reduction function. It is assumed that the plants needs either many fine roots per above ground biomass or have a strong symbiosis with mycorrhizal fungi. 
 
 It is implemented in [`nutrient_reduction!`](@ref).
 
@@ -187,19 +187,6 @@ It is implemented in [`nutrient_reduction!`](@ref).
 nutrient_reduction!
 ```
 
----
-#### Arbuscular mycorrhizal colonisation linked to nutrient stress
-
-```@docs
-amc_nut_reduction!
-```
-
----
-#### Root surface area / aboveground biomass linked to nutrient stress
-
-```@docs
-rsa_above_nut_reduction!
-```
 
 ```@raw html
 <script type="module">
