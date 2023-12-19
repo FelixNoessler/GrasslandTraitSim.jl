@@ -39,12 +39,7 @@ senescence_rate!
 
 The species-specific parameters are:
 
-```@docs
-sla_water_init!
-rsa_above_water_init!
-rsa_above_nut_init!
-amc_nut_init!
-```
+
 
 **Initialization of patch-specific parameters**
 

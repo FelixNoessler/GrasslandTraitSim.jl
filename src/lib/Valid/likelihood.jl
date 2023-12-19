@@ -21,6 +21,15 @@ function loglikelihood_model(sim::Module;
         sol = sim.solve_prob(; input_obj, inf_p, calc)
     end
 
+
+    var_p = [sol.p.b_biomass,
+             sol.p.b_sla, sol.p.b_lncm, sol.p.b_amc, sol.p.b_height, sol.p.b_rsa_above]
+    if any(var_p .< 0.0)
+        @warn "laplace variance parameter < 0.0"
+        @show var_p
+        return -Inf
+    end
+
     ########################################################################
     ########################################################################
     ########################## Calculate likelihood
@@ -38,14 +47,15 @@ function loglikelihood_model(sim::Module;
         site_biomass = vec(sum(species_biomass; dims = (:species)))
 
         if any(isnan.(species_biomass))
-            @warn "Biomass NaN, parameters:"
-            display(plotID)
-            @show sol.p
+            # @warn "Biomass NaN, parameters:"
+            # display(plotID)
+            # @show sol.p
             return -Inf
         end
 
         ### calculate the likelihood
-        biomass_d = Product(truncated.(Laplace.(site_biomass, sol.p.b_biomass); lower = 0.0))
+        biomass_d = Product(truncated.(Laplace.(site_biomass, sol.p.b_biomass + 1e-10);
+                            lower = 0.0))
         ll_biomass = logpdf(biomass_d, vec(data.biomass))
     end
 
@@ -94,10 +104,9 @@ function loglikelihood_model(sim::Module;
                 return (;
                     biomass = ll_biomass,
                     trait = -Inf,
-                    trait_var = -Inf,
                     soilmoisture = ll_soilmoisture)
             end
-            return -Inf
+            return ll_biomass + ll_soilmoisture + -100000
         end
 
         relative_biomass = species_biomass ./ site_biomass
@@ -116,7 +125,8 @@ function loglikelihood_model(sim::Module;
 
             ### CWM Likelihood
             cwm_traitscale = Symbol(:b_, trait_symbol)
-            cwmtrait_d = Product(truncated.(Laplace.(sim_cwm_trait, sol.p[cwm_traitscale]);
+            cwmtrait_d = Product(truncated.(
+                Laplace.(sim_cwm_trait, sol.p[cwm_traitscale]  + 1e-10);
                 lower = 0.0))
             ll = logpdf(cwmtrait_d, measured_cwm)
             ll_trait += ll / ntraits

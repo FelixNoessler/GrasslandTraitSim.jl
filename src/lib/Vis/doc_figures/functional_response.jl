@@ -1,12 +1,12 @@
 function amc_nut_response(sim, valid;
         nspecies = 50,
-        max_amc_nut_reduction,
+        δ_amc,
         path = nothing)
 
     ######## input prep
     mp = valid.model_parameters()
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
-    inf_p = @set inf_p.max_amc_nut_reduction = max_amc_nut_reduction
+    inf_p = @set inf_p.δ_amc = δ_amc
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
@@ -23,9 +23,9 @@ function amc_nut_response(sim, valid;
     end
 
     idx = sortperm(container.traits.amc)
-    Ks = container.funresponse.amc_nut_upper[idx]
-    x0s = container.funresponse.amc_nut_midpoint[idx]
-    A = 1 - container.p.max_amc_nut_reduction
+    Ks = container.funresponse.K_amc[idx]
+    x0s = container.funresponse.H_amc[idx]
+    A = 1 - container.p.δ_amc
     amc = container.traits.amc[idx]
     ymat = ymat[:, idx]
 
@@ -85,14 +85,11 @@ function amc_nut_response(sim, valid;
     return nothing
 end
 
-function rsa_above_water_response(sim, valid; nspecies = 25,
-        max_rsa_above_water_reduction,
-        path = nothing)
-
+function W_rsa_response(sim, valid; nspecies = 25, δ_wrsa = 0.5, path = nothing)
     #####################
     mp = valid.model_parameters()
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
-    inf_p = @set inf_p.max_rsa_above_water_reduction = max_rsa_above_water_reduction
+    inf_p = @set inf_p.δ_wrsa = δ_wrsa
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
@@ -102,16 +99,21 @@ function rsa_above_water_response(sim, valid; nspecies = 25,
     xs = 0:0.01:1
     ymat = fill(0.0, length(xs), nspecies)
 
+    PET = container.p.α_pet
+    WHC = 1u"mm"
+    PWP = 0u"mm"
+    container.calc.biomass_density_factor .= 1.0
+
     for (i, x) in enumerate(xs)
-        container.calc.water_splitted .= x
-        sim.rsa_above_water_reduction!(; container)
-        ymat[i, :] .= container.calc.rsa_above_water
+        W = x * u"mm"
+        sim.water_reduction!(; container, W, water_red = true, PET, PWP, WHC)
+        ymat[i, :] .= container.calc.W_rsa
     end
 
     idx = sortperm(container.traits.rsa_above)
-    Ks = container.funresponse.rsa_above_water_upper[idx]
-    x0s = container.funresponse.rsa_above_midpoint[idx]
-    A = 1 - container.p.max_rsa_above_water_reduction
+    Ks = container.funresponse.K_wrsa[idx]
+    x0s = container.funresponse.H_rsa[idx]
+    A = 1 - container.p.δ_wrsa
     rsa_above = container.traits.rsa_above[idx]
     ymat = ymat[:, idx]
 
@@ -172,13 +174,13 @@ end
 
 function rsa_above_nut_response(sim, valid;
         nspecies = 25,
-        max_rsa_above_nut_reduction,
+        δ_nrsa,
         path = nothing)
 
     #####################
     mp = valid.model_parameters()
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
-    inf_p = @set inf_p.max_rsa_above_nut_reduction = max_rsa_above_nut_reduction
+    inf_p = @set inf_p.δ_nrsa = δ_nrsa
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
@@ -197,9 +199,9 @@ function rsa_above_nut_response(sim, valid;
 
     ##################
     idx = sortperm(container.traits.rsa_above)
-    Ks = container.funresponse.rsa_above_nut_upper[idx]
-    x0s = container.funresponse.rsa_above_midpoint[idx]
-    A = 1 - container.p.max_rsa_above_nut_reduction
+    Ks = container.funresponse.K_nrsa[idx]
+    x0s = container.funresponse.H_rsa[idx]
+    A = 1 - container.p.δ_nrsa
     rsa_above = container.traits.rsa_above[idx]
     ymat = ymat[:, idx]
     ##################
@@ -259,15 +261,15 @@ function rsa_above_nut_response(sim, valid;
     return nothing
 end
 
-function sla_water_response(sim, valid;
+function W_sla_response(sim, valid;
         nspecies = 25,
-        max_sla_water_reduction,
+        δ_sla = 0.5,
         path = nothing)
 
     #####################
     mp = valid.model_parameters()
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
-    inf_p = @set inf_p.max_sla_water_reduction = max_sla_water_reduction
+    inf_p = @set inf_p.δ_sla = δ_sla
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
     calc = sim.preallocate_vectors(; input_obj)
@@ -277,22 +279,27 @@ function sla_water_response(sim, valid;
     xs = 0:0.01:1
     ymat = fill(0.0, length(xs), nspecies)
 
+    PET = container.p.α_pet
+    WHC = 1u"mm"
+    PWP = 0u"mm"
+    container.calc.biomass_density_factor .= 1.0
+
     for (i, x) in enumerate(xs)
-        container.calc.water_splitted .= x
-        sim.sla_water_reduction!(; container)
-        ymat[i, :] .= container.calc.sla_water
+        W = x * u"mm"
+        sim.water_reduction!(; container, W, water_red = true, PET, PWP, WHC)
+        ymat[i, :] .= container.calc.W_sla
     end
 
     ##################
     idx = sortperm(container.traits.sla)
-    x0s = container.funresponse.sla_water_midpoint[idx]
+    x0s = container.funresponse.H_sla[idx]
     sla = container.traits.sla[idx]
     ymat = ymat[:, idx]
     ##################
 
     fig = Figure(size = (900, 400))
     Axis(fig[1, 1];
-        xlabel = "Scaled water availability (water_splitted)",
+        xlabel = "Plant available water (Wp)",
         ylabel = "Growth reduction factor\n← no growth, less reduction →",
         title = "")
 
@@ -302,7 +309,7 @@ function sla_water_response(sim, valid;
             colorrange = (1, nspecies))
 
         ##### midpoint
-        x0_y = 1 - max_sla_water_reduction / 2
+        x0_y = 1 - δ_sla / 2
         scatter!([x0s[i]], [x0_y];
             marker = :x,
             color = i,

@@ -174,11 +174,11 @@ trait_input = (;
 
 ```@example input_creation
 inf_p = (
-    sen_α = 5.568529, 
-    sen_leaflifespan = 2.131722, 
+    α_sen = 5.568529, 
+    β_sen = 2.131722, 
     sla_tr = 0.0209188, 
     sla_tr_exponent = 1.122322, 
-    βₚₑₜ = 0.5,
+    β_pet = 0.5,
     biomass_dens = 1072.062, 
     belowground_density_effect = 2.054232, 
     height_strength = 0.616476, 
@@ -188,10 +188,10 @@ inf_p = (
     mowing_mid_days = 46.11971, 
     totalN_β = 0.1,
     CN_β = 0.1,
-    max_rsa_above_water_reduction = 0.4799059,
-    max_sla_water_reduction = 0.6447272, 
-    max_amc_nut_reduction = 0.7082366, 
-    max_rsa_above_nut_reduction = 0.4069509
+    δ_wrsa = 0.4799059,
+    δ_sla = 0.6447272, 
+    δ_amc = 0.7082366, 
+    δ_nrsa = 0.4069509
 )
 ```
 

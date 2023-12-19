@@ -36,6 +36,7 @@ include("doc_figures/height_influence.jl")
 include("doc_figures/neighbours.jl")
 include("doc_figures/gradient.jl")
 include("doc_figures/plant_available_water.jl")
+include("doc_figures/leaflifespan.jl")
 
 include("abiotic.jl")
 

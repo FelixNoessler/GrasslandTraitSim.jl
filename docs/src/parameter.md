@@ -17,7 +17,7 @@ CurrentModule = GrasslandTraitSim
 
 | Parameter  | Description    | used in  | 
 | ---------- | -------------- | -------- | 
-| `sen_α` | α value of a linear equation that relate the leaf life span to the senescence rate | [`senescence_rate!`](@ref)  | 
+| `α_sen` | α value of a linear equation that relate the leaf life span to the senescence rate | [`senescence_rate!`](@ref)  | 
 | `sla_tr` | reference community weighted mean specific leaf area, if the community weighted mean specific leaf area is equal to `sla_tr` then transpiration will not increase or decrease | [`transpiration`](@ref) | 
 | `sla_tr_exponent` | controls how strongly a community mean specific leaf area that deviates from `sla_tr` is affecting the transpiration  | [`transpiration`](@ref) | 
 | `biomass_dens` | if the matrix multiplication between the trait similarity matrix and the biomass equals `biomass_dens` the available water and nutrients for growth are not in- or decreased | [`below_ground_competition!`](@ref) | 
@@ -27,11 +27,11 @@ CurrentModule = GrasslandTraitSim
 | `grazing_half_factor` | total biomass  [kg ha⁻¹] when the daily consumption by grazers reaches half of their maximal consumption defined by κ $\cdot$ livestock density | [`grazing!`](@ref) | 
 | `trampling_factor` | defines together with the height of the plants and the livestock density the proportion of biomass that is trampled $\cdot 10^{-3}$ [ha m⁻¹] | [`trampling!`](@ref) | 
 | `mowing_mid_days` | number of days after a mowing event when the plants are grown back to half of their normal size | [`mowing!`](@ref) | 
-| `max_rsa_above_water_reduction` | maximal reduction of the plant-available water linked to the trait root surface area / aboveground biomass | [`rsa_above_water_init!`](@ref) | 
-| `max_sla_water_reduction` | maximal reduction of the plant-available water linked to the trait specific leaf area | [`sla_water_init!`](@ref) | 
-| `max_amc_nut_reduction` | maximal reduction of the plant-available nutrients linked to the trait arbuscular mycorrhizal colonisation rate | [`amc_nut_init!`](@ref) | 
-| `max_rsa_above_nut_reduction` | maximal reduction of the plant-available nutrients linked to the trait root surface area / aboveground biomass | [`rsa_above_nut_init!`](@ref) | 
-| `sen_leaflifespan` | slope of a linear equation that relates the leaf life span to the senescence rate |  [`senescence_rate!`](@ref)  | 
+| `δ_wrsa` | maximal reduction of the plant-available water linked to the trait root surface area / aboveground biomass | [`init_transfer_functions!`](@ref) | 
+| `δ_sla` | maximal reduction of the plant-available water linked to the trait specific leaf area | [`init_transfer_functions!`](@ref) | 
+| `δ_amc` | maximal reduction of the plant-available nutrients linked to the trait arbuscular mycorrhizal colonisation rate | [`init_transfer_functions!`](@ref) | 
+| `δ_nrsa` | maximal reduction of the plant-available nutrients linked to the trait root surface area / aboveground biomass | [`init_transfer_functions!`](@ref) | 
+| `β_sen` | slope of a linear equation that relates the leaf life span to the senescence rate |  [`senescence_rate!`](@ref)  | 
 | `totalN_β` | slope parameter for total N in logistic function to calculate nutrient index | [`input_nutrients!`](@ref) |  |
 | `CN_β` | slope parameter for the inverse of the CN ratio in logistic function to calculate nutrient index  | [`input_nutrients!`](@ref) |  |
 

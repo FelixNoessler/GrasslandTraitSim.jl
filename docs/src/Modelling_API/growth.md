@@ -107,6 +107,7 @@ flowchart LR
 
 ```@docs
 below_ground_competition!
+init_transfer_functions!
 ```
 
 ----
@@ -116,13 +117,13 @@ below_ground_competition!
 <div class="mermaid">
 flowchart LR
     W[↓ water stress] 
-    E[below ground competition]
-    A["soil water content [mm]"]
-    K["water holding capacity [mm]"]
-    L["permanent wilting point[mm]"]
-    P[plant available water]
-    M[adjusted plant available water]
-    H["potential evapotranspiration [mm]"]
+    E["below ground competition factor D [-]"]
+    A["soil water content W [mm]"]
+    K["water holding capacity WHC [mm]"]
+    L["permanent wilting point PWP [mm]"]
+    P["scaled soil water content Wsc [-]"]
+    M["plant available water Wp [-]"]
+    H["potential evapotranspiration PET [mm]"]
     R[trait: root surface area /\n aboveground biomass]
     S[trait: specific leaf area]
 
@@ -144,21 +145,18 @@ It is implemented in [`water_reduction!`](@ref).
 
 ```@docs
 water_reduction!
-plant_available_water!
 ```
 
 ---
 #### Specific leaf area linked to water stress
 
 ```@docs
-sla_water_reduction!
 ```
 
 --- 
 #### Root surface area / aboveground biomass linked to water stress
 
 ```@docs
-rsa_above_water_reduction!
 ```
 
 ### Nutrient stress

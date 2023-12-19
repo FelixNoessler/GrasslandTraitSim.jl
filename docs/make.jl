@@ -20,34 +20,37 @@ bib = CitationBibliography("docs/src/lit.bib"; style = :numeric)
 ####### create images for the document
 docs_img = "docs/src/img"
 
-#### functional response
+#### transfer functions
 vis.potential_growth(sim, valid; path = "$docs_img/sla_potential_growth.svg")
-vis.rsa_above_water_response(sim, valid;
-    path = "$docs_img/rsa_above_water_response.svg",
-    max_rsa_above_water_reduction = 1)
-vis.rsa_above_water_response(sim, valid;
-    path = "$docs_img/rsa_above_water_response_0_5.svg",
-    max_rsa_above_water_reduction = 0.5)
+vis.W_rsa_response(sim, valid;
+    path = "$docs_img/W_rsa_response.svg",
+    δ_wrsa = 1)
+vis.W_rsa_response(sim, valid;
+    path = "$docs_img/W_rsa_response_0_5.svg",
+    δ_wrsa = 0.5)
 vis.rsa_above_nut_response(sim, valid;
     path = "$docs_img/rsa_above_nut_response.svg",
-    max_rsa_above_nut_reduction = 1)
+    δ_nrsa = 1)
 vis.rsa_above_nut_response(sim, valid;
     path = "$docs_img/rsa_above_nut_response_0_5.svg",
-    max_rsa_above_nut_reduction = 0.5)
+    δ_nrsa = 0.5)
 vis.amc_nut_response(sim, valid;
     path = "$docs_img/amc_nut_response.svg",
-    max_amc_nut_reduction = 1)
+    δ_amc = 1)
 vis.amc_nut_response(sim, valid;
     path = "$docs_img/amc_nut_response_0_5.svg",
-    max_amc_nut_reduction = 0.5)
-vis.sla_water_response(sim, valid;
-    path = "$docs_img/sla_water_response.svg",
-    max_sla_water_reduction = 1.0)
-vis.sla_water_response(sim, valid;
-    path = "$docs_img/sla_water_response_0_5.svg",
-    max_sla_water_reduction = 0.5)
+    δ_amc = 0.5)
+vis.W_sla_response(sim, valid;
+    path = "$docs_img/W_sla_response.svg",
+    δ_sla = 1.0)
+vis.W_sla_response(sim, valid;
+    path = "$docs_img/W_sla_response_0_5.svg",
+    δ_sla = 0.5)
 vis.plant_available_water(sim, valid;
     path = "$docs_img/pet.svg")
+
+#### leaf lifespan
+vis.leaflifespan(sim, valid; path = "$docs_img/leaflifespan.svg")
 
 #### reducer functions
 vis.temperatur_reducer(sim; path = "$docs_img/temperature_reducer.svg")

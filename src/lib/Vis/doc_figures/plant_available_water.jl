@@ -16,19 +16,19 @@ function plant_available_water(sim, valid; path = nothing)
     PET_vals = LinRange(0.0, 5.0, 200)u"mm / d"
 
     for (i, W) in enumerate([20, 80]u"mm")
-        for (u, βₚₑₜ) in enumerate([0.2, 1])
-            container = @set container.p.βₚₑₜ = βₚₑₜ
+        for (u, β_pet) in enumerate([0.2, 1])
+            container = @set container.p.β_pet = β_pet
 
             x = (W - PWP) / (WHC - PWP)
             w = Float64[]
 
             for PET in PET_vals
-                sim.plant_available_water!(; container, W, PWP, WHC, PET)
-                push!(w, container.calc.water_splitted[1])
+                sim.water_reduction!(; container, W, water_red = true, PET, PWP, WHC)
+                push!(w, container.calc.Wp[1])
             end
 
             Axis(fig[i, u];
-                title = i == 1 ? "βₚₑₜ = $βₚₑₜ" : "",
+                title = i == 1 ? "β_pet = $β_pet" : "",
                 xlabel = i == 2 ? "Potential evapotranspiration PET [mm d⁻¹]" : "",
                 ylabel = u == 1 ? "Plant available water Wₚ" : "",
                 yticks = 0.0:0.2:1.0,

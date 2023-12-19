@@ -11,15 +11,15 @@ of [Reich1992](@cite)). The original equation calculates the leaf life span in m
 The equation was converted to days.
 
 Then, a linear equations is used to relate the leaf life span to the senescence rate
-of the plant species. The parameter `sen_α` is the intercept of the linear equation
+of the plant species. The parameter `α_sen` is the intercept of the linear equation
 and models the part of the senescense rate that is not related to the leaf life span.
-The parameter `sen_leaflifespan` is the slope of the linear equation and models the
+The parameter `β_sen` is the slope of the linear equation and models the
 influence of the leaf life span on the senescence rate.
 
 ```math
 \begin{align}
 \text{leaflifespan} &= 10^{(2.41 - log_{10}(\text{sla_conv})) / 0.38} \cdot \frac{365.25}{12} \\
-\mu &= \text{sen_α} + \text{sen_leaflifespan} \cdot \frac{1}{\text{leaflifespan}}
+\mu &= \text{α_sen} + \text{β_sen} \cdot \frac{1}{\text{leaflifespan}}
 \end{align}
 ```
 
@@ -27,19 +27,20 @@ influence of the leaf life span on the senescence rate.
   of the sla values (in the model the unit of the specific leaf area is m² g⁻¹)
 - `leaflifespan` leaf life span [d]
 - `μ` senescence rate [d⁻¹]
-- `sen_α` α value of a linear equation that models the influence
+- `α_sen` α value of a linear equation that models the influence
   of the leaf span on the senescence rate μ
-- `sen_leaflifespan` β value of a linear equation that models
+- `β_sen` β value of a linear equation that models
   the influence of the leaf lifespan on the senescence rate μ
+
+![](../img/leaflifespan.svg)
 """
-function senescence_rate!(; calc, inf_p)
-    @unpack sen_α, sen_leaflifespan = inf_p
+function senescence_rate!(; calc, p)
+    @unpack α_sen, β_sen, α_ll, β_ll = p
     @unpack μ, leaflifespan, sla = calc.traits
 
-    @. leaflifespan = 10^( (2.41 - log10(sla * 10000u"g/m^2")) / 0.38) *
+    @. leaflifespan = 10^((α_ll - log10(sla * 10000u"g/m^2")) / β_ll) *
         365.25 / 12 * u"d"
-
-    μ .= sen_α * u"d^-1" .+ sen_leaflifespan ./ leaflifespan
+    μ .= α_sen * u"d^-1" .+ β_sen ./ leaflifespan
 
     return nothing
 end

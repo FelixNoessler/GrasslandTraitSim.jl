@@ -5,12 +5,12 @@ include("transferfunctions_init.jl")
 
 
 """
-    initialization(; input_obj, inf_p, calc)
+    initialization(; input_obj, inf_p, calc, trait_input = nothing)
 
 Initialize the simulation object.
 """
-function initialization(; input_obj, inf_p,
-                        calc, trait_input = nothing)
+function initialization(; input_obj, inf_p, calc, trait_input = nothing)
+    p = tuplejoin(inf_p, fixed_parameter())
 
     ################## Traits ##################
     if isnothing(trait_input)
@@ -28,20 +28,17 @@ function initialization(; input_obj, inf_p,
 
     ################## Parameters ##################
     # leaf senescence rate μ [d⁻¹]
-    senescence_rate!(; calc, inf_p)
+    senescence_rate!(; calc, p)
 
     # linking traits to water and nutrient stress
-    amc_nut_init!(; calc, inf_p)
-    rsa_above_water_init!(; calc, inf_p)
-    rsa_above_nut_init!(; calc, inf_p)
-    sla_water_init!(; calc, inf_p)
+    init_transfer_functions!(; calc, p)
 
     # WHC, PWP and nutrient index
     input_WHC_PWP!(; calc, input_obj)
-    input_nutrients!(; calc, input_obj, inf_p)
+    input_nutrients!(; calc, input_obj, p)
 
     ################## Store everything in one object ##################
-    p = (; p = inf_p)
+    p = (; p = p)
     container = tuplejoin(p, input_obj, calc)
 
     ################## Initial conditions ##################
@@ -88,4 +85,36 @@ function cumulative_temperature(; temperature, year)
     end
 
     return temperature_sum * u"°C"
+end
+
+function fixed_parameter()
+    # TODO add all parameters with a fixed value
+    p = (
+        # potential evaporation --> plant available water
+        α_pet = 2.0u"mm / d",
+
+        # specific leaf area --> leaf lifespan
+        α_ll = 2.41,
+        β_ll = 0.38,
+
+        # transfer functions
+        ϕ_amc = 0.35,
+        ϕ_rsa = 0.12u"m^2 / g",
+        ϕ_sla = 0.025u"m^2 / g",
+        η_min_amc = 0.05,
+        η_min_rsa = 0.05,
+        η_min_sla = -0.8,
+        η_max_amc = 0.6,
+        η_max_rsa = 0.6,
+        η_max_sla = 0.8,
+        κ_min_amc = 0.7,
+        κ_min_rsa = 0.7,
+        β_κη_amc = 10,
+        β_κη_rsa = 40u"g / m^2 ",
+        β_η_sla = 75u"g / m^2",
+        β_sla = 5,
+        β_rsa = 7
+    )
+
+    return p
 end

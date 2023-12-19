@@ -9,6 +9,16 @@ function sample_prior()
     return vals
 end
 
+function sample_prior(obj)
+    nparameter = length(obj.names)
+    vals = Array{Float64}(undef, nparameter)
+
+    for i in 1:nparameter
+        vals[i] = rand(obj.prior_dists[i])
+    end
+    return vals
+end
+
 function prior_logpdf(obj, x)
     nparameter = length(obj.names)
 

@@ -104,3 +104,227 @@ function below_ground_competition!(; container, biomass)
 
     return nothing
 end
+
+
+@doc raw"""
+    water_reduction!(; container, water, water_red, PET, PWP, WHC)
+
+Reduction of growth based on the plant available water
+and the traits specific leaf area and root surface area
+per aboveground biomass.
+
+
+Derives the plant available water.
+
+The plant availabe water is dependent on the soil water content,
+the water holding capacity (`WHC`), the permanent
+wilting point (`PWP`), the potential evaporation (`PET`) and a
+belowground competition factor:
+
+```math
+\begin{align*}
+    W_{sc, txy} &= \frac{W_{txy} - PWP_{xy}}{WHC_{xy}-PWP_{xy}} \\
+    W_{p, txys} &= D_{txys} \cdot 1 \bigg/ \left(1 + \frac{\text{exp}\left(\beta_{pet} \cdot \left(PET_{txy} - \alpha_{pet} \right) \right)}{ 1 / (1-W_{sc, txy}) - 1}\right)
+\end{align*}
+```
+
+- ``W_{sc, txy}`` is the scaled soil water content ``\in [0, 1]`` [-]
+- ``W_{txy}`` is the soil water content [mm]
+- ``PWP_{xy}`` is the permanent wilting point [mm]
+- ``WHC_{xy}`` is the water holding capacity [mm]
+- ``W_{p, txys}`` is the plant available water [-]
+- ``D_{txys}`` is the belowground competition factor [-], in the programming code
+  is is called `biomass_density_factor`
+- ``PET_{txy}`` is the potential evapotranspiration [mm]
+- ``β_{pet}`` is a parameter that defines the steepness of the reduction function
+- ``α_{pet}`` is a parameter that defines the midpoint of the reduction function
+
+![](../img/pet.svg)
+
+Derive the water stress based on the specific leaf area and the
+plant availabe water.
+
+It is assumed, that plants with a higher specific leaf area have a higher
+transpiration per biomass and are therefore more sensitive to water stress.
+A transfer function is used to link the specific leaf area to the water
+stress reduction.
+
+**Initialization:**
+
+The specicies-specifc parameter `H_sla` is initialized
+and later used in the reduction function.
+
+```math
+\text{H_sla} = \text{min_sla_mid} +
+    \frac{\text{max_sla_mid} - \text{min_sla_mid}}
+    {1 + exp(-\text{β_sla_mid} \cdot (sla - \text{mid_sla}))}
+```
+
+- `sla` is the specific leaf area of the species [m² g⁻¹]
+- `min_sla_mid` is the minimum of `H_sla` that
+  can be reached with a very low specific leaf area [-]
+- `max_sla_mid` is the maximum of `H_sla` that
+  can be reached with a very high specific leaf area [-]
+- `mid_sla` is a mean specific leaf area [m² g⁻¹]
+- `β_sla_mid` is a parameter that defines the steepness
+  of function that relate the `sla` to `H_sla`
+
+
+**Reduction factor based on the plant availabe water:**
+```math
+\text{W_sla} = 1 - \text{δ_sla} +
+    \frac{\text{δ_sla}}
+    {1 + exp(-\text{k_sla} \cdot
+        (\text{Wp} - \text{H_sla}))}
+```
+
+- `W_sla` is the reduction factor for the growth based on the
+  specific leaf area [-]
+- `H_sla` is the value of the plant available water
+  at which the reduction factor is in the middle between
+  1 - `δ_sla` and 1 [-]
+- `δ_sla` is the maximal reduction of the
+  growth based on the specific leaf area
+- `Wp` is the plant available water [-]
+- `k_sla` is a parameter that defines the steepness of the reduction function
+
+**Overview over the parameters:**
+
+| Parameter                 | Type                      | Value          |
+| ------------------------- | ------------------------- | -------------- |
+| `min_sla_mid`             | fixed                     | -0.8 [-]       |
+| `max_sla_mid`             | fixed                     | 0.8  [-]       |
+| `mid_sla`                 | fixed                     | 0.025 [m² g⁻¹] |
+| `β_sla_mid`               | fixed                     | 75 [g m⁻²]     |
+| `k_sla`                   | fixed                     | 5 [-]          |
+| `δ_sla` | calibrated                | -              |
+| `H_sla`      | species-specific, derived | -              |
+
+**Influence of the `δ_sla`:**
+
+`δ_sla` equals 1:
+![](../img/W_sla_response.svg)
+
+`δ_sla` equals 0.5:
+![](../img/W_sla_response_0_5.svg)
+
+
+Reduction of growth due to stronger water stress for lower specific
+root surface area per above ground biomass (`rsa_above`).
+
+- the strength of the reduction is modified by the parameter `δ_wrsa`
+
+`δ_wrsa` equals 1:
+![Graphical overview of the functional response](../img/W_rsa_response.svg)
+
+`δ_wrsa` equals 0.5:
+# ![Graphical overview of the functional response](../img/W_rsa_response_0_5.svg)
+"""
+function water_reduction!(; container, W, water_red, PET, PWP, WHC)
+    @unpack W_sla, W_rsa, Waterred, Wp,
+            biomass_density_factor = container.calc
+    @unpack α_pet, β_pet, δ_sla, δ_wrsa, β_sla, β_rsa = container.p
+    @unpack K_wrsa, H_rsa, H_sla = container.funresponse
+
+    if !water_red
+        @info "No water reduction!" maxlog=1
+        @. Waterred = 1.0
+        return nothing
+    end
+
+    Wsc = W > WHC ? 1.0 : W > PWP ? (W - PWP) / (WHC - PWP) : 0.0
+    @. Wp = biomass_density_factor /
+            (1 + exp(β_pet * u"d/mm" * (PET - α_pet)) / (1/(1-Wsc) - 1))
+    @. W_sla = 1 - δ_sla + δ_sla / (1 + exp(-β_sla * (Wp - H_sla)))
+    @. W_rsa = 1 - δ_wrsa + (K_wrsa + δ_wrsa - 1) / (1 + exp(-β_rsa * (Wp - H_rsa)))
+    @. Waterred = W_sla * W_rsa
+
+    return nothing
+end
+
+
+
+"""
+    nutrient_reduction!(; container, nutrient_red, nutrients)
+
+Reduction of growth based on plant available nutrients and
+the traits arbuscular mycorrhizal colonisation and
+root surface area / aboveground biomass.
+"""
+function nutrient_reduction!(; container, nutrient_red, nutrients)
+    @unpack Nutred, nutrients_splitted, biomass_density_factor = container.calc
+    @unpack amc_nut, rsa_above_nut = container.calc
+
+    if !nutrient_red
+        @info "No nutrient reduction!" maxlog=1
+        @. Nutred = 1.0
+        return nothing
+    end
+
+    @. nutrients_splitted = nutrients * biomass_density_factor
+
+    ### ------------ species specific functional response
+    amc_nut_reduction!(; container)
+    rsa_above_nut_reduction!(; container)
+
+    @. Nutred = max(amc_nut, rsa_above_nut)
+
+    return nothing
+end
+
+"""
+    amc_nut_reduction!(; container)
+
+Reduction of growth due to stronger nutrient stress for lower
+arbuscular mycorrhizal colonisation (`AMC`).
+
+- the strength of the reduction is modified by the parameter `δ_amc` in [`amc_nut_reduction!`](@ref)
+
+`δ_amc` equals 1:
+![Graphical overview of the AMC functional response](../img/amc_nut_response.svg)
+
+`δ_amc` equals 0.5:
+![Graphical overview of the AMC functional response](../img/amc_nut_response_0_5.svg)
+
+"""
+function amc_nut_reduction!(; container)
+    @unpack K_amc, H_amc = container.funresponse
+    @unpack δ_amc = container.p
+    @unpack amc_nut, nutrients_splitted = container.calc
+
+    k_AMC = 7
+    lower_bound =  1 - δ_amc
+    @. amc_nut = lower_bound +
+                 (K_amc - lower_bound) /
+                 (1 + exp(-k_AMC * (nutrients_splitted - H_amc)))
+
+    return nothing
+end
+
+"""
+    rsa_above_nut_reduction!(; container)
+
+Reduction of growth due to stronger nutrient stress for lower specific
+root surface area per above ground biomass (`rsa_above`).
+
+- the strength of the reduction is modified by the parameter `δ_nrsa` in [`rsa_above_nut_reduction!`](@ref)
+
+`δ_nrsa` equals 1:
+![Graphical overview of the functional response](../img/rsa_above_nut_response.svg)
+
+`δ_nrsa` equals 0.5:
+![Graphical overview of the functional response](../img/rsa_above_nut_response_0_5.svg)
+"""
+function rsa_above_nut_reduction!(; container)
+    @unpack K_nrsa, H_rsa = container.funresponse
+    @unpack δ_nrsa = container.p
+    @unpack rsa_above_nut, nutrients_splitted = container.calc
+
+    k_rsa_above = 7
+    lower_bound = 1 - δ_nrsa
+    @. rsa_above_nut = lower_bound +
+                       (K_nrsa - lower_bound) /
+                       (1 + exp(-k_rsa_above * (nutrients_splitted - H_rsa)))
+
+    return nothing
+end

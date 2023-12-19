@@ -67,12 +67,12 @@ function preallocate_vectors(; input_obj, dtype = Float64)
             μ = fill(val, nspecies)u"d^-1",
             TS = fill(val, nspecies, nspecies),),
         funresponse = (;
-            amc_nut_upper = Array{dtype}(undef, nspecies),
-            amc_nut_midpoint = Array{dtype}(undef, nspecies),
-            rsa_above_water_upper = Array{dtype}(undef, nspecies),
-            rsa_above_nut_upper = Array{dtype}(undef, nspecies),
-            rsa_above_midpoint = Array{dtype}(undef, nspecies),
-            sla_water_midpoint = Array{dtype}(undef, nspecies),),
+            K_amc = Array{dtype}(undef, nspecies),
+            H_amc = Array{dtype}(undef, nspecies),
+            K_wrsa = Array{dtype}(undef, nspecies),
+            K_nrsa = Array{dtype}(undef, nspecies),
+            H_rsa = Array{dtype}(undef, nspecies),
+            H_sla = Array{dtype}(undef, nspecies),),
         calc = (;
             negbiomass = fill(false, ntimesteps, patch_xdim, patch_ydim, nspecies),
 
@@ -123,10 +123,10 @@ function preallocate_vectors(; input_obj, dtype = Float64)
             rsa_above_nut = fill(val, nspecies),
 
             ## water reducer function
-            water_splitted = fill(val, nspecies),
+            Wp = fill(val, nspecies),
             Waterred = fill(val, nspecies),
-            sla_water = fill(val, nspecies),
-            rsa_above_water = fill(val, nspecies),
+            W_sla = fill(val, nspecies),
+            W_rsa = fill(val, nspecies),
 
             ## mowing
             mown_height = fill(val, nspecies)u"m",
