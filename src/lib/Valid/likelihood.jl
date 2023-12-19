@@ -10,7 +10,8 @@ function loglikelihood_model(sim::Module;
         use_likelihood_traits = true,
         use_likelihood_soilwater = true,
         data = nothing,
-        sol = nothing)
+        sol = nothing,
+        trait_input = nothing)
 
     if isnothing(data)
         data = valid_data[plotID]
@@ -18,7 +19,7 @@ function loglikelihood_model(sim::Module;
 
     if isnothing(sol)
         input_obj = input_objs[plotID]
-        sol = sim.solve_prob(; input_obj, inf_p, calc)
+        sol = sim.solve_prob(; input_obj, inf_p, calc, trait_input)
     end
 
 
