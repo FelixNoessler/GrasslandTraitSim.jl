@@ -48,15 +48,8 @@ function input_nutrients!(; calc, input_obj, p)
     # minCNratio = 9.0525
     # maxCNratio = 13.6025
 
-    mintotalN = 0.0
-    maxtotalN = 50.0
-    minCNratio = 5.0
-    maxCNratio = 25.0
-
-    totalN_scaled = @. (totalN - mintotalN) / (maxtotalN - mintotalN)
-    CN_scaled = @. (CNratio - minCNratio) / (maxCNratio - minCNratio)
-
-    @. nutrients = 1 / (1 + exp(-totalN_β * totalN_scaled - CN_β * 1 / CN_scaled ))
+    maxtotalN = 40.0
+    @. nutrients = totalN  / maxtotalN
 
     return nothing
 end

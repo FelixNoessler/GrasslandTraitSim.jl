@@ -10,7 +10,6 @@ using Distributions
 using UnPack
 using DimensionalData
 
-c = DimArray(zeros(5,6), (:xdim, :ydim))
 ##### submodules
 include("lib/Valid/Valid.jl")
 include("lib/Vis/Vis.jl")
