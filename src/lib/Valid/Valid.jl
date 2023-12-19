@@ -88,7 +88,11 @@ function load_data(datapath)
     graz = CSV.read("$datapath/input/grazing.csv",
         DataFrame)
 
+    input_traits = CSV.read("$datapath/input/traits.csv",
+        DataFrame)
+
     input = (;
+        traits = input_traits,
         clim,
         dwd_clim,
         pet,
