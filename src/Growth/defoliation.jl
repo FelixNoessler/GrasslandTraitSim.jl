@@ -31,13 +31,17 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all,
     @unpack defoliation, mown_height, mowing_λ = container.calc
     @unpack mown = container.u
 
-    tstart = t - 200
-    tstart = tstart < 1 ? 1 : tstart
-    mowing_last200 = @view mowing_all[tstart:t]
+    tstart = t - 200 < 1 ? 1 : t - 200
+    mowing_last200 = @view mowing_all[t-1:-1:tstart]
+
     days_since_last_mowing = 200
-    for i in reverse(eachindex(mowing_last200))
-        if !iszero(mowing_last200[i]) && i != 201
-            days_since_last_mowing = 201 - i
+    for i in eachindex(mowing_last200)
+        if i == 1
+            continue
+        end
+
+        if !isnan(mowing_last200[i]) && !iszero(mowing_last200[i])
+            days_since_last_mowing = i
             break
         end
     end
@@ -51,7 +55,7 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all,
     ## the 'mowing_mid_days' is the day where the plants are grown
     ## back to their normal size/2
     mow_factor = 1 / (1 + exp(-0.05 * (days_since_last_mowing - mowing_mid_days)))
-
+    @show mow_factor
     if return_mowing
         return sum(mow_factor .* mowing_λ .* biomass)
     else

@@ -50,9 +50,10 @@ function one_day!(; t, container)
 
     ## -------- cutted biomass
     if t ∈ biomass_cutting_t
-        cutted_biomass[t = At(t)]  =
-            mowing!(; t, container, mowing_height = 0.04u"m",
-                biomass = mean(u_biomass; dims = (:x, :y)),
+        cutted_biomass[t = At(t)] =
+            mowing!(;
+                t, container, mowing_height = 0.04u"m",
+                biomass = dropdims(mean(u_biomass; dims = (:x, :y)), dims = (:x, :y)),
                 mowing_all = daily_input.mowing,
                 return_mowing = true)
     end
