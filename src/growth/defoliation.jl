@@ -24,11 +24,23 @@ Influence of mowing for plant species with different heights ($height$):
 Visualisation of the `mow_factor`:
 ![](../img/mow_factor.svg)
 """
-function mowing!(; t, x, y, container, mowing_height, days_since_last_mowing, biomass)
+function mowing!(; t, container, mowing_height, biomass, mowing_all,
+                 x = NaN, y = NaN, return_mowing = false)
     @unpack height = container.traits
     @unpack mowing_mid_days = container.p
     @unpack defoliation, mown_height, mowing_λ = container.calc
     @unpack mown = container.u
+
+    tstart = t - 200
+    tstart = tstart < 1 ? 1 : tstart
+    mowing_last200 = @view mowing_all[tstart:t]
+    days_since_last_mowing = 200
+    for i in reverse(eachindex(mowing_last200))
+        if !iszero(mowing_last200[i]) && i != 201
+            days_since_last_mowing = 201 - i
+            break
+        end
+    end
 
     # --------- mowing parameter λ
     mown_height .= height .- mowing_height
@@ -40,9 +52,13 @@ function mowing!(; t, x, y, container, mowing_height, days_since_last_mowing, bi
     ## back to their normal size/2
     mow_factor = 1 / (1 + exp(-0.05 * (days_since_last_mowing - mowing_mid_days)))
 
-    # --------- add the removed biomass to the defoliation vector
-    @. mown[t, x, y, :] = mow_factor * mowing_λ * biomass
-    defoliation .+= mow_factor .* mowing_λ .* biomass .* u"d^-1"
+    if return_mowing
+        return sum(mow_factor .* mowing_λ .* biomass)
+    else
+        # --------- add the removed biomass to the defoliation vector
+        @. mown[t, x, y, :] = mow_factor * mowing_λ * biomass
+        defoliation .+= mow_factor .* mowing_λ .* biomass .* u"d^-1"
+    end
 
     return nothing
 end

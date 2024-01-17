@@ -27,7 +27,8 @@ function validation_input(;
         radiation_red = true,
         trait_seed = missing)
 
-
+    start_date = Dates.Date(2006, 1, 1)
+    end_date = Dates.Date(2021, 12, 31)
     yearrange = Ref(2006:2021)
 
     ###### daily data
@@ -62,7 +63,6 @@ function validation_input(;
         @orderby :date
     end
 
-
     daily_input_df = @select(daily_data_prep,
         :temperature,
         :temperature_sum,
@@ -74,6 +74,16 @@ function validation_input(;
     ### ----------------- initial biomass and soilwater content
     initbiomass = 1500u"kg / ha"
     initsoilwater = 180.0u"mm"
+
+    ### ----------------- dates when biomass was cut (for creating output for validation)
+    df_cutting_day = @chain data.valid.measuredbiomass begin
+        @subset :plotID .== plotID
+        @subset :date .<= end_date
+        @transform :biomass_cutting_day = Dates.value.(:date - start_date)
+        @select(:date, :biomass_cutting_day)
+    end
+    biomass_cutting_t = df_cutting_day.biomass_cutting_day
+    biomass_cutting_date = df_cutting_day.date
 
     ### ----------------- abiotic
     nut_sub = @subset data.input.nut :plotID.==plotID
@@ -129,6 +139,9 @@ function validation_input(;
             organic,
             bulk,
             rootdepth),
+        output_validation = (;
+            biomass_cutting_t,
+            biomass_cutting_date),
         daily_input)
 end
 

@@ -1,6 +1,7 @@
 function preallocate_vectors(; input_obj, dtype = Float64)
     @unpack nspecies, patch_xdim, patch_ydim, ntimesteps = input_obj.simp
     @unpack initbiomass = input_obj.site
+    @unpack biomass_cutting_t = input_obj.output_validation
 
     val = dtype(NaN)
 
@@ -20,6 +21,10 @@ function preallocate_vectors(; input_obj, dtype = Float64)
     water = DimArray(fill(val, ntimesteps, patch_xdim, patch_ydim)u"mm",
                      (time = input_obj.date, x = 1:patch_xdim, y = 1:patch_ydim),
                      name = :water)
+    cutted_biomass = DimArray(
+        fill(val, length(biomass_cutting_t))u"kg/ha",
+        (; t = biomass_cutting_t),
+        name = :cutted_biomass)
 
     ############# change and state variables
     du_biomass = DimArray(
@@ -50,8 +55,10 @@ function preallocate_vectors(; input_obj, dtype = Float64)
         (x = 1:patch_xdim, y = 1:patch_ydim), name = :nutrients)
 
 
-    u = (; biomass, mown, grazed, water, du_biomass, du_water,
-                 u_biomass, u_water, WHC, PWP, nutrients)
+    u = (; biomass, mown, grazed, water,
+           cutted_biomass,
+           du_biomass, du_water,
+           u_biomass, u_water, WHC, PWP, nutrients)
 
     arraytuple = (;
         u = u,

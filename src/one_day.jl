@@ -35,9 +35,11 @@ loop over patches:
 function one_day!(; t, container)
     @unpack doy, daily_input, traits = container
     @unpack npatches, patch_xdim, patch_ydim, included = container.simp
-    @unpack u_biomass, u_water, du_biomass, du_water, WHC, PWP, nutrients = container.u
+    @unpack u_biomass, u_water, du_biomass, du_water,
+            WHC, PWP, nutrients, cutted_biomass = container.u
     @unpack very_low_biomass, nan_biomass = container.calc
     @unpack act_growth, sen, defoliation, relbiomass = container.calc
+    @unpack biomass_cutting_t = container.output_validation
 
     LAItot = 0.0
 
@@ -46,6 +48,16 @@ function one_day!(; t, container)
         clonalgrowth!(; container)
     end
 
+    ## -------- cutted biomass
+    if t ∈ biomass_cutting_t
+        cutted_biomass[t = At(t)]  =
+            mowing!(; t, container, mowing_height = 0.04u"m",
+                biomass = mean(u_biomass; dims = (:x, :y)),
+                mowing_all = daily_input.mowing,
+                return_mowing = true)
+    end
+
+    ## -------- loop over patches
     for x in Base.OneTo(patch_xdim)
         for y in Base.OneTo(patch_ydim)
 
@@ -81,19 +93,9 @@ function one_day!(; t, container)
                     end
 
                     if !isnan(mowing_height)
-                        tstart = t - 200
-                        tstart = tstart < 1 ? 1 : tstart
-                        mowing_last200 = @view daily_input.mowing[tstart:t]
-                        days_since_last_mowing = 200
-                        for i in reverse(eachindex(mowing_last200))
-                            if !iszero(mowing_last200[i]) && i != 201
-                                days_since_last_mowing = 201 - i
-                                break
-                            end
-                        end
                         mowing!(; t, x, y, container, mowing_height,
-                            days_since_last_mowing,
-                            biomass = patch_biomass)
+                            biomass = patch_biomass,
+                            mowing_all = daily_input.mowing)
                     end
                 end
 
