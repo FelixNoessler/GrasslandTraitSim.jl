@@ -41,22 +41,13 @@ function loglikelihood_model(sim::Module;
     ll_biomass = 0.0
 
     if use_likelihood_biomass
-        data_biomass_t = LookupArrays.index(data.biomass, :time)
-        species_biomass = dropdims(mean(sol.u.biomass[data_biomass_t, :, :, :]; dims = (:x, :y));
-            dims = (:x, :y))
-        species_biomass = ustrip.(species_biomass)
-        site_biomass = vec(sum(species_biomass; dims = (:species)))
-
-        if any(isnan.(species_biomass))
-            # @warn "Biomass NaN, parameters:"
-            # display(plotID)
-            # @show sol.p
-            return -Inf
-        end
+        simulated_cutted_biomass = vec(ustrip.(sol.u.cutted_biomass))
 
         ### calculate the likelihood
-        biomass_d = Product(truncated.(Laplace.(site_biomass, sol.p.b_biomass + 1e-10);
-                            lower = 0.0))
+        biomass_d = Product(
+            truncated.(Laplace.(simulated_cutted_biomass,
+                                sol.p.b_biomass + 1e-10);
+                       lower = 0.0))
         ll_biomass = logpdf(biomass_d, vec(data.biomass))
     end
 
@@ -100,7 +91,7 @@ function loglikelihood_model(sim::Module;
         site_biomass = vec(sum(species_biomass; dims = (:species)))
 
         ## cannot calculate cwm trait for zero biomass
-        if any(iszero.(site_biomass))
+        if any(iszero.(site_biomass)) || any(isnan.(site_biomass))
             if return_seperate
                 return (;
                     biomass = ll_biomass,
