@@ -55,7 +55,7 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all,
     ## the 'mowing_mid_days' is the day where the plants are grown
     ## back to their normal size/2
     mow_factor = 1 / (1 + exp(-0.05 * (days_since_last_mowing - mowing_mid_days)))
-    @show mow_factor
+
     if return_mowing
         return sum(mow_factor .* mowing_λ .* biomass)
     else
