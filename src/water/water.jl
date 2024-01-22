@@ -107,15 +107,20 @@ If the community weighted mean specific leaf area is high
   changes the `sla_effect` [-]
 """
 function transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
-    @unpack sla = container.traits
-    @unpack sla_tr, sla_tr_exponent = container.p
-    @unpack relative_sla = container.calc
+    @unpack water_red, below_included = container.simp.included
 
     ###### SLA effect
-    # community weighted mean specific leaf area
-    relative_sla .= sla .* patch_biomass ./ sum(patch_biomass)
-    cwm_sla = sum(relative_sla)
-    sla_effect = (cwm_sla / (sla_tr * u"m^2 / g"))^sla_tr_exponent
+    sla_effect = 1
+    if below_included && water_red
+        @unpack sla = container.traits
+        @unpack sla_tr, sla_tr_exponent = container.p
+        @unpack relative_sla = container.calc
+
+        # community weighted mean specific leaf area
+        relative_sla .= sla .* patch_biomass ./ sum(patch_biomass)
+        cwm_sla = sum(relative_sla)
+        sla_effect = (cwm_sla / (sla_tr * u"m^2 / g"))^sla_tr_exponent
+    end
 
     ####### plant available water:
     W = max(0.0, (water - PWP) / (WHC - PWP))

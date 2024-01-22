@@ -27,22 +27,29 @@ Visualisation of the `mow_factor`:
 function mowing!(; t, container, mowing_height, biomass, mowing_all,
                  x = NaN, y = NaN, return_mowing = false)
     @unpack height = container.traits
-    @unpack mowing_mid_days = container.p
     @unpack defoliation, mown_height, mowing_λ = container.calc
     @unpack mown = container.u
-
-    tstart = t - 200 < 1 ? 1 : t - 200
-    mowing_last200 = @view mowing_all[t-1:-1:tstart]
+    @unpack mowing_included = container.simp.included
 
     days_since_last_mowing = 200
-    for i in eachindex(mowing_last200)
-        if i == 1
-            continue
-        end
+    mowing_mid_days = 0
 
-        if !isnan(mowing_last200[i]) && !iszero(mowing_last200[i])
-            days_since_last_mowing = i
-            break
+    ## if mowing is not included, cutted biomass shouldn't raise an error
+    if mowing_included
+        @unpack mowing_mid_days = container.p
+
+        tstart = t - 200 < 1 ? 1 : t - 200
+        mowing_last200 = @view mowing_all[t-1:-1:tstart]
+
+        for i in eachindex(mowing_last200)
+            if i == 1
+                continue
+            end
+
+            if !isnan(mowing_last200[i]) && !iszero(mowing_last200[i])
+                days_since_last_mowing = i
+                break
+            end
         end
     end
 

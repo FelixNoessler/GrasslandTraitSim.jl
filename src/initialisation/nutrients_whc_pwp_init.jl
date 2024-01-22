@@ -40,7 +40,6 @@ and the last equations changes to:
 function input_nutrients!(; calc, input_obj, p)
     @unpack nutrients = calc.u
     @unpack totalN, CNratio = input_obj.site
-    @unpack totalN_β, CN_β = p
 
     #### data from the biodiversity exploratories
     # mintotalN = 1.2525

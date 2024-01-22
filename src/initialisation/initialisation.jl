@@ -28,10 +28,10 @@ function initialization(; input_obj, inf_p, calc, trait_input = nothing)
 
     ################## Parameters ##################
     # leaf senescence rate μ [d⁻¹]
-    senescence_rate!(; calc, p)
+    senescence_rate!(; input_obj, calc, p)
 
     # linking traits to water and nutrient stress
-    init_transfer_functions!(; calc, p)
+    init_transfer_functions!(; input_obj, calc, p)
 
     # WHC, PWP and nutrient index
     input_WHC_PWP!(; calc, input_obj)

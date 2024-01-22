@@ -16,7 +16,6 @@
 """
 function height_influence!(; container, biomass)
     @unpack relative_height, heightinfluence = container.calc
-    @unpack height_strength = container.p
     @unpack height_included = container.simp.included
     @unpack height = container.traits
 
@@ -30,6 +29,7 @@ function height_influence!(; container, biomass)
     relative_height .= height .* biomass ./ sum(biomass)
     height_cwm = sum(relative_height)
 
+    @unpack height_strength = container.p
     @. heightinfluence = height * height_strength / height_cwm - height_strength + 1.0
 
     return nothing

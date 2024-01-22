@@ -30,11 +30,8 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     below_ground_competition!(; container, biomass)
 
     #### growth reducer
-    water_reduction!(; container, W, PWP, WHC,
-        water_red = included.water_red,
-        PET = daily_input.PET[t])
-    nutrient_reduction!(; container, nutrients,
-        nutrient_red = included.nutrient_red)
+    water_reduction!(; container, W, PWP, WHC, PET = daily_input.PET[t])
+    nutrient_reduction!(; container, nutrients)
     Rred = radiation_reduction(; PAR = daily_input.PAR[t],
         radiation_red = included.radiation_red)
     Tred = temperature_reduction(; T = daily_input.temperature[t],

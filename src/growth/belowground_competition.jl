@@ -89,7 +89,6 @@ and the root surface area devided by the above ground biomass (`rsa_above`).
 function below_ground_competition!(; container, biomass)
     @unpack biomass_density_factor, TS_biomass = container.calc
     @unpack below_included = container.simp.included
-    @unpack belowground_density_effect, biomass_dens = container.p
     @unpack TS = container.traits
 
     if !below_included
@@ -98,6 +97,7 @@ function below_ground_competition!(; container, biomass)
         return nothing
     end
 
+    @unpack belowground_density_effect, biomass_dens = container.p
     LinearAlgebra.mul!(TS_biomass, TS, biomass)
     biomass_density_factor .= (TS_biomass ./ (biomass_dens * u"kg / ha")) .^
                               -belowground_density_effect
@@ -220,17 +220,18 @@ root surface area per above ground biomass (`rsa_above`).
 `δ_wrsa` equals 0.5:
 # ![Graphical overview of the functional response](../img/W_rsa_response_0_5.svg)
 """
-function water_reduction!(; container, W, water_red, PET, PWP, WHC)
-    @unpack W_sla, W_rsa, Waterred, Wp,
-            biomass_density_factor = container.calc
-    @unpack α_pet, β_pet, δ_sla, δ_wrsa, β_sla, β_rsa = container.p
-    @unpack K_wrsa, H_rsa, H_sla = container.funresponse
-
-    if !water_red
+function water_reduction!(; container, W, PET, PWP, WHC)
+    @unpack water_red, below_included = container.simp.included
+    @unpack Waterred = container.calc
+    if !water_red || !below_included
         @info "No water reduction!" maxlog=1
         @. Waterred = 1.0
         return nothing
     end
+
+    @unpack W_sla, W_rsa, Wp, biomass_density_factor = container.calc
+    @unpack α_pet, β_pet, δ_sla, δ_wrsa, β_sla, β_rsa = container.p
+    @unpack K_wrsa, H_rsa, H_sla = container.funresponse
 
     Wsc = W > WHC ? 1.0 : W > PWP ? (W - PWP) / (WHC - PWP) : 0.0
     @. Wp = biomass_density_factor /
@@ -273,18 +274,21 @@ root surface area per above ground biomass (`rsa_above`).
 `δ_nrsa` equals 0.5:
 ![Graphical overview of the functional response](../img/rsa_above_nut_response_0_5.svg)
 """
-function nutrient_reduction!(; container, nutrient_red, nutrients)
-    @unpack K_amc, H_amc, K_nrsa, H_rsa = container.funresponse
-    @unpack δ_amc, δ_nrsa, β_amc, β_rsa = container.p
-    @unpack Nutred, nutrients_splitted, biomass_density_factor,
-            amc_nut, nutrients_splitted, rsa_above_nut,
-            nutrients_splitted = container.calc
+function nutrient_reduction!(; container, nutrients)
+    @unpack nutrient_red, below_included = container.simp.included
+    @unpack Nutred = container.calc
 
-    if !nutrient_red
+    if !nutrient_red || !below_included
         @info "No nutrient reduction!" maxlog=1
         @. Nutred = 1.0
         return nothing
     end
+
+    @unpack K_amc, H_amc, K_nrsa, H_rsa = container.funresponse
+    @unpack δ_amc, δ_nrsa, β_amc, β_rsa = container.p
+    @unpack nutrients_splitted, biomass_density_factor,
+            amc_nut, nutrients_splitted, rsa_above_nut,
+            nutrients_splitted = container.calc
 
     @. nutrients_splitted = nutrients * biomass_density_factor
     @. amc_nut = 1 - δ_amc + (K_amc + δ_amc - 1) /
