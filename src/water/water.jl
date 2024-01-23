@@ -107,11 +107,11 @@ If the community weighted mean specific leaf area is high
   changes the `sla_effect` [-]
 """
 function transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
-    @unpack water_red, below_included = container.simp.included
+    @unpack water_growth_reduction, belowground_competition = container.simp.included
 
     ###### SLA effect
     sla_effect = 1
-    if below_included && water_red
+    if belowground_competition && water_growth_reduction
         @unpack sla = container.traits
         @unpack sla_tr, sla_tr_exponent = container.p
         @unpack relative_sla = container.calc

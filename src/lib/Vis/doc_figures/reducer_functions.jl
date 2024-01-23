@@ -5,7 +5,7 @@ function temperatur_reducer(sim;
 
     y = Float64[]
     for T in Ts
-        g = sim.temperature_reduction(; T, temperature_red = true)
+        g = sim.temperature_reduction(; T, temperature_growth_reduction = true)
         push!(y, g)
     end
 
@@ -115,7 +115,7 @@ function below_influence(sim, valid; nspecies = 25, path = nothing)
         c = (; traits = (; TS = mat),
             calc = (; TS_biomass = zeros(3)u"kg / ha",
                 biomass_density_factor = zeros(3)),
-            simp = (; included = (; below_included = true)),
+            simp = (; included = (; belowground_competition = true)),
             p = (; belowground_density_effect = artificial_below[i],
                 biomass_dens = 80))
         sim.below_ground_competition!(; container = c, biomass)

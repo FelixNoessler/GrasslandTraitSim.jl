@@ -88,10 +88,10 @@ and the root surface area devided by the above ground biomass (`rsa_above`).
 """
 function below_ground_competition!(; container, biomass)
     @unpack biomass_density_factor, TS_biomass = container.calc
-    @unpack below_included = container.simp.included
+    @unpack belowground_competition = container.simp.included
     @unpack TS = container.traits
 
-    if !below_included
+    if !belowground_competition
         @info "No below ground competition for resources!" maxlog=1
         @. biomass_density_factor = 1.0
         return nothing
@@ -107,7 +107,7 @@ end
 
 
 @doc raw"""
-    water_reduction!(; container, water, water_red, PET, PWP, WHC)
+    water_reduction!(; container, water, water_growth_reduction, PET, PWP, WHC)
 
 Reduction of growth based on the plant available water
 and the traits specific leaf area and root surface area
@@ -221,9 +221,9 @@ root surface area per above ground biomass (`rsa_above`).
 # ![Graphical overview of the functional response](../img/W_rsa_response_0_5.svg)
 """
 function water_reduction!(; container, W, PET, PWP, WHC)
-    @unpack water_red, below_included = container.simp.included
+    @unpack water_growth_reduction, belowground_competition = container.simp.included
     @unpack Waterred = container.calc
-    if !water_red || !below_included
+    if !water_growth_reduction || !belowground_competition
         @info "No water reduction!" maxlog=1
         @. Waterred = 1.0
         return nothing
@@ -246,7 +246,7 @@ end
 
 
 """
-    nutrient_reduction!(; container, nutrient_red, nutrients)
+    nutrient_reduction!(; container, nutrient_growth_reduction, nutrients)
 
 Reduction of growth based on plant available nutrients and
 the traits arbuscular mycorrhizal colonisation and
@@ -275,10 +275,10 @@ root surface area per above ground biomass (`rsa_above`).
 ![Graphical overview of the functional response](../img/rsa_above_nut_response_0_5.svg)
 """
 function nutrient_reduction!(; container, nutrients)
-    @unpack nutrient_red, below_included = container.simp.included
+    @unpack nutrient_growth_reduction, belowground_competition = container.simp.included
     @unpack Nutred = container.calc
 
-    if !nutrient_red || !below_included
+    if !nutrient_growth_reduction || !belowground_competition
         @info "No nutrient reduction!" maxlog=1
         @. Nutred = 1.0
         return nothing

@@ -33,7 +33,7 @@ function radiation_reduction(; PAR, radiation_red)
 end
 
 @doc raw"""
-    temperature_reduction(; T, temperature_red)
+    temperature_reduction(; T, temperature_growth_reduction)
 
 Reduction of the potential growth if the temperature is low or too high
 with a step function.
@@ -60,8 +60,8 @@ species specific parameter, but here it is set to 12°C for all species.
 
 ![Image of the temperature reducer function](../img/temperature_reducer.svg)
 """
-function temperature_reduction(; T, temperature_red)
-    if !temperature_red
+function temperature_reduction(; T, temperature_growth_reduction)
+    if !temperature_growth_reduction
         @info "No temperature reduction!" maxlog=1
         return 1.0
     end

@@ -29,13 +29,13 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all,
     @unpack height = container.traits
     @unpack defoliation, mown_height, mowing_λ = container.calc
     @unpack mown = container.u
-    @unpack mowing_included = container.simp.included
+    @unpack included = container.simp
 
     days_since_last_mowing = 200
     mowing_mid_days = 0
 
     ## if mowing is not included, cutted biomass shouldn't raise an error
-    if mowing_included
+    if included.mowing
         @unpack mowing_mid_days = container.p
 
         tstart = t - 200 < 1 ? 1 : t - 200

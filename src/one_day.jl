@@ -84,7 +84,7 @@ function one_day!(; t, container)
             if !iszero(sum(patch_biomass))
 
                 # ------------------------------------------ mowing
-                if included.mowing_included
+                if included.mowing
                     mowing_height = NaN * u"m"
 
                     if daily_input.mowing isa Vector
@@ -101,7 +101,7 @@ function one_day!(; t, container)
                 end
 
                 # ------------------------------------------ grazing & trampling
-                if included.grazing_included
+                if included.grazing
                     LD = NaN * u"1 / ha"
 
                     if daily_input.grazing isa Vector
@@ -127,7 +127,7 @@ function one_day!(; t, container)
                     PWP = PWP[x, y])
 
                 # ------------------------------------------ senescence
-                if included.senescence_included
+                if included.senescence
                     senescence!(; container,
                         ST = daily_input.temperature_sum[t],
                         biomass = patch_biomass)

@@ -18,8 +18,7 @@ function potential_growth(sim, valid;
     ymat = Array{Float64}(undef, nspecies, par_values)
 
     for (i, PAR) in enumerate(PARs)
-        sim.potential_growth!(; container, biomass, PAR,
-            potgrowth_included = true)
+        sim.potential_growth!(; container, biomass, PAR)
         ymat[:, i] .= ustrip.(container.calc.potgrowth)
     end
 

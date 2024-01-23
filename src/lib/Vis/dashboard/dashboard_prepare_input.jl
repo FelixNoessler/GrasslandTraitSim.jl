@@ -27,15 +27,15 @@ function prepare_input(; plot_obj, valid, posterior)
 
     # ------------- whether parts of the simulation are included
     included = (;
-        senescence_included = plot_obj.obs.toggle_senescence_included.active.val,
+        senescence = plot_obj.obs.toggle_senescence_included.active.val,
         potgrowth_included = plot_obj.obs.toggle_potgrowth_included.active.val,
-        mowing_included = plot_obj.obs.toggle_mowing_included.active.val,
-        grazing_included = plot_obj.obs.toggle_grazing_included.active.val,
-        below_included = plot_obj.obs.toggle_below_included.active.val,
+        mowing = plot_obj.obs.toggle_mowing_included.active.val,
+        grazing = plot_obj.obs.toggle_grazing_included.active.val,
+        belowground_competition = plot_obj.obs.toggle_below_included.active.val,
         height_included = plot_obj.obs.toggle_height_included.active.val,
-        water_red = plot_obj.obs.toggle_water_red.active.val,
-        nutrient_red = plot_obj.obs.toggle_nutr_red.active.val,
-        temperature_red = plot_obj.obs.toggle_temperature_red.active.val,
+        water_growth_reduction = plot_obj.obs.toggle_water_red.active.val,
+        nutrient_growth_reduction = plot_obj.obs.toggle_nutr_red.active.val,
+        temperature_growth_reduction = plot_obj.obs.toggle_temperature_red.active.val,
         season_red = plot_obj.obs.toggle_season_red.active.val,
         radiation_red = plot_obj.obs.toggle_radiation_red.active.val)
 

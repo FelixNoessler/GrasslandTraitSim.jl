@@ -1,5 +1,5 @@
 @doc raw"""
-    potential_growth!(; container, biomass, PAR, potgrowth_included)
+    potential_growth!(; container, biomass, PAR)
 
 Calculates the potential growth of all plant species
 in a specific patch.
@@ -34,7 +34,8 @@ leaf area index of the individual species
 
 ![Influence of the specific leaf area on the potential growth](../img/sla_potential_growth.svg)
 """
-function potential_growth!(; container, biomass, PAR, potgrowth_included)
+function potential_growth!(; container, biomass, PAR)
+    @unpack included = container.simp
     @unpack LAIs, potgrowth = container.calc
     @unpack RUE_max, α = container.p
 
@@ -43,7 +44,7 @@ function potential_growth!(; container, biomass, PAR, potgrowth_included)
         @error "LAItot below zero: $LAItot" maxlog=10
     end
 
-    if LAItot == 0 || !potgrowth_included
+    if LAItot == 0 || !included.potential_growth
         @info "Zero potential growth!" maxlog=1
         potgrowth .= 0.0u"kg / (ha * d)"
         return LAItot

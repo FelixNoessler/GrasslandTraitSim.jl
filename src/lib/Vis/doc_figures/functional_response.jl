@@ -18,7 +18,7 @@ function amc_nut_response(sim, valid;
     ymat = fill(0.0, length(xs), nspecies)
 
     for (i, x) in enumerate(xs)
-        sim.nutrient_reduction!(; container, nutrient_red = true, nutrients = x)
+        sim.nutrient_reduction!(; container, nutrient_growth_reduction = true, nutrients = x)
         ymat[i, :] .= container.calc.amc_nut
     end
 
@@ -106,7 +106,7 @@ function W_rsa_response(sim, valid; nspecies = 25, δ_wrsa = 0.5, path = nothing
 
     for (i, x) in enumerate(xs)
         W = x * u"mm"
-        sim.water_reduction!(; container, W, water_red = true, PET, PWP, WHC)
+        sim.water_reduction!(; container, W, water_growth_reduction = true, PET, PWP, WHC)
         ymat[i, :] .= container.calc.W_rsa
     end
 
@@ -192,7 +192,7 @@ function rsa_above_nut_response(sim, valid;
     ymat = fill(0.0, length(xs), nspecies)
 
     for (i, x) in enumerate(xs)
-        sim.nutrient_reduction!(; container, nutrient_red = true, nutrients = x)
+        sim.nutrient_reduction!(; container, nutrient_growth_reduction = true, nutrients = x)
         ymat[i, :] .= container.calc.rsa_above_nut
     end
 
@@ -285,7 +285,7 @@ function W_sla_response(sim, valid;
 
     for (i, x) in enumerate(xs)
         W = x * u"mm"
-        sim.water_reduction!(; container, W, water_red = true, PET, PWP, WHC)
+        sim.water_reduction!(; container, W, water_growth_reduction = true, PET, PWP, WHC)
         ymat[i, :] .= container.calc.W_sla
     end
 

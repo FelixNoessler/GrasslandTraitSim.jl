@@ -23,7 +23,7 @@ function plant_available_water(sim, valid; path = nothing)
             w = Float64[]
 
             for PET in PET_vals
-                sim.water_reduction!(; container, W, water_red = true, PET, PWP, WHC)
+                sim.water_reduction!(; container, W, water_growth_reduction = true, PET, PWP, WHC)
                 push!(w, container.calc.Wp[1])
             end
 

@@ -16,10 +16,10 @@
 """
 function height_influence!(; container, biomass)
     @unpack relative_height, heightinfluence = container.calc
-    @unpack height_included = container.simp.included
+    @unpack included = container.simp
     @unpack height = container.traits
 
-    if !height_included
+    if !included.height_competition
         @info "Height influence turned off!" maxlog=1
         @. heightinfluence = 1.0
         return nothing

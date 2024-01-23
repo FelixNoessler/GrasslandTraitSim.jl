@@ -19,7 +19,6 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
 
     #### potential growth
     LAItot = potential_growth!(; container,
-        potgrowth_included = included.potgrowth_included,
         biomass,
         PAR = daily_input.PAR[t])
 
@@ -35,7 +34,7 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     Rred = radiation_reduction(; PAR = daily_input.PAR[t],
         radiation_red = included.radiation_red)
     Tred = temperature_reduction(; T = daily_input.temperature[t],
-        temperature_red = included.temperature_red)
+        temperature_growth_reduction = included.temperature_growth_reduction)
     Seasonalred = seasonal_reduction(; ST = daily_input.temperature_sum[t],
         season_red = included.season_red)
 

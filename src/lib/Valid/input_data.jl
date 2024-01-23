@@ -14,17 +14,18 @@ function validation_input(;
         nutheterog = 0.0,
         patch_xdim = 1,
         patch_ydim = 1,
-        senescence_included = true,
-        potgrowth_included = true,
-        mowing_included = true,
-        grazing_included = true,
-        below_included = true,
-        height_included = true,
-        water_red = true,
-        nutrient_red = true,
-        temperature_red = true,
-        season_red = true,
-        radiation_red = true,
+        included = (;
+            senescence = true,
+            potential_growth = true,
+            mowing = true,
+            grazing = true,
+            belowground_competition = true,
+            height_competition = true,
+            water_growth_reduction = true,
+            nutrient_growth_reduction = true,
+            temperature_growth_reduction = true,
+            season_red = true,
+            radiation_red = true),
         trait_seed = missing)
 
     start_date = Dates.Date(2006, 1, 1)
@@ -98,20 +99,6 @@ function validation_input(;
     bulk = soil_sub.bulk[1]
     rootdepth = soil_sub.rootdepth[1]
 
-    #### -------------- whether parts of the simulation are included
-    included = (;
-        senescence_included,
-        potgrowth_included,
-        mowing_included,
-        grazing_included,
-        below_included,
-        height_included,
-        water_red,
-        nutrient_red,
-        temperature_red,
-        season_red,
-        radiation_red)
-
     return (
         doy = daily_data_prep.doy,
         date = daily_data_prep.date[1]:daily_data_prep.date[end],
@@ -126,8 +113,7 @@ function validation_input(;
             patch_ydim,
             nutheterog,
             trait_seed,
-
-            included,),
+            included),
         site = (;
             initbiomass,
             initsoilwater,

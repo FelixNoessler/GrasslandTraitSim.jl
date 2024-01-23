@@ -118,15 +118,15 @@ simp = (
     
     ## these variables are used to debug the model
     included = 
-        (senescence_included = true, 
-         potgrowth_included = true, 
-         mowing_included = true, 
-         grazing_included = true, 
-         below_included = true, 
-         height_included = true, 
-         water_red = true, 
-         nutrient_red = true, 
-         temperature_red = true, 
+        (senescence = true, 
+         potential_growth = true, 
+         mowing = true, 
+         grazing = true, 
+         belowground_competition = true, 
+         height_competition = true, 
+         water_growth_reduction = true, 
+         nutrient_growth_reduction = true, 
+         temperature_growth_reduction = true, 
          season_red = true, 
          radiation_red = true)
 )
