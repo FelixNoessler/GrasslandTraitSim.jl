@@ -5,14 +5,9 @@ Initialisation of the transfer functions that link the traits to
 the response to water and nutrient stress.
 """
 function init_transfer_functions!(; input_obj, calc, p)
-    @unpack belowground_competition, water_growth_reduction,
-            nutrient_growth_reduction = input_obj.simp.included
+    @unpack included = input_obj.simp
 
-    if !belowground_competition
-        return nothing
-    end
-
-    if water_growth_reduction
+    if included.water_growth_reduction
         @unpack δ_sla, δ_wrsa, ϕ_rsa, ϕ_sla, η_min_sla, η_max_sla,
                 κ_min_rsa, β_κη_rsa, β_η_sla = p
         @unpack rsa_above, sla = calc.traits
@@ -25,7 +20,7 @@ function init_transfer_functions!(; input_obj, calc, p)
         @. K_wrsa = 1 - (1 - κ_min_rsa) / (1 + exp(-β_κη_rsa * (rsa_above - ϕ_rsa))) * δ_wrsa
     end
 
-    if nutrient_growth_reduction
+    if included.nutrient_growth_reduction
         @unpack δ_amc, δ_nrsa, ϕ_amc, ϕ_rsa, η_min_amc, η_max_amc,
                 κ_min_amc, κ_min_rsa, β_κη_amc, β_κη_rsa = p
         @unpack amc, rsa_above = calc.traits
@@ -45,7 +40,7 @@ function init_transfer_functions!(; input_obj, calc, p)
         @. K_nrsa = 1 - (1 - κ_min_rsa) / (1 + exp(-β_κη_rsa * (rsa_above - ϕ_rsa))) * δ_nrsa
     end
 
-    if water_growth_reduction || nutrient_growth_reduction
+    if included.water_growth_reduction || included.nutrient_growth_reduction
         @unpack ϕ_rsa, η_min_rsa, η_max_rsa, β_κη_rsa = p
         @unpack rsa_above = calc.traits
         @unpack H_rsa = calc.transfer_function

@@ -64,7 +64,7 @@ inf_p = (; zip(Symbol.(mp.names), mp.best)...);
     
 sol = sim.solve_prob(; input_obj, inf_p);
 
-patch_biomass = dropdims(sum(sol.u.biomass; dims = :species); dims = :species)
+patch_biomass = dropdims(sum(sol.output.biomass; dims = :species); dims = :species)
 numeric_date = sim.Valid.to_numeric.(sol.date)
 
 begin
@@ -78,7 +78,6 @@ begin
             lines!(numeric_date, vec(ustrip.(patch_biomass[:, x, y]));)  
         end
     end
-    # axislegend()
     
     fig
 end

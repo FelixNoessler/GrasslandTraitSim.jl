@@ -22,6 +22,7 @@ function solve_prob(; input_obj, inf_p, calc = nothing, trait_input = nothing)
     ## set negative values to zero
     @. negbiomass = biomass < 0u"kg / ha"
     if any(negbiomass)
+        @warn "Some biomass values were negative!" maxlog = 20
         biomass[negbiomass] .= 0u"kg / ha"
     end
 
@@ -40,6 +41,7 @@ function main_loop!(; container)
     @unpack u_biomass, u_water, du_biomass, du_water = container.u
     @unpack biomass, water = container.output
     @unpack patch_xdim, patch_ydim, nspecies = container.simp
+
 
     for t in container.ts
         one_day!(; t, container)

@@ -64,19 +64,23 @@ function loglikelihood_model(sim::Module;
 
         sim_soilwater = dropdims(mean(sol.output.water[data_soilmoisture_t, :, :]; dims = (:x, :y));
                                  dims = (:x, :y))
-        sim_soilwater = min.(sim_soilwater ./ mean(sol.patch_variables.WHC), 1.0)
 
-        x = @. sol.p.moistureconv_alpha + sol.p.moistureconv_beta * sim_soilwater
-        μ = @. exp(x)/(1+exp(x))
-        φ = sol.p.b_soilmoisture
+        μ = vec(sim_soilwater) ./ (sol.site.rootdepth * u"mm")
+        φ = 1 / sol.p.b_soilmoisture
         α = @. μ * φ
         β = @. (1.0 - μ) * φ
+
+        measured_soilmoisture = vec(data.soilmoisture)
 
         if any(iszero.(α)) || any(iszero.(β))
             ll_soilmoisture += -Inf
         else
             soilmoisture_d = Product(Beta.(α, β))
-            ll_soilmoisture += logpdf(soilmoisture_d, vec(data.soilmoisture)) / weight
+            ll_soilmoisture = logpdf(soilmoisture_d, vec(data.soilmoisture)) / weight
+        end
+
+        if any(measured_soilmoisture .<= 0.0) || any(measured_soilmoisture .>= 1.0)
+            @info "soil moisture out of range"
         end
     end
 
@@ -125,7 +129,7 @@ function loglikelihood_model(sim::Module;
 
             if trait_symbol == :amc
                 μ = sim_cwm_trait
-                φ = sol.p.b_amc
+                φ = 1 / sol.p.b_amc
                 α = @. μ * φ
                 β = @. (1.0 - μ) * φ
 

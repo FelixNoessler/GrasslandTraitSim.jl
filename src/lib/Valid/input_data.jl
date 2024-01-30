@@ -26,6 +26,7 @@ function validation_input(;
             temperature_growth_reduction = true,
             season_red = true,
             radiation_red = true),
+        likelihood_included = (; biomass = false, trait = false, soilmoisture = false),
         trait_seed = missing)
 
     start_date = Dates.Date(2006, 1, 1)
@@ -114,7 +115,8 @@ function validation_input(;
             patch_ydim,
             nutheterog,
             trait_seed,
-            included),
+            included,
+            likelihood_included),
         site = (;
             initbiomass,
             initsoilwater,

@@ -146,7 +146,7 @@ function trampling(sim, valid; nspecies = 25, trampling_factor = 100, path = not
 end
 
 function mowing(sim, valid; nspecies = 25, mowing_height = 0.07u"m",
-        mowing_mid_days = 30, days_since_last_mowing = 100,
+        mowing_mid_days = 30,
         path = nothing)
 
     #####################
@@ -166,7 +166,7 @@ function mowing(sim, valid; nspecies = 25, mowing_height = 0.07u"m",
     for (i, biomass) in enumerate(biomass_vec)
         container.calc.defoliation .= 0.0u"kg / (ha * d)"
         sim.mowing!(; t = 1, x = 1, y = 1, container, mowing_height,
-                      days_since_last_mowing, biomass)
+                       biomass, mowing_all = fill(NaN, 5))
 
         mowing_mat[:, i] = ustrip.(container.calc.defoliation)
     end

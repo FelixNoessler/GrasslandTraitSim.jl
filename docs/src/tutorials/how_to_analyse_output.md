@@ -27,7 +27,7 @@ sol = sim.solve_prob(; input_obj, inf_p)
 We can look at the simulated biomass:
 
 ```@example output
-sol.u.biomass
+sol.output.biomass
 ```
 
 The four dimension of the array are: daily time step, patch x dim, patch y dim, and species. 
@@ -35,7 +35,7 @@ For plotting the values with `Makie.jl`, we have to remove the units with `ustri
 
 ```@example output
 # if we have more than one patch per site, we have to first calculate the mean biomass per site
-species_biomass = dropdims(mean(sol.u.biomass; dims = (:x, :y)); dims = (:x, :y))
+species_biomass = dropdims(mean(sol.output.biomass; dims = (:x, :y)); dims = (:x, :y))
 total_biomass = vec(sum(species_biomass; dims = :species))
 
 lines(sol.numeric_date, ustrip.(total_biomass), color = :darkgreen, linewidth = 2;
@@ -58,7 +58,7 @@ colors = [cmap[(co .- colorrange[1]) ./ (colorrange[2] - colorrange[1])]
           for co in color[is]]
 
 # calculate biomass proportion of each species
-biomass_site = dropdims(mean(sol.u.biomass; dims=(:x, :y)); dims = (:x, :y))
+biomass_site = dropdims(mean(sol.output.biomass; dims=(:x, :y)); dims = (:x, :y))
 biomass_ordered = biomass_site[:, sortperm(color)]
 biomass_fraction = biomass_ordered ./ sum(biomass_ordered; dims = :species)
 biomass_cumfraction = cumsum(biomass_fraction; dims = 2)
@@ -96,7 +96,7 @@ Similarly, we plot the soil water content over time:
 ```@example output
 # if we have more than one patch per site, 
 # we have to first calculate the mean soil water content per site
-soil_water_per_site = dropdims(mean(sol.u.water; dims = (:x, :y)); dims = (:x, :y))
+soil_water_per_site = dropdims(mean(sol.output.water; dims = (:x, :y)); dims = (:x, :y))
 
 lines(sol.numeric_date, ustrip.(soil_water_per_site), color = :blue, linewidth = 2;
       axis = (; ylabel = "Soil water content [mm]", xlabel = "Date [year]"))
@@ -139,14 +139,14 @@ We can look at the grazed and mown biomass over time:
 
 ```@example output
 # total 
-sum(sol.u.mown)
-sum(sol.u.grazed)
+sum(sol.output.mown)
+sum(sol.output.grazed)
 
 # plot the grazed and mown biomass over time
-grazed_site = dropdims(mean(sol.u.grazed; dims=(:x, :y, :species)); dims=(:x, :y, :species))
+grazed_site = dropdims(mean(sol.output.grazed; dims=(:x, :y, :species)); dims=(:x, :y, :species))
 cum_grazed = cumsum(grazed_site)
 
-mown_site = dropdims(mean(sol.u.mown; dims=(:x, :y, :species)); dims=(:x, :y, :species))
+mown_site = dropdims(mean(sol.output.mown; dims=(:x, :y, :species)); dims=(:x, :y, :species))
 cum_mown = cumsum(mown_site)
 begin
       fig = Figure()
@@ -163,7 +163,7 @@ end
 We can calculate the Shannon and Simpson diversity over time:
 
 ```@example output
-biomass_site = dropdims(mean(sol.u.biomass; dims = (:x, :y)); dims = (:x, :y))
+biomass_site = dropdims(mean(sol.output.biomass; dims = (:x, :y)); dims = (:x, :y))
 tend = size(biomass_site, 1)
 shannon = Array{Float64}(undef, tend)
 simpson = Array{Float64}(undef, tend)

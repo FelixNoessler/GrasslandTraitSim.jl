@@ -11,12 +11,15 @@ include("transferfunctions_init.jl")
 Initialize the simulation object.
 """
 function initialization(; input_obj, inf_p, calc, trait_input = nothing)
-    @unpack biomass_cutting_t, biomass_cutting_numeric_date = input_obj.output_validation
-
     p_fixed = fixed_parameter(; input_obj)
     p = tuplejoin(inf_p, p_fixed)
 
     ################## Cutted biomass for validation
+    biomass_cutting_t = Int64[]
+    biomass_cutting_numeric_date = Float64[]
+    if haskey(input_obj, :output_validation)
+        @unpack biomass_cutting_t, biomass_cutting_numeric_date = input_obj.output_validation
+    end
     cutted_biomass = DimArray(
         fill(NaN64, length(biomass_cutting_t))u"kg/ha",
         (; t = biomass_cutting_t),
@@ -107,6 +110,13 @@ function fixed_parameter(; input_obj)
 
     # TODO add all parameters with a fixed value
 
+    # likelihood_p = (;)
+    # if likelihood_included.soilmoisture
+    #     likelihood_p = (;
+    #         moistureconv_alpha = -10.0
+    #     )
+    # end
+
     potential_growth_p = (;)
     if included.potential_growth
         potential_growth_p = (;
@@ -132,7 +142,7 @@ function fixed_parameter(; input_obj)
     end
 
     transfer_functions_p = (;)
-    if included.water_growth_reduction & included.belowground_competition
+    if included.water_growth_reduction
         added_p =  (;
             ϕ_sla = 0.025u"m^2 / g",
             η_min_sla = -0.8,
@@ -143,7 +153,7 @@ function fixed_parameter(; input_obj)
         transfer_functions_p = tuplejoin(transfer_functions_p, added_p)
     end
 
-    if included.nutrient_growth_reduction & included.belowground_competition
+    if included.nutrient_growth_reduction
         added_p =  (;
             ϕ_amc = 0.35,
             η_min_amc = 0.05,
@@ -155,8 +165,7 @@ function fixed_parameter(; input_obj)
         transfer_functions_p = tuplejoin(transfer_functions_p, added_p)
     end
 
-    if (included.nutrient_growth_reduction || included.water_growth_reduction) &
-        included.belowground_competition
+    if included.nutrient_growth_reduction || included.water_growth_reduction
         added_p =  (;
             ϕ_rsa = 0.12u"m^2 / g",
             η_min_rsa = 0.05,

@@ -64,10 +64,9 @@ function one_day!(; t, container)
         for y in Base.OneTo(patch_ydim)
 
             # --------------------- biomass dynamics
+            ### this line is needed because it is possible
+            ## that there are numerical errors
             patch_biomass = @view u_biomass[x, y, :]
-
-            # grazing, trampling, mowing, and senescence together
-            # can result in negative biomass
             very_low_biomass .= patch_biomass .< 1e-30u"kg / ha" .&&
                                 .!iszero.(patch_biomass)
             for i in eachindex(very_low_biomass)

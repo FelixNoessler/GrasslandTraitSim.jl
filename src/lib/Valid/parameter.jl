@@ -8,7 +8,8 @@ function model_parameters(;
             belowground_competition = true, grazing = true, mowing = true,
             defoliation = true, senescence = true, height_competition = true))
     names = [
-        "moistureconv_alpha", "moistureconv_beta",
+        # "moistureconv_alpha",
+        # "moistureconv_beta",
         "β_sen",
         "sla_tr", "sla_tr_exponent",
         "β_pet",
@@ -25,27 +26,27 @@ function model_parameters(;
         ]
 
     best = [
-        -0.8396916069440019, 0.40575461296117304,
-         0.16718393481337973,
-        0.028051942122749175,
-        0.3856413257304432,
-        1.16267383992498,
-        1349.5087435157145,
-        1.575060909640071,
-        0.10138624694334897,
-        1.6803748450844105,
+        # -0.8396916069440019,
+        # 20.0,
+        0.1,
+        0.03, 0.4,
+        1.2,
+        1400.0,
+        1.5,
+        0.1,
+        1.7,
         0.02,
-        118.80750087317014,
+        1200.0,
         12.494938708379609,
         0.8383157020917221, 0.7691300352241937,
         0.908661756379690, 0.8539014804567874,
-        500.0, 500.0,
-        0.0005, 0.5, 30.0, 0.05, 0.004
+        100.0, 0.01,
+        0.0005, 0.5, 0.001, 0.01, 0.004
     ]
 
     prior_dists = (;
-        moistureconv_alpha = Normal(0.0, 1.0),
-        moistureconv_beta = Normal(0.0, 1.0),
+        # moistureconv_alpha = Normal(0.0, 1.0),
+        # moistureconv_beta = Normal(0.0, 1.0),
         β_sen = truncated(Normal(0.0, 0.1); lower = 1e-10),
         sla_tr = truncated(Normal(0.02, 0.01); lower = 1e-10),
         sla_tr_exponent = truncated(Normal(1.0, 5.0); lower = 1e-10),

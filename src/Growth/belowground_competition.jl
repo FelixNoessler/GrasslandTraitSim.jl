@@ -88,10 +88,10 @@ and the root surface area devided by the above ground biomass (`rsa_above`).
 """
 function below_ground_competition!(; container, biomass)
     @unpack biomass_density_factor, TS_biomass = container.calc
-    @unpack belowground_competition = container.simp.included
+    @unpack included = container.simp
     @unpack TS = container.traits
 
-    if !belowground_competition
+    if !included.belowground_competition
         @info "No below ground competition for resources!" maxlog=1
         @. biomass_density_factor = 1.0
         return nothing
@@ -101,6 +101,18 @@ function below_ground_competition!(; container, biomass)
     LinearAlgebra.mul!(TS_biomass, TS, biomass)
     biomass_density_factor .= (TS_biomass ./ (biomass_dens * u"kg / ha")) .^
                               -belowground_density_effect
+
+
+    ## biomass density factor should be between 0.3 and 3.0
+    for i in eachindex(biomass_density_factor)
+        if biomass_density_factor[i] > 3.0
+            biomass_density_factor[i] = 3.0
+        end
+
+        if biomass_density_factor[i] < 0.3
+            biomass_density_factor[i] = 0.3
+        end
+    end
 
     return nothing
 end
@@ -221,9 +233,9 @@ root surface area per above ground biomass (`rsa_above`).
 # ![Graphical overview of the functional response](../img/W_rsa_response_0_5.svg)
 """
 function water_reduction!(; container, W, PET, PWP, WHC)
-    @unpack water_growth_reduction, belowground_competition = container.simp.included
+    @unpack included = container.simp
     @unpack Waterred = container.calc
-    if !water_growth_reduction || !belowground_competition
+    if !included.water_growth_reduction
         @info "No water reduction!" maxlog=1
         @. Waterred = 1.0
         return nothing
@@ -275,10 +287,10 @@ root surface area per above ground biomass (`rsa_above`).
 ![Graphical overview of the functional response](../img/rsa_above_nut_response_0_5.svg)
 """
 function nutrient_reduction!(; container, nutrients)
-    @unpack nutrient_growth_reduction, belowground_competition = container.simp.included
+    @unpack included = container.simp
     @unpack Nutred = container.calc
 
-    if !nutrient_growth_reduction || !belowground_competition
+    if !included.nutrient_growth_reduction
         @info "No nutrient reduction!" maxlog=1
         @. Nutred = 1.0
         return nothing
