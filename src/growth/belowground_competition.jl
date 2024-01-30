@@ -231,7 +231,7 @@ function water_reduction!(; container, W, PET, PWP, WHC)
 
     @unpack W_sla, W_rsa, Wp, biomass_density_factor = container.calc
     @unpack α_pet, β_pet, δ_sla, δ_wrsa, β_sla, β_rsa = container.p
-    @unpack K_wrsa, H_rsa, H_sla = container.funresponse
+    @unpack K_wrsa, H_rsa, H_sla = container.transfer_function
 
     Wsc = W > WHC ? 1.0 : W > PWP ? (W - PWP) / (WHC - PWP) : 0.0
     @. Wp = biomass_density_factor /
@@ -284,7 +284,7 @@ function nutrient_reduction!(; container, nutrients)
         return nothing
     end
 
-    @unpack K_amc, H_amc, K_nrsa, H_rsa = container.funresponse
+    @unpack K_amc, H_amc, K_nrsa, H_rsa = container.transfer_function
     @unpack δ_amc, δ_nrsa, β_amc, β_rsa = container.p
     @unpack nutrients_splitted, biomass_density_factor,
             amc_nut, nutrients_splitted, rsa_above_nut,

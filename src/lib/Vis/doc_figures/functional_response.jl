@@ -23,8 +23,8 @@ function amc_nut_response(sim, valid;
     end
 
     idx = sortperm(container.traits.amc)
-    Ks = container.funresponse.K_amc[idx]
-    x0s = container.funresponse.H_amc[idx]
+    Ks = container.transfer_function.K_amc[idx]
+    x0s = container.transfer_function.H_amc[idx]
     A = 1 - container.p.δ_amc
     amc = container.traits.amc[idx]
     ymat = ymat[:, idx]
@@ -111,8 +111,8 @@ function W_rsa_response(sim, valid; nspecies = 25, δ_wrsa = 0.5, path = nothing
     end
 
     idx = sortperm(container.traits.rsa_above)
-    Ks = container.funresponse.K_wrsa[idx]
-    x0s = container.funresponse.H_rsa[idx]
+    Ks = container.transfer_function.K_wrsa[idx]
+    x0s = container.transfer_function.H_rsa[idx]
     A = 1 - container.p.δ_wrsa
     rsa_above = container.traits.rsa_above[idx]
     ymat = ymat[:, idx]
@@ -198,8 +198,8 @@ function rsa_above_nut_response(sim, valid;
 
     ##################
     idx = sortperm(container.traits.rsa_above)
-    Ks = container.funresponse.K_nrsa[idx]
-    x0s = container.funresponse.H_rsa[idx]
+    Ks = container.transfer_function.K_nrsa[idx]
+    x0s = container.transfer_function.H_rsa[idx]
     A = 1 - container.p.δ_nrsa
     rsa_above = container.traits.rsa_above[idx]
     ymat = ymat[:, idx]
@@ -291,7 +291,7 @@ function W_sla_response(sim, valid;
 
     ##################
     idx = sortperm(container.traits.sla)
-    x0s = container.funresponse.H_sla[idx]
+    x0s = container.transfer_function.H_sla[idx]
     sla = container.traits.sla[idx]
     ymat = ymat[:, idx]
     ##################

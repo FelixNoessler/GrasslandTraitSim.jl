@@ -32,15 +32,13 @@ function get_validation_data(; plotID)
     # ---------------------------- traits
     f = plotID .== data.valid.traits.plotID
     cwm = data.valid.traits.cwm[f, :]
-    cwv = data.valid.traits.cwv[f, :]
+    # cwv = data.valid.traits.cwv[f, :]
+    # mat = Array{Float64, 3}(undef, 2, size(cwm)...)
+    # mat[1, :, :] = cwm
+    # mat[2, :, :] = cwv
 
-    mat = Array{Float64, 3}(undef, 2, size(cwm)...)
-    mat[1, :, :] = cwm
-    mat[2, :, :] = cwv
-
-    traits = DimArray(mat,
-        (type = [:cwm, :cwv],
-            time = date_to_solt.(data.valid.traits.t[f]; ),
+    traits = DimArray(cwm,
+            (time = date_to_solt.(data.valid.traits.t[f]; ),
             trait = data.valid.traits.dim))
 
     return (; soilmoisture, traits, biomass)

@@ -85,6 +85,7 @@ function validation_input(;
     end
     biomass_cutting_t = df_cutting_day.biomass_cutting_day
     biomass_cutting_date = df_cutting_day.date
+    biomass_cutting_numeric_date = to_numeric.(biomass_cutting_date)
 
     ### ----------------- abiotic
     nut_sub = @subset data.input.nut :plotID.==plotID
@@ -127,7 +128,8 @@ function validation_input(;
             rootdepth),
         output_validation = (;
             biomass_cutting_t,
-            biomass_cutting_date),
+            biomass_cutting_date,
+            biomass_cutting_numeric_date),
         daily_input)
 end
 

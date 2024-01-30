@@ -6,9 +6,10 @@ function loglikelihood_model(sim::Module;
         plotID,
         pretty_print = false,
         return_seperate = false,
-        use_likelihood_biomass = true,
-        use_likelihood_traits = true,
-        use_likelihood_soilwater = true,
+        likelihood_included = (;
+            biomass = true,
+            trait = true,
+            soilmoisture = true),
         data = nothing,
         sol = nothing,
         trait_input = nothing)
@@ -22,13 +23,12 @@ function loglikelihood_model(sim::Module;
         sol = sim.solve_prob(; input_obj, inf_p, calc, trait_input)
     end
 
-
-    var_p = [sol.p.b_biomass,
-             sol.p.b_sla, sol.p.b_lncm, sol.p.b_amc, sol.p.b_height, sol.p.b_rsa_above]
-    if any(var_p .< 0.0)
-        @warn "laplace variance parameter < 0.0"
-        @show var_p
-        return -Inf
+    p_names = [string(s) for s in keys(sol.p)]
+    for p_name in p_names
+        if startswith(p_name, "b_") && (sol.p[Symbol(p_name)] <= 0.0)
+            @warn "variance parameter <= 0.0 ($p_name)"
+            return -Inf
+        end
     end
 
     ########################################################################
@@ -40,14 +40,16 @@ function loglikelihood_model(sim::Module;
     ########################################################################
     ll_biomass = 0.0
 
-    if use_likelihood_biomass
-        simulated_cutted_biomass = vec(ustrip.(sol.u.cutted_biomass))
+    if likelihood_included.biomass
+        simulated_cutted_biomass = vec(ustrip.(sol.output_validation.cutted_biomass))
 
         ### calculate the likelihood
         biomass_d = Product(
             truncated.(Laplace.(simulated_cutted_biomass,
-                                sol.p.b_biomass + 1e-10);
+                                sol.p.b_biomass);
                        lower = 0.0))
+
+        # biomass_d = Product(Normal.(simulated_cutted_biomass, sol.p.b_biomass + 1e-10);)
         ll_biomass = logpdf(biomass_d, vec(data.biomass))
     end
 
@@ -55,14 +57,14 @@ function loglikelihood_model(sim::Module;
     ################## soil moisture
     ########################################################################
     ll_soilmoisture = 0
-    if use_likelihood_soilwater
+    if likelihood_included.soilmoisture
         #### downweight the likelihood because there are many observations
         data_soilmoisture_t = LookupArrays.index(data.soilmoisture, :time)
         weight = length(data.soilmoisture) / 13
 
-        sim_soilwater = dropdims(mean(sol.u.water[data_soilmoisture_t, :, :]; dims = (:x, :y));
+        sim_soilwater = dropdims(mean(sol.output.water[data_soilmoisture_t, :, :]; dims = (:x, :y));
                                  dims = (:x, :y))
-        sim_soilwater = min.(sim_soilwater ./ mean(sol.u.WHC), 1.0)
+        sim_soilwater = min.(sim_soilwater ./ mean(sol.patch_variables.WHC), 1.0)
 
         x = @. sol.p.moistureconv_alpha + sol.p.moistureconv_beta * sim_soilwater
         μ = @. exp(x)/(1+exp(x))
@@ -79,12 +81,12 @@ function loglikelihood_model(sim::Module;
     end
 
     ########################################################################
-    ################## cwm/cwv trait likelihood
+    ################## cwm trait likelihood
     ########################################################################
     ll_trait = 0.0
-    if use_likelihood_traits
+    if likelihood_included.trait
         data_trait_t = LookupArrays.index(data.traits, :time)
-        species_biomass = dropdims(mean(sol.u.biomass[data_trait_t, :, :, :];
+        species_biomass = dropdims(mean(sol.output.biomass[data_trait_t, :, :, :];
                                         dims = (:x, :y));
                                    dims = (:x, :y))
         species_biomass = ustrip.(species_biomass)
@@ -98,7 +100,7 @@ function loglikelihood_model(sim::Module;
                     trait = -Inf,
                     soilmoisture = ll_soilmoisture)
             end
-            return ll_biomass + ll_soilmoisture + -100000
+            return -Inf
         end
 
         relative_biomass = species_biomass ./ site_biomass
@@ -113,13 +115,28 @@ function loglikelihood_model(sim::Module;
             sim_cwm_trait = vec(sum(weighted_trait; dims = 1))
 
             ### "measured" traits (calculated cwm from observed vegetation)
-            measured_cwm = data.traits[trait = At(trait_symbol), type = At(:cwm)]
+            measured_cwm = data.traits[trait = At(trait_symbol)]
 
             ### CWM Likelihood
             cwm_traitscale = Symbol(:b_, trait_symbol)
             cwmtrait_d = Product(truncated.(
-                Laplace.(sim_cwm_trait, sol.p[cwm_traitscale]  + 1e-10);
+                Laplace.(sim_cwm_trait, sol.p[cwm_traitscale]);
                 lower = 0.0))
+
+            if trait_symbol == :amc
+                μ = sim_cwm_trait
+                φ = sol.p.b_amc
+                α = @. μ * φ
+                β = @. (1.0 - μ) * φ
+
+                if any(iszero.(α)) || any(iszero.(β))
+                    ll_trait += -Inf
+                    continue
+                end
+
+                cwmtrait_d = Product(Beta.(α, β))
+            end
+
             ll = logpdf(cwmtrait_d, measured_cwm)
             ll_trait += ll / ntraits
         end

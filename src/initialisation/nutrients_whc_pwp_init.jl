@@ -34,11 +34,9 @@ and the last equations changes to:
 ```
 
 - `nutheterog`: heterogeneity of nutrients [-]
-- `nutgradient`: gradient of nutrients between 0 and 1 [-],
-  created by [`planar_gradient!`](@ref)
 """
-function input_nutrients!(; calc, input_obj, p)
-    @unpack nutrients = calc.u
+function input_nutrients!(; calc, input_obj)
+    @unpack nutrients = calc.patch_variables
     @unpack totalN, CNratio = input_obj.site
 
     #### data from the biodiversity exploratories
@@ -93,7 +91,7 @@ can be seen in the folling table:
 - `PWP`: permanent wilting point [mm]
 """
 function input_WHC_PWP!(; calc, input_obj)
-    @unpack WHC, PWP = calc.u
+    @unpack WHC, PWP = calc.patch_variables
     @unpack sand, silt, clay, organic, bulk, rootdepth, totalN, CNratio = input_obj.site
 
     @. WHC = (0.005678 * sand +

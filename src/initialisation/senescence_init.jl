@@ -37,16 +37,16 @@ influence of the leaf life span on the senescence rate.
 function senescence_rate!(; input_obj, calc, p)
     @unpack included = input_obj.simp
     @unpack μ, leaflifespan, sla = calc.traits
-    @unpack α_ll, β_ll = p
-    @. leaflifespan = 10^((α_ll - log10(sla * 10000u"g/m^2")) / β_ll) *
-    365.25 / 12 * u"d"
 
     if !included.senescence
         @. μ = 0.0u"d^-1"
+        @. leaflifespan = 0.0u"d"
         return nothing
     end
 
-    @unpack α_sen, β_sen = p
+    @unpack α_ll, β_ll, α_sen, β_sen = p
+    @. leaflifespan = 10^((α_ll - log10(sla * 10000u"g/m^2")) / β_ll) *
+    365.25 / 12 * u"d"
     μ .= α_sen * u"d^-1" .+ β_sen ./ leaflifespan
 
     return nothing

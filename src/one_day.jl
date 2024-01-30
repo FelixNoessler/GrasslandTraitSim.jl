@@ -1,5 +1,5 @@
 @doc raw"""
-    one_day!(; calc, p, t)
+    one_day!(; container, p, t)
 
 Calculate the density differences of all state variables of one day.
 
@@ -35,8 +35,9 @@ loop over patches:
 function one_day!(; t, container)
     @unpack doy, daily_input, traits = container
     @unpack npatches, patch_xdim, patch_ydim, included = container.simp
-    @unpack u_biomass, u_water, du_biomass, du_water,
-            WHC, PWP, nutrients, cutted_biomass = container.u
+    @unpack u_biomass, u_water, du_biomass, du_water = container.u
+    @unpack cutted_biomass = container.output_validation
+    @unpack WHC, PWP, nutrients = container.patch_variables
     @unpack very_low_biomass, nan_biomass = container.calc
     @unpack act_growth, sen, defoliation, relbiomass = container.calc
     @unpack biomass_cutting_t = container.output_validation
@@ -63,9 +64,10 @@ function one_day!(; t, container)
         for y in Base.OneTo(patch_ydim)
 
             # --------------------- biomass dynamics
-            ### this line is needed because it is possible
-            ## that there are numerical errors
             patch_biomass = @view u_biomass[x, y, :]
+
+            # grazing, trampling, mowing, and senescence together
+            # can result in negative biomass
             very_low_biomass .= patch_biomass .< 1e-30u"kg / ha" .&&
                                 .!iszero.(patch_biomass)
             for i in eachindex(very_low_biomass)

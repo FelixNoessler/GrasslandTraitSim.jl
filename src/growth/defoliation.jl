@@ -28,7 +28,7 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all,
                  x = NaN, y = NaN, return_mowing = false)
     @unpack height = container.traits
     @unpack defoliation, mown_height, mowing_λ = container.calc
-    @unpack mown = container.u
+    @unpack mown = container.output
     @unpack included = container.simp
 
     days_since_last_mowing = 200
@@ -117,7 +117,7 @@ function grazing!(; t, x, y, container, LD, biomass)
     @unpack lncm = container.traits
     @unpack grazing_half_factor, leafnitrogen_graz_exp = container.p
     @unpack defoliation, biomass_ρ, grazed_share, relative_lncm, ρ = container.calc
-    @unpack grazed = container.u
+    @unpack grazed = container.output
 
     ## Palatability ρ
     relative_lncm .= lncm .* biomass ./ sum(biomass)
@@ -180,9 +180,8 @@ function trampling!(; container, LD, biomass)
     @unpack trampling_factor = container.p
     @unpack trampling_proportion, trampled_biomass, defoliation = container.calc
 
-    @. trampling_proportion = height * LD * trampling_factor * u"ha / m" / 10000
+    @. trampling_proportion = min.(height * LD * trampling_factor * u"ha / m", 1.0)
     @. trampled_biomass = biomass * trampling_proportion
-    @. trampled_biomass .= min.(trampled_biomass, biomass)
     defoliation .+= trampled_biomass ./ u"d"
 
     return nothing

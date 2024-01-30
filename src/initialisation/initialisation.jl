@@ -1,4 +1,5 @@
 include("preallocation.jl")
+include("preallocation_struct.jl")
 include("nutrients_whc_pwp_init.jl")
 include("senescence_init.jl")
 include("transferfunctions_init.jl")
@@ -10,7 +11,19 @@ include("transferfunctions_init.jl")
 Initialize the simulation object.
 """
 function initialization(; input_obj, inf_p, calc, trait_input = nothing)
-    p = tuplejoin(inf_p, fixed_parameter())
+    @unpack biomass_cutting_t, biomass_cutting_numeric_date = input_obj.output_validation
+
+    p_fixed = fixed_parameter(; input_obj)
+    p = tuplejoin(inf_p, p_fixed)
+
+    ################## Cutted biomass for validation
+    cutted_biomass = DimArray(
+        fill(NaN64, length(biomass_cutting_t))u"kg/ha",
+        (; t = biomass_cutting_t),
+        name = :cutted_biomass)
+    cutted_biomass_tuple =
+        (; output_validation = (; cutted_biomass, biomass_cutting_t,
+                                biomass_cutting_numeric_date))
 
     ################## Traits ##################
     if isnothing(trait_input)
@@ -19,6 +32,7 @@ function initialization(; input_obj, inf_p, calc, trait_input = nothing)
     else
         # use traits from input
         for key in keys(trait_input)
+            # getfield(calc.traits, key) .= trait_input[key]
             calc.traits[key] .= trait_input[key]
         end
     end
@@ -35,11 +49,11 @@ function initialization(; input_obj, inf_p, calc, trait_input = nothing)
 
     # WHC, PWP and nutrient index
     input_WHC_PWP!(; calc, input_obj)
-    input_nutrients!(; calc, input_obj, p)
+    input_nutrients!(; calc, input_obj)
 
     ################## Store everything in one object ##################
     p = (; p = p)
-    container = tuplejoin(p, input_obj, calc)
+    container = tuplejoin(p, input_obj, calc, cutted_biomass_tuple)
 
     ################## Initial conditions ##################
     set_initialconditions!(; container)
@@ -62,7 +76,8 @@ the initial biomass (`initbiomass`). The soil water content
 - `initsoilwater`: initial soil water content [mm]
 """
 function set_initialconditions!(; container)
-    @unpack u_biomass, u_water, grazed, mown = container.u
+    @unpack u_biomass, u_water = container.u
+    @unpack grazed, mown = container.output
     @unpack initbiomass, initsoilwater = container.site
     @unpack nspecies = container.simp
 
@@ -87,39 +102,72 @@ function cumulative_temperature(; temperature, year)
     return temperature_sum * u"°C"
 end
 
-function fixed_parameter()
+function fixed_parameter(; input_obj)
+    @unpack included = input_obj.simp
+
     # TODO add all parameters with a fixed value
-    p = (
-        # potential growth
-        RUE_max = 3 // 1000 * u"kg / MJ", # Maximum radiation use efficiency 3 g DM MJ-1
-        α = 0.6,   # Extinction coefficient
 
-        # potential evaporation --> plant available water
-        α_pet = 2.0u"mm / d",
+    potential_growth_p = (;)
+    if included.potential_growth
+        potential_growth_p = (;
+            RUE_max = 3 / 1000 * u"kg / MJ", # Maximum radiation use efficiency 3 g DM MJ-1
+            α = 0.6   # Extinction coefficient
+        )
+    end
 
-        # specific leaf area --> leaf lifespan
-        α_ll = 2.41,
-        β_ll = 0.38,
+    potential_evaporation_p = (;)
+    if included.water_growth_reduction
+        potential_evaporation_p = (;
+            α_pet = 2.0u"mm / d",  # potential evaporation --> plant available water
+        )
+    end
 
-        # transfer functions
-        ϕ_amc = 0.35,
-        ϕ_rsa = 0.12u"m^2 / g",
-        ϕ_sla = 0.025u"m^2 / g",
-        η_min_amc = 0.05,
-        η_min_rsa = 0.05,
-        η_min_sla = -0.8,
-        η_max_amc = 0.6,
-        η_max_rsa = 0.6,
-        η_max_sla = 0.8,
-        κ_min_amc = 0.7,
-        κ_min_rsa = 0.7,
-        β_κη_amc = 10,
-        β_κη_rsa = 40u"g / m^2 ",
-        β_η_sla = 75u"g / m^2",
-        β_sla = 5,
-        β_rsa = 7,
-        β_amc = 7
-    )
+    p_senescence = (;)
+    if included.senescence
+        p_senescence = (;
+            α_ll = 2.41,  # specific leaf area --> leaf lifespan
+            β_ll = 0.38,  # specific leaf area --> leaf lifespan
+            α_sen = 0.004 # senescence rate that is independent of the leaf lifespan
+        )
+    end
 
-    return p
+    transfer_functions_p = (;)
+    if included.water_growth_reduction & included.belowground_competition
+        added_p =  (;
+            ϕ_sla = 0.025u"m^2 / g",
+            η_min_sla = -0.8,
+            η_max_sla = 0.8,
+            β_η_sla = 75u"g / m^2",
+            β_sla = 5,)
+
+        transfer_functions_p = tuplejoin(transfer_functions_p, added_p)
+    end
+
+    if included.nutrient_growth_reduction & included.belowground_competition
+        added_p =  (;
+            ϕ_amc = 0.35,
+            η_min_amc = 0.05,
+            η_max_amc = 0.6,
+            κ_min_amc = 0.7,
+            β_κη_amc = 10,
+            β_amc = 7)
+
+        transfer_functions_p = tuplejoin(transfer_functions_p, added_p)
+    end
+
+    if (included.nutrient_growth_reduction || included.water_growth_reduction) &
+        included.belowground_competition
+        added_p =  (;
+            ϕ_rsa = 0.12u"m^2 / g",
+            η_min_rsa = 0.05,
+            η_max_rsa = 0.6,
+            κ_min_rsa = 0.7,
+            β_κη_rsa = 40u"g / m^2 ",
+            β_rsa = 7)
+
+        transfer_functions_p = tuplejoin(transfer_functions_p, added_p)
+    end
+
+    return tuplejoin(p_senescence, potential_growth_p, potential_evaporation_p,
+    transfer_functions_p)
 end

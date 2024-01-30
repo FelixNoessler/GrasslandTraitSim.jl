@@ -9,23 +9,20 @@ Then, run the main loop and store the results with all parameters in a container
 """
 function solve_prob(; input_obj, inf_p, calc = nothing, trait_input = nothing)
     if isnothing(calc)
-        calc = preallocate_vectors(; input_obj, dtype = typeof(inf_p[1]))
+        calc = preallocate_vectors(; input_obj)
     end
 
     container = initialization(; input_obj, inf_p, calc, trait_input)
 
     main_loop!(; container)
 
-
-    @unpack biomass = container.u
+    @unpack biomass = container.output
     @unpack negbiomass = container.calc
 
     ## set negative values to zero
     @. negbiomass = biomass < 0u"kg / ha"
-    for i in eachindex(negbiomass)
-        if negbiomass[i]
-            biomass[i] = 0u"kg / ha"
-        end
+    if any(negbiomass)
+        biomass[negbiomass] .= 0u"kg / ha"
     end
 
     return container
@@ -40,7 +37,8 @@ Calls the function [`one_day!`](@ref) for each day and set the
 calculated density differences to the output variables.
 """
 function main_loop!(; container)
-    @unpack u_biomass, u_water, du_biomass, du_water, biomass, water = container.u
+    @unpack u_biomass, u_water, du_biomass, du_water = container.u
+    @unpack biomass, water = container.output
     @unpack patch_xdim, patch_ydim, nspecies = container.simp
 
     for t in container.ts
