@@ -138,6 +138,9 @@ function fixed_parameter(; input_obj)
         p_senescence = (;
             α_ll = 2.41,  # specific leaf area --> leaf lifespan
             β_ll = 0.38,  # specific leaf area --> leaf lifespan
+            Ψ₁ = 775,     # temperature threshold: senescence starts to increase
+            Ψ₂ = 3000,    # temperature threshold: senescence reaches maximum
+            SENₘₐₓ = 3    # maximal seasonality factor for the senescence rate
         )
     end
 

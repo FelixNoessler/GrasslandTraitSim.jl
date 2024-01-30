@@ -61,7 +61,7 @@ vis.below_influence(sim, valid; path = f("$docs_img/below_influence.svg"))
 
 #### seasonal effects
 vis.seasonal_effect(sim; path = f("$docs_img/seasonal_reducer.svg"))
-vis.seasonal_component_senescence(sim;
+vis.seasonal_component_senescence(sim, valid;
     path = f("$docs_img/seasonal_factor_senescence.svg"))
 
 #### land use

@@ -230,21 +230,31 @@ function seasonal_effect(sim;
     return nothing
 end
 
-function seasonal_component_senescence(sim;
-        STs = LinRange(0, 3500, 1000),
+function seasonal_component_senescence(sim, valid;
+        STs = LinRange(0, 4000, 500),
         path = nothing)
+
+    #####################
+    mp = valid.model_parameters()
+    inf_p = (; zip(Symbol.(mp.names), mp.best)...)
+    input_obj = valid.validation_input(;
+        plotID = "HEG01", nspecies = 1)
+    calc = sim.preallocate_vectors(; input_obj)
+    container = sim.initialization(; input_obj, inf_p, calc)
+    #####################
+
     STs = sort(STs)
 
     y = Float64[]
     for ST in STs
-        g = sim.seasonal_component_senescence(; ST)
+        g = sim.seasonal_component_senescence(; container, ST)
         push!(y, g)
     end
 
     fig = Figure(; size = (700, 400))
     Axis(fig[1, 1];
-        ylabel = "Seasonal factor (SEN)",
-        xlabel = "Accumulated degree days (ST) [°C]",
+        ylabel = "Seasonal factor for senescence (SEN)",
+        xlabel = "Annual cumulative temperature (ST) [°C]",
         title = "")
 
     if length(y) > 1000
