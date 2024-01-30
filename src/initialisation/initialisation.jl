@@ -96,10 +96,11 @@ end
 function cumulative_temperature(; temperature, year)
     temperature = ustrip.(temperature)
     temperature_sum = Float64[]
+    temperature_filter = temperature .> 0
 
     for y in year
         year_filter = y .== year
-        append!(temperature_sum, cumsum(temperature[year_filter]))
+        append!(temperature_sum, cumsum(temperature[year_filter .&& temperature_filter]))
     end
 
     return temperature_sum * u"°C"
