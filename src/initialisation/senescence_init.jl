@@ -10,16 +10,12 @@ broad-leaved subset of the LEAVES data set (LEAVES/BROAD in Table 1
 of [Reich1992](@cite)). The original equation calculates the leaf life span in months.
 The equation was converted to days.
 
-Then, a linear equations is used to relate the leaf life span to the senescence rate
-of the plant species. The parameter `α_sen` is the intercept of the linear equation
-and models the part of the senescense rate that is not related to the leaf life span.
-The parameter `β_sen` is the slope of the linear equation and models the
-influence of the leaf life span on the senescence rate.
+Then, the parameter $\beta_{\text{sen}}$ is used to downscale the inverse of the leaf life span because the overall senescence rate of the aboveground biomass is lower than the inverse of the leaf life span:
 
 ```math
 \begin{align}
 \text{leaflifespan} &= 10^{(2.41 - log_{10}(\text{sla_conv})) / 0.38} \cdot \frac{365.25}{12} \\
-\mu &= \text{α_sen} + \text{β_sen} \cdot \frac{1}{\text{leaflifespan}}
+\mu &= \text{β_sen} \cdot \frac{1}{\text{leaflifespan}}
 \end{align}
 ```
 
@@ -27,7 +23,6 @@ influence of the leaf life span on the senescence rate.
   of the sla values (in the model the unit of the specific leaf area is m² g⁻¹)
 - `leaflifespan` leaf life span [d]
 - `μ` senescence rate [d⁻¹]
-- `α_sen` α value of a linear equation that models the influence
   of the leaf span on the senescence rate μ
 - `β_sen` β value of a linear equation that models
   the influence of the leaf lifespan on the senescence rate μ
@@ -44,10 +39,10 @@ function senescence_rate!(; input_obj, calc, p)
         return nothing
     end
 
-    @unpack α_ll, β_ll, α_sen, β_sen = p
+    @unpack α_ll, β_ll, β_sen = p
     @. leaflifespan = 10^((α_ll - log10(sla * 10000u"g/m^2")) / β_ll) *
     365.25 / 12 * u"d"
-    μ .= α_sen * u"d^-1" .+ β_sen ./ leaflifespan
+    μ .= β_sen ./ leaflifespan
 
     return nothing
 end

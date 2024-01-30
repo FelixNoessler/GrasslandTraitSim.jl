@@ -137,7 +137,6 @@ function fixed_parameter(; input_obj)
         p_senescence = (;
             α_ll = 2.41,  # specific leaf area --> leaf lifespan
             β_ll = 0.38,  # specific leaf area --> leaf lifespan
-            α_sen = 0.004 # senescence rate that is independent of the leaf lifespan
         )
     end
 

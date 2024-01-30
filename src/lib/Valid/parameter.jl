@@ -28,7 +28,7 @@ function model_parameters(;
     best = [
         # -0.8396916069440019,
         # 20.0,
-        0.1,
+        0.2,
         0.03, 0.4,
         1.2,
         1400.0,
@@ -47,7 +47,7 @@ function model_parameters(;
     prior_dists = (;
         # moistureconv_alpha = Normal(0.0, 1.0),
         # moistureconv_beta = Normal(0.0, 1.0),
-        β_sen = truncated(Normal(0.0, 0.1); lower = 1e-10),
+        β_sen = Uniform(0.0, 1.0),
         sla_tr = truncated(Normal(0.02, 0.01); lower = 1e-10),
         sla_tr_exponent = truncated(Normal(1.0, 5.0); lower = 1e-10),
         β_pet = truncated(Normal(1.0, 1.0); lower = 1e-10),
@@ -132,7 +132,7 @@ function model_parameters(;
     end
 
     if !included.senescence
-        senescence_names = ["α_sen", "β_sen"]
+        senescence_names = ["β_sen"]
         append!(exclude_parameters, senescence_names)
     end
 
