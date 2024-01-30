@@ -19,14 +19,14 @@ leaf area index of the individual species
 ```math
 \begin{align*}
 \text{potgrowth_total} &=
-    PAR \cdot RUE_{max} \cdot (1 -  \text{exp}(-\alpha \cdot \text{LAItot})) \\
+    PAR \cdot RUE_{max} \cdot (1 -  \text{exp}(-k \cdot \text{LAItot})) \\
 \text{potgrowth} &= \text{potgrowth_total} \cdot \frac{\text{LAI}}{\text{LAItot}}
 \end{align*}
 ```
 
 - `PAR` photosynthetically active radiation [MJ ha⁻¹ d⁻¹]
 - `RUE_max` maximum radiation use efficiency [kg MJ⁻¹]
-- `α` extinction coefficient [-]
+- `k` extinction coefficient [-]
 - `LAItot` total leaf area index [m² m⁻²]
 - `LAIs` leaf area index of each species [m² m⁻²]
 - `potgrowth_total` total potential growth [kg ha⁻¹ d⁻¹]
@@ -37,7 +37,7 @@ leaf area index of the individual species
 function potential_growth!(; container, biomass, PAR)
     @unpack included = container.simp
     @unpack LAIs, potgrowth = container.calc
-    @unpack RUE_max, α = container.p
+    @unpack RUE_max, k = container.p
 
     LAItot = calculate_LAI(; container, biomass, LAIs)
     if LAItot < 0
@@ -50,7 +50,7 @@ function potential_growth!(; container, biomass, PAR)
         return LAItot
     end
 
-    potgrowth_total = PAR * RUE_max * (1 - exp(-α * LAItot))
+    potgrowth_total = PAR * RUE_max * (1 - exp(-k * LAItot))
     @. potgrowth = potgrowth_total * LAIs / LAItot
 
     return LAItot

@@ -122,7 +122,7 @@ function fixed_parameter(; input_obj)
     if included.potential_growth
         potential_growth_p = (;
             RUE_max = 3 / 1000 * u"kg / MJ", # Maximum radiation use efficiency 3 g DM MJ-1
-            α = 0.6   # Extinction coefficient
+            k = 0.6   # Extinction coefficient
         )
     end
 
