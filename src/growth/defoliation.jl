@@ -27,7 +27,7 @@ Visualisation of the `mow_factor`:
 function mowing!(; t, container, mowing_height, biomass, mowing_all,
                  x = NaN, y = NaN, return_mowing = false)
     @unpack height = container.traits
-    @unpack defoliation, mown_height, mowing_λ = container.calc
+    @unpack defoliation, mown_height, proportion_mown = container.calc
     @unpack mown = container.output
     @unpack included = container.simp
 
@@ -53,10 +53,8 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all,
         end
     end
 
-    # --------- mowing parameter λ
-    mown_height .= height .- mowing_height
-    mown_height .= max.(mown_height, 0.0u"m")
-    mowing_λ .= mown_height ./ height
+    # --------- proportion of plant height that is mown
+    proportion_mown .= max.(height .- mowing_height, 0.0u"m") ./ height
 
     # --------- if meadow is too often mown, less biomass is removed
     ## the 'mowing_mid_days' is the day where the plants are grown
@@ -64,11 +62,11 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all,
     mow_factor = 1 / (1 + exp(-0.05 * (days_since_last_mowing - mowing_mid_days)))
 
     if return_mowing
-        return sum(mow_factor .* mowing_λ .* biomass)
+        return sum(mow_factor .* proportion_mown .* biomass)
     else
         # --------- add the removed biomass to the defoliation vector
-        @. mown[t, x, y, :] = mow_factor * mowing_λ * biomass
-        defoliation .+= mow_factor .* mowing_λ .* biomass .* u"d^-1"
+        @. mown[t, x, y, :] = mow_factor * proportion_mown * biomass
+        defoliation .+= mow_factor .* proportion_mown .* biomass .* u"d^-1"
     end
 
     return nothing
@@ -115,32 +113,17 @@ Influence of `grazing_half_factor`:
 """
 function grazing!(; t, x, y, container, LD, biomass)
     @unpack lncm = container.traits
-    @unpack grazing_half_factor, leafnitrogen_graz_exp = container.p
-    @unpack defoliation, biomass_ρ, grazed_share, relative_lncm, ρ = container.calc
+    @unpack grazing_half_factor, leafnitrogen_graz_exp, κ = container.p
+    @unpack defoliation, grazed_share, relative_lncm, ρ = container.calc
     @unpack grazed = container.output
 
     ## Palatability ρ
     relative_lncm .= lncm .* biomass ./ sum(biomass)
-    lncm_cwm = sum(relative_lncm)
-    ρ .= (lncm ./ lncm_cwm) .^ leafnitrogen_graz_exp
+    ρ .= (lncm ./ sum(relative_lncm)) .^ leafnitrogen_graz_exp
 
     ## Grazing
-    κ = 22u"kg / d"
-    k_exp = 2
-    μₘₐₓ = κ * LD
-    h = 1 / μₘₐₓ
-    a = 1 / (grazing_half_factor^k_exp * h)
-
-    ## Exponentiation of Quantity with a variable is type unstable
-    ## therefore this is a workaround, k_exp = 2
-    # https://painterqubits.github.io/Unitful.jl/stable/trouble/#Exponentiation
-    biomass_exp = sum(biomass)^2
-
-    total_grazed = a * biomass_exp / (1u"kg / ha"^k_exp + a * h * biomass_exp)
-    @. biomass_ρ = ρ * biomass
-
-    ## sum(biomass) == sum(biomass_ρ)
-    grazed_share .= biomass_ρ ./ sum(biomass)
+    total_grazed = κ * LD * sum(biomass) / (grazing_half_factor * u"kg/ha" + sum(biomass))
+    grazed_share .= ρ .* biomass ./ sum(biomass)
 
     #### add grazed biomass to defoliation
     @. grazed[t, x, y, :] = grazed_share * total_grazed * u"d"
@@ -150,7 +133,7 @@ function grazing!(; t, x, y, container, LD, biomass)
 end
 
 @doc raw"""
-    trampling!(; calc, LD, biomass, height, trampling_factor)
+    trampling!(; container, LD, biomass)
 
 ```math
 \begin{align}

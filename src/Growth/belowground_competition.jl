@@ -103,14 +103,14 @@ function below_ground_competition!(; container, biomass)
                               -belowground_density_effect
 
 
-    ## biomass density factor should be between 0.3 and 3.0
+    ## biomass density factor should be between 0.33 and 3.0
     for i in eachindex(biomass_density_factor)
         if biomass_density_factor[i] > 3.0
             biomass_density_factor[i] = 3.0
         end
 
-        if biomass_density_factor[i] < 0.3
-            biomass_density_factor[i] = 0.3
+        if biomass_density_factor[i] < 0.33
+            biomass_density_factor[i] = 0.33
         end
     end
 

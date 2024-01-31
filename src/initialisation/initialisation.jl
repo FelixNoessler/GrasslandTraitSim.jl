@@ -126,21 +126,21 @@ function fixed_parameter(; input_obj)
         )
     end
 
-    potential_evaporation_p = (;)
-    if included.water_growth_reduction
-        potential_evaporation_p = (;
-            α_pet = 2.0u"mm / d",  # potential evaporation --> plant available water
-        )
-    end
-
-    p_senescence = (;)
+    senescence_p = (;)
     if included.senescence
-        p_senescence = (;
+        senescence_p = (;
             α_ll = 2.41,  # specific leaf area --> leaf lifespan
             β_ll = 0.38,  # specific leaf area --> leaf lifespan
             Ψ₁ = 775,     # temperature threshold: senescence starts to increase
             Ψ₂ = 3000,    # temperature threshold: senescence reaches maximum
             SENₘₐₓ = 3    # maximal seasonality factor for the senescence rate
+        )
+    end
+
+    grazing_p = (;)
+    if included.grazing
+        grazing_p = (;
+            κ = 22u"kg / d"
         )
     end
 
@@ -180,6 +180,13 @@ function fixed_parameter(; input_obj)
         transfer_functions_p = tuplejoin(transfer_functions_p, added_p)
     end
 
-    return tuplejoin(p_senescence, potential_growth_p, potential_evaporation_p,
-    transfer_functions_p)
+    potential_evaporation_p = (;)
+    if included.water_growth_reduction
+        potential_evaporation_p = (;
+            α_pet = 2.0u"mm / d",  # potential evaporation --> plant available water
+        )
+    end
+
+    return tuplejoin(potential_growth_p, senescence_p, grazing_p,
+                     transfer_functions_p, potential_evaporation_p)
 end

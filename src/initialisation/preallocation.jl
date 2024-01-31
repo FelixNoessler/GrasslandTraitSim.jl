@@ -128,15 +128,10 @@ function preallocate_vectors(; input_obj, dtype = Float64)
         W_sla = fill(val, nspecies),
         W_rsa = fill(val, nspecies),
 
-        ## mowing
+        ## mowing, grazing, trampling
         mown_height = fill(val, nspecies)u"m",
-        mowing_λ = fill(val, nspecies),
-
-        ## grazing
-        biomass_ρ = fill(val, nspecies)u"kg / ha",
+        proportion_mown = fill(val, nspecies),
         grazed_share = fill(val, nspecies),
-
-        ## trampling
         trampling_proportion = fill(val, nspecies),
         trampled_biomass = fill(val, nspecies)u"kg / ha",
 

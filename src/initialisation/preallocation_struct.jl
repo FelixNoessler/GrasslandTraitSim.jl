@@ -220,9 +220,8 @@
 #     W_rsa
 
 #     mown_height
-#     mowing_λ
+#     proportion_mown
 
-#     biomass_ρ
 #     grazed_share
 
 #     trampling_proportion
@@ -280,9 +279,8 @@
 #         W_rsa = fill(val, nspecies)
 
 #         mown_height = fill(val, nspecies)u"m"
-#         mowing_λ = fill(val, nspecies)
+#         proportion_mown = fill(val, nspecies)
 
-#         biomass_ρ = fill(val, nspecies)u"kg / ha"
 #         grazed_share = fill(val, nspecies)
 
 #         trampling_proportion = fill(val, nspecies)
@@ -297,7 +295,7 @@
 #             amc_resid, rsa_above_resid, biomass_density_factor, TS_biomass,
 #             heightinfluence, relative_height, relative_lncm, ρ, nutrients_splitted,
 #             Nutred, amc_nut, rsa_above_nut, Wp, Waterred, W_sla, W_rsa, mown_height,
-#             mowing_λ, biomass_ρ, grazed_share, trampling_proportion, trampled_biomass,
+#             proportion_mown,  grazed_share, trampling_proportion, trampled_biomass,
 #             clonalgrowth, relative_sla)
 
 #     end
