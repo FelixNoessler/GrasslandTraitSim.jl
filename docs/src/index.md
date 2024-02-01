@@ -18,7 +18,9 @@ Pkg.add(url="https://github.com/felixnoessler/GrasslandTraitSim.jl")
 
 !!! compat
     The simulations were tested with `Julia` 1.10. I recommend using this version.
-    
+
+For more information on installing unregistered packages, see [here](https://pkgdocs.julialang.org/v1/managing-packages/#Adding-unregistered-packages). Here, you can browse the different versions of `GrasslandTraitSim.jl`: [tags](https://github.com/FelixNoessler/GrasslandTraitSim.jl/tags). 
+
 ## Run simulations
 
 ```@julia
