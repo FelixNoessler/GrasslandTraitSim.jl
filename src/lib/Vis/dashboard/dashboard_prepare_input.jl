@@ -26,70 +26,29 @@ function prepare_input(; plot_obj, valid, posterior)
     inf_p = (; zip(Symbol.(parameter_names), parameter_vals)...)
 
     # ------------- whether parts of the simulation are included
-    included = (;
-        senescence = plot_obj.obs.toggle_senescence_included.active.val,
-        potgrowth_included = plot_obj.obs.toggle_potgrowth_included.active.val,
-        mowing = plot_obj.obs.toggle_mowing_included.active.val,
-        grazing = plot_obj.obs.toggle_grazing_included.active.val,
-        belowground_competition = plot_obj.obs.toggle_below_included.active.val,
-        height_included = plot_obj.obs.toggle_height_included.active.val,
-        water_growth_reduction = plot_obj.obs.toggle_water_red.active.val,
-        nutrient_growth_reduction = plot_obj.obs.toggle_nutr_red.active.val,
-        temperature_growth_reduction = plot_obj.obs.toggle_temperature_red.active.val,
-        season_red = plot_obj.obs.toggle_season_red.active.val,
-        radiation_red = plot_obj.obs.toggle_radiation_red.active.val)
+    included = NamedTuple(
+        [first(s) => last(s).active.val for s in plot_obj.obs.toggles_included])
 
-    return inf_p, prepare_valid_input(; included, plot_obj, valid)
-end
+    trait_input = load_trait_data(valid)
 
-function prepare_valid_input(; included, plot_obj, valid)
     plotID = plot_obj.obs.menu_plotID.selection.val
     input_obj = valid.validation_input(;
         plotID,
-        nspecies = plot_obj.obs.nspecies.val,
-        npatches = plot_obj.obs.npatches.val,
-        nutheterog = plot_obj.obs.slider_nutheterog.value.val,
-        included...)
+        nspecies = length(trait_input.sla),
+        included)
 
-    return input_obj
+    return inf_p, input_obj, trait_input
 end
 
-# function prepare_scen_input(; included, plot_obj, scen)
-#     # ------------- mowing
-#     mowing_selected = [toggle.active.val for toggle in plot_obj.obs.toggles_mowing]
-#     mowing_dates = [tb.stored_string.val for tb in plot_obj.obs.tb_mowing_date][mowing_selected]
 
-#     ## final vectors of vectors
-#     mowing_doys = Dates.dayofyear.(Dates.Date.(mowing_dates, "mm-dd"))
-
-#     # ------------- grazing
-#     grazing_selected = [toggle.active.val
-#                         for toggle in plot_obj.obs.toggles_grazing]
-#     grazing_start = [tb.stored_string.val
-#                      for tb in plot_obj.obs.tb_grazing_start][grazing_selected]
-#     grazing_end = [tb.stored_string.val
-#                    for tb in plot_obj.obs.tb_grazing_end][grazing_selected]
-#     grazing_intensity = [parse(Float64, tb.stored_string.val)
-#                          for tb in plot_obj.obs.tb_grazing_intensity][grazing_selected]
-
-#     # ------------- soil nutrients
-#     nutrient_index = plot_obj.obs.slider_nut.value.val
-
-#     # ------------- soil water properties
-#     PWP, WHC = plot_obj.obs.slider_pwp_whc.interval.val
-
-#     input_obj = scen.scenario_input(;
-#         nyears = plot_obj.obs.nyears.val,
-#         nspecies = plot_obj.obs.nspecies.val,
-#         npatches = plot_obj.obs.npatches.val,
-#         explo = plot_obj.obs.menu_explo.selection.val,
-#         mowing_doys,
-#         grazing_start,
-#         grazing_end,
-#         grazing_intensity,
-#         nutrient_index,
-#         WHC,
-#         PWP,
-#         included...)
-#     return input_obj
-# end
+function load_trait_data(valid)
+    trait_df = valid.data.input.traits
+    return (;
+        amc = trait_df.amc,
+        sla = trait_df.sla * u"m^2/g",
+        height = trait_df.height * u"m",
+        rsa_above = trait_df.rsa_above * u"m^2/g",
+        ampm = trait_df.ampm,
+        lmpm = trait_df.lmpm,
+        lncm = trait_df.lncm * u"mg/g")
+end
