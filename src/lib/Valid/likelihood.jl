@@ -8,8 +8,7 @@ function loglikelihood_model(sim::Module;
         return_seperate = false,
         likelihood_included = (;
             biomass = true,
-            trait = true,
-            soilmoisture = true),
+            trait = true),
         data = nothing,
         sol = nothing,
         trait_input = nothing)
@@ -56,33 +55,33 @@ function loglikelihood_model(sim::Module;
     ########################################################################
     ################## soil moisture
     ########################################################################
-    ll_soilmoisture = 0
-    if likelihood_included.soilmoisture
-        #### downweight the likelihood because there are many observations
-        data_soilmoisture_t = LookupArrays.index(data.soilmoisture, :time)
-        weight = length(data.soilmoisture) / 13
+    # ll_soilmoisture = 0
+    # if likelihood_included.soilmoisture
+    #     #### downweight the likelihood because there are many observations
+    #     data_soilmoisture_t = LookupArrays.index(data.soilmoisture, :time)
+    #     weight = length(data.soilmoisture) / 13
 
-        sim_soilwater = dropdims(mean(sol.output.water[data_soilmoisture_t, :, :]; dims = (:x, :y));
-                                 dims = (:x, :y))
+    #     sim_soilwater = dropdims(mean(sol.output.water[data_soilmoisture_t, :, :]; dims = (:x, :y));
+    #                              dims = (:x, :y))
 
-        μ = vec(sim_soilwater) ./ (sol.site.rootdepth * u"mm")
-        φ = 1 / sol.p.b_soilmoisture
-        α = @. μ * φ
-        β = @. (1.0 - μ) * φ
+    #     μ = vec(sim_soilwater) ./ (sol.site.rootdepth * u"mm")
+    #     φ = 1 / sol.p.b_soilmoisture
+    #     α = @. μ * φ
+    #     β = @. (1.0 - μ) * φ
 
-        measured_soilmoisture = vec(data.soilmoisture)
+    #     measured_soilmoisture = vec(data.soilmoisture)
 
-        if any(iszero.(α)) || any(iszero.(β))
-            ll_soilmoisture += -Inf
-        else
-            soilmoisture_d = Product(Beta.(α, β))
-            ll_soilmoisture = logpdf(soilmoisture_d, vec(data.soilmoisture)) / weight
-        end
+    #     if any(iszero.(α)) || any(iszero.(β))
+    #         ll_soilmoisture += -Inf
+    #     else
+    #         soilmoisture_d = Product(Beta.(α, β))
+    #         ll_soilmoisture = logpdf(soilmoisture_d, vec(data.soilmoisture)) / weight
+    #     end
 
-        if any(measured_soilmoisture .<= 0.0) || any(measured_soilmoisture .>= 1.0)
-            @info "soil moisture out of range"
-        end
-    end
+    #     if any(measured_soilmoisture .<= 0.0) || any(measured_soilmoisture .>= 1.0)
+    #         @info "soil moisture out of range"
+    #     end
+    # end
 
     ########################################################################
     ################## cwm trait likelihood
@@ -149,20 +148,18 @@ function loglikelihood_model(sim::Module;
     ########################################################################
     ################## total likelihood
     ########################################################################
-    ll = ll_biomass + ll_trait + ll_soilmoisture
+    ll = ll_biomass + ll_trait
 
     ########################################################################
     ################## printing
     ########################################################################
     if pretty_print
         bl, tl = round(ll_biomass), round(ll_trait)
-        sl = round(ll_soilmoisture)
-        @info "biomass: $(bl) trait cwm: $tl moi: $(sl)" maxlog=1000
+        @info "biomass: $(bl) trait cwm: $tl" maxlog=1000
     end
 
     if return_seperate
-        return (biomass = ll_biomass, trait = ll_trait,
-                soilmoisture = ll_soilmoisture)
+        return (biomass = ll_biomass, trait = ll_trait)
     end
 
     return ll

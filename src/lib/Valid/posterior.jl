@@ -28,16 +28,30 @@
 #         external_chain = sample(1:nchains)])[1:(nparameter - 3)]
 # end
 
-function sample_posterior(obj; chain = nothing)
-    ndraws = size(obj, :draw)
-    nchains = size(obj, :chain)
-    internal_chains = size(obj, :internal_chain)
-
-
-    if isnothing(chain)
-        chain = StatsBase.sample(1:nchains)
+function sample_posterior(obj; run = nothing)
+    if isnothing(run)
+        run = StatsBase.sample(axes(obj, :run))
     end
-    return vec(obj[draw = StatsBase.sample((ndraws ÷ 2):ndraws),
-        chain = chain,
-        internal_chain = StatsBase.sample(1:internal_chains)])
+
+    ndraw = size(obj, :draw)
+    draw = StatsBase.sample((ndraw ÷ 2):ndraw)
+    chain = StatsBase.sample(axes(obj, :chain))
+    subset = obj[run = run, chain = chain, draw = draw]
+
+    return (; zip(keys(obj), [subset[k] for k in keys(obj)])...)
 end
+
+
+# function sample_posterior(obj; chain = nothing)
+#     ndraws = size(obj, :draw)
+#     nchains = size(obj, :chain)
+#     internal_chains = size(obj, :internal_chain)
+
+
+#     if isnothing(chain)
+#         chain = StatsBase.sample(1:nchains)
+#     end
+#     return vec(obj[draw = StatsBase.sample((ndraws ÷ 2):ndraws),
+#         chain = chain,
+#         internal_chain = StatsBase.sample(1:internal_chains)])
+# end

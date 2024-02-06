@@ -58,7 +58,8 @@ function change_water_reserve(; container, patch_biomass, water, precipitation,
     AET = min(water / u"d", ATr + AEv)
 
     # -------- Drainage
-    drain = max(water / u"d" + precipitation - WHC / u"d" - AET, 0u"mm / d")
+    excess_water = (water - WHC) / u"d"
+    drain = max(excess_water + precipitation -AET, zero(excess_water))
 
     # -------- Total change in the water reserve
     du_water = precipitation - drain - AET
@@ -110,7 +111,7 @@ function transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
     @unpack included = container.simp
 
     ###### SLA effect
-    sla_effect = 1
+    sla_effect = 1.0
     if included.water_growth_reduction
         @unpack sla = container.traits
         @unpack sla_tr, sla_tr_exponent = container.p
@@ -146,6 +147,5 @@ Evaporation of water from the soil.
 - `LAItot` is the total leaf area index of all plants [-]
 """
 function evaporation(; water, WHC, PET, LAItot)
-    W = water / WHC
-    return W * PET * (1 - min(1, LAItot / 3))
+    return water / WHC * PET * (1 - min(1, LAItot / 3))
 end

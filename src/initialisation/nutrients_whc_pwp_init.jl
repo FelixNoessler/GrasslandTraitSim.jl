@@ -45,8 +45,8 @@ function input_nutrients!(; calc, input_obj)
     # minCNratio = 9.0525
     # maxCNratio = 13.6025
 
-    maxtotalN = 40.0
-    @. nutrients = totalN  / maxtotalN
+    maxtotalN = 35.0
+    @. nutrients = totalN / maxtotalN
 
     return nothing
 end

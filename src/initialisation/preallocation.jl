@@ -1,92 +1,90 @@
-function preallocate_vectors(; input_obj, dtype = Float64)
+function preallocate_vectors(; input_obj, T = Float64)
     @unpack nspecies, patch_xdim, patch_ydim, ntimesteps = input_obj.simp
     @unpack initbiomass = input_obj.site
-
-
-    val = dtype(NaN)
+    TNaN = T(NaN)
 
     ############# output variables
     biomass = DimArray(
-        fill(val, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        fill(TNaN, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
         (time = input_obj.date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :biomass)
     mown = DimArray(
-        fill(val, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        fill(TNaN, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
         (time = input_obj.date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :mown)
     grazed = DimArray(
-        fill(val, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        fill(TNaN, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
         (time = input_obj.date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :grazed)
-    water = DimArray(fill(val, ntimesteps, patch_xdim, patch_ydim)u"mm",
+    water = DimArray(fill(TNaN, ntimesteps, patch_xdim, patch_ydim)u"mm",
                      (time = input_obj.date, x = 1:patch_xdim, y = 1:patch_ydim),
                      name = :water)
     output = (; biomass, mown, grazed, water)
 
     ############# change and state variables
     du_biomass = DimArray(
-        fill(val, patch_xdim, patch_ydim, nspecies)u"kg / (ha * d)",
+        fill(TNaN, patch_xdim, patch_ydim, nspecies)u"kg / (ha * d)",
         (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :du_biomass)
     du_water = DimArray(
-        fill(val, patch_xdim, patch_ydim)u"mm / d",
+        fill(TNaN, patch_xdim, patch_ydim)u"mm / d",
         (x = 1:patch_xdim, y = 1:patch_ydim), name = :du_water)
     u_biomass = DimArray(
-        fill(val, patch_xdim, patch_ydim, nspecies)u"kg / ha",
+        fill(TNaN, patch_xdim, patch_ydim, nspecies)u"kg / ha",
         (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :u_biomass)
     u_water = DimArray(
-        fill(val, patch_xdim, patch_ydim)u"mm",
+        fill(TNaN, patch_xdim, patch_ydim)u"mm",
         (x = 1:patch_xdim, y = 1:patch_ydim),
         name = :u_water)
     u = (; du_biomass, du_water, u_biomass, u_water)
 
     ############# patch variables
     WHC = DimArray(
-        fill(val, patch_xdim, patch_ydim,)u"mm",
+        fill(TNaN, patch_xdim, patch_ydim,)u"mm",
         (x = 1:patch_xdim, y = 1:patch_ydim), name = :WHC)
     PWP = DimArray(
-        fill(val, patch_xdim, patch_ydim,)u"mm",
+        fill(TNaN, patch_xdim, patch_ydim,)u"mm",
         (x = 1:patch_xdim, y = 1:patch_ydim), name = :PWP)
     nutrients = DimArray(
-        fill(val, patch_xdim, patch_ydim),
+        fill(TNaN, patch_xdim, patch_ydim),
         (x = 1:patch_xdim, y = 1:patch_ydim), name = :nutrients)
     patch_variables = (; WHC, PWP, nutrients)
 
     ############# Traits
     traits = (;
-        amc = Array{dtype}(undef, nspecies),
-        height = fill(val, nspecies)u"m",
-        lmpm = Array{dtype}(undef, nspecies),
-        lncm = fill(val, nspecies)u"mg/g",
-        sla = fill(val, nspecies)u"m^2 / g",
-        rsa_above = fill(val, nspecies)u"m^2 / g",
-        ampm = Array{dtype}(undef, nspecies),
-        leaflifespan = fill(val, nspecies)u"d",
-        μ = fill(val, nspecies)u"d^-1",
-        TS = fill(val, nspecies, nspecies))
+        amc = Array{T}(undef, nspecies),
+        height = fill(TNaN, nspecies)u"m",
+        lmpm = Array{T}(undef, nspecies),
+        lncm = fill(TNaN, nspecies)u"mg/g",
+        sla = fill(TNaN, nspecies)u"m^2 / g",
+        rsa_above = fill(TNaN, nspecies)u"m^2 / g",
+        ampm = Array{T}(undef, nspecies),
+        leaflifespan = fill(TNaN, nspecies)u"d",
+        μ = fill(TNaN, nspecies)u"d^-1",
+        TS = fill(TNaN, nspecies, nspecies))
 
     ############# Transfer function
     transfer_function = (;
-        K_amc = Array{dtype}(undef, nspecies),
-        H_amc = Array{dtype}(undef, nspecies),
-        K_wrsa = Array{dtype}(undef, nspecies),
-        K_nrsa = Array{dtype}(undef, nspecies),
-        H_rsa = Array{dtype}(undef, nspecies),
-        H_sla = Array{dtype}(undef, nspecies))
+        K_amc = Array{T}(undef, nspecies),
+        H_amc = Array{T}(undef, nspecies),
+        K_wrsa = Array{T}(undef, nspecies),
+        K_nrsa = Array{T}(undef, nspecies),
+        H_rsa = Array{T}(undef, nspecies),
+        H_sla = Array{T}(undef, nspecies))
 
 
     calc = (;
         negbiomass = fill(false, ntimesteps, patch_xdim, patch_ydim, nspecies),
 
         ############ preallaocated vectors that are used in the calculations
-        potgrowth = fill(val, nspecies)u"kg / (ha * d)",
-        act_growth = fill(val, nspecies)u"kg / (ha * d)",
-        defoliation = fill(val, nspecies)u"kg / (ha * d)",
-        sen = zeros(nspecies)u"kg / (ha * d)",
-        species_specific_red = fill(val, nspecies),
-        LAIs = fill(val, nspecies),
-        biomass_per_patch = fill(val, patch_xdim, patch_ydim)u"kg / ha",
+        potgrowth = fill(TNaN, nspecies)u"kg / (ha * d)",
+        act_growth = fill(TNaN, nspecies)u"kg / (ha * d)",
+        defoliation = fill(TNaN, nspecies)u"kg / (ha * d)",
+        sen = zeros(T, nspecies)u"kg / (ha * d)",
+        species_specific_red = fill(TNaN, nspecies),
+        LAIs = fill(TNaN, nspecies),
+        biomass_per_patch = fill(TNaN, patch_xdim, patch_ydim)u"kg / ha",
         relbiomass = fill(1.0, patch_xdim, patch_ydim),
 
         ## warnings, debugging, avoid numerical errors
@@ -94,52 +92,56 @@ function preallocate_vectors(; input_obj, dtype = Float64)
         nan_biomass = fill(false, nspecies),
         neg_act_growth = fill(false, nspecies),
 
+        ## cutted biomass
+        mean_biomass = fill(TNaN, nspecies)u"kg / ha",
+        species_cutted_biomass = fill(TNaN, nspecies)u"kg / ha",
+
         ## functional response helper variables
-        K_prep = Array{dtype}(undef, nspecies),
-        denominator = Array{dtype}(undef, nspecies),
+        K_prep = Array{T}(undef, nspecies),
+        denominator = Array{T}(undef, nspecies),
 
         ## helper variables for generation of traits
-        traitmat = Matrix{dtype}(undef, 7, nspecies),
-        similarity_matprep = Array{dtype}(undef, nspecies, nspecies),
-        amc_resid = Array{dtype}(undef, nspecies),
-        rsa_above_resid = Array{dtype}(undef, nspecies),
+        traitmat = Matrix{T}(undef, 7, nspecies),
+        similarity_matprep = Array{T}(undef, nspecies, nspecies),
+        amc_resid = Array{T}(undef, nspecies),
+        rsa_above_resid = Array{T}(undef, nspecies),
 
         ## below ground competition
-        biomass_density_factor = fill(val, nspecies),
-        TS_biomass = fill(val, nspecies)u"kg / ha",
+        biomass_density_factor = fill(TNaN, nspecies),
+        TS_biomass = fill(TNaN, nspecies)u"kg / ha",
 
         ## height influence
-        heightinfluence = fill(val, nspecies),
-        relative_height = fill(val, nspecies)u"m",
+        heightinfluence = fill(TNaN, nspecies),
+        relative_height = fill(TNaN, nspecies)u"m",
 
         # leaf nitrogen (palatability) --> grazing
-        relative_lncm = fill(val, nspecies)u"mg/g",
-        ρ = Array{dtype}(undef, nspecies),
+        relative_lncm = fill(TNaN, nspecies)u"mg/g",
+        ρ = Array{T}(undef, nspecies),
 
         ## nutrient reducer function
-        nutrients_splitted = fill(val, nspecies),
-        Nutred = fill(val, nspecies),
-        amc_nut = fill(val, nspecies),
-        rsa_above_nut = fill(val, nspecies),
+        nutrients_splitted = fill(TNaN, nspecies),
+        Nutred = fill(TNaN, nspecies),
+        amc_nut = fill(TNaN, nspecies),
+        rsa_above_nut = fill(TNaN, nspecies),
 
         ## water reducer function
-        Wp = fill(val, nspecies),
-        Waterred = fill(val, nspecies),
-        W_sla = fill(val, nspecies),
-        W_rsa = fill(val, nspecies),
+        Wp = fill(TNaN, nspecies),
+        Waterred = fill(TNaN, nspecies),
+        W_sla = fill(TNaN, nspecies),
+        W_rsa = fill(TNaN, nspecies),
 
         ## mowing, grazing, trampling
-        mown_height = fill(val, nspecies)u"m",
-        proportion_mown = fill(val, nspecies),
-        grazed_share = fill(val, nspecies),
-        trampling_proportion = fill(val, nspecies),
-        trampled_biomass = fill(val, nspecies)u"kg / ha",
+        mown_height = fill(TNaN, nspecies)u"m",
+        proportion_mown = fill(TNaN, nspecies),
+        grazed_share = fill(TNaN, nspecies),
+        trampling_proportion = fill(TNaN, nspecies),
+        trampled_biomass = fill(TNaN, nspecies)u"kg / ha",
 
         ## clonal growth
-        clonalgrowth = fill(val, patch_xdim, patch_ydim, nspecies)u"kg / ha",
+        clonalgrowth = fill(TNaN, patch_xdim, patch_ydim, nspecies)u"kg / ha",
 
         ## sla transpiration effect
-        relative_sla = fill(val, nspecies)u"m^2 / g")
+        relative_sla = fill(TNaN, nspecies)u"m^2 / g")
 
     return (; u, patch_variables, calc, traits, transfer_function, output)
 end

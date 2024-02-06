@@ -5,6 +5,21 @@ include("senescence_init.jl")
 include("transferfunctions_init.jl")
 
 
+function init_cutted_biomass(; input_obj, T = Float64)
+    biomass_cutting_t = Int64[]
+    biomass_cutting_numeric_date = Float64[]
+    if haskey(input_obj, :output_validation)
+        @unpack biomass_cutting_t, biomass_cutting_numeric_date = input_obj.output_validation
+    end
+    cutted_biomass = DimArray(
+        fill(T(NaN), length(biomass_cutting_t))u"kg/ha",
+        (; t = biomass_cutting_t),
+        name = :cutted_biomass)
+
+    return (; output_validation = (; cutted_biomass, biomass_cutting_t,
+                                biomass_cutting_numeric_date))
+end
+
 """
     initialization(; input_obj, inf_p, calc, trait_input = nothing)
 
@@ -15,18 +30,7 @@ function initialization(; input_obj, inf_p, calc, trait_input = nothing)
     p = tuplejoin(inf_p, p_fixed)
 
     ################## Cutted biomass for validation
-    biomass_cutting_t = Int64[]
-    biomass_cutting_numeric_date = Float64[]
-    if haskey(input_obj, :output_validation)
-        @unpack biomass_cutting_t, biomass_cutting_numeric_date = input_obj.output_validation
-    end
-    cutted_biomass = DimArray(
-        fill(NaN64, length(biomass_cutting_t))u"kg/ha",
-        (; t = biomass_cutting_t),
-        name = :cutted_biomass)
-    cutted_biomass_tuple =
-        (; output_validation = (; cutted_biomass, biomass_cutting_t,
-                                biomass_cutting_numeric_date))
+    cutted_biomass_tuple = init_cutted_biomass(; input_obj, T = eltype(collect(inf_p)))
 
     ################## Traits ##################
     if isnothing(trait_input)
@@ -111,13 +115,6 @@ function fixed_parameter(; input_obj)
 
     # TODO add all parameters with a fixed value
 
-    # likelihood_p = (;)
-    # if likelihood_included.soilmoisture
-    #     likelihood_p = (;
-    #         moistureconv_alpha = -10.0
-    #     )
-    # end
-
     potential_growth_p = (;)
     if included.potential_growth
         potential_growth_p = (;
@@ -151,7 +148,10 @@ function fixed_parameter(; input_obj)
             η_min_sla = -0.8,
             η_max_sla = 0.8,
             β_η_sla = 75u"g / m^2",
-            β_sla = 5,)
+            β_sla = 5,
+
+            δ_wrsa = 0.8,
+            δ_sla = 0.5,)
 
         transfer_functions_p = tuplejoin(transfer_functions_p, added_p)
     end
@@ -161,7 +161,7 @@ function fixed_parameter(; input_obj)
             ϕ_amc = 0.35,
             η_min_amc = 0.05,
             η_max_amc = 0.6,
-            κ_min_amc = 0.7,
+            κ_min_amc = 0.2,
             β_κη_amc = 10,
             β_amc = 7)
 
@@ -173,7 +173,7 @@ function fixed_parameter(; input_obj)
             ϕ_rsa = 0.12u"m^2 / g",
             η_min_rsa = 0.05,
             η_max_rsa = 0.6,
-            κ_min_rsa = 0.7,
+            κ_min_rsa = 0.4,
             β_κη_rsa = 40u"g / m^2 ",
             β_rsa = 7)
 

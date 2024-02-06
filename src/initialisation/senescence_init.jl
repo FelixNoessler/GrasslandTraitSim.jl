@@ -42,7 +42,7 @@ function senescence_rate!(; input_obj, calc, p)
     @unpack α_ll, β_ll, β_sen = p
     @. leaflifespan = 10^((α_ll - log10(sla * 10000u"g/m^2")) / β_ll) *
     365.25 / 12 * u"d"
-    μ .= β_sen ./ leaflifespan
+    μ .= 0.0002u"d^-1" .+ β_sen ./ leaflifespan
 
     return nothing
 end

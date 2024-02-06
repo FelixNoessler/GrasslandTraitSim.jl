@@ -39,7 +39,7 @@ function one_day!(; t, container)
     @unpack cutted_biomass = container.output_validation
     @unpack WHC, PWP, nutrients = container.patch_variables
     @unpack very_low_biomass, nan_biomass = container.calc
-    @unpack act_growth, sen, defoliation, relbiomass = container.calc
+    @unpack act_growth, sen, defoliation, relbiomass, mean_biomass = container.calc
     @unpack biomass_cutting_t = container.output_validation
 
     LAItot = 0.0
@@ -51,12 +51,15 @@ function one_day!(; t, container)
 
     ## -------- cutted biomass
     if t ∈ biomass_cutting_t
-        cutted_biomass[t = At(t)] =
-            mowing!(;
-                t, container, mowing_height = 0.04u"m",
-                biomass = dropdims(mean(u_biomass; dims = (:x, :y)), dims = (:x, :y)),
-                mowing_all = daily_input.mowing,
-                return_mowing = true)
+        for s in axes(u_biomass, :species)
+            mean_biomass[s] = mean(@view u_biomass[:, :, s])
+        end
+
+        mowing!(;
+            t, container, mowing_height = 0.04u"m",
+            biomass = mean_biomass,
+            mowing_all = daily_input.mowing,
+            cutted_biomass)
     end
 
     ## -------- loop over patches

@@ -25,7 +25,7 @@ Visualisation of the `mow_factor`:
 ![](../img/mow_factor.svg)
 """
 function mowing!(; t, container, mowing_height, biomass, mowing_all,
-                 x = NaN, y = NaN, return_mowing = false)
+                 x = NaN, y = NaN, cutted_biomass = nothing)
     @unpack height = container.traits
     @unpack defoliation, mown_height, proportion_mown = container.calc
     @unpack mown = container.output
@@ -61,8 +61,10 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all,
     ## back to their normal size/2
     mow_factor = 1 / (1 + exp(-0.05 * (days_since_last_mowing - mowing_mid_days)))
 
-    if return_mowing
-        return sum(mow_factor .* proportion_mown .* biomass)
+    if !isnothing(cutted_biomass)
+        @unpack species_cutted_biomass = container.calc
+        species_cutted_biomass .= mow_factor .* proportion_mown .* biomass
+        cutted_biomass[t = At(t)] = sum(species_cutted_biomass)
     else
         # --------- add the removed biomass to the defoliation vector
         @. mown[t, x, y, :] = mow_factor * proportion_mown * biomass
@@ -122,7 +124,20 @@ function grazing!(; t, x, y, container, LD, biomass)
     ρ .= (lncm ./ sum(relative_lncm)) .^ leafnitrogen_graz_exp
 
     ## Grazing
-    total_grazed = κ * LD * sum(biomass) / (grazing_half_factor * u"kg/ha" + sum(biomass))
+    k_exp = 2.0
+    μₘₐₓ = κ * LD
+    h = 1 / μₘₐₓ
+    a = 1 / (grazing_half_factor^k_exp * h)
+
+    ## Exponentiation of Quantity with a variable is type unstable
+    ## therefore this is a workaround, k_exp = 2
+    # https://painterqubits.github.io/Unitful.jl/stable/trouble/#Exponentiation
+    biomass_exp = sum(biomass) ^ 2.0
+
+    total_grazed = a * biomass_exp / (1u"kg / ha"^k_exp + a * h * biomass_exp)
+
+    ## Grazing
+    # total_grazed = κ * LD * sum(biomass) / (grazing_half_factor * u"kg/ha" + sum(biomass))
     grazed_share .= ρ .* biomass ./ sum(biomass)
 
     #### add grazed biomass to defoliation

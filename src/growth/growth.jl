@@ -46,9 +46,9 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
 
     @. neg_act_growth = act_growth < 0u"kg / (ha * d)"
     if any(neg_act_growth)
-        @warn "act_growth below zero: $(container.calc.act_growth)"
-        @show container.p
-        @show container.simp
+        @warn "act_growth below zero: $(container.calc.act_growth)" maxlog = 20
+        # @show container.p
+        # @show container.simp
     end
 
     return LAItot

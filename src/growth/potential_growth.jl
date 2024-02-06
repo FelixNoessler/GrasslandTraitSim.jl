@@ -37,7 +37,6 @@ leaf area index of the individual species
 function potential_growth!(; container, biomass, PAR)
     @unpack included = container.simp
     @unpack LAIs, potgrowth = container.calc
-    @unpack RUE_max, k = container.p
 
     LAItot = calculate_LAI(; container, biomass, LAIs)
     if LAItot < 0
@@ -50,6 +49,7 @@ function potential_growth!(; container, biomass, PAR)
         return LAItot
     end
 
+    @unpack RUE_max, k = container.p
     potgrowth_total = PAR * RUE_max * (1 - exp(-k * LAItot))
     @. potgrowth = potgrowth_total * LAIs / LAItot
 
