@@ -1,3 +1,4 @@
+include("parameter.jl")
 include("preallocation.jl")
 include("preallocation_struct.jl")
 include("nutrients_whc_pwp_init.jl")
@@ -25,12 +26,10 @@ end
 
 Initialize the simulation object.
 """
-function initialization(; input_obj, inf_p, calc, trait_input = nothing)
-    p_fixed = fixed_parameter(; input_obj)
-    p = tuplejoin(inf_p, p_fixed)
+function initialization(; input_obj, p, calc, trait_input = nothing, θ_type = Float64)
 
     ################## Cutted biomass for validation
-    cutted_biomass_tuple = init_cutted_biomass(; input_obj, T = eltype(collect(inf_p)))
+    cutted_biomass_tuple = init_cutted_biomass(; input_obj, T = θ_type)
 
     ################## Traits ##################
     if isnothing(trait_input)
@@ -39,7 +38,6 @@ function initialization(; input_obj, inf_p, calc, trait_input = nothing)
     else
         # use traits from input
         for key in keys(trait_input)
-            # getfield(calc.traits, key) .= trait_input[key]
             calc.traits[key] .= trait_input[key]
         end
     end
@@ -56,7 +54,7 @@ function initialization(; input_obj, inf_p, calc, trait_input = nothing)
 
     # WHC, PWP and nutrient index
     input_WHC_PWP!(; calc, input_obj)
-    input_nutrients!(; calc, input_obj)
+    input_nutrients!(; calc, input_obj, p)
 
     ################## Store everything in one object ##################
     p = (; p = p)
@@ -107,86 +105,5 @@ function cumulative_temperature(; temperature, year)
         append!(temperature_sum, cumsum(temperature[year_filter .&& temperature_filter]))
     end
 
-    return temperature_sum * u"°C"
-end
-
-function fixed_parameter(; input_obj)
-    @unpack included = input_obj.simp
-
-    # TODO add all parameters with a fixed value
-
-    potential_growth_p = (;)
-    if included.potential_growth
-        potential_growth_p = (;
-            RUE_max = 3 / 1000 * u"kg / MJ", # Maximum radiation use efficiency 3 g DM MJ-1
-            k = 0.6   # Extinction coefficient
-        )
-    end
-
-    senescence_p = (;)
-    if included.senescence
-        senescence_p = (;
-            α_ll = 2.41,  # specific leaf area --> leaf lifespan
-            β_ll = 0.38,  # specific leaf area --> leaf lifespan
-            Ψ₁ = 775,     # temperature threshold: senescence starts to increase
-            Ψ₂ = 3000,    # temperature threshold: senescence reaches maximum
-            SENₘₐₓ = 3    # maximal seasonality factor for the senescence rate
-        )
-    end
-
-    grazing_p = (;)
-    if included.grazing
-        grazing_p = (;
-            κ = 22u"kg / d"
-        )
-    end
-
-    transfer_functions_p = (;)
-    if included.water_growth_reduction
-        added_p =  (;
-            ϕ_sla = 0.025u"m^2 / g",
-            η_min_sla = -0.8,
-            η_max_sla = 0.8,
-            β_η_sla = 75u"g / m^2",
-            β_sla = 5,
-
-            δ_wrsa = 0.8,
-            δ_sla = 0.5,)
-
-        transfer_functions_p = tuplejoin(transfer_functions_p, added_p)
-    end
-
-    if included.nutrient_growth_reduction
-        added_p =  (;
-            ϕ_amc = 0.35,
-            η_min_amc = 0.05,
-            η_max_amc = 0.6,
-            κ_min_amc = 0.2,
-            β_κη_amc = 10,
-            β_amc = 7)
-
-        transfer_functions_p = tuplejoin(transfer_functions_p, added_p)
-    end
-
-    if included.nutrient_growth_reduction || included.water_growth_reduction
-        added_p =  (;
-            ϕ_rsa = 0.12u"m^2 / g",
-            η_min_rsa = 0.05,
-            η_max_rsa = 0.6,
-            κ_min_rsa = 0.4,
-            β_κη_rsa = 40u"g / m^2 ",
-            β_rsa = 7)
-
-        transfer_functions_p = tuplejoin(transfer_functions_p, added_p)
-    end
-
-    potential_evaporation_p = (;)
-    if included.water_growth_reduction
-        potential_evaporation_p = (;
-            α_pet = 2.0u"mm / d",  # potential evaporation --> plant available water
-        )
-    end
-
-    return tuplejoin(potential_growth_p, senescence_p, grazing_p,
-                     transfer_functions_p, potential_evaporation_p)
+    return temperature_sum #* u"°C"
 end

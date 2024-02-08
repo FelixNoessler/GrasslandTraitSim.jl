@@ -5,13 +5,13 @@ function plot_clonalgrowth(sim, valid; path = nothing)
     patch_ydim = 5
 
     #####################
-    mp = valid.model_parameters()
-    inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies,
         patch_xdim, patch_ydim)
+    p = sim.parameter(; input_obj)
+    p = @set p.clonalgrowth_factor = 0.5
     calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, inf_p, calc)
+    container = sim.initialization(; input_obj, p, calc)
     #####################
 
     container.u.u_biomass .= 2.0u"kg / ha"
@@ -34,7 +34,7 @@ function plot_clonalgrowth(sim, valid; path = nothing)
                 marker = :rect,
                 markersize = 1.5,
                 markerspace = :data,
-                color = log10(startcondition[x, y]),
+                color = startcondition[x, y],
                 colorrange,
                 colormap = :viridis)
 
@@ -42,7 +42,7 @@ function plot_clonalgrowth(sim, valid; path = nothing)
                     marker = :rect,
                     markersize = 1.5,
                     markerspace = :data,
-                    color = log10(endcondition[x, y]),
+                    color = endcondition[x, y],
                     colorrange,
                     colormap = :viridis)
         end
@@ -57,7 +57,7 @@ function plot_clonalgrowth(sim, valid; path = nothing)
         ax.limits = (0, patch_xdim + 1, 0, patch_ydim + 1)
     end
 
-    Colorbar(fig[1, 3]; colorrange, colormap = :viridis, label = "log10 biomass [kg ha⁻¹]")
+    Colorbar(fig[1, 3]; colorrange, colormap = :viridis, label = "biomass [kg ha⁻¹]")
 
     if !isnothing(path)
         save(path, fig;)

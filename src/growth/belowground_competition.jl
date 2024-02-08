@@ -99,7 +99,7 @@ function below_ground_competition!(; container, biomass)
 
     @unpack belowground_density_effect, biomass_dens = container.p
     LinearAlgebra.mul!(TS_biomass, TS, biomass)
-    biomass_density_factor .= (TS_biomass ./ (biomass_dens * u"kg / ha")) .^
+    biomass_density_factor .= (TS_biomass ./ (biomass_dens)) .^
                               -belowground_density_effect
 
 
@@ -241,13 +241,19 @@ function water_reduction!(; container, W, PET, PWP, WHC)
         return nothing
     end
 
+    Wsc = W > WHC ? 1.0 : W > PWP ? (W - PWP) / (WHC - PWP) : 0.0
+
+    pet_adjustment = 1.0
+    if included.pet_growth_reduction
+        @unpack α_pet, β_pet = container.p
+        pet_adjustment = exp(-β_pet * (PET - α_pet))
+    end
+
     @unpack W_sla, W_rsa, Wp, biomass_density_factor = container.calc
-    @unpack α_pet, β_pet, δ_sla, δ_wrsa, β_sla, β_rsa = container.p
+    @unpack δ_sla, δ_wrsa, β_sla, β_rsa = container.p
     @unpack K_wrsa, H_rsa, H_sla = container.transfer_function
 
-    Wsc = W > WHC ? 1.0 : W > PWP ? (W - PWP) / (WHC - PWP) : 0.0
-    @. Wp = biomass_density_factor /
-            (1 + exp(β_pet * u"d/mm" * (PET - α_pet)) / (1/(1-Wsc) - 1))
+    @. Wp = min(biomass_density_factor * Wsc * pet_adjustment, 3.0)
     @. W_sla = 1 - δ_sla + δ_sla / (1 + exp(-β_sla * (Wp - H_sla)))
     @. W_rsa = 1 - δ_wrsa + (K_wrsa + δ_wrsa - 1) / (1 + exp(-β_rsa * (Wp - H_rsa)))
     @. Waterred = W_sla * W_rsa

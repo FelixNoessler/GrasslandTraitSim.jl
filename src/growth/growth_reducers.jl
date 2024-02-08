@@ -20,14 +20,15 @@ comment to the equation/figure: PAR values are usually between 0 and
 Rred are very unlikely
 ![Image of the radiation reducer function](../img/radiation_reducer.svg)
 """
-function radiation_reduction(; PAR, radiation_red)
-    if !radiation_red
+function radiation_reduction(; container, PAR)
+    @unpack included = container.simp
+
+    if !included.radiation_red
         @info "No radiation reduction!" maxlog=1
         return 1.0
     end
 
-    γ1 = 0.0445u"m^2 * d / MJ"
-    γ2 = 5.0u"MJ / (m^2 * d)"
+    @unpack γ1, γ2 = container.p
 
     return min(1.0, 1.0 − γ1 * (PAR − γ2))
 end
@@ -60,18 +61,16 @@ species specific parameter, but here it is set to 12°C for all species.
 
 ![Image of the temperature reducer function](../img/temperature_reducer.svg)
 """
-function temperature_reduction(; T, temperature_growth_reduction)
-    if !temperature_growth_reduction
+function temperature_reduction(; container, T)
+    @unpack included = container.simp
+
+    if !included.temperature_growth_reduction
         @info "No temperature reduction!" maxlog=1
         return 1.0
     end
 
+    @unpack T₀, T₁, T₂, T₃ = container.p
     T = ustrip(T)
-
-    T₀ = 3  #u"°C"
-    T₁ = 12 #u"°C"
-    T₂ = 20 #u"°C"
-    T₃ = 35 #u"°C"
 
     if T < T₀
         return 0
@@ -123,17 +122,15 @@ growth is reduced as the plant stores resources [Jouven2006](@cite).
 
 ![Image of the seasonal effect function](../img/seasonal_reducer.svg)
 """
-function seasonal_reduction(; ST, season_red)
-    if !season_red
+function seasonal_reduction(; container, ST)
+    @unpack included = container.simp
+
+    if !included.season_red
         @info "No seasonal reduction!" maxlog=1
         return 1.0
     end
 
-    SEAₘᵢₙ = 0.7
-    SEAₘₐₓ = 1.3
-    ST₁ = 625
-    ST₂ = 1300
-
+    @unpack SEAₘᵢₙ, SEAₘₐₓ, ST₁, ST₂ = container.p
     ST = ustrip(ST)
 
     if ST < 200

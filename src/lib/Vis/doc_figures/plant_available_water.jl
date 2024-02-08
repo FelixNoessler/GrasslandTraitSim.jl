@@ -1,11 +1,11 @@
 function plant_available_water(sim, valid; path = nothing)
     #####################
-    mp = valid.model_parameters()
-    inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies = 25)
+    p = sim.parameter(; input_obj)
+
     calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, inf_p, calc)
+    container = sim.initialization(; input_obj, p, calc)
     container.calc.biomass_density_factor .= 1
     #####################
 
@@ -16,7 +16,7 @@ function plant_available_water(sim, valid; path = nothing)
     PET_vals = LinRange(0.0, 5.0, 200)u"mm / d"
 
     for (i, W) in enumerate([20, 80]u"mm")
-        for (u, β_pet) in enumerate([0.2, 1])
+        for (u, β_pet) in enumerate([0.1, 0.3]u"d / mm")
             container = @set container.p.β_pet = β_pet
 
             x = (W - PWP) / (WHC - PWP)

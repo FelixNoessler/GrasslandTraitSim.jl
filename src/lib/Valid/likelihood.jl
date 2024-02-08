@@ -1,5 +1,5 @@
 function loglikelihood_model(sim::Module;
-        inf_p,
+        θ, θ_type = Float64,
         input_objs = nothing,
         valid_data = nothing,
         calc = nothing,
@@ -19,7 +19,8 @@ function loglikelihood_model(sim::Module;
 
     if isnothing(sol)
         input_obj = input_objs[plotID]
-        sol = sim.solve_prob(; input_obj, inf_p, calc, trait_input)
+        p = sim.parameter(; input_obj, variable_p = θ)
+        sol = sim.solve_prob(; input_obj, p, calc, trait_input, θ_type)
     end
 
     p_names = [string(s) for s in keys(sol.p)]

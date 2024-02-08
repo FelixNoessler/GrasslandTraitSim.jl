@@ -31,12 +31,9 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     #### growth reducer
     water_reduction!(; container, W, PWP, WHC, PET = daily_input.PET[t])
     nutrient_reduction!(; container, nutrients)
-    Rred = radiation_reduction(; PAR = daily_input.PAR[t],
-        radiation_red = included.radiation_red)
-    Tred = temperature_reduction(; T = daily_input.temperature[t],
-        temperature_growth_reduction = included.temperature_growth_reduction)
-    Seasonalred = seasonal_reduction(; ST = daily_input.temperature_sum[t],
-        season_red = included.season_red)
+    Rred = radiation_reduction(; container, PAR = daily_input.PAR[t])
+    Tred = temperature_reduction(; container, T = daily_input.temperature[t])
+    Seasonalred = seasonal_reduction(; container, ST = daily_input.temperature_sum[t])
 
     @. species_specific_red = heightinfluence * Waterred * Nutred
     reduction = Rred * Tred * Seasonalred

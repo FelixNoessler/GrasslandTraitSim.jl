@@ -35,10 +35,10 @@ function clonalgrowth!(; container)
     @unpack patch_xdim, patch_ydim, nspecies = container.simp
     @unpack clonalgrowth, biomass_per_patch = container.calc
     @unpack u_biomass = container.u
+    @unpack clonalgrowth_factor = container.p
 
     calculate_relbiomass!(; container)
 
-    clonalgrowth_factor = 0.05
     clonalgrowth .= 0.0u"kg / ha"
 
     x_add = [0, 1, 0, -1, 0]

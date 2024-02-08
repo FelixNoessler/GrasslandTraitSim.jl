@@ -4,13 +4,12 @@ function amc_nut_response(sim, valid;
         path = nothing)
 
     ######## input prep
-    mp = valid.model_parameters()
-    inf_p = (; zip(Symbol.(mp.names), mp.best)...)
-    inf_p = @set inf_p.δ_amc = δ_amc
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
+    p = sim.parameter(; input_obj)
+    p = @set p.δ_amc = δ_amc
     calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, inf_p, calc)
+    container = sim.initialization(; input_obj, p, calc)
     container.calc.biomass_density_factor .= 1.0
     ########
 
@@ -87,13 +86,12 @@ end
 
 function W_rsa_response(sim, valid; nspecies = 25, δ_wrsa = 0.5, path = nothing)
     #####################
-    mp = valid.model_parameters()
-    inf_p = (; zip(Symbol.(mp.names), mp.best)...)
-    inf_p = @set inf_p.δ_wrsa = δ_wrsa
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
+    p = sim.parameter(; input_obj)
+    p = @set p.δ_wrsa = δ_wrsa
     calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, inf_p, calc)
+    container = sim.initialization(; input_obj, p, calc)
     #####################
 
     xs = 0:0.01:1
@@ -178,13 +176,12 @@ function rsa_above_nut_response(sim, valid;
         path = nothing)
 
     #####################
-    mp = valid.model_parameters()
-    inf_p = (; zip(Symbol.(mp.names), mp.best)...)
-    inf_p = @set inf_p.δ_nrsa = δ_nrsa
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
+    p = sim.parameter(; input_obj)
+    p = @set p.δ_nrsa = δ_nrsa
     calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, inf_p, calc)
+    container = sim.initialization(; input_obj, p, calc)
     container.calc.biomass_density_factor .= 1.0
     #####################
 
@@ -266,13 +263,12 @@ function W_sla_response(sim, valid;
         path = nothing)
 
     #####################
-    mp = valid.model_parameters()
-    inf_p = (; zip(Symbol.(mp.names), mp.best)...)
-    inf_p = @set inf_p.δ_sla = δ_sla
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
+    p = sim.parameter(; input_obj)
+    p = @set p.δ_sla = δ_sla
     calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, inf_p, calc)
+    container = sim.initialization(; input_obj, p, calc)
     #####################
 
     xs = 0:0.01:1

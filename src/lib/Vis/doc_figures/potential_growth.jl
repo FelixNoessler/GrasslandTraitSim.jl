@@ -4,12 +4,11 @@ function potential_growth(sim, valid;
         path = nothing)
 
     #####################
-    mp = valid.model_parameters()
-    inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
+    p = sim.parameter(; input_obj)
     calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, inf_p, calc)
+    container = sim.initialization(; input_obj, p, calc)
     #####################
 
     par_values = 10

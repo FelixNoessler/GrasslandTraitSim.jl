@@ -1,36 +1,16 @@
-function sample_prior()
-    obj = model_parameters()
-    nparameter = length(obj.names)
-    vals = Array{Float64}(undef, nparameter)
-
-    for i in 1:nparameter
-        vals[i] = rand(obj.prior_dists[i])
-    end
-    return vals
-end
-
-function sample_prior(obj)
-    nparameter = length(obj.names)
-    vals = Array{Float64}(undef, nparameter)
-
-    for i in 1:nparameter
-        vals[i] = rand(obj.prior_dists[i])
-    end
-    return vals
-end
-
-function prior_logpdf(obj, x)
-    nparameter = length(obj.names)
-
-    neg_filter = obj.names .∉ Ref(["moistureconv_alpha", "moistureconv_beta"])
-    if any(x[neg_filter] .< 0)
-        return -Inf
-    end
-
+function lprior(x; inference_obj)
     lprior = 0.0
-    for i in 1:nparameter
-        lprior += logpdf(obj.prior_dists[i], x[i])
+    for k in keys(inference_obj.priordists)
+        lprior += logpdf(inference_obj.priordists[k], x[k])
     end
-
     return lprior
+end
+
+function sample_prior(; inference_obj)
+    p_names = keys(inference_obj.priordists)
+    vals = Float64[]
+    for p in p_names
+        push!(vals, rand(inference_obj.priordists[p]))
+    end
+    return (; zip(p_names, vals)...)
 end

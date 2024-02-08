@@ -54,13 +54,13 @@ vis.plant_available_water(sim, valid;
 vis.leaflifespan(sim, valid; path = f("$docs_img/leaflifespan.svg"))
 
 #### reducer functions
-vis.temperatur_reducer(sim; path = f("$docs_img/temperature_reducer.svg"))
-vis.radiation_reducer(sim; path = f("$docs_img/radiation_reducer.svg"))
+vis.temperatur_reducer(sim, valid; path = f("$docs_img/temperature_reducer.svg"))
+vis.radiation_reducer(sim, valid; path = f("$docs_img/radiation_reducer.svg"))
 vis.height_influence(sim, valid; path = f("$docs_img/height_influence.svg"))
 vis.below_influence(sim, valid; path = f("$docs_img/below_influence.svg"))
 
 #### seasonal effects
-vis.seasonal_effect(sim; path = f("$docs_img/seasonal_reducer.svg"))
+vis.seasonal_effect(sim, valid; path = f("$docs_img/seasonal_reducer.svg"))
 vis.seasonal_component_senescence(sim, valid;
     path = f("$docs_img/seasonal_factor_senescence.svg"))
 

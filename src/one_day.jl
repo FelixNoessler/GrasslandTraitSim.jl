@@ -19,8 +19,6 @@ Density differences for water:
 
 if npatches > 1
 
-- [calculate relative biomass per patch](@ref calculate_relbiomass!),
-  this is needed for [grazing](@ref grazing!) and [trampling](@ref trampling!)
 - [clonal growth](@ref clonalgrowth!) at day of the year = 250
 
 loop over patches:
@@ -39,13 +37,13 @@ function one_day!(; t, container)
     @unpack cutted_biomass = container.output_validation
     @unpack WHC, PWP, nutrients = container.patch_variables
     @unpack very_low_biomass, nan_biomass = container.calc
-    @unpack act_growth, sen, defoliation, relbiomass, mean_biomass = container.calc
+    @unpack act_growth, sen, defoliation,  mean_biomass = container.calc
     @unpack biomass_cutting_t = container.output_validation
 
     LAItot = 0.0
 
     ## -------- clonal growth
-    if doy[t] == 250 && npatches > 1
+    if doy[t] == 250 && npatches > 1 && included.clonalgrowth
         clonalgrowth!(; container)
     end
 

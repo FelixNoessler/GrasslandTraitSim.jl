@@ -14,11 +14,8 @@ using Unitful
 input_obj = valid.validation_input(;
     plotID = "HEG01", nspecies = 25,
     trait_seed = 99);
-
-mp = valid.model_parameters();
-inf_p = (; zip(Symbol.(mp.names), mp.best)...);
-
-sol = sim.solve_prob(; input_obj, inf_p)
+p = sim.parameter(; input_obj);
+sol = sim.solve_prob(; input_obj, p)
 ```
 
 
@@ -109,6 +106,10 @@ We can calculate for all traits the community weighted mean over time:
 ```@example output
 relative_biomass = species_biomass ./ total_biomass
 traits = [:height, :sla, :lncm, :rsa_above, :amc, :ampm, :lmpm]
+trait_names = [
+    "Potential\n height [m]", "Specific leaf\narea [m² g⁻¹]", "Leaf nitrogen \nper leaf mass\n [mg g⁻¹]",
+    "Root surface\narea per above\nground biomass\n[m² g⁻¹]", "Arbuscular\n mycorrhizal\n colonisation",
+    "Aboveground\nbiomass per total\nbiomass [-]", "Leaf biomass\nper total \nbiomass [-]"]
 
 begin
     fig = Figure(; size = (500, 1000))
@@ -121,7 +122,7 @@ begin
         Axis(fig[i, 1];
                 xlabel = i == length(traits) ? "Date [year]" : "",
                 xticklabelsvisible = i == length(traits) ? true : false,
-                ylabel = string(traits[i]))
+                ylabel = trait_names[i])
         lines!(sol.numeric_date, ustrip.(cwm_trait);
                 color = :black, linewidth = 2)
         

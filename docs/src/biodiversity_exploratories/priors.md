@@ -5,22 +5,29 @@ using CairoMakie
 using Statistics
 using Distributions
 import GrasslandTraitSim.Valid as valid
+import GrasslandTraitSim as sim
 
-mp = valid.model_parameters()
+## the input object specifies which processes are included
+## here we include all processes
+input_obj = valid.validation_input(;
+    plotID = "HEG01", nspecies = 1);
+inference_obj = sim.calibrated_parameter(; input_obj)
+
 
 begin
     fig = Figure(; size = (600, 6000))
 
-    for p in eachindex(mp.names)
-        Axis(fig[p, 1]; title = mp.names[p])
+    for (i,p) in enumerate(keys(inference_obj.priordists))
+        Axis(fig[i, 1]; title = String(p))
 
-        ma = quantile(mp.prior_dists[p], 0.995)
+        d = inference_obj.priordists[p]
+        ma = quantile(d, 0.995)
         x = LinRange(0.000001, ma, 200)
-        y = pdf.(mp.prior_dists[p], x)
+        y = pdf.(d, x)
         band!(x, zeros(200), y; color = (:red, 0.3))
         lines!(x, y; color = :black, linewidth = 2)
     end
-end
 
-fig
+    fig
+end
 ```

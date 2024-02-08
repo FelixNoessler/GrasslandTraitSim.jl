@@ -19,7 +19,6 @@ include("validation_data.jl")
 include("likelihood.jl")
 include("prior.jl")
 include("posterior.jl")
-include("parameter.jl")
 include("predictive_check.jl")
 
 function __init__()

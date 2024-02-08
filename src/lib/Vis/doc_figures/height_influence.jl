@@ -1,11 +1,10 @@
 function height_influence(sim, valid; path = nothing, nspecies = 25)
     #####################
-    mp = valid.model_parameters()
-    inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
+    p = sim.parameter(; input_obj)
     calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, inf_p, calc)
+    container = sim.initialization(; input_obj, p, calc)
     #####################
 
     height_strengths = LinRange(0.0, 1.5, 40)

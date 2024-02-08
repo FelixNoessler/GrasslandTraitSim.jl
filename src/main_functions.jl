@@ -7,12 +7,12 @@ Intialize the parameters, the state variables and the output vectors.
 In addition some vectors are preallocated to avoid allocations in the main loop.
 Then, run the main loop and store the results with all parameters in a container.
 """
-function solve_prob(; input_obj, inf_p, calc = nothing, trait_input = nothing)
+function solve_prob(; input_obj, p, calc = nothing, trait_input = nothing, θ_type = Float64)
     if isnothing(calc)
-        calc = preallocate_vectors(; input_obj, T = eltype(collect(inf_p)))
+        calc = preallocate_vectors(; input_obj, T = θ_type)
     end
 
-    container = initialization(; input_obj, inf_p, calc, trait_input)
+    container = initialization(; input_obj, p, calc, trait_input, θ_type)
 
     main_loop!(; container)
 

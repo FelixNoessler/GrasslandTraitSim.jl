@@ -5,14 +5,13 @@ function grazing(sim, valid;
         path = nothing)
 
     #####################
-    mp = valid.model_parameters()
-    inf_p = (; zip(Symbol.(mp.names), mp.best)...)
-    inf_p = @set inf_p.grazing_half_factor = grazing_half_factor
-    inf_p = @set inf_p.leafnitrogen_graz_exp = leafnitrogen_graz_exp
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
+    p = sim.parameter(; input_obj)
+    p = @set p.grazing_half_factor = grazing_half_factor
+    p = @set p.leafnitrogen_graz_exp = leafnitrogen_graz_exp
     calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, inf_p, calc)
+    container = sim.initialization(; input_obj, p, calc)
     #####################
 
     nbiomass = 500
@@ -92,13 +91,12 @@ end
 function trampling(sim, valid; nspecies = 25, trampling_factor = 100, path = nothing)
 
     #####################
-    mp = valid.model_parameters()
-    inf_p = (; zip(Symbol.(mp.names), mp.best)...)
-    inf_p = @set inf_p.trampling_factor = trampling_factor
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
+    p = sim.parameter(; input_obj)
+    p = @set p.trampling_factor = trampling_factor * u"ha / m"
     calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, inf_p, calc)
+    container = sim.initialization(; input_obj, p, calc)
     #####################
 
     nLD = 500
@@ -150,13 +148,12 @@ function mowing(sim, valid; nspecies = 25, mowing_height = 0.07u"m",
         path = nothing)
 
     #####################
-    mp = valid.model_parameters()
-    inf_p = (; zip(Symbol.(mp.names), mp.best)...)
-    inf_p = @set inf_p.mowing_mid_days = mowing_mid_days
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
+    p = sim.parameter(; input_obj)
+    p = @set p.mowing_mid_days = mowing_mid_days
     calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, inf_p, calc)
+    container = sim.initialization(; input_obj, p, calc)
     #####################
 
     nbiomass = 3

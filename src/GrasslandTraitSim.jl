@@ -9,6 +9,8 @@ using Unitful
 using Distributions
 using UnPack
 using DimensionalData
+using TransformVariables
+using Setfield
 
 ##### submodules
 include("lib/Valid/Valid.jl")

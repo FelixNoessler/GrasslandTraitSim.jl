@@ -178,7 +178,7 @@ function trampling!(; container, LD, biomass)
     @unpack trampling_factor = container.p
     @unpack trampling_proportion, trampled_biomass, defoliation = container.calc
 
-    @. trampling_proportion = min.(height * LD * trampling_factor * u"ha / m", 1.0)
+    @. trampling_proportion = min.(height * LD * trampling_factor, 1.0)
     @. trampled_biomass = biomass * trampling_proportion
     defoliation .+= trampled_biomass ./ u"d"
 

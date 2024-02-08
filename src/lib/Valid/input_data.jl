@@ -17,16 +17,19 @@ function validation_input(;
         included = (;
             senescence = true,
             potential_growth = true,
+            clonalgrowth = true,
             mowing = true,
             grazing = true,
             belowground_competition = true,
             height_competition = true,
+            pet_growth_reduction = true,
+            sla_transpiration = true,
             water_growth_reduction = true,
             nutrient_growth_reduction = true,
             temperature_growth_reduction = true,
             season_red = true,
             radiation_red = true),
-        likelihood_included = (; biomass = false, trait = false, soilmoisture = false),
+        likelihood_included = (; biomass = true, trait = true),
         trait_seed = missing)
 
     start_date = Dates.Date(2006, 1, 1)
@@ -53,8 +56,8 @@ function validation_input(;
         innerjoin(_, pet_sub, on = :date, makeunique = true)
         innerjoin(_, par_sub, on = :date, makeunique = true)
         @transform begin
-            :temperature_sum = yearly_temp_cumsum(:temperature, :date) .* u"°C"
-            :temperature = :temperature .* u"°C"
+            :temperature_sum = yearly_temp_cumsum(:temperature, :date) #.* u"°C"
+            :temperature = :temperature #.* u"°C"
             :precipitation = :precipitation .* u"mm / d"
             :PET = :PET .* u"mm / d"
             :PAR = :PAR .* 10000 .* u"MJ / (d * ha)"

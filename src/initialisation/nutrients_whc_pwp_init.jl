@@ -35,9 +35,10 @@ and the last equations changes to:
 
 - `nutheterog`: heterogeneity of nutrients [-]
 """
-function input_nutrients!(; calc, input_obj)
+function input_nutrients!(; calc, input_obj, p)
     @unpack nutrients = calc.patch_variables
     @unpack totalN, CNratio = input_obj.site
+    @unpack included = input_obj.simp
 
     #### data from the biodiversity exploratories
     # mintotalN = 1.2525
@@ -45,8 +46,9 @@ function input_nutrients!(; calc, input_obj)
     # minCNratio = 9.0525
     # maxCNratio = 13.6025
 
-    maxtotalN = 35.0
-    @. nutrients = totalN / maxtotalN
+    if included.nutrient_growth_reduction
+        @. nutrients = totalN / p.maxtotalN
+    end
 
     return nothing
 end

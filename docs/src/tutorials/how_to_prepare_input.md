@@ -43,7 +43,7 @@ PET = ones(ntimesteps)u"mm / d"
 precipitation = ones(ntimesteps)u"mm / d"
 
 # --------------- temperature [°C]
-temperature = ones(ntimesteps)u"°C"
+temperature = ones(ntimesteps)#u"°C"
 
 # --------------- yearly temperature sum [°C]
 temperature_sum = sim.cumulative_temperature(; temperature, year) 
@@ -116,19 +116,25 @@ simp = (
     nutheterog = 0.0, 
     trait_seed = missing,  
     
-    ## these variables are used to debug the model
-    included = 
-        (senescence = true, 
-         potential_growth = true, 
-         mowing = true, 
-         grazing = true, 
-         belowground_competition = true, 
-         height_competition = true, 
-         water_growth_reduction = true, 
-         nutrient_growth_reduction = true, 
-         temperature_growth_reduction = true, 
-         season_red = true, 
-         radiation_red = true)
+    ## which processes to include
+    included = (;
+        senescence = true,
+        potential_growth = true,
+        clonalgrowth = true,
+        mowing = true,
+        grazing = true,
+        belowground_competition = true,
+        height_competition = true,
+        pet_growth_reduction = true,
+        sla_transpiration = true,
+        water_growth_reduction = true,
+        nutrient_growth_reduction = true,
+        temperature_growth_reduction = true,
+        season_red = true,
+        radiation_red = true),
+    
+    ## include parameter for likelihood calculation?
+    likelihood_included = (; biomass = true, trait = true)
 )
 ```
 
@@ -170,42 +176,19 @@ trait_input = (;
     lncm = [19.6, 20.7, 22.7, 20.1, 23.6]u"mg/g")
 ```
 
-## Simulation parameters that are adapted in the calibration process
-
-```@example input_creation
-inf_p = (
-    α_sen = 5.568529, 
-    β_sen = 2.131722, 
-    sla_tr = 0.0209188, 
-    sla_tr_exponent = 1.122322, 
-    β_pet = 0.5,
-    biomass_dens = 1072.062, 
-    belowground_density_effect = 2.054232, 
-    height_strength = 0.616476, 
-    leafnitrogen_graz_exp = 2.618872, 
-    trampling_factor = 198.9975, 
-    grazing_half_factor = 102.4847, 
-    mowing_mid_days = 46.11971, 
-    totalN_β = 0.1,
-    CN_β = 0.1,
-    δ_wrsa = 0.4799059,
-    δ_sla = 0.6447272, 
-    δ_amc = 0.7082366, 
-    δ_nrsa = 0.4069509
-)
-```
-
-
 ## Run a simulation
 
 ```@example input_creation
+## get parameters
+p = sim.parameter(; input_obj)
+
 # if you will run many simulations, it is recommended to preallocated the vectors
 # but the simulation will also run without preallocation 
 calc = sim.preallocate_vectors(; input_obj);
 
 # traits will be generated, no preallocation
-sol = sim.solve_prob(; input_obj, inf_p)
+sol = sim.solve_prob(; input_obj, p);
 
 # with static traits, with preallocation
-sol = sim.solve_prob(; input_obj, calc, inf_p, trait_input)
+sol = sim.solve_prob(; input_obj, calc, p, trait_input);
 ```

@@ -112,7 +112,7 @@ function transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
 
     ###### SLA effect
     sla_effect = 1.0
-    if included.water_growth_reduction
+    if included.sla_transpiration
         @unpack sla = container.traits
         @unpack sla_tr, sla_tr_exponent = container.p
         @unpack relative_sla = container.calc
@@ -120,7 +120,7 @@ function transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
         # community weighted mean specific leaf area
         relative_sla .= sla .* patch_biomass ./ sum(patch_biomass)
         cwm_sla = sum(relative_sla)
-        sla_effect = (cwm_sla / (sla_tr * u"m^2 / g"))^sla_tr_exponent
+        sla_effect = (cwm_sla / sla_tr)^sla_tr_exponent
     end
 
     ####### plant available water:

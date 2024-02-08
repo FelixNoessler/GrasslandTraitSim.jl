@@ -59,10 +59,9 @@ input_obj = (; daily_input, simp,
 ```
 
 ```@example heterog_input
-mp = valid.model_parameters();
-inf_p = (; zip(Symbol.(mp.names), mp.best)...);
-    
-sol = sim.solve_prob(; input_obj, inf_p);
+p = sim.parameter(; input_obj) 
+
+sol = sim.solve_prob(; input_obj, p);
 
 patch_biomass = dropdims(sum(sol.output.biomass; dims = :species); dims = :species)
 numeric_date = sim.Valid.to_numeric.(sol.date)
