@@ -1,19 +1,27 @@
 function dashboard(; sim::Module, valid::Module, posterior = nothing)
     # Makie.inline!(true)
+    set_theme!(
+        Theme(
+            Label = (; fontsize = 12)),
+            Axis = (xgridvisible = false, ygridvisible = false,
+                    topspinevisible = false, rightspinevisible = false),
+            GLMakie = (title = "Grassland Simulation",
+                       focus_on_show = true))
 
-    plot_obj = dashboard_layout(; valid)
+    plot_obj = dashboard_layout(; sim, valid)
 
     still_running = false
     sol = nothing
     valid_data = nothing
     predictive_data = nothing
+    trait_input = load_trait_data(valid)
 
     on(plot_obj.obs.run_button.clicks) do n
         if !still_running
             still_running = true
 
-            inf_p, input_obj, trait_input = prepare_input(; plot_obj, valid, posterior)
-            sol = sim.solve_prob(; input_obj, inf_p, trait_input)
+            p, input_obj = prepare_input(; plot_obj, sim, valid, posterior)
+            sol = sim.solve_prob(; input_obj, p, trait_input)
             valid_data = get_valid_data(; plot_obj, valid)
 
             show_predictive = plot_obj.obs.toggle_predcheck.active.val
@@ -30,7 +38,7 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing)
             end
 
             ll_obj = valid.loglikelihood_model(sim;
-                inf_p,
+                θ = p,
                 plotID = plot_obj.obs.menu_plotID.selection.val,
                 data = valid_data,
                 sol = sol,
@@ -45,6 +53,23 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing)
 
     on(plot_obj.obs.menu_plotID.selection) do n
         plot_obj.obs.run_button.clicks[] = 1
+    end
+
+    on(plot_obj.obs.preset_button.clicks) do n
+        @info "Parameter reset"
+        included = NamedTuple(
+            [first(s) => last(s).active.val for s in plot_obj.obs.toggles_included])
+        plotID = plot_obj.obs.menu_plotID.selection.val
+        input_obj = valid.validation_input(;
+            plotID,
+            nspecies = 43,
+            included)
+        p = sim.parameter(; input_obj)
+        for p_k in keys(p)
+            f = plot_obj.obs.parameter_keys .== p_k
+            s = plot_obj.obs.sliders_param.sliders[findfirst(f)]
+            set_close_to!(s, ustrip(p[p_k]))
+        end
     end
 
     plot_obj.obs.run_button.clicks[] = 1

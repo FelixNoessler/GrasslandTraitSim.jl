@@ -1,11 +1,37 @@
-function prepare_input(; plot_obj, valid, posterior)
+function prepare_input(; plot_obj, sim, valid, posterior)
+
+
+    # ------------- whether parts of the simulation are included
+    included = NamedTuple(
+        [first(s) => last(s).active.val for s in plot_obj.obs.toggles_included])
+    plotID = plot_obj.obs.menu_plotID.selection.val
+    input_obj = valid.validation_input(;
+        plotID,
+        nspecies = 43,
+        included)
+
     # ------------- parameter values
-    parameter_vals = nothing
+    p = nothing
     samplingtype = plot_obj.obs.menu_samplingtype.selection.val
+
     if samplingtype == :prior
-        parameter_vals = valid.sample_prior()
+        inference_obj = sim.calibrated_parameter(; input_obj)
+        θ = valid.sample_prior(; inference_obj)
+        θ = sim.add_units(θ; inference_obj)
+        p = sim.parameter(; input_obj, variable_p = θ)
+
     elseif samplingtype == :fixed
         parameter_vals = [s.value.val for s in plot_obj.obs.sliders_param.sliders]
+        p_fixed = sim.parameter(; input_obj)
+        unit_vec = unit.(collect(p_fixed))
+        value_vec = Float64[]
+
+        for p_k in keys(p_fixed)
+            f = plot_obj.obs.parameter_keys .== p_k
+            push!(value_vec, parameter_vals[findfirst(f)])
+        end
+        plot_obj.obs.parameter_keys
+        p = (; zip(keys(p_fixed), value_vec .* unit_vec)...)
     else
         samplingtype == :posterior
         if isnothing(posterior)
@@ -16,28 +42,14 @@ function prepare_input(; plot_obj, valid, posterior)
     end
 
     if samplingtype != :fixed
-        for i in eachindex(parameter_vals)
-            s = plot_obj.obs.sliders_param.sliders[i]
-            set_close_to!(s, parameter_vals[i])
+        for p_k in keys(p)
+            f = plot_obj.obs.parameter_keys .== p_k
+            s = plot_obj.obs.sliders_param.sliders[findfirst(f)]
+            set_close_to!(s, ustrip(p[p_k]))
         end
     end
 
-    parameter_names = valid.model_parameters().names
-    inf_p = (; zip(Symbol.(parameter_names), parameter_vals)...)
-
-    # ------------- whether parts of the simulation are included
-    included = NamedTuple(
-        [first(s) => last(s).active.val for s in plot_obj.obs.toggles_included])
-
-    trait_input = load_trait_data(valid)
-
-    plotID = plot_obj.obs.menu_plotID.selection.val
-    input_obj = valid.validation_input(;
-        plotID,
-        nspecies = length(trait_input.sla),
-        included)
-
-    return inf_p, input_obj, trait_input
+    return p, input_obj
 end
 
 

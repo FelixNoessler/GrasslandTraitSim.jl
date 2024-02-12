@@ -114,7 +114,7 @@ function soilwater_plot(; sol, plot_obj)
         color = :blue)
     ax.ylabel = "Soil water [mm]"
     ax.xlabel = "Time [years]"
-    # ylims!(ax, 0.0, nothing)
+    ylims!(ax, 0.0, nothing)
 end
 
 function abiotic_plot(; sol, plot_obj)
@@ -173,7 +173,13 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
         φ = 1 / sol.p.b_amc
         α = @. μ * φ
         β = @. (1.0 - μ) * φ
-        cwm_trait_dist = Beta.(α, β)
+
+        try
+            cwm_trait_dist = Beta.(α, β)
+        catch e
+            @warn "Error in Beta distribution: $e"
+            return nothing
+        end
     else
         cwm_trait_dist = truncated.(
             Laplace.(cwm_trait, sol.p[Symbol("b_$trait")]);
