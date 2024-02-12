@@ -2,24 +2,44 @@ function calibrated_parameter(; input_obj)
     @unpack likelihood_included, included = input_obj.simp
 
     p = (;
+        # α_sen = (Uniform(0, 0.1), as(Real, 0.0, 0.1), u"d^-1"),
         β_sen = (Uniform(0.0, 1.0), as𝕀, NoUnits),
-        sla_tr = (truncated(Normal(0.02, 0.01); lower = 1e-10), asℝ₊, u"m^2/g"),
-        sla_tr_exponent = (truncated(Normal(1.0, 5.0); lower = 1e-10), asℝ₊, NoUnits),
-        β_pet = (truncated(Normal(1.0, 1.0); lower = 1e-10), asℝ₊, u"d/mm"),
+        height_strength = (Uniform(0.0, 1.0), asℝ₊, NoUnits),
+        mowing_mid_days = (truncated(Normal(10.0, 30.0); lower = 0.0, upper = 60.0),
+                           as(Real, 0.0, 60.0), NoUnits),
+        leafnitrogen_graz_exp = (truncated(Normal(1.0, 10.0); lower = 1e-10),
+                                 asℝ₊, NoUnits),
+        trampling_factor = (truncated(Normal(0.0, 0.05); lower = 0.0), asℝ₊, u"ha/m"),
+        grazing_half_factor = (truncated(Normal(500.0, 500.0); lower = 0.0, upper = 1000.0),
+                               as(Real, 0.0, 1000.0), NoUnits),
         biomass_dens = (truncated(Normal(1000.0, 1000.0); lower = 1e-10), asℝ₊, u"kg/ha"),
         belowground_density_effect = (truncated(Normal(1.0, 0.5); lower = 1e-10),
                                       asℝ₊, NoUnits),
-        height_strength = (Uniform(0.0, 1.0), asℝ₊, NoUnits),
-        leafnitrogen_graz_exp = (truncated(Normal(1.0, 10.0); lower = 1e-10),
-                                 asℝ₊, NoUnits),
-        trampling_factor = (truncated(Normal(0.0, 0.01); lower = 1e-10), asℝ₊, u"ha/m"),
-        grazing_half_factor = (truncated(Normal(500.0, 500.0); lower = 1e-10),
-                               asℝ₊, NoUnits),
-        mowing_mid_days = (truncated(Normal(10.0, 30.0); lower = 1e-10), asℝ₊, NoUnits),
+        # α_pet = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), u"mm/d")
+        β_pet = (truncated(Normal(1.0, 1.0); lower = 1e-10), asℝ₊, u"d/mm"),
+        sla_tr = (truncated(Normal(0.02, 0.01); lower = 1e-10), asℝ₊, u"m^2/g"),
+        sla_tr_exponent = (truncated(Normal(1.0, 5.0); lower = 1e-10), asℝ₊, NoUnits),
+        # ϕ_sla = 0.025u"m^2 / g",
+        # η_min_sla = -0.8,
+        # η_max_sla = 0.8,
+        # β_η_sla = 75u"g / m^2",
+        # β_sla = 5.0,
         δ_wrsa = (Uniform(0.0, 1.0), as𝕀, NoUnits),
         δ_sla = (Uniform(0.0, 1.0), as𝕀, NoUnits),
+        # ϕ_amc = 0.35,
+        # η_min_amc = 0.05,
+        # η_max_amc = 0.6,
+        # κ_min_amc = 0.2,
+        # β_κη_amc = 10,
+        # β_amc = 7.0,
         δ_amc = (Uniform(0.0, 1.0), as𝕀, NoUnits),
         δ_nrsa = (Uniform(0.0, 1.0), as𝕀, NoUnits),
+        # ϕ_rsa = 0.12u"m^2 / g",
+        # η_min_rsa = 0.05,
+        # η_max_rsa = 0.6,
+        # κ_min_rsa = 0.4,
+        # β_κη_rsa = 40u"g / m^2",
+        # β_rsa = 7.0,
         b_biomass = (truncated(Cauchy(0, 300); lower = 1e-10), asℝ₊, NoUnits),
         b_sla = (truncated(Cauchy(0, 0.05); lower = 1e-10), asℝ₊, NoUnits),
         b_lncm = (truncated(Cauchy(0, 0.5); lower = 1e-10), asℝ₊, NoUnits),
@@ -77,12 +97,12 @@ function calibrated_parameter(; input_obj)
         append!(exclude_parameters, height_names)
     end
 
-    f = keys.(collect(p)) .∉ Ref(exclude_parameters)
+    f = collect(keys(p)) .∉ Ref(exclude_parameters)
     p = (; zip(keys(p)[f], collect(p)[f])...)
 
     prior_vec = first.(collect(p))
     lb = quantile.(prior_vec, 0.001)
-    ub = quantile.(prior_vec, 0.999)
+    ub = quantile.(prior_vec, 0.95)
 
 
     lb = (; zip(keys(p), lb)...)
@@ -145,10 +165,10 @@ function fixed_parameter(; input_obj)
 
     if included.season_red
         p = merge(p, (
-        SEAₘᵢₙ = 0.7,
-        SEAₘₐₓ = 1.3,
-        ST₁ = 625,
-        ST₂ = 1300,
+            SEAₘᵢₙ = 0.7,
+            SEAₘₐₓ = 1.3,
+            ST₁ = 625,
+            ST₂ = 1300,
         ))
     end
 
@@ -269,4 +289,10 @@ function add_units(x; inference_obj)
     end
 
     return x
+end
+
+function init_parameter(; input_obj, inference_obj)
+    fixed_p = fixed_parameter(; input_obj)
+    f = collect(keys(fixed_p)) .∈ Ref(keys(inference_obj.units))
+    return (; zip(collect(keys(fixed_p))[f], ustrip.(collect(fixed_p)[f]))...)
 end
