@@ -14,6 +14,12 @@ import GrasslandTraitSim as sim
 import GrasslandTraitSim.Valid as valid
 import GrasslandTraitSim.Vis as vis
 
+####### Copy files to docs folder
+cp("README.md", "docs/src/index.md"; force = true)
+cp("assets/ECEM_2023_presentation.pdf", "docs/src/assets/ECEM_2023_presentation.pdf";
+     force = true)
+cp("assets/screenshot.png", "docs/src/img/screenshot.png"; force = true)
+
 ####### Create Bilbiography
 bib = CitationBibliography("docs/src/lit.bib"; style = :numeric)
 

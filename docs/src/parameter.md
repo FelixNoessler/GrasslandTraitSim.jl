@@ -70,21 +70,14 @@ the water holding capacity and the permanent wilting point (see [`input_WHC_PWP!
 
 
 
-## Scale and conversion parameter for calibration
+## Scale parameter for calibration
 
 | Parameter            | Description |
 | -------------------- | ----------- |
-| `moistureconv_alpha` |             |
-| `moistureconv_beta`  |             |
 | `b_biomass`          |             |
 | `b_sla`              |             |
 | `b_lncm`             |             |
 | `b_amc`              |             |
 | `b_height`           |             |
 | `b_rsa_above`        |             |
-| `b_var_sla`          |             |
-| `b_var_lncm`         |             |
-| `b_var_height`       |             |
-| `b_var_rsa_above`    |             |
-| `b_soilmoisture`     |             |
 
