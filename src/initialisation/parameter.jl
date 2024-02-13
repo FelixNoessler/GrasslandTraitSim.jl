@@ -180,7 +180,8 @@ function fixed_parameter(; input_obj)
 
     if included.mowing
         p = merge(p, (
-            mowing_mid_days = 15.0, # day where the plants are grown back to their normal size/2
+            mowing_mid_days = 10.0, # day where the plants are grown back to their normal size/2
+            mowfactor_β = 0.05,
         ))
     end
 

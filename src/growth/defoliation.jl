@@ -32,11 +32,12 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all,
     @unpack included = container.simp
 
     days_since_last_mowing = 200
-    mowing_mid_days = 0
+    mowing_mid_days = 0.0
+    mowfactor_β = 0.0
 
     ## if mowing is not included, cutted biomass shouldn't raise an error
     if included.mowing
-        @unpack mowing_mid_days = container.p
+        @unpack mowing_mid_days, mowfactor_β = container.p
 
         tstart = t - 200 < 1 ? 1 : t - 200
         mowing_last200 = @view mowing_all[t-1:-1:tstart]
@@ -59,7 +60,7 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all,
     # --------- if meadow is too often mown, less biomass is removed
     ## the 'mowing_mid_days' is the day where the plants are grown
     ## back to their normal size/2
-    mow_factor = 1 / (1 + exp(-0.05 * (days_since_last_mowing - mowing_mid_days)))
+    mow_factor = 1.0 #1 / (1 + exp(-mowfactor_β * (days_since_last_mowing - mowing_mid_days)))
 
     if !isnothing(cutted_biomass)
         @unpack species_cutted_biomass = container.calc
