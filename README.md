@@ -19,19 +19,18 @@ Here are slides from presentations that show concepts of the models:
 
 2. Launch Julia and type
 
-```@julia
+```julia
 import Pkg
 Pkg.add(url="https://github.com/felixnoessler/GrasslandTraitSim.jl")
 ```
 
-!!! compat
-    The simulations were tested with `Julia` 1.10. I recommend using this version.
+> **_Compatibility:_** The simulations were tested with `Julia` 1.10. I recommend using this version.
 
 For more information on installing unregistered packages, see [here](https://pkgdocs.julialang.org/v1/managing-packages/#Adding-unregistered-packages). Here, you can browse the different versions of `GrasslandTraitSim.jl`: [tags](https://github.com/FelixNoessler/GrasslandTraitSim.jl/tags). 
 
 ## Run simulations
 
-```@julia
+```julia
 import GrasslandTraitSim as sim
 import GrasslandTraitSim.Valid as valid
 
@@ -42,7 +41,7 @@ sol = sim.solve_prob(; input_obj, p);
 
 ## Start the GUI for checking the calibration results
 
-```@julia
+```julia
 using GLMakie
 import GrasslandTraitSim as sim
 import GrasslandTraitSim.Valid as valid
