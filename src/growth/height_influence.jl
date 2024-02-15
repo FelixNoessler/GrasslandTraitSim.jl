@@ -8,7 +8,7 @@
     -\text{height}_{\text{strength}}
 ```
 
-- `height_strength` lies between 0 (no influence) and 1
+- `height_strength_exp` lies between 0 (no influence) and 1
   (strong influence of the plant height) [-]
 - `cwm_height` is community weighted mean height [m]
 
@@ -29,8 +29,8 @@ function height_influence!(; container, biomass)
     relative_height .= height .* biomass ./ sum(biomass)
     height_cwm = sum(relative_height)
 
-    @unpack height_strength = container.p
-    @. heightinfluence = height * height_strength / height_cwm - height_strength + 1.0
+    @unpack height_strength_exp = container.p
+    @. heightinfluence = (height / height_cwm) ^ height_strength_exp
 
     return nothing
 end
