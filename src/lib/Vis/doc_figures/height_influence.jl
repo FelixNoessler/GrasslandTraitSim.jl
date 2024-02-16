@@ -36,7 +36,7 @@ function height_influence(sim, valid; path = nothing, nspecies = 25)
             colormap = colormap)
     end
 
-    lines!(height_strengths, ones(length(height_strengths));
+    lines!(height_strength_exps, ones(length(height_strength_exps));
         linewidth = 5,
         linestyle = :dash,
         color = :red)
