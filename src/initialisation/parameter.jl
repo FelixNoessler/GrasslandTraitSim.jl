@@ -86,6 +86,8 @@ function calibrated_parameter(; input_obj)
     p = (;
         α_sen = (Uniform(0, 0.1), as(Real, 0.0, 0.1), u"d^-1"),
         β_sen = (Uniform(0.0, 1.0), as𝕀, NoUnits),
+        Ψ₁ = (Uniform(700.0, 3000.0), as(Real, 700.0, 3000.0), NoUnits),
+        SENₘₐₓ = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0), NoUnits),
         height_strength_exp = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), NoUnits),
         mowing_mid_days = (truncated(Normal(10.0, 30.0); lower = 0.0, upper = 60.0),
                            as(Real, 0.0, 60.0), NoUnits),
@@ -93,13 +95,14 @@ function calibrated_parameter(; input_obj)
         trampling_factor = (truncated(Normal(0.0, 0.05); lower = 0.0), asℝ₊, u"ha/m"),
         grazing_half_factor = (truncated(Normal(500.0, 500.0); lower = 0.0, upper = 1000.0),
                                as(Real, 0.0, 1000.0), NoUnits),
-        biomass_dens = (truncated(Normal(1000.0, 1000.0); lower = 1e-10), asℝ₊, u"kg/ha"),
-        belowground_density_effect = (truncated(Normal(1.0, 0.5); lower = 1e-10),
+        κ = (Uniform(12.0, 22.5), as(Real, 12.0, 22.5), u"kg/d"),
+        biomass_dens = (truncated(Normal(1000.0, 1000.0); lower = 0.0), asℝ₊, u"kg/ha"),
+        belowground_density_effect = (truncated(Normal(1.0, 0.5); lower = 0.0),
                                       asℝ₊, NoUnits),
         α_pet = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), u"mm/d"),
-        β_pet = (truncated(Normal(1.0, 1.0); lower = 1e-10), asℝ₊, u"d/mm"),
-        sla_tr = (truncated(Normal(0.02, 0.01); lower = 1e-10), asℝ₊, u"m^2/g"),
-        sla_tr_exponent = (truncated(Normal(1.0, 5.0); lower = 1e-10), asℝ₊, NoUnits),
+        β_pet = (truncated(Normal(1.0, 1.0); lower = 0.0), asℝ₊, u"d/mm"),
+        sla_tr = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊, u"m^2/g"),
+        sla_tr_exponent = (truncated(Normal(1.0, 5.0); lower = 0.0), asℝ₊, NoUnits),
         ϕ_sla = (Uniform(0.01, 0.03), as(Real, 0.01, 0.03), u"m^2/g"),
         η_min_sla = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), NoUnits),
         η_max_sla = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), NoUnits),
@@ -121,12 +124,12 @@ function calibrated_parameter(; input_obj)
         κ_min_rsa = (Uniform(0.0, 1.0), as𝕀, NoUnits),
         β_κη_rsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), u"g/m^2"),
         β_rsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), NoUnits),
-        b_biomass = (truncated(Cauchy(0, 300); lower = 1e-10), asℝ₊, NoUnits),
-        b_sla = (truncated(Cauchy(0, 0.05); lower = 1e-10), asℝ₊, NoUnits),
-        b_lncm = (truncated(Cauchy(0, 0.5); lower = 1e-10), asℝ₊, NoUnits),
-        b_amc = (truncated(Cauchy(0, 30); lower = 1e-10), asℝ₊, NoUnits),
-        b_height = (truncated(Cauchy(0, 1); lower = 1e-10), asℝ₊, NoUnits),
-        b_rsa_above = (truncated(Cauchy(0, 0.01); lower = 1e-10), asℝ₊, NoUnits)
+        b_biomass = (truncated(Cauchy(0, 300); lower = 0.0), asℝ₊, NoUnits),
+        b_sla = (truncated(Cauchy(0, 0.05); lower = 0.0), asℝ₊, NoUnits),
+        b_lncm = (truncated(Cauchy(0, 0.5); lower = 0.0), asℝ₊, NoUnits),
+        b_amc = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊, NoUnits),
+        b_height = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊, NoUnits),
+        b_rsa_above = (truncated(Cauchy(0, 0.01); lower = 0.0), asℝ₊, NoUnits)
     )
 
     exclude_parameters = exlude_parameter(; input_obj)
