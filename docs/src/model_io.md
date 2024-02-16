@@ -54,9 +54,9 @@ CurrentModule = GrasslandTraitSim
 
 | Variable          | Description                                  | used in                                                                   |
 | ----------------- | -------------------------------------------- | ------------------------------------------------------------------------- |
-| `PWP[patch]`      | Permanent wilting point [mm]                 | [`water_reduction!`](@ref)                                         |
-| `WHC[patch]`      | Water holding capacity [mm]                  | [`water_reduction!`](@ref)                                         |
-| `nutindex[patch]` | Nutrients index ranging from zero to one [-] | [`nutrient_reduction!`](@ref) |
+| `PWP[x, y]`      | Permanent wilting point [mm]                 | [`water_reduction!`](@ref)                                         |
+| `WHC[x, y]`      | Water holding capacity [mm]                  | [`water_reduction!`](@ref)                                         |
+| `nutindex[x, y]` | Nutrients index ranging from zero to one [-] | [`nutrient_reduction!`](@ref) |
 
 ---
 
@@ -65,18 +65,18 @@ CurrentModule = GrasslandTraitSim
 ### Raw outputs
 | Variable                     | Description                               |
 | ---------------------------- | ----------------------------------------- |
-| `biomass[t, patch, species]` | Aboveground fresh green biomass [kg ha⁻¹] |
-| `water[t, patch]`            | Water reserve [mm]                        |
+| `biomass[t, x, y, species]` | Aboveground fresh green biomass [kg ha⁻¹] |
+| `water[t, x, y]`            | Water reserve [mm]                        |
 
 
 ### Derived outputs (community weighted mean traits)
 
 | Variable                   | Description                                      |
 | -------------------------- | ------------------------------------------------ |
-| `CWM_sla[t, patch]`        | Specific leaf area [m² g⁻¹]                      |
-| `CWM_amc[t, patch]`        | Arbuscular mycorrhizal colonisation [-]          |
-| `CWM_rsa_above[t, patch]` | Root surface area / aboveground biomass [m² g⁻¹] |
-| `CWM_height[t, patch]`     | Plant height [m]                                 |
-| `CWM_lncm[t, patch]`       | Leaf nitrogen / leaf mass [mg g⁻¹]               |
+| `CWM_sla[t, x, y]`        | Specific leaf area [m² g⁻¹]                      |
+| `CWM_amc[t, x, y]`        | Arbuscular mycorrhizal colonisation [-]          |
+| `CWM_trait[t, x, y]` | Root surface area / aboveground biomass [m² g⁻¹] |
+| `CWM_height[t, x, y]`     | Plant height [m]                                 |
+| `CWM_lncm[t, x, y]`       | Leaf nitrogen / leaf mass [mg g⁻¹]               |
 
 
