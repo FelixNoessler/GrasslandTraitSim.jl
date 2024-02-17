@@ -144,3 +144,23 @@ function preallocate_vectors(; input_obj, T = Float64)
 
     return (; u, patch_variables, calc, traits, transfer_function, output)
 end
+
+function preallocate(; input_obj, Tdiff = nothing)
+    normal = preallocate_vectors(; input_obj, T = Float64)
+
+    if isnothing(Tdiff)
+        return (; normal)
+    end
+
+    diff = preallocate_vectors(; input_obj, T = Tdiff)
+
+    return (; normal, diff)
+end
+
+function get_buffer(buffer, T)
+    if T <: ForwardDiff.Dual
+        return buffer.diff
+    elseif T <: Float64
+        return buffer.normal
+    end
+end

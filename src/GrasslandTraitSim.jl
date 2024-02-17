@@ -11,6 +11,7 @@ using UnPack
 using DimensionalData
 using TransformVariables
 using Setfield
+using ForwardDiff
 
 ##### submodules
 include("lib/Valid/Valid.jl")
