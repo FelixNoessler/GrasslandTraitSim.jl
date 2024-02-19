@@ -88,13 +88,13 @@ function grazing_half_factor(; path = nothing)
     end
 end
 
-function trampling(sim, valid; nspecies = 25, trampling_factor = 100, path = nothing)
+function trampling(sim, valid; nspecies = 25, trampling_factor = 0.01, path = nothing)
 
     #####################
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
     p = sim.parameter(; input_obj)
-    p = @set p.trampling_factor = trampling_factor * u"ha / m"
+    p = @set p.trampling_factor = trampling_factor * u"ha"
     calc = sim.preallocate_vectors(; input_obj)
     container = sim.initialization(; input_obj, p, calc)
     #####################

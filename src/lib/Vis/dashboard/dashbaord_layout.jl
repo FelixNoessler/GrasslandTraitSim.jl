@@ -1,4 +1,4 @@
-function dashboard_layout(; sim, valid)
+function dashboard_layout(; sim, valid, variable_p)
     fig = Figure(; size = (1700, 850))
 
     top_menu = GridLayout(fig[1, 1])
@@ -70,36 +70,29 @@ function dashboard_layout(; sim, valid)
     Label(validation_layout[1, 1], "Validation";
         tellwidth = true, halign = :left,
         font = :bold, fontsize = 16)
-
-    Label(validation_layout[2, 1], "predictive check?";
-        tellwidth = true, halign = :left, fontsize = 16)
-    toggle_predcheck = Toggle(validation_layout[2, 2],
-        active = true,
-        tellwidth = false,
-        halign = :left)
-    Label(validation_layout[3, 1], "validation data?";
+    Label(validation_layout[2, 1], "validation data?";
         halign = :left, fontsize = 16)
-    toggle_validdata = Toggle(validation_layout[3, 2],
+    toggle_validdata = Toggle(validation_layout[2, 2],
         active = true,
         tellwidth = false,
         halign = :left)
 
-    Label(validation_layout[4, 1], "Parameter:";
+    Label(validation_layout[3, 1], "Parameter:";
         tellwidth = true, halign = :left, fontsize = 16)
-    menu_samplingtype = Menu(validation_layout[5, 1];
+    menu_samplingtype = Menu(validation_layout[4, 1];
         options = zip(["fixed (see right)", "sample prior", "sample posterior"],
             [:fixed, :prior, :posterior]),
         halign = :left)
 
-    Label(validation_layout[4, 2], "PlotID:";
+    Label(validation_layout[3, 2], "PlotID:";
         tellwidth = true, halign = :left, fontsize = 16)
-    menu_plotID = Menu(validation_layout[5, 2];
+    menu_plotID = Menu(validation_layout[4, 2];
         options = ["$(explo)$(lpad(i, 2, "0"))" for i in 1:50
                    for explo in ["HEG", "SEG", "AEG"]],
         width = 100,
         halign = :left)
 
-    [rowgap!(validation_layout, i, 5) for i in 1:4]
+    [rowgap!(validation_layout, i, 5) for i in 1:3]
 
     ############# Abiotic variable
     Label(plottingmenu_layout[1, 1], "Abiotic variable (right upper plot)";
@@ -140,7 +133,7 @@ function dashboard_layout(; sim, valid)
     preset_button = Button(param_layout[1, 2]; label = "reset")
 
     ############# Parameter values
-    p = sim.parameter(; input_obj)
+    p = sim.parameter(; input_obj, variable_p)
     inference_obj = sim.calibrated_parameter(; input_obj)
     inference_keys = keys(inference_obj.units)
     all_keys = collect(keys(p))
@@ -185,7 +178,6 @@ function dashboard_layout(; sim, valid)
         sliders_param,
         parameter_keys,
         toggles_included,
-        toggle_predcheck,
         toggle_grazmow,
         toggle_validdata,
         lls)

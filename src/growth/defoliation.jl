@@ -176,10 +176,11 @@ Maximal the whole biomass of a plant species is removed by trampling.
 """
 function trampling!(; container, LD, biomass)
     @unpack height = container.traits
-    @unpack trampling_factor = container.p
+    @unpack trampling_height_exp, trampling_factor = container.p
     @unpack trampling_proportion, trampled_biomass, defoliation = container.calc
 
-    @. trampling_proportion = min.(height * LD * trampling_factor, 1.0)
+    @. trampling_proportion =
+        min.((height / 0.5u"m") ^ trampling_height_exp * LD * trampling_factor, 1.0)
     @. trampled_biomass = biomass * trampling_proportion
     defoliation .+= trampled_biomass ./ u"d"
 

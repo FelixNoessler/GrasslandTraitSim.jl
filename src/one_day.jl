@@ -103,18 +103,20 @@ function one_day!(; t, container)
                 end
 
                 # ------------------------------------------ grazing & trampling
-                if included.grazing
-                    LD = NaN * u"1 / ha"
+                LD = NaN * u"1 / ha"
+                if daily_input.grazing isa Vector
+                    LD = daily_input.grazing[t]
+                else
+                    LD = daily_input.grazing[t, x, y]
+                end
 
-                    if daily_input.grazing isa Vector
-                        LD = daily_input.grazing[t]
-                    else
-                        LD = daily_input.grazing[t, x, y]
-                    end
-
-                    if !isnan(LD)
+                if !isnan(LD)
+                    if included.grazing
                         grazing!(; t, x, y, container, LD,
                             biomass = patch_biomass)
+                    end
+
+                    if included.trampling
                         trampling!(; container, LD,
                             biomass = patch_biomass)
                     end

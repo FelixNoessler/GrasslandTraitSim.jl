@@ -2,8 +2,7 @@ function band_patch(;
         plot_obj,
         patch = 1,
         sol,
-        valid_data,
-        predictive_data)
+        valid_data)
     ax = plot_obj.axes[:biomass]
     empty!(ax)
 
@@ -15,7 +14,8 @@ function band_patch(;
     t = sol.numeric_date
     biomass_μ = vec(sum(ustrip.(sol.output.biomass); dims = (:x, :y, :species))) ./
                 sol.simp.npatches
-    biomass_dist = truncated.(Laplace.(biomass_μ, sol.p.b_biomass); lower = 0)
+
+    biomass_dist = truncated.(Normal.(biomass_μ, sol.p.b_biomass); lower = 0.0)
     biomass_median = median.(biomass_dist)
     biomass_lower = quantile.(biomass_dist, 0.025)
     biomass_upper = quantile.(biomass_dist, 0.975)
@@ -55,11 +55,6 @@ function band_patch(;
         num_t = sol.numeric_date[LookupArrays.index(valid_data.biomass, :time)]
 
         scatter!(ax, num_t, biomass, color = :black, markersize = 8)
-    end
-
-    if !isnothing(predictive_data)
-        scatter!(ax, t[predictive_data.t_biomass], predictive_data.biomass;
-            color = :red, markersize = 8)
     end
 
     return nothing

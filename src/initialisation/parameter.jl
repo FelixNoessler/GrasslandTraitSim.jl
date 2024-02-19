@@ -3,13 +3,11 @@ function exlude_parameter(; input_obj)
 
     excl_p = Symbol[]
     if !likelihood_included.biomass
-        trait_names = [:b_biomass]
-        append!(excl_p, trait_names)
+        append!(excl_p, [:b_biomass])
     end
 
     if !likelihood_included.trait
-        trait_names = [:b_sla, :b_lncm, :b_amc, :b_height, :b_rsa_above]
-        append!(excl_p, trait_names)
+        append!(excl_p, [:b_sla, :b_lncm, :b_amc, :b_height, :b_rsa_above])
     end
 
     if !included.potential_growth
@@ -55,13 +53,15 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.belowground_competition
-        belowground_names = [:biomass_dens, :belowground_density_effect]
-        append!(excl_p, belowground_names)
+        append!(excl_p, [:biomass_dens, :belowground_density_effect])
     end
 
     if !included.grazing
-        grazing_names = [:leafnitrogen_graz_exp, :trampling_factor, :grazing_half_factor, :κ]
-        append!(excl_p, grazing_names)
+        append!(excl_p, [:leafnitrogen_graz_exp, :grazing_half_factor, :κ])
+    end
+
+    if !included.trampling
+        append!(excl_p, [:trampling_factor, :trampling_height_exp])
     end
 
     if !included.mowing
@@ -70,13 +70,16 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.senescence
-        senescence_names = [:α_sen, :β_sen, :α_ll, :β_ll, :Ψ₁, :Ψ₂, :SENₘₐₓ]
+        senescence_names = [:α_sen, :β_sen, :α_ll, :β_ll]
         append!(excl_p, senescence_names)
     end
 
+    if !included.senescence || !included.senescence_season
+        append!(excl_p, [:Ψ₁, :Ψ₂, :SENₘₐₓ])
+    end
+
     if !included.height_competition
-        height_names = [:height_strength_exp]
-        append!(excl_p, height_names)
+        append!(excl_p, [:height_strength_exp])
     end
 
     return excl_p
@@ -92,7 +95,8 @@ function calibrated_parameter(; input_obj)
         mowing_mid_days = (truncated(Normal(10.0, 30.0); lower = 0.0, upper = 60.0),
                            as(Real, 0.0, 60.0), NoUnits),
         leafnitrogen_graz_exp = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), NoUnits),
-        trampling_factor = (truncated(Normal(0.0, 0.05); lower = 0.0), asℝ₊, u"ha/m"),
+        trampling_factor = (truncated(Normal(0.0, 0.05); lower = 0.0), asℝ₊, u"ha"),
+        trampling_height_exp = (Uniform(0.0, 3.0), as(Real, 0.0, 3.0), NoUnits),
         grazing_half_factor = (truncated(Normal(500.0, 500.0); lower = 0.0, upper = 1000.0),
                                as(Real, 0.0, 1000.0), NoUnits),
         κ = (Uniform(12.0, 22.5), as(Real, 12.0, 22.5), u"kg/d"),
@@ -177,7 +181,8 @@ function fixed_parameter(; input_obj)
         mowing_mid_days = 10.0, # day where the plants are grown back to their normal size/2
         mowfactor_β = 0.05,
         leafnitrogen_graz_exp = 1.5, # exponent of the leaf nitrogen grazing effect
-        trampling_factor = 0.01u"ha / m", # trampling factor
+        trampling_factor = 0.01u"ha", # trampling factor
+        trampling_height_exp = 0.5,
         grazing_half_factor = 500.0, # half saturation constant for grazing
         κ = 22.0u"kg / d", # maximum grazing rate
         biomass_dens = 1200.0u"kg / ha", # biomass density

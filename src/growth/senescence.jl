@@ -18,11 +18,14 @@ seasonal component of the senescence.
 function senescence!(; container, ST, biomass)
     @unpack sen = container.calc
     @unpack μ = container.traits
+    @unpack included = container.simp
 
-    # include a seasonal effect
-    # less senescence in spring,
-    # high senescens rate in autumn
-    SEN = seasonal_component_senescence(; container, ST)
+    SEN = if included.senescence_season
+        seasonal_component_senescence(; container, ST)
+    else
+        1.0
+    end
+
     @. sen = μ * SEN * biomass
 
     return nothing

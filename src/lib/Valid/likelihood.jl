@@ -26,7 +26,7 @@ function loglikelihood_model(sim::Module;
     p_names = [string(s) for s in keys(sol.p)]
     for p_name in p_names
         if startswith(p_name, "b_") && (sol.p[Symbol(p_name)] <= 0.0)
-            @warn "variance parameter <= 0.0 ($p_name)"
+            @warn "variance parameter <= 0.0 ($p_name = $(sol.p[Symbol(p_name)]))"
             return -Inf
         end
     end
@@ -45,10 +45,9 @@ function loglikelihood_model(sim::Module;
 
         ### calculate the likelihood
         biomass_d = Product(
-            truncated.(Laplace.(simulated_cutted_biomass,
+            truncated.(Normal.(simulated_cutted_biomass,
                                 sol.p.b_biomass);
                        lower = 0.0))
-
         # biomass_d = Product(Normal.(simulated_cutted_biomass, sol.p.b_biomass + 1e-10);)
         ll_biomass = logpdf(biomass_d, vec(data.biomass))
     end
@@ -101,8 +100,7 @@ function loglikelihood_model(sim::Module;
             if return_seperate
                 return (;
                     biomass = ll_biomass,
-                    trait = -Inf,
-                    soilmoisture = ll_soilmoisture)
+                    trait = -Inf)
             end
             return -Inf
         end

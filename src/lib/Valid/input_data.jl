@@ -16,9 +16,11 @@ function validation_input(;
         patch_ydim = 1,
         included = (;
             senescence = true,
+            senescence_season = true,
             potential_growth = true,
             clonalgrowth = true,
             mowing = true,
+            trampling = true,
             grazing = true,
             belowground_competition = true,
             height_competition = true,

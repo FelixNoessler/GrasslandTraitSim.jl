@@ -1,4 +1,4 @@
-function dashboard(; sim::Module, valid::Module, posterior = nothing)
+function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p = (;))
     # Makie.inline!(true)
     set_theme!(
         Theme(
@@ -8,12 +8,11 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing)
             GLMakie = (title = "Grassland Simulation",
                        focus_on_show = true))
 
-    plot_obj = dashboard_layout(; sim, valid)
+    plot_obj = dashboard_layout(; sim, valid, variable_p)
 
     still_running = false
     sol = nothing
     valid_data = nothing
-    predictive_data = nothing
     trait_input = load_trait_data(valid)
 
     on(plot_obj.obs.run_button.clicks) do n
@@ -24,17 +23,11 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing)
             sol = sim.solve_prob(; input_obj, p, trait_input)
             valid_data = get_valid_data(; plot_obj, valid)
 
-            show_predictive = plot_obj.obs.toggle_predcheck.active.val
-            predictive_data = nothing
-            if show_predictive
-                predictive_data = valid.predictive_check(; sol, valid_data)
-            end
-
             show_validdata = plot_obj.obs.toggle_validdata.active.val
             if show_validdata
-                update_plots(; sol, plot_obj, valid_data, predictive_data)
+                update_plots(; sol, plot_obj, valid_data)
             else
-                update_plots(; sol, plot_obj, predictive_data)
+                update_plots(; sol, plot_obj)
             end
 
             ll_obj = valid.loglikelihood_model(sim;
@@ -75,7 +68,7 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing)
     plot_obj.obs.run_button.clicks[] = 1
 
     on(plot_obj.obs.toggle_grazmow.active) do n
-        band_patch(; plot_obj, sol, valid_data, predictive_data)
+        band_patch(; plot_obj, sol, valid_data)
     end
 
     on(plot_obj.obs.menu_abiotic.selection) do n
@@ -88,7 +81,7 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing)
             valid_data = get_valid_data(;
                 plot_obj, valid)
         end
-        band_patch(; plot_obj, sol, valid_data, predictive_data)
+        band_patch(; plot_obj, sol, valid_data)
         [trait_time_plot(; plot_obj, sol, valid_data, trait = t) for t in
             [:amc, :sla, :height, :rsa_above, :lncm]]
     end
@@ -105,13 +98,12 @@ function get_valid_data(; plot_obj, valid)
     return data
 end
 
-function update_plots(; sol, plot_obj, valid_data = nothing, predictive_data)
+function update_plots(; sol, plot_obj, valid_data = nothing)
     ########### Biomass
     band_patch(;
         plot_obj,
         sol,
-        valid_data,
-        predictive_data)
+        valid_data)
 
     ########### Soil water
     soilwater_plot(; sol, plot_obj)
