@@ -38,10 +38,10 @@ Overview of the traits:
 | `lmpm`      | -      | leaf dry mass per plant dry mass          | logit          |
 
 """
-function random_traits!(; calc, input_obj)
+function random_traits!(; prealloc, input_obj)
     @unpack trait_seed, nspecies = input_obj.simp
-    @unpack traitmat = calc.calc
-    @unpack traits = calc
+    @unpack traitmat = prealloc.calc
+    @unpack traits = prealloc
 
     ### set seed
     if ismissing(trait_seed)
@@ -115,10 +115,10 @@ and 95 % quantile ($Q_{0.95, t}$) of trait values of 100 plant species:
 If the rescaled trait values were below zero or above one, the values were
 set to zero or one respectively.
 """
-function similarity_matrix!(; input_obj, calc)
+function similarity_matrix!(; input_obj, prealloc)
     @unpack nspecies = input_obj.simp
-    @unpack amc, rsa_above = calc.traits
-    @unpack amc_resid, rsa_above_resid, TS = calc.calc
+    @unpack amc, rsa_above = prealloc.traits
+    @unpack amc_resid, rsa_above_resid, TS = prealloc.calc
 
     amc_resid .= (amc .- mean(amc)) ./ std(amc)
     rsa_above_resid .= (rsa_above .- mean(rsa_above)) ./ std(rsa_above)

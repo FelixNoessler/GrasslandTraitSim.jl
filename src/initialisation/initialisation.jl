@@ -28,33 +28,33 @@ end
 
 Initialize the simulation object.
 """
-function initialization(; input_obj, p, calc, trait_input = nothing, θ_type = Float64)
+function initialization(; input_obj, p, prealloc, trait_input = nothing, θ_type = Float64)
 
     ################## Traits ##################
     if isnothing(trait_input)
         # generate random traits
-        random_traits!(; calc, input_obj)
+        random_traits!(; prealloc, input_obj)
     else
-        calc = @set calc.traits = trait_input
+        prealloc = @set prealloc.traits = trait_input
     end
 
     # distance matrix for below ground competition
-    similarity_matrix!(; input_obj, calc)
+    similarity_matrix!(; input_obj, prealloc)
 
     ################## Parameters ##################
     # leaf senescence rate μ [d⁻¹]
-    senescence_rate!(; input_obj, calc, p)
+    senescence_rate!(; input_obj, prealloc, p)
 
     # linking traits to water and nutrient stress
-    init_transfer_functions!(; input_obj, calc, p)
+    init_transfer_functions!(; input_obj, prealloc, p)
 
     # WHC, PWP and nutrient index
-    input_WHC_PWP!(; calc, input_obj)
-    input_nutrients!(; calc, input_obj, p)
+    input_WHC_PWP!(; prealloc, input_obj)
+    input_nutrients!(; prealloc, input_obj, p)
 
     ################## Store everything in one object ##################
     p = (; p = p)
-    container = tuplejoin(p, input_obj, calc)
+    container = tuplejoin(p, input_obj, prealloc)
 
     ################## Initial conditions ##################
     set_initialconditions!(; container)

@@ -35,8 +35,8 @@ and the last equations changes to:
 
 - `nutheterog`: heterogeneity of nutrients [-]
 """
-function input_nutrients!(; calc, input_obj, p)
-    @unpack nutrients = calc.patch_variables
+function input_nutrients!(; prealloc, input_obj, p)
+    @unpack nutrients = prealloc.patch_variables
     @unpack totalN, CNratio = input_obj.site
     @unpack included = input_obj.simp
 
@@ -92,8 +92,8 @@ can be seen in the folling table:
 - `WHC`: water holding capacity [mm]
 - `PWP`: permanent wilting point [mm]
 """
-function input_WHC_PWP!(; calc, input_obj)
-    @unpack WHC, PWP = calc.patch_variables
+function input_WHC_PWP!(; prealloc, input_obj)
+    @unpack WHC, PWP = prealloc.patch_variables
     @unpack sand, silt, clay, organic, bulk, rootdepth, totalN, CNratio = input_obj.site
 
     @. WHC = (0.005678 * sand +
