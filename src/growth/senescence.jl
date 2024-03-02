@@ -16,8 +16,7 @@ seasonal component of the senescence.
 - `B` biomass dry weight [kg ha⁻¹]
 """
 function senescence!(; container, ST, biomass)
-    @unpack sen = container.calc
-    @unpack μ = container.traits
+    @unpack sen, μ = container.calc
     @unpack included = container.simp
 
     SEN = if included.senescence_season

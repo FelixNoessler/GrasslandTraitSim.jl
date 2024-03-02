@@ -3,6 +3,7 @@ module Valid
 import CSV
 import Dates
 
+using UnPack
 using DataFrames
 using DataFramesMeta
 using DimensionalData

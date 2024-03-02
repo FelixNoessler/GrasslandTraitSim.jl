@@ -31,7 +31,8 @@ Then, the parameter $\beta_{\text{sen}}$ is used to downscale the inverse of the
 """
 function senescence_rate!(; input_obj, calc, p)
     @unpack included = input_obj.simp
-    @unpack μ, leaflifespan, sla = calc.traits
+    @unpack sla = calc.traits
+    @unpack μ, leaflifespan =  calc.calc
 
     if !included.senescence
         @. μ = 0.0u"d^-1"

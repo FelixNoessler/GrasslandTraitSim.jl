@@ -7,18 +7,20 @@ include("transferfunctions_init.jl")
 
 
 function init_cutted_biomass(; input_obj, T = Float64)
+    cutting_height = Float64[]
     biomass_cutting_t = Int64[]
     biomass_cutting_numeric_date = Float64[]
+    biomass_cutting_index = Int64[]
     if haskey(input_obj, :output_validation)
-        @unpack biomass_cutting_t, biomass_cutting_numeric_date = input_obj.output_validation
+        @unpack biomass_cutting_t, biomass_cutting_numeric_date,
+                cutting_height, biomass_cutting_index = input_obj.output_validation
     end
-    cutted_biomass = DimArray(
-        fill(T(NaN), length(biomass_cutting_t))u"kg/ha",
-        (; t = biomass_cutting_t),
-        name = :cutted_biomass)
+    cut_biomass = fill(T(NaN), length(biomass_cutting_t))u"kg/ha"
 
-    return (; output_validation = (; cutted_biomass, biomass_cutting_t,
-                                biomass_cutting_numeric_date))
+    return (; cut_biomass, biomass_cutting_t,
+            biomass_cutting_numeric_date,
+            cut_index = biomass_cutting_index,
+            cutting_height = cutting_height)
 end
 
 """
@@ -28,18 +30,12 @@ Initialize the simulation object.
 """
 function initialization(; input_obj, p, calc, trait_input = nothing, θ_type = Float64)
 
-    ################## Cutted biomass for validation
-    cutted_biomass_tuple = init_cutted_biomass(; input_obj, T = θ_type)
-
     ################## Traits ##################
     if isnothing(trait_input)
         # generate random traits
         random_traits!(; calc, input_obj)
     else
-        # use traits from input
-        for key in keys(trait_input)
-            calc.traits[key] .= trait_input[key]
-        end
+        calc = @set calc.traits = trait_input
     end
 
     # distance matrix for below ground competition
@@ -58,7 +54,7 @@ function initialization(; input_obj, p, calc, trait_input = nothing, θ_type = F
 
     ################## Store everything in one object ##################
     p = (; p = p)
-    container = tuplejoin(p, input_obj, calc, cutted_biomass_tuple)
+    container = tuplejoin(p, input_obj, calc)
 
     ################## Initial conditions ##################
     set_initialconditions!(; container)

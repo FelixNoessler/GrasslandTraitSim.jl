@@ -34,30 +34,16 @@ function one_day!(; t, container)
     @unpack doy, daily_input, traits = container
     @unpack npatches, patch_xdim, patch_ydim, included = container.simp
     @unpack u_biomass, u_water, du_biomass, du_water = container.u
-    @unpack cutted_biomass = container.output_validation
     @unpack WHC, PWP, nutrients = container.patch_variables
     @unpack very_low_biomass, nan_biomass = container.calc
-    @unpack act_growth, sen, defoliation,  mean_biomass = container.calc
-    @unpack biomass_cutting_t = container.output_validation
+    @unpack act_growth, sen, defoliation = container.calc
+
 
     LAItot = 0.0
 
     ## -------- clonal growth
     if doy[t] == 250 && npatches > 1 && included.clonalgrowth
         clonalgrowth!(; container)
-    end
-
-    ## -------- cutted biomass
-    if t ∈ biomass_cutting_t
-        for s in axes(u_biomass, :species)
-            mean_biomass[s] = mean(@view u_biomass[:, :, s])
-        end
-
-        mowing!(;
-            t, container, mowing_height = 0.04u"m",
-            biomass = mean_biomass,
-            mowing_all = daily_input.mowing,
-            cutted_biomass)
     end
 
     ## -------- loop over patches
@@ -87,12 +73,10 @@ function one_day!(; t, container)
 
                 # ------------------------------------------ mowing
                 if included.mowing
-                    mowing_height = NaN * u"m"
-
-                    if daily_input.mowing isa Vector
-                        mowing_height = daily_input.mowing[t]
+                    mowing_height = if daily_input.mowing isa Vector
+                        daily_input.mowing[t]
                     else
-                        mowing_height = daily_input.mowing[t, x, y]
+                        daily_input.mowing[t, x, y]
                     end
 
                     if !isnan(mowing_height)
@@ -103,11 +87,10 @@ function one_day!(; t, container)
                 end
 
                 # ------------------------------------------ grazing & trampling
-                LD = NaN * u"1 / ha"
-                if daily_input.grazing isa Vector
-                    LD = daily_input.grazing[t]
+                LD = if daily_input.grazing isa Vector
+                    daily_input.grazing[t]
                 else
-                    LD = daily_input.grazing[t, x, y]
+                    daily_input.grazing[t, x, y]
                 end
 
                 if !isnan(LD)

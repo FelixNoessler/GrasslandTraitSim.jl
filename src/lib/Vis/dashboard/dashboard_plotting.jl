@@ -54,7 +54,10 @@ function band_patch(;
         biomass = ustrip.(valid_data.biomass)
         num_t = sol.numeric_date[LookupArrays.index(valid_data.biomass, :time)]
 
-        scatter!(ax, num_t, biomass, color = :black, markersize = 8)
+        unique_type = unique(valid_data.biomass_type)
+        color_types = [findfirst(t .== unique_type) for t in valid_data.biomass_type]
+
+        scatter!(ax, num_t, biomass, color = color_types, markersize = 6)
     end
 
     return nothing

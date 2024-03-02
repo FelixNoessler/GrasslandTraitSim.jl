@@ -24,33 +24,26 @@ Influence of mowing for plant species with different heights ($height$):
 Visualisation of the `mow_factor`:
 ![](../img/mow_factor.svg)
 """
-function mowing!(; t, container, mowing_height, biomass, mowing_all,
-                 x = NaN, y = NaN, cutted_biomass = nothing)
+function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
     @unpack height = container.traits
-    @unpack defoliation, mown_height, proportion_mown = container.calc
+    @unpack defoliation, proportion_mown, lowbiomass_correction = container.calc
     @unpack mown = container.output
-    @unpack included = container.simp
+    @unpack mowing_mid_days, mowfactor_β, lowbiomass, lowbiomass_k = container.p
+    @unpack nspecies = container.simp
 
     days_since_last_mowing = 200
-    mowing_mid_days = 0.0
-    mowfactor_β = 0.0
 
-    ## if mowing is not included, cutted biomass shouldn't raise an error
-    if included.mowing
-        @unpack mowing_mid_days, mowfactor_β = container.p
+    tstart = t - 200 < 1 ? 1 : t - 200
+    mowing_last200 = @view mowing_all[t-1:-1:tstart]
 
-        tstart = t - 200 < 1 ? 1 : t - 200
-        mowing_last200 = @view mowing_all[t-1:-1:tstart]
+    for i in eachindex(mowing_last200)
+        if i == 1
+            continue
+        end
 
-        for i in eachindex(mowing_last200)
-            if i == 1
-                continue
-            end
-
-            if !isnan(mowing_last200[i]) && !iszero(mowing_last200[i])
-                days_since_last_mowing = i
-                break
-            end
+        if !isnan(mowing_last200[i]) && !iszero(mowing_last200[i])
+            days_since_last_mowing = i
+            break
         end
     end
 
@@ -60,21 +53,19 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all,
     # --------- if meadow is too often mown, less biomass is removed
     ## the 'mowing_mid_days' is the day where the plants are grown
     ## back to their normal size/2
-    mow_factor = 1.0 #1 / (1 + exp(-mowfactor_β * (days_since_last_mowing - mowing_mid_days)))
+    mow_factor = 1.0 / (1.0 + exp(-mowfactor_β * (days_since_last_mowing - mowing_mid_days)))
+    @. lowbiomass_correction =  1 / (1 + exp(-lowbiomass_k * (biomass - lowbiomass)))
+    lowbiomass_correction ./= sum(lowbiomass_correction)
 
-    if !isnothing(cutted_biomass)
-        @unpack species_cutted_biomass = container.calc
-        species_cutted_biomass .= mow_factor .* proportion_mown .* biomass
-        cutted_biomass[t = At(t)] = sum(species_cutted_biomass)
-    else
-        # --------- add the removed biomass to the defoliation vector
-        @. mown[t, x, y, :] = mow_factor * proportion_mown * biomass
-        defoliation .+= mow_factor .* proportion_mown .* biomass .* u"d^-1"
+    # --------- add the removed biomass to the defoliation vector
+    for s in 1:nspecies
+        mown[t, x, y, s] = lowbiomass_correction[s] * mow_factor *
+                           proportion_mown[s] * biomass[s]
+        defoliation[s] += mown[t, x, y, s] * u"d^-1"
     end
 
     return nothing
 end
-
 
 @doc raw"""
     grazing!(; t, x, y, container, LD, biomass)
@@ -116,8 +107,10 @@ Influence of `grazing_half_factor`:
 """
 function grazing!(; t, x, y, container, LD, biomass)
     @unpack lncm = container.traits
-    @unpack grazing_half_factor, leafnitrogen_graz_exp, κ = container.p
-    @unpack defoliation, grazed_share, relative_lncm, ρ = container.calc
+    @unpack grazing_half_factor, leafnitrogen_graz_exp, κ,
+            lowbiomass, lowbiomass_k = container.p
+    @unpack defoliation, grazed_share, relative_lncm, ρ,
+            lowbiomass_correction, low_ρ_biomass = container.calc
     @unpack grazed = container.output
 
     ## Palatability ρ
@@ -125,27 +118,32 @@ function grazing!(; t, x, y, container, LD, biomass)
     ρ .= (lncm ./ sum(relative_lncm)) .^ leafnitrogen_graz_exp
 
     ## Grazing
-    k_exp = 2.0
     μₘₐₓ = κ * LD
     h = 1 / μₘₐₓ
-    a = 1 / (grazing_half_factor^k_exp * h)
+    a = 1 / (grazing_half_factor^2.0 * h)
 
     ## Exponentiation of Quantity with a variable is type unstable
     ## therefore this is a workaround, k_exp = 2
     # https://painterqubits.github.io/Unitful.jl/stable/trouble/#Exponentiation
-    biomass_exp = sum(biomass) ^ 2.0
+    sum_biomass = sum(biomass)
+    biomass_exp = sum_biomass * sum_biomass
+    total_grazed = a * biomass_exp / (1u"kg^2 * ha^-2" + a * h * biomass_exp)
 
-    total_grazed = a * biomass_exp / (1u"kg / ha"^k_exp + a * h * biomass_exp)
-
-    ## Grazing
-    # total_grazed = κ * LD * sum(biomass) / (grazing_half_factor * u"kg/ha" + sum(biomass))
-    grazed_share .= ρ .* biomass ./ sum(biomass)
+    @. lowbiomass_correction =  1 / (1 + exp(-lowbiomass_k * (biomass - lowbiomass)))
+    @. low_ρ_biomass = lowbiomass_correction * ρ * biomass
+    grazed_share .= low_ρ_biomass ./ sum(low_ρ_biomass)
 
     #### add grazed biomass to defoliation
     @. grazed[t, x, y, :] = grazed_share * total_grazed * u"d"
     @. defoliation += grazed_share * total_grazed
 
     return nothing
+end
+
+
+function lowbiomass_factor(; biomass, container)
+    @unpack lowbiomass, lowbiomass_k = container.p
+    return @. 1 / (1 + exp(-lowbiomass_k * (biomass - lowbiomass)))
 end
 
 @doc raw"""

@@ -87,9 +87,8 @@ and the root surface area devided by the above ground biomass (`rsa_above`).
 ![](../img/below_influence.svg)
 """
 function below_ground_competition!(; container, biomass)
-    @unpack biomass_density_factor, TS_biomass = container.calc
+    @unpack biomass_density_factor, TS_biomass, TS = container.calc
     @unpack included = container.simp
-    @unpack TS = container.traits
 
     if !included.belowground_competition
         @info "No below ground competition for resources!" maxlog=1

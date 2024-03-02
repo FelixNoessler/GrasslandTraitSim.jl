@@ -19,6 +19,7 @@ include("lib/Vis/Vis.jl")
 
 include("main_functions.jl")
 include("one_day.jl")
+include("cut_biomass.jl")
 include("initialisation/initialisation.jl")
 include("growth/growth.jl")
 include("water/water.jl")

@@ -14,12 +14,13 @@ end
 
 function get_validation_data(; plotID)
     # ---------------------------- biomass
-    biomass_sub = @subset data.valid.measuredbiomass :plotID .==
-                                                     plotID.&&
-    Dates.year.(:date) .<= 2021
+    biomass_sub =
+        @subset data.valid.measuredbiomass :plotID .== plotID.&&
+            Dates.year.(:date) .<= 2021
 
     biomass = DimArray(biomass_sub.biomass,
         (; time = date_to_solt.(biomass_sub.date; )))
+    biomass_type = biomass_sub.stat
 
     # ---------------------------- soil moisture
     soilmoisture_sub = @subset data.valid.soilmoisture :plotID .==
@@ -41,5 +42,5 @@ function get_validation_data(; plotID)
             (time = date_to_solt.(data.valid.traits.t[f]; ),
             trait = data.valid.traits.dim))
 
-    return (; soilmoisture, traits, biomass)
+    return (; soilmoisture, traits, biomass, biomass_type)
 end

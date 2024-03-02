@@ -117,8 +117,8 @@ set to zero or one respectively.
 """
 function similarity_matrix!(; input_obj, calc)
     @unpack nspecies = input_obj.simp
-    @unpack amc, rsa_above, TS = calc.traits
-    @unpack amc_resid, rsa_above_resid = calc.calc
+    @unpack amc, rsa_above = calc.traits
+    @unpack amc_resid, rsa_above_resid, TS = calc.calc
 
     amc_resid .= (amc .- mean(amc)) ./ std(amc)
     rsa_above_resid .= (rsa_above .- mean(rsa_above)) ./ std(rsa_above)

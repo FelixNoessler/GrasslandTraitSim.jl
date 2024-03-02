@@ -87,8 +87,8 @@ function dashboard_layout(; sim, valid, variable_p)
     Label(validation_layout[3, 2], "PlotID:";
         tellwidth = true, halign = :left, fontsize = 16)
     menu_plotID = Menu(validation_layout[4, 2];
-        options = ["$(explo)$(lpad(i, 2, "0"))" for i in 1:50
-                   for explo in ["HEG", "SEG", "AEG"]],
+        options = ["$(explo)$(lpad(i, 2, "0"))"  for explo in ["HEG", "SEG", "AEG"]
+                   for i in 1:50],
         width = 100,
         halign = :left)
 
@@ -150,6 +150,7 @@ function dashboard_layout(; sim, valid, variable_p)
 
     param_slider_prep = [(label = string(name),
         range = LinRange(p1, p2, 1000),
+        snap = false,
         format = "{:.5f}",
         linewidth = 10,
         startvalue = val) for (name, val, p1, p2) in zip(keys(p), p_val, lb, ub)]

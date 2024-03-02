@@ -69,6 +69,10 @@ function exlude_parameter(; input_obj)
         append!(excl_p, mowing_names)
     end
 
+    if !included.grazing && !included.mowing
+        append!(excl_p, [:lowbiomass, :lowbiomass_k])
+    end
+
     if !included.senescence
         senescence_names = [:α_sen, :β_sen, :α_ll, :β_ll]
         append!(excl_p, senescence_names)
@@ -100,6 +104,8 @@ function calibrated_parameter(; input_obj)
         grazing_half_factor = (truncated(Normal(500.0, 500.0); lower = 0.0, upper = 1000.0),
                                as(Real, 0.0, 1000.0), NoUnits),
         κ = (Uniform(12.0, 22.5), as(Real, 12.0, 22.5), u"kg/d"),
+        lowbiomass = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0), u"kg/ha"),
+        lowbiomass_k = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), u"ha/kg"),
         biomass_dens = (truncated(Normal(1000.0, 1000.0); lower = 0.0), asℝ₊, u"kg/ha"),
         belowground_density_effect = (truncated(Normal(1.0, 0.5); lower = 0.0),
                                       asℝ₊, NoUnits),
@@ -185,6 +191,8 @@ function fixed_parameter(; input_obj)
         trampling_height_exp = 0.5,
         grazing_half_factor = 500.0, # half saturation constant for grazing
         κ = 22.0u"kg / d", # maximum grazing rate
+        lowbiomass = 100.0u"kg / ha", # low biomass
+        lowbiomass_k = 1.0u"ha / kg", # low biomass k
         biomass_dens = 1200.0u"kg / ha", # biomass density
         belowground_density_effect = 2.0, # effect of belowground competition
         α_pet = 2.0u"mm / d",

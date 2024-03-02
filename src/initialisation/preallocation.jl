@@ -1,5 +1,5 @@
 function preallocate_vectors(; input_obj, T = Float64)
-    @unpack nspecies, patch_xdim, patch_ydim, ntimesteps = input_obj.simp
+    @unpack included, nspecies, patch_xdim, patch_ydim, ntimesteps = input_obj.simp
     @unpack initbiomass = input_obj.site
 
     ############# output variables
@@ -58,10 +58,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         lncm = Array{T}(undef, nspecies)u"mg/g",
         sla = Array{T}(undef, nspecies)u"m^2 / g",
         rsa_above = Array{T}(undef, nspecies)u"m^2 / g",
-        ampm = Array{T}(undef, nspecies),
-        leaflifespan = Array{T}(undef, nspecies)u"d",
-        μ = Array{T}(undef, nspecies)u"d^-1",
-        TS = Array{T}(undef, nspecies, nspecies))
+        ampm = Array{T}(undef, nspecies))
 
     ############# Transfer function
     transfer_function = (;
@@ -85,6 +82,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         LAIs = Array{T}(undef, nspecies),
         biomass_per_patch = Array{T}(undef, patch_xdim, patch_ydim)u"kg / ha",
         relbiomass = Array{T}(undef, patch_xdim, patch_ydim),
+        lowbiomass_correction = Array{T}(undef, nspecies),
 
         ## warnings, debugging, avoid numerical errors
         very_low_biomass = fill(false, nspecies),
@@ -93,7 +91,7 @@ function preallocate_vectors(; input_obj, T = Float64)
 
         ## cutted biomass
         mean_biomass = Array{T}(undef, nspecies)u"kg / ha",
-        species_cutted_biomass = Array{T}(undef, nspecies)u"kg / ha",
+        species_cut_biomass = Array{T}(undef, nspecies)u"kg / ha",
 
         ## functional response helper variables
         K_prep = Array{T}(undef, nspecies),
@@ -116,6 +114,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         # leaf nitrogen (palatability) --> grazing
         relative_lncm = Array{T}(undef, nspecies)u"mg/g",
         ρ = Array{T}(undef, nspecies),
+        low_ρ_biomass = Array{T}(undef, nspecies)u"kg / ha",
 
         ## nutrient reducer function
         nutrients_splitted = Array{T}(undef, nspecies),
@@ -140,9 +139,21 @@ function preallocate_vectors(; input_obj, T = Float64)
         clonalgrowth = Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
 
         ## sla transpiration effect
-        relative_sla = Array{T}(undef, nspecies)u"m^2 / g")
+        relative_sla = Array{T}(undef, nspecies)u"m^2 / g",
 
-    return (; u, patch_variables, calc, traits, transfer_function, output)
+        ## based on traits
+        leaflifespan = Array{T}(undef, nspecies)u"d",
+        μ = Array{T}(undef, nspecies)u"d^-1",
+        TS = Array{T}(undef, nspecies, nspecies))
+
+    likelihood_calc = (;
+
+    )
+
+    output_validation = init_cutted_biomass(; input_obj, T)
+
+
+    return (; u, patch_variables, calc, traits, transfer_function, output, output_validation)
 end
 
 function preallocate(; input_obj, Tdiff = nothing)

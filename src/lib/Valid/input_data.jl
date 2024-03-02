@@ -87,11 +87,35 @@ function validation_input(;
         @subset :plotID .== plotID
         @subset :date .<= end_date
         @transform :biomass_cutting_day = Dates.value.(:date - start_date)
-        @select(:date, :biomass_cutting_day)
+        @select :date :biomass_cutting_day :cutting_height
     end
-    biomass_cutting_t = df_cutting_day.biomass_cutting_day
-    biomass_cutting_date = df_cutting_day.date
+
+    ##### what to calculate
+    unique_calc = unique(df_cutting_day, [:date, :cutting_height])
+    biomass_cutting_t = unique_calc.biomass_cutting_day
+    cutting_height = unique_calc.cutting_height
+    biomass_cutting_date = unique_calc.date
     biomass_cutting_numeric_date = to_numeric.(biomass_cutting_date)
+
+    ###### how to index to get final result
+    cutting_t_prep = df_cutting_day.biomass_cutting_day
+    cutting_height_prep = df_cutting_day.cutting_height
+    biomass_cutting_index = Int64[]
+    current_index = 0
+    for i in eachindex(cutting_t_prep)
+        if i == 1
+            current_index += 1
+            push!(biomass_cutting_index, current_index)
+            continue
+        end
+
+        if cutting_t_prep[i] != cutting_t_prep[i-1] ||
+            cutting_height_prep[i] != cutting_height_prep[i-1]
+            current_index += 1
+        end
+
+        push!(biomass_cutting_index, current_index)
+    end
 
     ### ----------------- abiotic
     nut_sub = @subset data.input.nut :plotID.==plotID
@@ -134,9 +158,11 @@ function validation_input(;
             bulk,
             rootdepth),
         output_validation = (;
+            biomass_cutting_index,
             biomass_cutting_t,
             biomass_cutting_date,
-            biomass_cutting_numeric_date),
+            biomass_cutting_numeric_date,
+            cutting_height),
         daily_input)
 end
 

@@ -41,14 +41,16 @@ function loglikelihood_model(sim::Module;
     ll_biomass = 0.0
 
     if likelihood_included.biomass
-        simulated_cutted_biomass = vec(ustrip.(sol.output_validation.cutted_biomass))
+        @unpack cut_biomass, cut_index = sol.output_validation
+
+        simulated_cutted_biomass = ustrip.(cut_biomass)[cut_index]
 
         ### calculate the likelihood
         biomass_d = Product(
             truncated.(Normal.(simulated_cutted_biomass,
                                 sol.p.b_biomass);
                        lower = 0.0))
-        # biomass_d = Product(Normal.(simulated_cutted_biomass, sol.p.b_biomass + 1e-10);)
+
         ll_biomass = logpdf(biomass_d, vec(data.biomass))
     end
 
@@ -140,7 +142,7 @@ function loglikelihood_model(sim::Module;
             end
 
             ll = logpdf(cwmtrait_d, measured_cwm)
-            ll_trait += ll / ntraits
+            ll_trait += ll -log(ntraits)
         end
     end
 

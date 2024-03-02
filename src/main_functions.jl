@@ -26,6 +26,8 @@ function solve_prob(; input_obj, p, calc = nothing, trait_input = nothing, θ_ty
         biomass[negbiomass] .= 0u"kg / ha"
     end
 
+    calc_cut_biomass!(; container)
+
     return container
 end
 
