@@ -10,8 +10,8 @@ Licence: [GPL-3.0](https://github.com/FelixNoessler/GrasslandTraitSim.jl/blob/ma
 Please refer to the [documentation](https://felixnoessler.github.io/GrasslandTraitSim.jl/dev/) for more information about the grassland simulation model.
 
 Here are slides from presentations that show concepts of the models:
-- [ECEM 2023](assets/ECEM_2023_presentation.pdf)
-
+- [European Conference on Ecological Modelling 2023](assets/ECEM_2023_presentation.pdf)
+- [Biodiversity Exploratories Assembly 2024](assets/Assembly_2024_presentation.pdf)
 
 ## Quick install
 

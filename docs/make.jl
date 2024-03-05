@@ -18,6 +18,8 @@ import GrasslandTraitSim.Vis as vis
 cp("README.md", "docs/src/index.md"; force = true)
 cp("assets/ECEM_2023_presentation.pdf", "docs/src/assets/ECEM_2023_presentation.pdf";
      force = true)
+cp("assets/Assembly_2024_presentation.pdf", "docs/src/assets/Assembly_2024_presentation.pdf";
+    force = true)
 cp("assets/screenshot.png", "docs/src/img/screenshot.png"; force = true)
 
 ####### Create Bilbiography

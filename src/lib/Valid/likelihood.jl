@@ -7,9 +7,6 @@ function loglikelihood_model(sim::Module;
         plotID,
         pretty_print = false,
         return_seperate = false,
-        likelihood_included = (;
-            biomass = true,
-            trait = true),
         data = nothing,
         sol = nothing,
         trait_input = nothing)
@@ -33,7 +30,7 @@ function loglikelihood_model(sim::Module;
     #######################################################################
     ll_biomass = 0.0
 
-    if likelihood_included.biomass
+    if sol.simp.likelihood_included.biomass
         @unpack cut_biomass, cut_index = sol.output_validation
         @unpack simulated_cutted_biomass = sol.likelihood_calc
 
@@ -58,7 +55,7 @@ function loglikelihood_model(sim::Module;
     ################## cwm trait likelihood
     ########################################################################
     ll_trait = 0.0
-    if likelihood_included.trait
+    if sol.simp.likelihood_included.trait
         data_trait_t = LookupArrays.index(data.traits, :time)
         species_biomass = dropdims(mean(sol.output.biomass[data_trait_t, :, :, :];
                                         dims = (:x, :y));

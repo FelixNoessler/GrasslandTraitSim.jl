@@ -31,7 +31,7 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
             end
 
             ll_obj = valid.loglikelihood_model(sim;
-                θ = p,
+                p,
                 plotID = plot_obj.obs.menu_plotID.selection.val,
                 data = valid_data,
                 sol = sol,
