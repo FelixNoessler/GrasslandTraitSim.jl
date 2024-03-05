@@ -34,9 +34,10 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     Rred = radiation_reduction(; container, PAR = daily_input.PAR[t])
     Tred = temperature_reduction(; container, T = daily_input.temperature[t])
     Seasonalred = seasonal_reduction(; container, ST = daily_input.temperature_sum[t])
+    height_community_red = community_height_reduction(; container, biomass)
 
-    @. species_specific_red = heightinfluence * Waterred * Nutred
-    reduction = Rred * Tred * Seasonalred
+    @. species_specific_red = heightinfluence * Waterred * Waterred
+    reduction = Rred * Tred * Seasonalred * height_community_red
 
     #### final growth
     @. act_growth = potgrowth * reduction * species_specific_red

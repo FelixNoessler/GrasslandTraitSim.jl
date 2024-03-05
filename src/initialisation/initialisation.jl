@@ -1,34 +1,17 @@
 include("parameter.jl")
 include("preallocation.jl")
-include("preallocation_struct.jl")
 include("nutrients_whc_pwp_init.jl")
 include("senescence_init.jl")
 include("transferfunctions_init.jl")
 
-
-function init_cutted_biomass(; input_obj, T = Float64)
-    cutting_height = Float64[]
-    biomass_cutting_t = Int64[]
-    biomass_cutting_numeric_date = Float64[]
-    biomass_cutting_index = Int64[]
-    if haskey(input_obj, :output_validation)
-        @unpack biomass_cutting_t, biomass_cutting_numeric_date,
-                cutting_height, biomass_cutting_index = input_obj.output_validation
-    end
-    cut_biomass = fill(T(NaN), length(biomass_cutting_t))u"kg/ha"
-
-    return (; cut_biomass, biomass_cutting_t,
-            biomass_cutting_numeric_date,
-            cut_index = biomass_cutting_index,
-            cutting_height = cutting_height)
-end
 
 """
     initialization(; input_obj, inf_p, calc, trait_input = nothing)
 
 Initialize the simulation object.
 """
-function initialization(; input_obj, p, prealloc, trait_input = nothing, θ_type = Float64)
+function initialization(; input_obj, p, prealloc, prealloc_specific,
+                        trait_input = nothing, θ_type = Float64)
 
     ################## Traits ##################
     if isnothing(trait_input)
@@ -54,7 +37,7 @@ function initialization(; input_obj, p, prealloc, trait_input = nothing, θ_type
 
     ################## Store everything in one object ##################
     p = (; p = p)
-    container = tuplejoin(p, input_obj, prealloc)
+    container = tuplejoin(p, input_obj, prealloc, prealloc_specific)
 
     ################## Initial conditions ##################
     set_initialconditions!(; container)

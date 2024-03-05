@@ -120,6 +120,11 @@ function similarity_matrix!(; input_obj, prealloc)
     @unpack amc, rsa_above = prealloc.traits
     @unpack amc_resid, rsa_above_resid, TS = prealloc.calc
 
+    if isone(nspecies)
+        TS .= [1.0;;]
+        return nothing
+    end
+
     amc_resid .= (amc .- mean(amc)) ./ std(amc)
     rsa_above_resid .= (rsa_above .- mean(rsa_above)) ./ std(rsa_above)
 

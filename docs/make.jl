@@ -64,6 +64,9 @@ vis.temperatur_reducer(sim, valid; path = f("$docs_img/temperature_reducer.svg")
 vis.radiation_reducer(sim, valid; path = f("$docs_img/radiation_reducer.svg"))
 vis.height_influence(sim, valid; path = f("$docs_img/height_influence.svg"))
 vis.below_influence(sim, valid; path = f("$docs_img/below_influence.svg"))
+vis.community_height_influence(; sim, valid,
+                               path = f("$docs_img/community_height_influence.svg"))
+vis.plot_community_height(; sim, valid, path = f("$docs_img/community_height.svg"))
 
 #### seasonal effects
 vis.seasonal_effect(sim, valid; path = f("$docs_img/seasonal_reducer.svg"))

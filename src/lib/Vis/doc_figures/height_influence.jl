@@ -1,11 +1,5 @@
-function height_influence(sim, valid; path = nothing, nspecies = 25)
-    #####################
-    input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies)
-    p = sim.parameter(; input_obj)
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
-    #####################
+function height_influence(sim, valid; path = nothing)
+    nspecies, container = create_container(; sim, valid)
 
     height_strength_exps = LinRange(0.0, 1.5, 40)
     biomass = fill(50, nspecies)u"kg / ha"

@@ -119,11 +119,14 @@ simp = (
     ## which processes to include
     included = (;
         senescence = true,
+        senescence_season = true,
         potential_growth = true,
         clonalgrowth = true,
         mowing = true,
+        trampling = true,
         grazing = true,
         belowground_competition = true,
+        community_height_red = true,
         height_competition = true,
         pet_growth_reduction = true,
         sla_transpiration = true,
@@ -184,11 +187,12 @@ p = sim.parameter(; input_obj)
 
 # if you will run many simulations, it is recommended to preallocated the vectors
 # but the simulation will also run without preallocation 
-calc = sim.preallocate_vectors(; input_obj);
+prealloc = sim.preallocate_vectors(; input_obj);
+prealloc_specific = sim.preallocate_specific_vectors(; input_obj);
 
 # traits will be generated, no preallocation
 sol = sim.solve_prob(; input_obj, p);
 
 # with static traits, with preallocation
-sol = sim.solve_prob(; input_obj, calc, p, trait_input);
+sol = sim.solve_prob(; input_obj, prealloc, prealloc_specific, p, trait_input);
 ```

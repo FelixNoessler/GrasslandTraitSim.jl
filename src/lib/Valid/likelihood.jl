@@ -1,8 +1,9 @@
 function loglikelihood_model(sim::Module;
-        θ, θ_type = Float64,
+        p = nothing,
         input_objs = nothing,
         valid_data = nothing,
-        calc = nothing,
+        prealloc = nothing,
+        prealloc_specific = nothing,
         plotID,
         pretty_print = false,
         return_seperate = false,
@@ -14,37 +15,35 @@ function loglikelihood_model(sim::Module;
         trait_input = nothing)
 
     if isnothing(data)
-        data = valid_data[plotID]
+        data = valid_data[Symbol(plotID)]
     end
+
 
     if isnothing(sol)
-        input_obj = input_objs[plotID]
-        p = sim.parameter(; input_obj, variable_p = θ)
-        sol = sim.solve_prob(; input_obj, p, calc, trait_input, θ_type)
+        input_obj = input_objs[Symbol(plotID)]
+        sol = sim.solve_prob(; input_obj, p, prealloc, prealloc_specific, trait_input)
     end
 
-    p_names = [string(s) for s in keys(sol.p)]
-    for p_name in p_names
-        if startswith(p_name, "b_") && (sol.p[Symbol(p_name)] <= 0.0)
-            @warn "variance parameter <= 0.0 ($p_name = $(sol.p[Symbol(p_name)]))"
-            return -Inf
-        end
-    end
+    #######################################################################
+    #######################################################################
+    ######################### Calculate likelihood
 
-    ########################################################################
-    ########################################################################
-    ########################## Calculate likelihood
-
-    ########################################################################
-    ################## measured biomass
-    ########################################################################
+    #######################################################################
+    ################# measured biomass
+    #######################################################################
     ll_biomass = 0.0
 
     if likelihood_included.biomass
         @unpack cut_biomass, cut_index = sol.output_validation
+        @unpack simulated_cutted_biomass = sol.likelihood_calc
 
-        simulated_cutted_biomass = ustrip.(cut_biomass)[cut_index]
+        # n = length(cut_index)
 
+        # for i in 1:n
+
+        # end
+
+        simulated_cutted_biomass .= ustrip.(cut_biomass)[cut_index]
         ### calculate the likelihood
         biomass_d = Product(
             truncated.(Normal.(simulated_cutted_biomass,
@@ -54,36 +53,6 @@ function loglikelihood_model(sim::Module;
         ll_biomass = logpdf(biomass_d, vec(data.biomass))
     end
 
-    ########################################################################
-    ################## soil moisture
-    ########################################################################
-    # ll_soilmoisture = 0
-    # if likelihood_included.soilmoisture
-    #     #### downweight the likelihood because there are many observations
-    #     data_soilmoisture_t = LookupArrays.index(data.soilmoisture, :time)
-    #     weight = length(data.soilmoisture) / 13
-
-    #     sim_soilwater = dropdims(mean(sol.output.water[data_soilmoisture_t, :, :]; dims = (:x, :y));
-    #                              dims = (:x, :y))
-
-    #     μ = vec(sim_soilwater) ./ (sol.site.rootdepth * u"mm")
-    #     φ = 1 / sol.p.b_soilmoisture
-    #     α = @. μ * φ
-    #     β = @. (1.0 - μ) * φ
-
-    #     measured_soilmoisture = vec(data.soilmoisture)
-
-    #     if any(iszero.(α)) || any(iszero.(β))
-    #         ll_soilmoisture += -Inf
-    #     else
-    #         soilmoisture_d = Product(Beta.(α, β))
-    #         ll_soilmoisture = logpdf(soilmoisture_d, vec(data.soilmoisture)) / weight
-    #     end
-
-    #     if any(measured_soilmoisture .<= 0.0) || any(measured_soilmoisture .>= 1.0)
-    #         @info "soil moisture out of range"
-    #     end
-    # end
 
     ########################################################################
     ################## cwm trait likelihood

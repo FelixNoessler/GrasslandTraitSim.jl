@@ -1,18 +1,9 @@
-function grazing(sim, valid;
-        grazing_half_factor = 1500,
-        leafnitrogen_graz_exp = 1,
-        nspecies = 25,
-        path = nothing)
+function grazing(sim, valid; grazing_half_factor = 1500, leafnitrogen_graz_exp = 1,
+                 path = nothing)
 
-    #####################
-    input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies)
-    p = sim.parameter(; input_obj)
-    p = @set p.grazing_half_factor = grazing_half_factor
-    p = @set p.leafnitrogen_graz_exp = leafnitrogen_graz_exp
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
-    #####################
+    nspecies, container = create_container(; sim, valid)
+    container = @set container.p.grazing_half_factor = grazing_half_factor
+    container = @set container.p.leafnitrogen_graz_exp = leafnitrogen_graz_exp
 
     nbiomass = 500
     LD = 2u"ha ^ -1"
@@ -88,16 +79,9 @@ function grazing_half_factor(; path = nothing)
     end
 end
 
-function trampling(sim, valid; nspecies = 25, trampling_factor = 0.01, path = nothing)
-
-    #####################
-    input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies)
-    p = sim.parameter(; input_obj)
-    p = @set p.trampling_factor = trampling_factor * u"ha"
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
-    #####################
+function trampling(sim, valid; trampling_factor = 0.01, path = nothing)
+    nspecies, container = create_container(; sim, valid)
+    container = @set container.p.trampling_factor = trampling_factor * u"ha"
 
     nLD = 500
     biomass = fill(100.0, nspecies)u"kg / ha"
@@ -143,18 +127,11 @@ function trampling(sim, valid; nspecies = 25, trampling_factor = 0.01, path = no
     return nothing
 end
 
-function mowing(sim, valid; nspecies = 25, mowing_height = 0.07u"m",
-        mowing_mid_days = 30,
-        path = nothing)
+function mowing(sim, valid; mowing_height = 0.07u"m", mowing_mid_days = 30,
+                path = nothing)
 
-    #####################
-    input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies)
-    p = sim.parameter(; input_obj)
-    p = @set p.mowing_mid_days = mowing_mid_days
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
-    #####################
+    nspecies, container = create_container(; sim, valid)
+    container = @set container.p.mowing_mid_days = mowing_mid_days
 
     nbiomass = 3
     biomass_vec = LinRange(0, 1000, nbiomass)u"kg / ha"
@@ -163,7 +140,7 @@ function mowing(sim, valid; nspecies = 25, mowing_height = 0.07u"m",
     for (i, biomass) in enumerate(biomass_vec)
         container.calc.defoliation .= 0.0u"kg / (ha * d)"
         sim.mowing!(; t = 1, x = 1, y = 1, container, mowing_height,
-                       biomass, mowing_all = fill(NaN, 5))
+                    biomass = fill(biomass, nspecies), mowing_all = fill(NaN, 5))
 
         mowing_mat[:, i] = ustrip.(container.calc.defoliation)
     end
@@ -198,8 +175,7 @@ function mowing(sim, valid; nspecies = 25, mowing_height = 0.07u"m",
     return nothing
 end
 
-function mow_factor(;
-        path = nothing)
+function mow_factor(; path = nothing)
     fig = Figure(; size = (700, 400))
     Axis(fig[1, 1],
         xlabel = "Time since last mowing event [day]\n(days_since_last_mowing)",

@@ -54,8 +54,7 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
     ## the 'mowing_mid_days' is the day where the plants are grown
     ## back to their normal size/2
     mow_factor = 1.0 / (1.0 + exp(-mowfactor_β * (days_since_last_mowing - mowing_mid_days)))
-    @. lowbiomass_correction =  1 / (1 + exp(-lowbiomass_k * (biomass - lowbiomass)))
-    lowbiomass_correction ./= sum(lowbiomass_correction)
+    @. lowbiomass_correction =  1.0 / (1.0 + exp(-lowbiomass_k * (biomass - lowbiomass)))
 
     # --------- add the removed biomass to the defoliation vector
     for s in 1:nspecies
@@ -129,7 +128,7 @@ function grazing!(; t, x, y, container, LD, biomass)
     biomass_exp = sum_biomass * sum_biomass
     total_grazed = a * biomass_exp / (1u"kg^2 * ha^-2" + a * h * biomass_exp)
 
-    @. lowbiomass_correction =  1 / (1 + exp(-lowbiomass_k * (biomass - lowbiomass)))
+    @. lowbiomass_correction =  1.0 / (1.0 + exp(-lowbiomass_k * (biomass - lowbiomass)))
     @. low_ρ_biomass = lowbiomass_correction * ρ * biomass
     grazed_share .= low_ρ_biomass ./ sum(low_ρ_biomass)
 
@@ -138,12 +137,6 @@ function grazing!(; t, x, y, container, LD, biomass)
     @. defoliation += grazed_share * total_grazed
 
     return nothing
-end
-
-
-function lowbiomass_factor(; biomass, container)
-    @unpack lowbiomass, lowbiomass_k = container.p
-    return @. 1 / (1 + exp(-lowbiomass_k * (biomass - lowbiomass)))
 end
 
 @doc raw"""

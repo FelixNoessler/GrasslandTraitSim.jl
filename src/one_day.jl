@@ -54,23 +54,21 @@ function one_day!(; t, container)
             ### this line is needed because it is possible
             ## that there are numerical errors
             patch_biomass = @view u_biomass[x, y, :]
-            very_low_biomass .= patch_biomass .< 1e-30u"kg / ha" .&&
-                                .!iszero.(patch_biomass)
-            for i in eachindex(very_low_biomass)
-                if very_low_biomass[i]
-                    patch_biomass[i] = 0u"kg / ha"
+            # very_low_biomass .= patch_biomass .< 1e-30u"kg / ha" .&&
+            #                     .!iszero.(patch_biomass)
+            for i in eachindex(patch_biomass)
+                if patch_biomass[i] < 1e-30u"kg / ha" && !iszero(patch_biomass[i])
+                    patch_biomass[i] = 0.0u"kg / ha"
+                end
+
+                if isnan(patch_biomass[i])
+                    @error "Patch biomass isnan: $patch_biomass" maxlog=2
                 end
             end
 
             defoliation .= 0.0u"kg / (ha * d)"
 
-            nan_biomass .= isnan.(patch_biomass)
-            if any(nan_biomass)
-                @error "Patch biomass isnan: $patch_biomass" maxlog=20
-            end
-
             if !iszero(sum(patch_biomass))
-
                 # ------------------------------------------ mowing
                 if included.mowing
                     mowing_height = if daily_input.mowing isa Vector

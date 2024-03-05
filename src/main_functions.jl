@@ -7,24 +7,33 @@ Intialize the parameters, the state variables and the output vectors.
 In addition some vectors are preallocated to avoid allocations in the main loop.
 Then, run the main loop and store the results with all parameters in a container.
 """
-function solve_prob(; input_obj, p, prealloc = nothing, trait_input = nothing, θ_type = Float64)
+function solve_prob(; input_obj, p, prealloc = nothing, prealloc_specific = nothing,
+                     trait_input = nothing, θ_type = Float64)
     if isnothing(prealloc)
         prealloc = preallocate_vectors(; input_obj, T = θ_type)
     end
 
-    container = initialization(; input_obj, p, prealloc, trait_input, θ_type)
+    if isnothing(prealloc_specific)
+        prealloc_specific = preallocate_specific_vectors(; input_obj, T = θ_type)
+    end
+
+    container = initialization(; input_obj, p, prealloc, prealloc_specific,
+                               trait_input, θ_type)
 
     main_loop!(; container)
 
     @unpack biomass = container.output
     @unpack negbiomass = container.calc
-
-    ## set negative values to zero
-    @. negbiomass = biomass < 0u"kg / ha"
-    if any(negbiomass)
-        @warn "Some biomass values were negative!" maxlog = 20
-        biomass[negbiomass] .= 0u"kg / ha"
+    for i in eachindex(biomass)
+        if biomass[i] < 0.0u"kg / ha"
+            biomass[negbiomass] .= 0.0u"kg / ha"
+        end
     end
+
+    # if any(negbiomass)
+    #     @warn "Some biomass values were negative!" maxlog = 2
+
+    # end
 
     calc_cut_biomass!(; container)
 
@@ -43,7 +52,6 @@ function main_loop!(; container)
     @unpack u_biomass, u_water, du_biomass, du_water = container.u
     @unpack biomass, water = container.output
     @unpack patch_xdim, patch_ydim, nspecies = container.simp
-
 
     for t in container.ts
         one_day!(; t, container)

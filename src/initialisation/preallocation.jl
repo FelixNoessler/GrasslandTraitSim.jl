@@ -146,14 +146,33 @@ function preallocate_vectors(; input_obj, T = Float64)
         μ = Array{T}(undef, nspecies)u"d^-1",
         TS = Array{T}(undef, nspecies, nspecies))
 
+    return (; u, patch_variables, calc, traits, transfer_function, output)
+end
+
+
+function preallocate_specific_vectors(; input_obj, T = Float64)
+
+
+    ############## vectors for cut biomass
+    cutting_height = Float64[]
+    biomass_cutting_t = Int64[]
+    biomass_cutting_numeric_date = Float64[]
+    biomass_cutting_index = Int64[]
+    if haskey(input_obj, :output_validation)
+        @unpack biomass_cutting_t, biomass_cutting_numeric_date,
+                cutting_height, biomass_cutting_index = input_obj.output_validation
+    end
+    cut_biomass = fill(T(NaN), length(biomass_cutting_t))u"kg/ha"
+    output_validation = (; cut_biomass, biomass_cutting_t,
+                biomass_cutting_numeric_date,
+                cut_index = biomass_cutting_index,
+                cutting_height = cutting_height)
+
+
     likelihood_calc = (;
+        simulated_cutted_biomass = Array{T}(undef, length(biomass_cutting_index)))
 
-    )
-
-    output_validation = init_cutted_biomass(; input_obj, T)
-
-
-    return (; u, patch_variables, calc, traits, transfer_function, output, output_validation)
+    return (; likelihood_calc, output_validation)
 end
 
 function preallocate(; input_obj, Tdiff = nothing)
@@ -164,6 +183,18 @@ function preallocate(; input_obj, Tdiff = nothing)
     end
 
     diff = preallocate_vectors(; input_obj, T = Tdiff)
+
+    return (; normal, diff)
+end
+
+function preallocate_specific(; input_obj, Tdiff = nothing)
+    normal = preallocate_specific_vectors(; input_obj, T = Float64)
+
+    if isnothing(Tdiff)
+        return (; normal)
+    end
+
+    diff = preallocate_specific_vectors(; input_obj, T = Tdiff)
 
     return (; normal, diff)
 end

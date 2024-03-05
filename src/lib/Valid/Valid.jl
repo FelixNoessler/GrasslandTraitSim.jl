@@ -11,6 +11,7 @@ using Distributions
 using LinearAlgebra
 using RData
 using StatsBase
+using Statistics
 using TimeSeries
 using Unitful
 using TransformVariables

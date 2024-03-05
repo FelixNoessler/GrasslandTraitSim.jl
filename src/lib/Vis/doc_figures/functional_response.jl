@@ -1,17 +1,7 @@
-function amc_nut_response(sim, valid;
-        nspecies = 50,
-        δ_amc,
-        path = nothing)
-
-    ######## input prep
-    input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies)
-    p = sim.parameter(; input_obj)
-    p = @set p.δ_amc = δ_amc
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
+function amc_nut_response(sim, valid; δ_amc, path = nothing)
+    nspecies, container = create_container(; sim, valid)
+    container = @set container.p.δ_amc = δ_amc
     container.calc.biomass_density_factor .= 1.0
-    ########
 
     xs = 0:0.01:1
     ymat = fill(0.0, length(xs), nspecies)
@@ -84,15 +74,9 @@ function amc_nut_response(sim, valid;
     return nothing
 end
 
-function W_rsa_response(sim, valid; nspecies = 25, δ_wrsa = 0.5, path = nothing)
-    #####################
-    input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies)
-    p = sim.parameter(; input_obj)
-    p = @set p.δ_wrsa = δ_wrsa
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
-    #####################
+function W_rsa_response(sim, valid; δ_wrsa = 0.5, path = nothing)
+    nspecies, container = create_container(; sim, valid)
+    container = @set container.p.δ_wrsa = δ_wrsa
 
     xs = 0:0.01:1
     ymat = fill(0.0, length(xs), nspecies)
@@ -170,20 +154,10 @@ function W_rsa_response(sim, valid; nspecies = 25, δ_wrsa = 0.5, path = nothing
     return nothing
 end
 
-function rsa_above_nut_response(sim, valid;
-        nspecies = 25,
-        δ_nrsa,
-        path = nothing)
-
-    #####################
-    input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies)
-    p = sim.parameter(; input_obj)
-    p = @set p.δ_nrsa = δ_nrsa
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
+function rsa_above_nut_response(sim, valid; δ_nrsa, path = nothing)
+    nspecies, container = create_container(; sim, valid)
+    container = @set container.p.δ_nrsa = δ_nrsa
     container.calc.biomass_density_factor .= 1.0
-    #####################
 
     xs = 0:0.01:1
     ymat = fill(0.0, length(xs), nspecies)
@@ -257,19 +231,9 @@ function rsa_above_nut_response(sim, valid;
     return nothing
 end
 
-function W_sla_response(sim, valid;
-        nspecies = 25,
-        δ_sla = 0.5,
-        path = nothing)
-
-    #####################
-    input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies)
-    p = sim.parameter(; input_obj)
-    p = @set p.δ_sla = δ_sla
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
-    #####################
+function W_sla_response(sim, valid;δ_sla = 0.5, path = nothing)
+    nspecies, container = create_container(; sim, valid)
+    container = @set container.p.δ_sla = δ_sla
 
     xs = 0:0.01:1
     ymat = fill(0.0, length(xs), nspecies)

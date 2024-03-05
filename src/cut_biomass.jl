@@ -1,13 +1,12 @@
 function calc_cut_biomass!(; container)
-    @unpack biomass_cutting_t, cutting_height = container.output_validation
+    @unpack cutting_height, biomass_cutting_t = container.output_validation
     @unpack biomass = container.output
     @unpack mean_biomass = container.calc
-
+    @unpack nspecies = container.simp
 
     for i in eachindex(biomass_cutting_t)
         t = biomass_cutting_t[i]
-
-        for s in axes(biomass, :species)
+        for s in 1:nspecies
             vec_view = @view biomass[t, :, :, s]
             mean_biomass[s] = mean(vec_view)
         end

@@ -82,6 +82,10 @@ function exlude_parameter(; input_obj)
         append!(excl_p, [:Ψ₁, :Ψ₂, :SENₘₐₓ])
     end
 
+    if !included.community_height_red
+        append!(excl_p, [:β_community_height, :α_community_height])
+    end
+
     if !included.height_competition
         append!(excl_p, [:height_strength_exp])
     end
@@ -95,6 +99,9 @@ function calibrated_parameter(; input_obj)
         β_sen = (Uniform(0.0, 1.0), as𝕀, NoUnits),
         Ψ₁ = (Uniform(700.0, 3000.0), as(Real, 700.0, 3000.0), NoUnits),
         SENₘₐₓ = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0), NoUnits),
+        α_community_height = (Uniform(0.0, 20000.0), as(Real, 0.0, 20000.0),
+                              u"kg / (ha * m)"),
+        β_community_height = (Uniform(0.0, 0.01), as(Real, 0.0, 0.01), u"ha * m / kg"),
         height_strength_exp = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), NoUnits),
         mowing_mid_days = (truncated(Normal(10.0, 30.0); lower = 0.0, upper = 60.0),
                            as(Real, 0.0, 60.0), NoUnits),
@@ -160,6 +167,74 @@ function calibrated_parameter(; input_obj)
     return (; priordists, lb, ub, t, units)
 end
 
+# Base.@kwdef struct Param{T}
+#     RUE_max::Union{typeof(u"kg / MJ"), Quantity{<:Float64}} = 3 / 1000 * u"kg / MJ" # Maximum radiation use efficiency
+#     k::Union{T, Float64} = 0.6    # Extinction coefficientw)
+#     α_sen::Union{Quantity{<:T}, Quantity{<:Float64}} = 0.0002u"d^-1"
+#     β_sen::Union{T, Float64} = 0.03 # senescence rate
+#     α_ll::Union{T, Float64} = 2.41  # specific leaf area --> leaf lifespan
+#     β_ll::Union{T, Float64} = 0.38  # specific leaf area --> leaf lifespan
+#     Ψ₁::Union{T, Float64} = 775.0     # temperature threshold: senescence starts to increase
+#     Ψ₂::Union{T, Float64} = 3000.0    # temperature threshold: senescence reaches maximum
+#     SENₘₐₓ::Union{T, Float64} = 3.0  # maximal seasonality factor for the senescence rate
+#     clonalgrowth_factor::Union{T, Float64} = 0.05
+#     γ1::Union{Quantity{<:T}, Quantity{<:Float64}} = 0.0445u"m^2 * d / MJ"
+#     γ2::Union{Quantity{<:T}, Quantity{<:Float64}} = 5.0u"MJ / (m^2 * d)"
+#     T₀::Union{T, Float64} = 3.0  #u"°C"
+#     T₁::Union{T, Float64} = 12.0 #u"°C"
+#     T₂::Union{T, Float64} = 20.0 #u"°C"
+#     T₃::Union{T, Float64} = 35.0 #u"°C"
+#     SEAₘᵢₙ::Union{T, Float64} = 0.7
+#     SEAₘₐₓ::Union{T, Float64} = 1.3
+#     ST₁::Union{T, Float64} = 625.0
+#     ST₂::Union{T, Float64} = 1300.0
+#     β_community_height::Union{Quantity{<:T}, Quantity{<:Float64}} = 0.02u"ha * m / kg"
+#     α_community_height::Union{Quantity{<:T}, Quantity{<:Float64}} = 5000.0u"kg / (ha * m)"
+#     height_strength_exp::Union{T, Float64} = 0.5 # strength of height competition
+#     mowing_mid_days::Union{T, Float64} = 10.0 # day where the plants are grown back to their normal size/2
+#     mowfactor_β::Union{T, Float64} = 0.05
+#     leafnitrogen_graz_exp::Union{T, Float64} = 1.5 # exponent of the leaf nitrogen grazing effect
+#     trampling_factor::Union{Quantity{<:T}, Quantity{<:Float64}} = 0.01u"ha" # trampling factor
+#     trampling_height_exp::Union{T, Float64} = 0.5
+#     grazing_half_factor::Union{T, Float64} = 500.0 # half saturation constant for grazing
+#     κ::Union{Quantity{<:T}, Quantity{<:Float64}} = 22.0u"kg / d" # maximum grazing rate
+#     lowbiomass::Union{Quantity{<:T}, Quantity{<:Float64}} = 100.0u"kg / ha" # low biomass
+#     lowbiomass_k::Union{Quantity{<:T}, Quantity{<:Float64}} = 1.0u"ha / kg" # low biomass k
+#     biomass_dens::Union{Quantity{<:T}, Quantity{<:Float64}} = 1200.0u"kg / ha" # biomass density
+#     belowground_density_effect = 2.0 # effect of belowground competition
+#     α_pet::Union{Quantity{<:T}, Quantity{<:Float64}} = 2.0u"mm / d"
+#     β_pet::Union{Quantity{<:T}, Quantity{<:Float64}} = 1.2u"d / mm"
+#     sla_tr::Union{Quantity{<:T}, Quantity{<:Float64}} = 0.03u"m^2 / g"
+#     sla_tr_exponent::Union{T, Float64} = 0.4
+#     ϕ_sla::Union{Quantity{<:T}, Quantity{<:Float64}} = 0.025u"m^2 / g"
+#     η_min_sla::Union{T, Float64} = -0.8
+#     η_max_sla::Union{T, Float64} = 0.8
+#     β_η_sla::Union{Quantity{<:T}, Quantity{<:Float64}} = 75.0u"g / m^2"
+#     β_sla::Union{T, Float64} = 5.0
+#     δ_wrsa::Union{T, Float64} = 0.8
+#     δ_sla::Union{T, Float64} = 0.5
+#     maxtotalN::Union{T, Float64} = 35.0
+#     ϕ_amc::Union{T, Float64} = 0.35
+#     η_min_amc::Union{T, Float64} = 0.05
+#     η_max_amc::Union{T, Float64} = 0.6
+#     κ_min_amc::Union{T, Float64} = 0.2
+#     β_κη_amc::Union{T, Float64} = 10.0
+#     β_amc::Union{T, Float64} = 7.0
+#     δ_amc::Union{T, Float64} = 0.8
+#     δ_nrsa::Union{T, Float64} = 0.5
+#     ϕ_rsa::Union{Quantity{<:T}, Quantity{<:Float64}} = 0.12u"m^2 / g"
+#     η_min_rsa::Union{T, Float64} = 0.05
+#     η_max_rsa::Union{T, Float64} = 0.6
+#     κ_min_rsa::Union{T, Float64} = 0.4
+#     β_κη_rsa::Union{Quantity{<:T}, Quantity{<:Float64}} = 40.0u"g / m^2"
+#     β_rsa::Union{T, Float64} = 7.0
+#     b_biomass::Union{T, Float64} = 1000.0
+#     b_sla::Union{T, Float64} = 0.0005
+#     b_lncm::Union{T, Float64} = 0.5
+#     b_amc::Union{T, Float64} = 0.001
+#     b_height::Union{T, Float64} = 0.01
+#     b_rsa_above::Union{T, Float64} = 0.004
+# end
 
 function fixed_parameter(; input_obj)
     p = (
@@ -183,6 +258,8 @@ function fixed_parameter(; input_obj)
         SEAₘₐₓ = 1.3,
         ST₁ = 625,
         ST₂ = 1300,
+        α_community_height = 10000u"kg / (ha * m)",
+        β_community_height = 0.0005u"ha * m / kg",
         height_strength_exp = 0.5, # strength of height competition
         mowing_mid_days = 10.0, # day where the plants are grown back to their normal size/2
         mowfactor_β = 0.05,
@@ -237,15 +314,12 @@ end
 
 
 function parameter(; input_obj, variable_p = ())
-    fixed_p = fixed_parameter(; input_obj)
-
-    # ------------------------ check if some parameters are already in variable_p
-    if any(keys(fixed_p) .∈ Ref(keys(variable_p)))
-        f = collect(keys(fixed_p) .∉ Ref(keys(variable_p)))
-        fixed_p = (; zip(collect(keys(fixed_p))[f], collect(fixed_p)[f])...)
+    p = fixed_parameter(; input_obj)
+    for k in keys(variable_p)
+        p = @set p[k] = variable_p[k]
     end
 
-    return tuplejoin(fixed_p, variable_p)
+    return p
 end
 
 function add_units(x; inference_obj)

@@ -2,10 +2,10 @@ function get_validation_data_plots(; plotIDs)
     valid_data = Dict()
 
     for plotID in plotIDs
-        valid_data[plotID] = get_validation_data(; plotID)
+        valid_data[Symbol(plotID)] = get_validation_data(; plotID)
     end
 
-    return valid_data
+    return NamedTuple(valid_data)
 end
 
 function date_to_solt(d; )

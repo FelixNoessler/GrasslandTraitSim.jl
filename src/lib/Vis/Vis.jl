@@ -5,7 +5,7 @@ import Dates
 using CairoMakie
 using DimensionalData
 using Distributions
-using Setfield
+using Accessors
 using Statistics
 using Unitful
 
@@ -27,6 +27,7 @@ include("dashboard/dashbaord_layout.jl")
 include("dashboard/dashboard_plotting.jl")
 include("dashboard/dashboard_prepare_input.jl")
 
+include("doc_figures/doc_figures_utils.jl")
 include("doc_figures/clonalgrowth.jl")
 include("doc_figures/functional_response.jl")
 include("doc_figures/potential_growth.jl")
@@ -37,6 +38,7 @@ include("doc_figures/neighbours.jl")
 include("doc_figures/gradient.jl")
 include("doc_figures/plant_available_water.jl")
 include("doc_figures/leaflifespan.jl")
+include("doc_figures/community_height.jl")
 
 include("abiotic.jl")
 

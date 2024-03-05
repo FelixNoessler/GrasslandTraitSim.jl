@@ -1,15 +1,5 @@
-
-function potential_growth(sim, valid;
-        nspecies = 25,
-        path = nothing)
-
-    #####################
-    input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies)
-    p = sim.parameter(; input_obj)
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
-    #####################
+function potential_growth(sim, valid; path = nothing)
+    nspecies, container = create_container(; sim, valid)
 
     par_values = 10
     biomass = repeat([1], nspecies)u"kg / ha"

@@ -2,14 +2,7 @@ function temperatur_reducer(sim, valid;
         Ts = LinRange(0.0, 40.0, 500), # °C
         path = nothing)
 
-    #####################
-    input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies = 1)
-    p = sim.parameter(; input_obj)
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
-    #####################
-
+    nspecies, container = create_container(; sim, valid, nspecies = 1)
     Ts = sort(ustrip.(Ts))
 
     y = Float64[]
@@ -47,13 +40,7 @@ function radiation_reducer(sim, valid;
         PARs = LinRange(0.0, 15.0, 1000)u"MJ / (m^2 * d)",
         path = nothing)
 
-    #####################
-    input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies = 1)
-    p = sim.parameter(; input_obj)
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
-    #####################
+    nspecies, container = create_container(; sim, valid, nspecies = 1)
 
     PARs = sort(ustrip.(PARs)) .* unit(PARs[1])
 
@@ -92,14 +79,8 @@ function radiation_reducer(sim, valid;
     return nothing
 end
 
-function below_influence(sim, valid; nspecies = 25, path = nothing)
-    #####################
-    input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies)
-    p = sim.parameter(; input_obj)
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
-    #####################
+function below_influence(sim, valid; path = nothing)
+    nspecies, container = create_container(; sim, valid)
 
     #################### varying belowground_density_effect, equal biomass, random traits
     below_effects = LinRange(0, 2.0, 200)
@@ -112,7 +93,7 @@ function below_influence(sim, valid; nspecies = 25, path = nothing)
         ymat[:, i] .= container.calc.biomass_density_factor
     end
 
-    traitsimmat = ustrip.(copy(container.traits.TS))
+    traitsimmat = ustrip.(copy(container.calc.TS))
     traitsim = vec(mean(traitsimmat, dims = 1))
     idx = sortperm(traitsim)
     traitsim = traitsim[idx]
@@ -129,9 +110,10 @@ function below_influence(sim, valid; nspecies = 25, path = nothing)
     artificial_mat = Array{Float64}(undef, 3, length(artificial_below))
 
     for i in eachindex(artificial_below)
-        c = (; traits = (; TS = mat),
+        c = (;
             calc = (; TS_biomass = zeros(3)u"kg / ha",
-                biomass_density_factor = zeros(3)),
+                    TS = mat,
+                    biomass_density_factor = zeros(3)),
             simp = (; included = (; belowground_competition = true)),
             p = (; belowground_density_effect = artificial_below[i],
                 biomass_dens = 80u"kg / ha"))
@@ -215,13 +197,7 @@ function seasonal_effect(sim, valid;
         STs = LinRange(0, 3500, 1000),
         path = nothing)
 
-    #####################
-    input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies = 1)
-    p = sim.parameter(; input_obj)
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
-    #####################
+    nspecies, container = create_container(; sim, valid, nspecies = 1)
 
     y = Float64[]
     for ST in STs
@@ -260,13 +236,7 @@ function seasonal_component_senescence(sim, valid;
         STs = LinRange(0, 4000, 500),
         path = nothing)
 
-    #####################
-    input_obj = valid.validation_input(;
-        plotID = "HEG01", nspecies = 1)
-    p = sim.parameter(; input_obj)
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
-    #####################
+    nspecies, container = create_container(; sim, valid, nspecies = 1)
 
     STs = sort(STs)
 

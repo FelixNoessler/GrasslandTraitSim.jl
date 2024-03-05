@@ -10,7 +10,7 @@ using Distributions
 using UnPack
 using DimensionalData
 using TransformVariables
-using Setfield
+using Accessors
 using ForwardDiff
 
 ##### submodules

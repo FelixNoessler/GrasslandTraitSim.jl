@@ -2,10 +2,10 @@ function validation_input_plots(; plotIDs, kwargs...)
     static_inputs = Dict()
 
     for plotID in plotIDs
-        static_inputs[plotID] = validation_input(; plotID, kwargs...)
+        static_inputs[Symbol(plotID)] = validation_input(; plotID, kwargs...)
     end
 
-    return static_inputs
+    return NamedTuple(static_inputs)
 end
 
 function validation_input(;
@@ -23,6 +23,7 @@ function validation_input(;
             trampling = true,
             grazing = true,
             belowground_competition = true,
+            community_height_red = true,
             height_competition = true,
             pet_growth_reduction = true,
             sla_transpiration = true,
@@ -196,7 +197,7 @@ function prepare_mowing(d::DataFrame)
     cutheights = d.CutHeight_cm1[.!ismissing.(d.CutHeight_cm1)]
     mean_cutheight = 7.0
     if !isempty(cutheights)
-        mean_cutheight = mean(cutheights)
+        mean_cutheight = Statistics.mean(cutheights)
     end
 
     cutHeight_vec = Array{Float64}(undef, length(days))
@@ -252,4 +253,17 @@ function prepare_grazing(d::DataFrame)
         end
     end
     return grazing_vec
+end
+
+
+function input_traits()
+    trait_df = data.input.traits;
+    trait_input = (;
+        amc = trait_df.amc,
+        sla = trait_df.sla * u"m^2/g",
+        height = trait_df.height * u"m",
+        rsa_above = trait_df.rsa_above * u"m^2/g",
+        ampm = trait_df.ampm,
+        lmpm = trait_df.lmpm,
+        lncm = trait_df.lncm * u"mg/g");
 end

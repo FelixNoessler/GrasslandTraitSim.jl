@@ -139,7 +139,7 @@ function dashboard_layout(; sim, valid, variable_p)
     all_keys = collect(keys(p))
     is_inf_p = all_keys .∈ Ref(inference_keys)
 
-    p_inf_label = (; zip(Symbol.(:θ_, all_keys[is_inf_p]), collect(p)[is_inf_p])...)
+    p_inf_label = (; zip(all_keys[is_inf_p], collect(p)[is_inf_p])...)
     p_inf = (; zip(Symbol.(all_keys[is_inf_p]), collect(p)[is_inf_p])...)
     p_fixed = (; zip(all_keys[.!is_inf_p], collect(p)[.!is_inf_p])...)
     p = merge(p_inf_label, p_fixed)

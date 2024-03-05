@@ -10,8 +10,9 @@ function plot_clonalgrowth(sim, valid; path = nothing)
         patch_xdim, patch_ydim)
     p = sim.parameter(; input_obj)
     p = @set p.clonalgrowth_factor = 0.5
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, p, calc)
+    prealloc = sim.preallocate_vectors(; input_obj);
+    prealloc_specific = sim.preallocate_specific_vectors(; input_obj);
+    container = sim.initialization(; input_obj, p, prealloc, prealloc_specific)
     #####################
 
     container.u.u_biomass .= 2.0u"kg / ha"
