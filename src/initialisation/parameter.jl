@@ -100,8 +100,9 @@ function calibrated_parameter(; input_obj)
         Ψ₁ = (Uniform(700.0, 3000.0), as(Real, 700.0, 3000.0), NoUnits),
         SENₘₐₓ = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0), NoUnits),
         α_community_height = (Uniform(0.0, 20000.0), as(Real, 0.0, 20000.0),
-                              u"kg / (ha * m)"),
-        β_community_height = (Uniform(0.0, 0.01), as(Real, 0.0, 0.01), u"ha * m / kg"),
+                              u"kg / ha"),
+        β_community_height = (Uniform(0.0, 0.01), as(Real, 0.0, 0.01), u"ha / kg"),
+        exp_community_height = (Uniform(0.0, 1.0), as(Real, 0.0, 1.0), NoUnits),
         height_strength_exp = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), NoUnits),
         mowing_mid_days = (truncated(Normal(10.0, 30.0); lower = 0.0, upper = 60.0),
                            as(Real, 0.0, 60.0), NoUnits),
@@ -258,8 +259,9 @@ function fixed_parameter(; input_obj)
         SEAₘₐₓ = 1.3,
         ST₁ = 625,
         ST₂ = 1300,
-        α_community_height = 10000u"kg / (ha * m)",
-        β_community_height = 0.0005u"ha * m / kg",
+        α_community_height = 10000u"kg / ha",
+        β_community_height = 0.0005u"ha / kg",
+        exp_community_height = 0.9,
         height_strength_exp = 0.5, # strength of height competition
         mowing_mid_days = 10.0, # day where the plants are grown back to their normal size/2
         mowfactor_β = 0.05,

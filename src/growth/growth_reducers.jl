@@ -147,7 +147,7 @@ function seasonal_reduction(; container, ST)
 end
 
 
-"""
+@doc raw"""
     community_height_reduction(; container, biomass)
 
 Only one species is used for the simulation:
@@ -163,9 +163,9 @@ function community_height_reduction(; container, biomass)
 
     @unpack relative_height = container.calc
     @unpack height = container.traits
-    @unpack β_community_height, α_community_height = container.p
+    @unpack β_community_height, α_community_height, exp_community_height = container.p
     relative_height .= height .* biomass ./ sum(biomass)
-    height_cwm = sum(relative_height)
-    x = 1 / height_cwm * sum(biomass)
+    height_cwm = ustrip(sum(relative_height))
+    x = (1 / height_cwm)^exp_community_height * sum(biomass)
     return 1 / (1 + exp(β_community_height * (x - α_community_height)))
 end
