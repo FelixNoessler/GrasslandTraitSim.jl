@@ -42,11 +42,8 @@ function loglikelihood_model(sim::Module;
 
         simulated_cutted_biomass .= ustrip.(cut_biomass)[cut_index]
         ### calculate the likelihood
-        biomass_d = Product(
-            truncated.(Normal.(simulated_cutted_biomass,
-                                sol.p.b_biomass);
-                       lower = 0.0))
-
+        biomass_d = Product(Normal.(simulated_cutted_biomass,
+                                sol.p.b_biomass);)
         ll_biomass = logpdf(biomass_d, vec(data.biomass))
     end
 
@@ -89,9 +86,7 @@ function loglikelihood_model(sim::Module;
 
             ### CWM Likelihood
             cwm_traitscale = Symbol(:b_, trait_symbol)
-            cwmtrait_d = Product(truncated.(
-                Laplace.(sim_cwm_trait, sol.p[cwm_traitscale]);
-                lower = 0.0))
+            cwmtrait_d = Product(Laplace.(sim_cwm_trait, sol.p[cwm_traitscale]);)
 
             if trait_symbol == :amc
                 μ = sim_cwm_trait

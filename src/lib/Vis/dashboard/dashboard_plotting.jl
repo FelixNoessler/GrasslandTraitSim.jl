@@ -5,28 +5,31 @@ function band_patch(;
         valid_data)
     ax = plot_obj.axes[:biomass]
     empty!(ax)
-
     ax.ylabel = "Green biomass [kg ha⁻¹]"
     ax.xlabel = "Time [years]"
 
-    thin = 7
+    thin = 1
 
     t = sol.numeric_date
-    biomass_μ = vec(sum(ustrip.(sol.output.biomass); dims = (:x, :y, :species))) ./
+    biomass = vec(sum(ustrip.(sol.output.biomass); dims = (:x, :y, :species))) ./
                 sol.simp.npatches
+    lines!(ax, t, biomass; color = :orange, linewidth = 2)
 
-    biomass_dist = truncated.(Normal.(biomass_μ, sol.p.b_biomass); lower = 0.0)
+    cutbiomass_μ = vec(ustrip.(sol.output_validation.cut_biomass))
+    t = sol.numeric_date[sol.output_validation.biomass_cutting_t]
+
+    biomass_dist = Normal.(cutbiomass_μ, sol.p.b_biomass)
     biomass_median = median.(biomass_dist)
     biomass_lower = quantile.(biomass_dist, 0.025)
     biomass_upper = quantile.(biomass_dist, 0.975)
     biomass_lower5 = quantile.(biomass_dist, 0.25)
     biomass_upper5 = quantile.(biomass_dist, 0.75)
 
-    band!(ax, t[1:thin:end], biomass_lower[1:thin:end],
-        biomass_upper[1:thin:end]; color = (:black, 0.1))
-    band!(ax, t[1:thin:end], biomass_lower5[1:thin:end],
-        biomass_upper5[1:thin:end]; color = (:black, 0.1))
-    lines!(ax, t[1:thin:end], biomass_median[1:thin:end]; color = :orange)
+    rangebars!(ax, t[1:thin:end], biomass_lower[1:thin:end],
+        biomass_upper[1:thin:end]; color = (:black, 0.3), linewidth = 1)
+    rangebars!(ax, t[1:thin:end], biomass_lower5[1:thin:end],
+        biomass_upper5[1:thin:end]; color = (:black, 0.3), linewidth = 2)
+    scatter!(ax, t[1:thin:end], biomass_median[1:thin:end]; color = :orange)
 
 
     show_grazmow = plot_obj.obs.toggle_grazmow.active.val
@@ -62,37 +65,6 @@ function band_patch(;
 
     return nothing
 end
-
-
-
-# function trait_mean_biomass(;
-#         sol,
-#         markersize = 15,
-#         patch = 1,
-#         t, plot_obj, ax_num = 3)
-#     ax = plot_obj.axes[ax_num]
-#     empty!(ax)
-
-#     trait = plot_obj.obs.menu_color.selection.val
-#     name_index = getindex.([plot_obj.obs.menu_color.options.val...], 2) .== trait
-#     trait_name = first.([plot_obj.obs.menu_color.options.val...])[name_index][1]
-#     color = ustrip.(sol.traits[trait])
-#     colormap = :viridis
-#     colorrange = (minimum(color), maximum(color) + 0.0001)
-
-#     print_date = Dates.format(sol.date[t], "dd.mm.yyyy")
-
-#     ax.ylabel = "Biomass at $(print_date) [kg ha⁻¹]"
-#     ax.xlabel = trait_name
-
-#     scatter!(ax,
-#         ustrip.(sol.traits[trait]),
-#         ustrip.(sol.o.biomass[t, patch, :]);
-#         color, colormap, colorrange,
-#         markersize)
-
-#     return nothing
-# end
 
 function soilwater_plot(; sol, plot_obj)
     ax = plot_obj.axes[:soilwater]
@@ -179,19 +151,19 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
             return nothing
         end
     else
-        cwm_trait_dist = truncated.(
-            Laplace.(cwm_trait, sol.p[Symbol("b_$trait")]);
-            lower = 0)
+        cwm_trait_dist = Laplace.(cwm_trait, sol.p[Symbol("b_$trait")])
     end
 
     median_trait = median.(cwm_trait_dist)
-    lower_trait = quantile.(cwm_trait_dist, 0.025)
-    upper_trait = quantile.(cwm_trait_dist, 0.975)
-    lower5_trait = quantile.(cwm_trait_dist, 0.25)
-    upper5_trait = quantile.(cwm_trait_dist, 0.75)
+    cwm_trait_dist_sub = cwm_trait_dist[LookupArrays.index(valid_data.traits, :time)]
+    tsub = t[LookupArrays.index(valid_data.traits, :time)]
+    lower_trait = quantile.(cwm_trait_dist_sub, 0.025)
+    upper_trait = quantile.(cwm_trait_dist_sub, 0.975)
+    lower5_trait = quantile.(cwm_trait_dist_sub, 0.25)
+    upper5_trait = quantile.(cwm_trait_dist_sub, 0.75)
 
-    band!(ax, t, lower_trait, upper_trait; color = (:black, 0.1))
-    band!(ax, t, lower5_trait, upper5_trait; color = (:black, 0.1))
+    rangebars!(ax, tsub, lower_trait, upper_trait; color = (:black, 0.3))
+    rangebars!(ax, tsub, lower5_trait, upper5_trait; color = (:black, 0.3), linewidth = 2)
     lines!(ax, t, median_trait, color = :blue)
     ax.ylabel = "CWM: $trait_name"
 

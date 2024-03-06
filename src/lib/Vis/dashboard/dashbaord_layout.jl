@@ -161,7 +161,8 @@ function dashboard_layout(; sim, valid, variable_p)
 
     #############
     axes = Dict()
-    axes[:biomass] = Axis(plots_layout[1, 1:2]; alignmode = Outside())
+    axes[:biomass] = Axis(plots_layout[1, 1:2]; alignmode = Outside(),
+                          limits = (nothing, nothing, -100.0, nothing))
     axes[:soilwater] = Axis(plots_layout[1, 3]; alignmode = Outside())
     axes[:abiotic] = Axis(plots_layout[1, 4]; alignmode = Outside())
     axes[:sla] = Axis(plots_trait_layout[1, 1]; alignmode = Outside())
