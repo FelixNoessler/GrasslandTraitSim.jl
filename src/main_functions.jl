@@ -26,14 +26,9 @@ function solve_prob(; input_obj, p, prealloc = nothing, prealloc_specific = noth
     @unpack negbiomass = container.calc
     for i in eachindex(biomass)
         if biomass[i] < 0.0u"kg / ha"
-            biomass[negbiomass] .= 0.0u"kg / ha"
+            biomass[i] = 0.0u"kg / ha"
         end
     end
-
-    # if any(negbiomass)
-    #     @warn "Some biomass values were negative!" maxlog = 2
-
-    # end
 
     calc_cut_biomass!(; container)
 
