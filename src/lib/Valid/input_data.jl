@@ -242,10 +242,10 @@ function prepare_grazing(d::DataFrame)
                 grazing_enddate = row["end_graz$i"]
                 grazing_intensity = row["inten_graz$i"]
 
-                if isnan(grazing_intensity)
-                    @warn "Grazing intensity NaN"
-                    @show grazing_startdate, grazing_enddate, d.plotID[1]
-                end
+                # if isnan(grazing_intensity)
+                #     @warn "Grazing intensity NaN"
+                #     @show grazing_startdate, grazing_enddate, d.plotID[1]
+                # end
                 start_index = values(t[grazing_startdate].index)[1]
                 end_index = values(t[grazing_enddate].index)[1]
                 grazing_vec[start_index:end_index] .= grazing_intensity

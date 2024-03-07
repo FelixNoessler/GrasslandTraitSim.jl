@@ -42,12 +42,12 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     #### final growth
     @. act_growth = potgrowth * reduction * species_specific_red
 
-    @. neg_act_growth = act_growth < 0u"kg / (ha * d)"
-    if any(neg_act_growth)
-        @warn "act_growth below zero: $(container.calc.act_growth)" maxlog = 20
-        # @show container.p
-        # @show container.simp
-    end
+    # @. neg_act_growth = act_growth < 0u"kg / (ha * d)"
+    # if any(neg_act_growth)
+    #     @warn "act_growth below zero: $(container.calc.act_growth)" maxlog = 20
+    #    @show container.p
+    #    @show container.simp
+    # end
 
     return LAItot
 end

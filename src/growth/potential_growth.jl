@@ -39,9 +39,9 @@ function potential_growth!(; container, biomass, PAR)
     @unpack LAIs, potgrowth = container.calc
 
     LAItot = calculate_LAI(; container, biomass, LAIs)
-    if LAItot < 0
-        @error "LAItot below zero: $LAItot" maxlog=10
-    end
+    # if LAItot < 0
+    #     @error "LAItot below zero: $LAItot" maxlog=10
+    # end
 
     if LAItot == 0 || !included.potential_growth
         @info "Zero potential growth!" maxlog=1

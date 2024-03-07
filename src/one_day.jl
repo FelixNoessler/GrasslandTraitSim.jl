@@ -61,9 +61,9 @@ function one_day!(; t, container)
                     patch_biomass[i] = 0.0u"kg / ha"
                 end
 
-                if isnan(patch_biomass[i])
-                    @error "Patch biomass isnan: $patch_biomass" maxlog=2
-                end
+                # if isnan(patch_biomass[i])
+                #     @error "Patch biomass isnan: $patch_biomass" maxlog=2
+                # end
             end
 
             defoliation .= 0.0u"kg / (ha * d)"
@@ -119,7 +119,7 @@ function one_day!(; t, container)
                 end
 
             else
-                @warn "Sum of patch biomass = 0" maxlog=10
+                # @warn "Sum of patch biomass = 0" maxlog=10
                 act_growth .= 0.0u"kg / (ha * d)"
                 sen .= 0.0u"kg / (ha * d)"
 
