@@ -9,7 +9,6 @@ using DataFramesMeta
 using DimensionalData
 using Distributions
 using LinearAlgebra
-using RData
 using StatsBase
 using Statistics
 using TimeSeries
