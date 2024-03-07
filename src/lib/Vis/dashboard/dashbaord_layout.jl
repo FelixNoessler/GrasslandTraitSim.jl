@@ -62,7 +62,7 @@ function dashboard_layout(; sim, valid, variable_p)
     toggles_included = Dict(zip(included_symbols, toggles_included_prep))
 
     [rowgap!(sim_layout, i, dist)
-        for (i, dist) in enumerate(fill(5, length(included_symbols) ÷ 2))]
+        for (i, dist) in enumerate(fill(5, length(included_symbols) ÷ 2 + 1))]
     colgap!(sim_layout, 1, 5)
     colgap!(sim_layout, 3, 5)
 

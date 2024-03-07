@@ -15,26 +15,12 @@ function band_patch(;
                 sol.simp.npatches
     lines!(ax, t, biomass; color = :orange, linewidth = 2)
 
-    cutbiomass_μ = vec(ustrip.(sol.output_validation.cut_biomass))
-    t = sol.numeric_date[sol.output_validation.biomass_cutting_t]
 
-    biomass_dist = Normal.(cutbiomass_μ, sol.p.b_biomass)
-    biomass_median = median.(biomass_dist)
-    biomass_lower = quantile.(biomass_dist, 0.025)
-    biomass_upper = quantile.(biomass_dist, 0.975)
-    biomass_lower5 = quantile.(biomass_dist, 0.25)
-    biomass_upper5 = quantile.(biomass_dist, 0.75)
-
-    rangebars!(ax, t[1:thin:end], biomass_lower[1:thin:end],
-        biomass_upper[1:thin:end]; color = (:black, 0.3), linewidth = 1)
-    rangebars!(ax, t[1:thin:end], biomass_lower5[1:thin:end],
-        biomass_upper5[1:thin:end]; color = (:black, 0.3), linewidth = 2)
-    scatter!(ax, t[1:thin:end], biomass_median[1:thin:end]; color = :orange)
 
 
     show_grazmow = plot_obj.obs.toggle_grazmow.active.val
     if show_grazmow
-        ymax = maximum(biomass_median) * 1.5
+        ymax = maximum(biomass) * 1.5
 
         # -------------- grazing
         ylower = fill(0.0, length(sol.daily_input.grazing))
@@ -54,6 +40,24 @@ function band_patch(;
 
 
     if !isnothing(valid_data)
+        cutbiomass_μ = vec(ustrip.(sol.output_validation.cut_biomass))
+        t = sol.numeric_date[sol.output_validation.biomass_cutting_t]
+
+        biomass_dist = Normal.(cutbiomass_μ, sol.p.b_biomass)
+        biomass_median = median.(biomass_dist)
+
+        scatter!(ax, t[1:thin:end], biomass_median[1:thin:end]; color = :orange)
+
+            biomass_lower = quantile.(biomass_dist, 0.025)
+        biomass_upper = quantile.(biomass_dist, 0.975)
+        biomass_lower5 = quantile.(biomass_dist, 0.25)
+        biomass_upper5 = quantile.(biomass_dist, 0.75)
+
+        rangebars!(ax, t[1:thin:end], biomass_lower[1:thin:end],
+            biomass_upper[1:thin:end]; color = (:black, 0.3), linewidth = 1)
+        rangebars!(ax, t[1:thin:end], biomass_lower5[1:thin:end],
+            biomass_upper5[1:thin:end]; color = (:black, 0.3), linewidth = 2)
+
         biomass = ustrip.(valid_data.biomass)
         num_t = sol.numeric_date[LookupArrays.index(valid_data.biomass, :time)]
 
@@ -155,19 +159,19 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
     end
 
     median_trait = median.(cwm_trait_dist)
-    cwm_trait_dist_sub = cwm_trait_dist[LookupArrays.index(valid_data.traits, :time)]
-    tsub = t[LookupArrays.index(valid_data.traits, :time)]
-    lower_trait = quantile.(cwm_trait_dist_sub, 0.025)
-    upper_trait = quantile.(cwm_trait_dist_sub, 0.975)
-    lower5_trait = quantile.(cwm_trait_dist_sub, 0.25)
-    upper5_trait = quantile.(cwm_trait_dist_sub, 0.75)
 
-    rangebars!(ax, tsub, lower_trait, upper_trait; color = (:black, 0.3))
-    rangebars!(ax, tsub, lower5_trait, upper5_trait; color = (:black, 0.3), linewidth = 2)
     lines!(ax, t, median_trait, color = :blue)
     ax.ylabel = "CWM: $trait_name"
 
     if !isnothing(valid_data)
+        cwm_trait_dist_sub = cwm_trait_dist[LookupArrays.index(valid_data.traits, :time)]
+        tsub = t[LookupArrays.index(valid_data.traits, :time)]
+        lower_trait = quantile.(cwm_trait_dist_sub, 0.025)
+        upper_trait = quantile.(cwm_trait_dist_sub, 0.975)
+        lower5_trait = quantile.(cwm_trait_dist_sub, 0.25)
+        upper5_trait = quantile.(cwm_trait_dist_sub, 0.75)
+        rangebars!(ax, tsub, lower_trait, upper_trait; color = (:black, 0.3))
+        rangebars!(ax, tsub, lower5_trait, upper5_trait; color = (:black, 0.3), linewidth = 2)
         num_t = sol.numeric_date[LookupArrays.index(valid_data.traits, :time)]
         y = vec(valid_data.traits[trait = At(trait)])
         scatter!(ax, num_t, y, color = :black, markersize = 8)
