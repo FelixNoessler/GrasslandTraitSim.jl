@@ -57,11 +57,15 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.grazing
-        append!(excl_p, [:leafnitrogen_graz_exp, :grazing_half_factor, :κ])
+        append!(excl_p, [:leafnitrogen_graz_exp, :κ])
     end
 
     if !included.trampling
         append!(excl_p, [:trampling_factor, :trampling_height_exp])
+    end
+
+    if !included.trampling && !included.grazing
+        append!(excl_p, [:grazing_half_factor])
     end
 
     if !included.mowing
