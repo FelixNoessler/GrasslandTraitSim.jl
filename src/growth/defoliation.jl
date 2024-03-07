@@ -167,7 +167,7 @@ Maximal the whole biomass of a plant species is removed by trampling.
 """
 function trampling!(; container, LD, biomass)
     @unpack height = container.traits
-    @unpack trampling_height_exp, trampling_factor grazing_half_factor = container.p
+    @unpack trampling_height_exp, trampling_factor, grazing_half_factor = container.p
     @unpack trampling_proportion, trampled_biomass, defoliation = container.calc
 
     h = 1 / LD
