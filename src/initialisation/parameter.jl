@@ -173,149 +173,97 @@ function calibrated_parameter(; input_obj)
 end
 
 @with_kw mutable struct Parameter{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9, Q10, Q11, Q12, Q13, Q14, Q15, Q16, Q17, Q18}
-    RUE_max::Q1 = 3 / 1000 * u"kg / MJ" # Maximum radiation use efficiency
-    k::T = 0.6    # Extinction coefficientw)
-    α_sen::Q2 = 0.0002u"d^-1"
-    β_sen::T = 0.03 # senescence rate
-    α_ll::T = 2.41  # specific leaf area --> leaf lifespan
-    β_ll::T = 0.38  # specific leaf area --> leaf lifespan
-    Ψ₁::T = 775.0     # temperature threshold: senescence starts to increase
-    Ψ₂::T = 3000.0    # temperature threshold: senescence reaches maximum
-    SENₘₐₓ::T = 3.0  # maximal seasonality factor for the senescence rate
-    clonalgrowth_factor::T = 0.05
-    γ1::Q3 = 0.0445u"m^2 * d / MJ"
-    γ2::Q4 = 5.0u"MJ / (m^2 * d)"
-    T₀::T = 3.0  #u"°C"
-    T₁::T = 12.0 #u"°C"
-    T₂::T = 20.0 #u"°C"
-    T₃::T = 35.0 #u"°C"
-    SEAₘᵢₙ::T = 0.7
-    SEAₘₐₓ::T = 1.3
-    ST₁::T = 625.0
-    ST₂::T = 1300.0
-    α_community_height::Q5 = 10000.0u"kg / ha "
-    β_community_height::Q6 = 0.0005u"ha / kg"
-    exp_community_height::T = 0.9
-    height_strength_exp::T = 0.5 # strength of height competition
-    mowing_mid_days::T = 10.0 # day where the plants are grown back to their normal size/2
-    mowfactor_β::T = 0.05
-    leafnitrogen_graz_exp::T = 1.5 # exponent of the leaf nitrogen grazing effect
-    trampling_factor::Q7 = 0.01u"ha" # trampling factor
-    trampling_height_exp::T = 0.5
-    grazing_half_factor::T = 500.0 # half saturation constant for grazing
-    κ::Q8 = 22.0u"kg / d" # maximum grazing rate
-    lowbiomass::Q9 = 100.0u"kg / ha" # low biomass
-    lowbiomass_k::Q10= 1.0u"ha / kg" # low biomass k
-    biomass_dens::Q11 = 1200.0u"kg / ha" # biomass density
-    belowground_density_effect::T = 2.0 # effect of belowground competition
-    α_pet::Q12 = 2.0u"mm / d"
-    β_pet::Q13 = 1.2u"d / mm"
-    sla_tr::Q14 = 0.03u"m^2 / g"
-    sla_tr_exponent::T = 0.4
-    ϕ_sla::Q15 = 0.025u"m^2 / g"
-    η_min_sla::T = -0.8
-    η_max_sla::T = 0.8
-    β_η_sla::Q16 = 75.0u"g / m^2"
-    β_sla::T = 5.0
-    δ_wrsa::T = 0.8
-    δ_sla::T = 0.5
-    maxtotalN::T = 35.0
-    ϕ_amc::T = 0.35
-    η_min_amc::T = 0.05
-    η_max_amc::T = 0.6
-    κ_min_amc::T = 0.2
-    β_κη_amc::T = 10.0
-    β_amc::T = 7.0
-    δ_amc::T = 0.8
-    δ_nrsa::T = 0.5
-    ϕ_rsa::Q17 = 0.12u"m^2 / g"
-    η_min_rsa::T = 0.05
-    η_max_rsa::T = 0.6
-    κ_min_rsa::T = 0.4
-    β_κη_rsa::Q18 = 40.0u"g / m^2"
-    β_rsa::T = 7.0
-    b_biomass::T = 1000.0
-    b_sla::T = 0.0005
-    b_lncm::T = 0.5
-    b_amc::T = 0.001
-    b_height::T = 0.01
-    b_rsa_above::T = 0.004
+    RUE_max::Q1 = F(3 / 1000) * u"kg / MJ" # Maximum radiation use efficiency
+    k::T = F(0.6)    # Extinction coefficientw)
+    α_sen::Q2 = F(0.0002)u"d^-1"
+    β_sen::T = F(0.03) # senescence rate
+    α_ll::T = F(2.41)  # specific leaf area --> leaf lifespan
+    β_ll::T = F(0.38)  # specific leaf area --> leaf lifespan
+    Ψ₁::T = F(775.0)     # temperature threshold: senescence starts to increase
+    Ψ₂::T = F(3000.0)    # temperature threshold: senescence reaches maximum
+    SENₘₐₓ::T = F(3.0)  # maximal seasonality factor for the senescence rate
+    clonalgrowth_factor::T = F(0.05)
+    γ1::Q3 = F(0.0445)u"m^2 * d / MJ"
+    γ2::Q4 = F(5.0)u"MJ / (m^2 * d)"
+    T₀::T = F(3.0)  #u"°C"
+    T₁::T = F(12.0) #u"°C"
+    T₂::T = F(20.0) #u"°C"
+    T₃::T = F(35.0) #u"°C"
+    SEAₘᵢₙ::T = F(0.7)
+    SEAₘₐₓ::T = F(1.3)
+    ST₁::T = F(625.0)
+    ST₂::T = F(1300.0)
+    α_community_height::Q5 = F(10000.0)u"kg / ha "
+    β_community_height::Q6 = F(0.0005)u"ha / kg"
+    exp_community_height::T = F(0.9)
+    height_strength_exp::T = F(0.5) # strength of height competition
+    mowing_mid_days::T = F(10.0) # day where the plants are grown back to their normal size/2
+    mowfactor_β::T = F(0.05)
+    leafnitrogen_graz_exp::T = F(1.5) # exponent of the leaf nitrogen grazing effect
+    trampling_factor::Q7 = F(0.01)u"ha" # trampling factor
+    trampling_height_exp::T = F(0.5)
+    grazing_half_factor::T = F(500.0) # half saturation constant for grazing
+    κ::Q8 = F(22.0)u"kg / d" # maximum grazing rate
+    lowbiomass::Q9 = F(100.0)u"kg / ha" # low biomass
+    lowbiomass_k::Q10= F(1.0)u"ha / kg" # low biomass k
+    biomass_dens::Q11 = F(1200.0)u"kg / ha" # biomass density
+    belowground_density_effect::T = F(2.0) # effect of belowground competition
+    α_pet::Q12 = F(2.0)u"mm / d"
+    β_pet::Q13 = F(1.2)u"d / mm"
+    sla_tr::Q14 = F(0.03)u"m^2 / g"
+    sla_tr_exponent::T = F(0.4)
+    ϕ_sla::Q15 = F(0.025)u"m^2 / g"
+    η_min_sla::T = F(-0.8)
+    η_max_sla::T = F(0.8)
+    β_η_sla::Q16 = F(75.0)u"g / m^2"
+    β_sla::T = F(5.0)
+    δ_wrsa::T = F(0.8)
+    δ_sla::T = F(0.5)
+    maxtotalN::T = F(35.0)
+    ϕ_amc::T = F(0.35)
+    η_min_amc::T = F(0.05)
+    η_max_amc::T = F(0.6)
+    κ_min_amc::T = F(0.2)
+    β_κη_amc::T = F(10.0)
+    β_amc::T = F(7.0)
+    δ_amc::T = F(0.8)
+    δ_nrsa::T = F(0.5)
+    ϕ_rsa::Q17 = F(0.12)u"m^2 / g"
+    η_min_rsa::T = F(0.05)
+    η_max_rsa::T = F(0.6)
+    κ_min_rsa::T = F(0.4)
+    β_κη_rsa::Q18 = F(40.0)u"g / m^2"
+    β_rsa::T = F(7.0)
+    b_biomass::T = F(1000.0)
+    b_sla::T = F(0.0005)
+    b_lncm::T = F(0.5)
+    b_amc::T = F(0.001)
+    b_height::T = F(0.01)
+    b_rsa_above::T = F(0.004)
 end
 
-@with_kw mutable struct diff_Parameter
-    RUE_max = 3 / 1000 * u"kg / MJ" # Maximum radiation use efficiency
-    k = 0.6    # Extinction coefficientw)
-    α_sen = 0.0002u"d^-1"
-    β_sen = 0.03 # senescence rate
-    α_ll = 2.41  # specific leaf area --> leaf lifespan
-    β_ll = 0.38  # specific leaf area --> leaf lifespan
-    Ψ₁ = 775.0     # temperature threshold: senescence starts to increase
-    Ψ₂ = 3000.0    # temperature threshold: senescence reaches maximum
-    SENₘₐₓ = 3.0  # maximal seasonality factor for the senescence rate
-    clonalgrowth_factor = 0.05
-    γ1 = 0.0445u"m^2 * d / MJ"
-    γ2 = 5.0u"MJ / (m^2 * d)"
-    T₀ = 3.0  #u"°C"
-    T₁ = 12.0 #u"°C"
-    T₂ = 20.0 #u"°C"
-    T₃ = 35.0 #u"°C"
-    SEAₘᵢₙ = 0.7
-    SEAₘₐₓ = 1.3
-    ST₁ = 625.0
-    ST₂ = 1300.0
-    α_community_height = 10000.0u"kg / ha "
-    β_community_height = 0.0005u"ha / kg"
-    exp_community_height = 0.9
-    height_strength_exp = 0.5 # strength of height competition
-    mowing_mid_days = 10.0 # day where the plants are grown back to their normal size/2
-    mowfactor_β = 0.05
-    leafnitrogen_graz_exp = 1.5 # exponent of the leaf nitrogen grazing effect
-    trampling_factor = 0.01u"ha" # trampling factor
-    trampling_height_exp = 0.5
-    grazing_half_factor = 500.0 # half saturation constant for grazing
-    κ = 22.0u"kg / d" # maximum grazing rate
-    lowbiomass = 100.0u"kg / ha" # low biomass
-    lowbiomass_k = 1.0u"ha / kg" # low biomass k
-    biomass_dens = 1200.0u"kg / ha" # biomass density
-    belowground_density_effect = 2.0 # effect of belowground competition
-    α_pet = 2.0u"mm / d"
-    β_pet = 1.2u"d / mm"
-    sla_tr = 0.03u"m^2 / g"
-    sla_tr_exponent = 0.4
-    ϕ_sla = 0.025u"m^2 / g"
-    η_min_sla = -0.8
-    η_max_sla = 0.8
-    β_η_sla = 75.0u"g / m^2"
-    β_sla = 5.0
-    δ_wrsa = 0.8
-    δ_sla = 0.5
-    maxtotalN = 35.0
-    ϕ_amc = 0.35
-    η_min_amc = 0.05
-    η_max_amc = 0.6
-    κ_min_amc = 0.2
-    β_κη_amc = 10.0
-    β_amc = 7.0
-    δ_amc = 0.8
-    δ_nrsa = 0.5
-    ϕ_rsa = 0.12u"m^2 / g"
-    η_min_rsa = 0.05
-    η_max_rsa = 0.6
-    κ_min_rsa = 0.4
-    β_κη_rsa = 40.0u"g / m^2"
-    β_rsa = 7.0
-    b_biomass = 1000.0
-    b_sla = 0.0005
-    b_lncm = 0.5
-    b_amc = 0.001
-    b_height = 0.01
-    b_rsa_above = 0.004
+
+F = Float64
+function Parameter(dual_type;)
+    global F = dual_type
+    p = Parameter()
+    global F = Float64
+
+    return p
 end
 
 Base.getindex(obj::Parameter, k) = getfield(obj, k)
 Base.setindex!(obj::Parameter, val, k) = setfield!(obj, k, val)
-Base.getindex(obj::diff_Parameter, k) = getfield(obj, k)
-Base.setindex!(obj::diff_Parameter, val, k) = setfield!(obj, k, val)
+
+
+## put it in the optimisation file
+# struct ParameterCache{T, S}
+#     p::Parameter{T}
+#     dual_p::Parameter{S}
+# end
+
+
+
 function fixed_parameter(; input_obj)
     p = (
         RUE_max = 3 / 1000 * u"kg / MJ", # Maximum radiation use efficiency
