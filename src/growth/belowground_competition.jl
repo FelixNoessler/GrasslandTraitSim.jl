@@ -98,19 +98,19 @@ function below_ground_competition!(; container, biomass)
 
     @unpack belowground_density_effect, biomass_dens = container.p
     LinearAlgebra.mul!(TS_biomass, TS, biomass)
-    biomass_density_factor .= (TS_biomass ./ (biomass_dens)) .^
-                              -belowground_density_effect
 
 
     ## biomass density factor should be between 0.33 and 3.0
     for i in eachindex(biomass_density_factor)
-        if biomass_density_factor[i] > 3.0
-            biomass_density_factor[i] = 3.0
+        biomass_factor = (TS_biomass[i] / biomass_dens) ^ -belowground_density_effect
+
+        if biomass_factor > 3.0
+            biomass_factor = 3.0
+        elseif biomass_factor < 0.33
+            biomass_factor = 0.33
         end
 
-        if biomass_density_factor[i] < 0.33
-            biomass_density_factor[i] = 0.33
-        end
+        biomass_density_factor[i] = biomass_factor
     end
 
     return nothing

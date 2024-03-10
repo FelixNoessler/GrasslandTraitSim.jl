@@ -23,7 +23,7 @@ function solve_prob(; input_obj, p, prealloc = nothing, prealloc_specific = noth
     main_loop!(; container)
 
     @unpack biomass = container.output
-    @unpack negbiomass = container.calc
+    # @unpack negbiomass = container.calc
     for i in eachindex(biomass)
         if biomass[i] < 0.0u"kg / ha"
             biomass[i] = 0.0u"kg / ha"

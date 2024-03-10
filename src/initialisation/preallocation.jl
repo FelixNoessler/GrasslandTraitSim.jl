@@ -151,8 +151,6 @@ end
 
 
 function preallocate_specific_vectors(; input_obj, T = Float64)
-
-
     ############## vectors for cut biomass
     cutting_height = Float64[]
     biomass_cutting_t = Int64[]
@@ -169,10 +167,7 @@ function preallocate_specific_vectors(; input_obj, T = Float64)
                 cutting_height = cutting_height)
 
 
-    likelihood_calc = (;
-        simulated_cutted_biomass = Array{T}(undef, length(biomass_cutting_index)))
-
-    return (; likelihood_calc, output_validation)
+    return (; output_validation)
 end
 
 function preallocate(; input_obj, Tdiff = nothing)
@@ -197,12 +192,4 @@ function preallocate_specific(; input_obj, Tdiff = nothing)
     diff = preallocate_specific_vectors(; input_obj, T = Tdiff)
 
     return (; normal, diff)
-end
-
-function get_buffer(buffer, T)
-    if T <: ForwardDiff.Dual
-        return buffer.diff
-    elseif T <: Float64
-        return buffer.normal
-    end
 end
