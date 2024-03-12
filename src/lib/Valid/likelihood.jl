@@ -4,6 +4,7 @@ function loglikelihood_model(sim::Module;
         valid_data = nothing,
         prealloc = nothing,
         prealloc_specific = nothing,
+        θ_type = Float64,
         plotID,
         pretty_print = false,
         return_seperate = false,
@@ -18,7 +19,8 @@ function loglikelihood_model(sim::Module;
 
     if isnothing(sol)
         input_obj = input_objs[Symbol(plotID)]
-        sol = sim.solve_prob(; input_obj, p, prealloc, prealloc_specific, trait_input)
+        sol = sim.solve_prob(; input_obj, p, prealloc, prealloc_specific, trait_input,
+                             θ_type)
     end
 
     #######################################################################
@@ -31,7 +33,8 @@ function loglikelihood_model(sim::Module;
     ll_biomass = 0.0
 
     if sol.simp.likelihood_included.biomass
-        @unpack cut_biomass, cut_index = sol.output_validation
+        @unpack cut_index = sol.calc
+        @unpack cut_biomass = sol
 
         # for (i,c) in enumerate(cut_index)
         #     sim_cutted_biomass = ustrip(cut_biomass[c])
@@ -41,8 +44,6 @@ function loglikelihood_model(sim::Module;
 
 
         simulated_cutted_biomass = ustrip.(cut_biomass)[cut_index]
-
-        ### calculate the likelihood
         biomass_d = Product(Normal.(simulated_cutted_biomass,
                                 sol.p.b_biomass);)
         ll_biomass = logpdf(biomass_d, vec(data.biomass))

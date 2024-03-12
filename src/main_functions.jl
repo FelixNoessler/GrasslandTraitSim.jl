@@ -23,12 +23,19 @@ function solve_prob(; input_obj, p, prealloc = nothing, prealloc_specific = noth
     main_loop!(; container)
 
     @unpack biomass = container.output
-    # @unpack negbiomass = container.calc
-    for i in eachindex(biomass)
-        if biomass[i] < 0.0u"kg / ha"
-            biomass[i] = 0.0u"kg / ha"
-        end
+    @unpack negbiomass = container.calc
+
+    negbiomass .= biomass .< 0.0u"kg / ha"
+    if any(negbiomass)
+        biomass[negbiomass] .= 0.0u"kg / ha"
     end
+
+    ## this has fewer allocations, but is slower in for forwardiff
+    # for i in eachindex(biomass)
+    #     if biomass[i] < 0.0u"kg / ha"
+    #         biomass[i] = 0.0u"kg / ha"
+    #     end
+    # end
 
     calc_cut_biomass!(; container)
 

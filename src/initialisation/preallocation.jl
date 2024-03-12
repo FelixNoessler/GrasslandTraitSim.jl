@@ -70,7 +70,24 @@ function preallocate_vectors(; input_obj, T = Float64)
         H_sla = Array{T}(undef, nspecies))
 
 
+
+    cutting_height = Float64[]
+    biomass_cutting_t = Int64[]
+    biomass_cutting_numeric_date = Float64[]
+    biomass_cutting_index = Int64[]
+    if haskey(input_obj, :output_validation)
+        @unpack biomass_cutting_t, biomass_cutting_numeric_date,
+                cutting_height, biomass_cutting_index = input_obj.output_validation
+    end
+
     calc = (;
+
+        ########### preparation for cut biomass
+        biomass_cutting_t,
+        biomass_cutting_numeric_date,
+        cut_index = biomass_cutting_index,
+        cutting_height = cutting_height,
+
         negbiomass = fill(false, ntimesteps, patch_xdim, patch_ydim, nspecies),
 
         ############ preallaocated vectors that are used in the calculations
@@ -149,25 +166,14 @@ function preallocate_vectors(; input_obj, T = Float64)
     return (; u, patch_variables, calc, traits, transfer_function, output)
 end
 
-
 function preallocate_specific_vectors(; input_obj, T = Float64)
-    ############## vectors for cut biomass
-    cutting_height = Float64[]
     biomass_cutting_t = Int64[]
-    biomass_cutting_numeric_date = Float64[]
-    biomass_cutting_index = Int64[]
     if haskey(input_obj, :output_validation)
-        @unpack biomass_cutting_t, biomass_cutting_numeric_date,
-                cutting_height, biomass_cutting_index = input_obj.output_validation
+        @unpack biomass_cutting_t = input_obj.output_validation
     end
     cut_biomass = fill(T(NaN), length(biomass_cutting_t))u"kg/ha"
-    output_validation = (; cut_biomass, biomass_cutting_t,
-                biomass_cutting_numeric_date,
-                cut_index = biomass_cutting_index,
-                cutting_height = cutting_height)
 
-
-    return (; output_validation)
+    return (; cut_biomass)
 end
 
 function preallocate(; input_obj, Tdiff = nothing)
@@ -188,7 +194,6 @@ function preallocate_specific(; input_obj, Tdiff = nothing)
     if isnothing(Tdiff)
         return (; normal)
     end
-
     diff = preallocate_specific_vectors(; input_obj, T = Tdiff)
 
     return (; normal, diff)

@@ -97,66 +97,69 @@ function exlude_parameter(; input_obj)
     return excl_p
 end
 
-function calibrated_parameter(; input_obj)
+function calibrated_parameter(; input_obj = nothing)
     p = (;
-        α_sen = (Uniform(0, 0.1), as(Real, 0.0, 0.1), u"d^-1"),
+        # α_sen = (Uniform(0, 0.1), as(Real, 0.0, 0.1), u"d^-1"),
         β_sen = (Uniform(0.0, 1.0), as𝕀, NoUnits),
-        Ψ₁ = (Uniform(700.0, 3000.0), as(Real, 700.0, 3000.0), NoUnits),
-        SENₘₐₓ = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0), NoUnits),
-        α_community_height = (Uniform(0.0, 20000.0), as(Real, 0.0, 20000.0),
-                              u"kg / ha"),
-        β_community_height = (Uniform(0.0, 0.01), as(Real, 0.0, 0.01), u"ha / kg"),
-        exp_community_height = (Uniform(0.0, 1.0), as(Real, 0.0, 1.0), NoUnits),
-        height_strength_exp = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), NoUnits),
-        mowing_mid_days = (truncated(Normal(10.0, 30.0); lower = 0.0, upper = 60.0),
-                           as(Real, 0.0, 60.0), NoUnits),
-        leafnitrogen_graz_exp = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), NoUnits),
-        trampling_factor = (truncated(Normal(0.0, 0.05); lower = 0.0), asℝ₊, u"ha"),
-        trampling_height_exp = (Uniform(0.0, 3.0), as(Real, 0.0, 3.0), NoUnits),
-        grazing_half_factor = (truncated(Normal(500.0, 500.0); lower = 0.0, upper = 1000.0),
-                               as(Real, 0.0, 1000.0), NoUnits),
-        κ = (Uniform(12.0, 22.5), as(Real, 12.0, 22.5), u"kg/d"),
-        lowbiomass = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0), u"kg/ha"),
-        lowbiomass_k = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), u"ha/kg"),
-        biomass_dens = (truncated(Normal(1000.0, 1000.0); lower = 0.0), asℝ₊, u"kg/ha"),
-        belowground_density_effect = (truncated(Normal(1.0, 0.5); lower = 0.0),
-                                      asℝ₊, NoUnits),
-        α_pet = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), u"mm/d"),
-        β_pet = (truncated(Normal(1.0, 1.0); lower = 0.0), asℝ₊, u"d/mm"),
-        sla_tr = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊, u"m^2/g"),
-        sla_tr_exponent = (truncated(Normal(1.0, 5.0); lower = 0.0), asℝ₊, NoUnits),
-        ϕ_sla = (Uniform(0.01, 0.03), as(Real, 0.01, 0.03), u"m^2/g"),
-        η_min_sla = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), NoUnits),
-        η_max_sla = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), NoUnits),
-        β_η_sla = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0), u"g/m^2"),
-        β_sla = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), NoUnits),
-        δ_wrsa = (Uniform(0.0, 1.0), as𝕀, NoUnits),
-        δ_sla = (Uniform(0.0, 1.0), as𝕀, NoUnits),
-        ϕ_amc = (Uniform(0.1, 0.5), as(Real, 0.1, 0.5), NoUnits),
-        η_min_amc = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), NoUnits),
-        η_max_amc = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), NoUnits),
-        κ_min_amc = (Uniform(0.0, 1.0), as𝕀, NoUnits),
-        β_κη_amc = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), NoUnits),
-        β_amc = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), NoUnits),
-        δ_amc = (Uniform(0.0, 1.0), as𝕀, NoUnits),
-        δ_nrsa = (Uniform(0.0, 1.0), as𝕀, NoUnits),
-        ϕ_rsa = (Uniform(0.1, 0.25), as(Real, 0.1, 0.25), u"m^2/g"),
-        η_min_rsa = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), NoUnits),
-        η_max_rsa =(Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), NoUnits),
-        κ_min_rsa = (Uniform(0.0, 1.0), as𝕀, NoUnits),
-        β_κη_rsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), u"g/m^2"),
-        β_rsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), NoUnits),
-        b_biomass = (truncated(Cauchy(0, 300); lower = 0.0), asℝ₊, NoUnits),
-        b_sla = (truncated(Cauchy(0, 0.05); lower = 0.0), asℝ₊, NoUnits),
-        b_lncm = (truncated(Cauchy(0, 0.5); lower = 0.0), asℝ₊, NoUnits),
-        b_amc = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊, NoUnits),
-        b_height = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊, NoUnits),
-        b_rsa_above = (truncated(Cauchy(0, 0.01); lower = 0.0), asℝ₊, NoUnits)
+        # Ψ₁ = (Uniform(700.0, 3000.0), as(Real, 700.0, 3000.0), NoUnits),
+        # SENₘₐₓ = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0), NoUnits),
+        # α_community_height = (Uniform(0.0, 20000.0), as(Real, 0.0, 20000.0),
+        #                       u"kg / ha"),
+        # β_community_height = (Uniform(0.0, 0.01), as(Real, 0.0, 0.01), u"ha / kg"),
+        # exp_community_height = (Uniform(0.0, 1.0), as(Real, 0.0, 1.0), NoUnits),
+        # height_strength_exp = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), NoUnits),
+        # mowing_mid_days = (truncated(Normal(10.0, 30.0); lower = 0.0, upper = 60.0),
+        #                    as(Real, 0.0, 60.0), NoUnits),
+        # leafnitrogen_graz_exp = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), NoUnits),
+        # trampling_factor = (truncated(Normal(0.0, 0.05); lower = 0.0), asℝ₊, u"ha"),
+        # trampling_height_exp = (Uniform(0.0, 3.0), as(Real, 0.0, 3.0), NoUnits),
+        # grazing_half_factor = (truncated(Normal(500.0, 500.0); lower = 0.0, upper = 1000.0),
+        #                        as(Real, 0.0, 1000.0), NoUnits),
+        # κ = (Uniform(12.0, 22.5), as(Real, 12.0, 22.5), u"kg/d"),
+        # lowbiomass = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0), u"kg/ha"),
+        # lowbiomass_k = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), u"ha/kg"),
+        # biomass_dens = (truncated(Normal(1000.0, 1000.0); lower = 0.0), asℝ₊, u"kg/ha"),
+        # belowground_density_effect = (truncated(Normal(1.0, 0.5); lower = 0.0),
+        #                               asℝ₊, NoUnits),
+        # α_pet = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), u"mm/d"),
+        # β_pet = (truncated(Normal(1.0, 1.0); lower = 0.0), asℝ₊, u"d/mm"),
+        # sla_tr = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊, u"m^2/g"),
+        # sla_tr_exponent = (truncated(Normal(1.0, 5.0); lower = 0.0), asℝ₊, NoUnits),
+        # ϕ_sla = (Uniform(0.01, 0.03), as(Real, 0.01, 0.03), u"m^2/g"),
+        # η_min_sla = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), NoUnits),
+        # η_max_sla = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), NoUnits),
+        # β_η_sla = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0), u"g/m^2"),
+        # β_sla = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), NoUnits),
+        # δ_wrsa = (Uniform(0.0, 1.0), as𝕀, NoUnits),
+        # δ_sla = (Uniform(0.0, 1.0), as𝕀, NoUnits),
+        # ϕ_amc = (Uniform(0.1, 0.5), as(Real, 0.1, 0.5), NoUnits),
+        # η_min_amc = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), NoUnits),
+        # η_max_amc = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), NoUnits),
+        # κ_min_amc = (Uniform(0.0, 1.0), as𝕀, NoUnits),
+        # β_κη_amc = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), NoUnits),
+        # β_amc = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), NoUnits),
+        # δ_amc = (Uniform(0.0, 1.0), as𝕀, NoUnits),
+        # δ_nrsa = (Uniform(0.0, 1.0), as𝕀, NoUnits),
+        # ϕ_rsa = (Uniform(0.1, 0.25), as(Real, 0.1, 0.25), u"m^2/g"),
+        # η_min_rsa = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), NoUnits),
+        # η_max_rsa =(Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), NoUnits),
+        # κ_min_rsa = (Uniform(0.0, 1.0), as𝕀, NoUnits),
+        # β_κη_rsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), u"g/m^2"),
+        # β_rsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), NoUnits),
+        # b_biomass = (truncated(Cauchy(0, 300); lower = 0.0), asℝ₊, NoUnits),
+        # b_sla = (truncated(Cauchy(0, 0.05); lower = 0.0), asℝ₊, NoUnits),
+        # b_lncm = (truncated(Cauchy(0, 0.5); lower = 0.0), asℝ₊, NoUnits),
+        # b_amc = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊, NoUnits),
+        # b_height = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊, NoUnits),
+        # b_rsa_above = (truncated(Cauchy(0, 0.01); lower = 0.0), asℝ₊, NoUnits)
     )
 
-    exclude_parameters = exlude_parameter(; input_obj)
-    f = collect(keys(p)) .∉ Ref(exclude_parameters)
-    p = (; zip(keys(p)[f], collect(p)[f])...)
+
+    if !isnothing(input_obj)
+        exclude_parameters = exlude_parameter(; input_obj)
+        f = collect(keys(p)) .∉ Ref(exclude_parameters)
+        p = (; zip(keys(p)[f], collect(p)[f])...)
+    end
 
     prior_vec = first.(collect(p))
     lb = quantile.(prior_vec, 0.001)
@@ -244,7 +247,7 @@ end
 
 
 F = Float64
-function Parameter(dual_type;)
+function Parameter(dual_type)
     global F = dual_type
     p = Parameter()
     global F = Float64
@@ -254,13 +257,6 @@ end
 
 Base.getindex(obj::Parameter, k) = getfield(obj, k)
 Base.setindex!(obj::Parameter, val, k) = setfield!(obj, k, val)
-
-
-## put it in the optimisation file
-# struct ParameterCache{T, S}
-#     p::Parameter{T}
-#     dual_p::Parameter{S}
-# end
 
 
 

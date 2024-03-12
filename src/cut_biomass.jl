@@ -1,5 +1,5 @@
 function calc_cut_biomass!(; container)
-    @unpack cutting_height, biomass_cutting_t = container.output_validation
+    @unpack cutting_height, biomass_cutting_t = container.calc
     @unpack biomass = container.output
     @unpack mean_biomass = container.calc
     @unpack nspecies = container.simp
@@ -17,7 +17,8 @@ function calc_cut_biomass!(; container)
 end
 
 function cut_biomass!(; cut_index, t, ch, container, biomass)
-    @unpack cutting_height, biomass_cutting_t, cut_biomass = container.output_validation
+    @unpack cutting_height, biomass_cutting_t = container.calc
+    @unpack cut_biomass = container
     @unpack height = container.traits
     @unpack species_cut_biomass = container.calc
     @unpack proportion_mown = container.calc

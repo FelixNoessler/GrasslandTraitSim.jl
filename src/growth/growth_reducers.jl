@@ -29,8 +29,7 @@ function radiation_reduction(; container, PAR)
     end
 
     @unpack γ1, γ2 = container.p
-
-    return min(1.0, 1.0 − γ1 * (PAR − γ2))
+    return min(1.0, 1.0 − uconvert(NoUnits, γ1 * (PAR − γ2)))
 end
 
 @doc raw"""
