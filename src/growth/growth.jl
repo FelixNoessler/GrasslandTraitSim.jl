@@ -36,7 +36,7 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     Seasonalred = seasonal_reduction(; container, ST = daily_input.temperature_sum[t])
     height_community_red = community_height_reduction(; container, biomass)
 
-    @. species_specific_red = heightinfluence * Waterred * Waterred
+    @. species_specific_red = heightinfluence * Waterred * Nutred
     reduction = Rred * Tred * Seasonalred * height_community_red
 
     #### final growth
