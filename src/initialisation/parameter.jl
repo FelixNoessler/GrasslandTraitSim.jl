@@ -95,8 +95,8 @@ end
 
 function calibrated_parameter(; input_obj = nothing)
     p = (;
-        α_sen = (Uniform(0, 0.1), as(Real, 0.0, 0.1), u"d^-1"),
-        β_sen = (Uniform(0.0, 1.0), as𝕀, NoUnits),
+        α_sen = (Uniform(0, 0.001), as(Real, 0.0, 0.001), u"d^-1"),
+        β_sen = (Uniform(0.0, 0.1),  as(Real, 0.0, 0.1), NoUnits),
         Ψ₁ = (Uniform(700.0, 3000.0), as(Real, 700.0, 3000.0), NoUnits),
         SENₘₐₓ = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0), NoUnits),
         α_community_height = (Uniform(0.0, 20000.0), as(Real, 0.0, 20000.0),
@@ -111,11 +111,11 @@ function calibrated_parameter(; input_obj = nothing)
         trampling_height_exp = (Uniform(0.0, 3.0), as(Real, 0.0, 3.0), NoUnits),
         trampling_half_factor = (truncated(Normal(10000.0, 1000.0); lower = 0.0), asℝ₊,
                                  NoUnits),
-        grazing_half_factor = (truncated(Normal(500.0, 500.0); lower = 0.0, upper = 1000.0),
-                               as(Real, 0.0, 1000.0), NoUnits),
+        grazing_half_factor = (truncated(Normal(500.0, 1000.0); lower = 0.0, upper = 2000.0),
+                               as(Real, 0.0, 2000.0), NoUnits),
         κ = (Uniform(12.0, 22.5), as(Real, 12.0, 22.5), u"kg/d"),
         lowbiomass = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0), u"kg/ha"),
-        lowbiomass_k = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), u"ha/kg"),
+        lowbiomass_k = (Uniform(0.0, 1.0), as(Real, 0.0, 1.0), u"ha/kg"),
         biomass_dens = (truncated(Normal(1000.0, 1000.0); lower = 0.0), asℝ₊, u"kg/ha"),
         belowground_density_effect = (truncated(Normal(1.0, 0.5); lower = 0.0),
                                       asℝ₊, NoUnits),
@@ -204,10 +204,10 @@ end
     trampling_factor::Q7 = F(0.01)u"ha" # trampling factor
     trampling_height_exp::T = F(0.5)
     trampling_half_factor::T = F(10000.0)
-    grazing_half_factor::T = F(500.0) # half saturation constant for grazing
+    grazing_half_factor::T = F(1000.0) # half saturation constant for grazing
     κ::Q8 = F(22.0)u"kg / d" # maximum grazing rate
     lowbiomass::Q9 = F(100.0)u"kg / ha" # low biomass
-    lowbiomass_k::Q10= F(1.0)u"ha / kg" # low biomass k
+    lowbiomass_k::Q10= F(0.1)u"ha / kg" # low biomass k
     biomass_dens::Q11 = F(1200.0)u"kg / ha" # biomass density
     belowground_density_effect::T = F(2.0) # effect of belowground competition
     α_pet::Q12 = F(2.0)u"mm / d"
@@ -259,111 +259,103 @@ Base.setindex!(obj::Parameter, val, k) = setfield!(obj, k, val)
 
 
 
-function fixed_parameter(; input_obj)
-    p = (
-        RUE_max = 3 / 1000 * u"kg / MJ", # Maximum radiation use efficiency
-        k = 0.6,    # Extinction coefficientw)
-        α_sen = 0.0002u"d^-1",
-        β_sen = 0.03, # senescence rate
-        α_ll = 2.41,  # specific leaf area --> leaf lifespan
-        β_ll = 0.38,  # specific leaf area --> leaf lifespan
-        Ψ₁ = 775.0,     # temperature threshold: senescence starts to increase
-        Ψ₂ = 3000.0,    # temperature threshold: senescence reaches maximum
-        SENₘₐₓ = 3.0,  # maximal seasonality factor for the senescence rate
-        clonalgrowth_factor = 0.05,
-        γ1 = 0.0445u"m^2 * d / MJ",
-        γ2 = 5.0u"MJ / (m^2 * d)",
-        T₀ = 3,  #u"°C"
-        T₁ = 12, #u"°C"
-        T₂ = 20, #u"°C"
-        T₃ = 35, #u"°C"
-        SEAₘᵢₙ = 0.7,
-        SEAₘₐₓ = 1.3,
-        ST₁ = 625,
-        ST₂ = 1300,
-        α_community_height = 10000.0u"kg / ha",
-        β_community_height = 0.0005u"ha / kg",
-        exp_community_height = 0.9,
-        height_strength_exp = 0.5, # strength of height competition
-        mowing_mid_days = 10.0, # day where the plants are grown back to their normal size/2
-        mowfactor_β = 0.05,
-        leafnitrogen_graz_exp = 1.5, # exponent of the leaf nitrogen grazing effect
-        trampling_factor = 0.01u"ha", # trampling factor
-        trampling_height_exp = 0.5,
-        trampling_half_factor = 10000.0,
-        grazing_half_factor = 500.0, # half saturation constant for grazing
-        κ = 22.0u"kg / d", # maximum grazing rate
-        lowbiomass = 100.0u"kg / ha", # low biomass
-        lowbiomass_k = 1.0u"ha / kg", # low biomass k
-        biomass_dens = 1200.0u"kg / ha", # biomass density
-        belowground_density_effect = 2.0, # effect of belowground competition
-        α_pet = 2.0u"mm / d",
-        β_pet = 1.2u"d / mm",
-        sla_tr = 0.03u"m^2 / g",
-        sla_tr_exponent = 0.4,
-        ϕ_sla = 0.025u"m^2 / g",
-        η_min_sla = -0.8,
-        η_max_sla = 0.8,
-        β_η_sla = 75.0u"g / m^2",
-        β_sla = 5.0,
-        δ_wrsa = 0.8,
-        δ_sla = 0.5,
-        maxtotalN = 35.0,
-        ϕ_amc = 0.35,
-        η_min_amc = 0.05,
-        η_max_amc = 0.6,
-        κ_min_amc = 0.2,
-        β_κη_amc = 10.0,
-        β_amc = 7.0,
-        δ_amc = 0.8,
-        δ_nrsa = 0.5,
-        ϕ_rsa = 0.12u"m^2 / g",
-        η_min_rsa = 0.05,
-        η_max_rsa = 0.6,
-        κ_min_rsa = 0.4,
-        β_κη_rsa = 40.0u"g / m^2",
-        β_rsa = 7.0,
-        b_biomass = 1000.0,
-        b_sla = 0.0005,
-        b_lncm = 0.5,
-        b_amc = 0.001,
-        b_height = 0.01,
-        b_rsa_above = 0.004
-    )
+# function fixed_parameter(; input_obj)
+#     p = (
+#         RUE_max = 3 / 1000 * u"kg / MJ", # Maximum radiation use efficiency
+#         k = 0.6,    # Extinction coefficientw)
+#         α_sen = 0.0002u"d^-1",
+#         β_sen = 0.03, # senescence rate
+#         α_ll = 2.41,  # specific leaf area --> leaf lifespan
+#         β_ll = 0.38,  # specific leaf area --> leaf lifespan
+#         Ψ₁ = 775.0,     # temperature threshold: senescence starts to increase
+#         Ψ₂ = 3000.0,    # temperature threshold: senescence reaches maximum
+#         SENₘₐₓ = 3.0,  # maximal seasonality factor for the senescence rate
+#         clonalgrowth_factor = 0.05,
+#         γ1 = 0.0445u"m^2 * d / MJ",
+#         γ2 = 5.0u"MJ / (m^2 * d)",
+#         T₀ = 3,  #u"°C"
+#         T₁ = 12, #u"°C"
+#         T₂ = 20, #u"°C"
+#         T₃ = 35, #u"°C"
+#         SEAₘᵢₙ = 0.7,
+#         SEAₘₐₓ = 1.3,
+#         ST₁ = 625,
+#         ST₂ = 1300,
+#         α_community_height = 10000.0u"kg / ha",
+#         β_community_height = 0.0005u"ha / kg",
+#         exp_community_height = 0.9,
+#         height_strength_exp = 0.5, # strength of height competition
+#         mowing_mid_days = 10.0, # day where the plants are grown back to their normal size/2
+#         mowfactor_β = 0.05,
+#         leafnitrogen_graz_exp = 1.5, # exponent of the leaf nitrogen grazing effect
+#         trampling_factor = 0.01u"ha", # trampling factor
+#         trampling_height_exp = 0.5,
+#         trampling_half_factor = 10000.0,
+#         grazing_half_factor = 500.0, # half saturation constant for grazing
+#         κ = 22.0u"kg / d", # maximum grazing rate
+#         lowbiomass = 100.0u"kg / ha", # low biomass
+#         lowbiomass_k = 1.0u"ha / kg", # low biomass k
+#         biomass_dens = 1200.0u"kg / ha", # biomass density
+#         belowground_density_effect = 2.0, # effect of belowground competition
+#         α_pet = 2.0u"mm / d",
+#         β_pet = 1.2u"d / mm",
+#         sla_tr = 0.03u"m^2 / g",
+#         sla_tr_exponent = 0.4,
+#         ϕ_sla = 0.025u"m^2 / g",
+#         η_min_sla = -0.8,
+#         η_max_sla = 0.8,
+#         β_η_sla = 75.0u"g / m^2",
+#         β_sla = 5.0,
+#         δ_wrsa = 0.8,
+#         δ_sla = 0.5,
+#         maxtotalN = 35.0,
+#         ϕ_amc = 0.35,
+#         η_min_amc = 0.05,
+#         η_max_amc = 0.6,
+#         κ_min_amc = 0.2,
+#         β_κη_amc = 10.0,
+#         β_amc = 7.0,
+#         δ_amc = 0.8,
+#         δ_nrsa = 0.5,
+#         ϕ_rsa = 0.12u"m^2 / g",
+#         η_min_rsa = 0.05,
+#         η_max_rsa = 0.6,
+#         κ_min_rsa = 0.4,
+#         β_κη_rsa = 40.0u"g / m^2",
+#         β_rsa = 7.0,
+#         b_biomass = 1000.0,
+#         b_sla = 0.0005,
+#         b_lncm = 0.5,
+#         b_amc = 0.001,
+#         b_height = 0.01,
+#         b_rsa_above = 0.004
+#     )
 
 
-    return p
-    # exclude_parameters = exlude_parameter(; input_obj)
-    # f = collect(keys(p)) .∉ Ref(exclude_parameters)
+#     return p
+#     # exclude_parameters = exlude_parameter(; input_obj)
+#     # f = collect(keys(p)) .∉ Ref(exclude_parameters)
 
-    # return (; zip(keys(p)[f], collect(p)[f])...)
-end
+#     # return (; zip(keys(p)[f], collect(p)[f])...)
+# end
 
 
-function parameter(; input_obj, variable_p = ())
-    p = fixed_parameter(; input_obj)
-    for k in keys(variable_p)
-        p = @set p[k] = variable_p[k]
-    end
+# function parameter(; input_obj, variable_p = ())
+#     p = fixed_parameter(; input_obj)
+#     for k in keys(variable_p)
+#         p = @set p[k] = variable_p[k]
+#     end
 
-    return p
-end
+#     return p
+# end
 
-function parameter(p; input_obj, variable_p = (), inference_obj)
-    # for k in keys(variable_p)
-    #     p = @set p[k] = variable_p[k] * inference_obj.units[k]
-    # end
-    @show "hwlloasd"
-    return p
-end
+# function add_units(x; inference_obj)
+#     for p in keys(x)
+#         x = @set x[p] = x[p] * inference_obj.units[p]
+#     end
 
-function add_units(x; inference_obj)
-    for p in keys(x)
-        x = @set x[p] = x[p] * inference_obj.units[p]
-    end
-
-    return x
-end
+#     return x
+# end
 
 # function add_units(x, y::T; inference_obj) where {T}
 #     for p in keys(x)
@@ -373,8 +365,8 @@ end
 #     return x::T
 # end
 
-function init_parameter(; input_obj, inference_obj)
-    fixed_p = fixed_parameter(; input_obj)
-    f = collect(keys(fixed_p)) .∈ Ref(keys(inference_obj.units))
-    return (; zip(collect(keys(fixed_p))[f], ustrip.(collect(fixed_p)[f]))...)
-end
+# function init_parameter(; input_obj, inference_obj)
+#     fixed_p = fixed_parameter(; input_obj)
+#     f = collect(keys(fixed_p)) .∈ Ref(keys(inference_obj.units))
+#     return (; zip(collect(keys(fixed_p))[f], ustrip.(collect(fixed_p)[f]))...)
+# end

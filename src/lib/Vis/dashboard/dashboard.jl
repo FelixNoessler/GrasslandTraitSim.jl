@@ -40,6 +40,23 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
             plot_obj.obs.lls.biomass[] = ll_obj.biomass
             plot_obj.obs.lls.traits[] = ll_obj.trait
 
+
+            calculate_gradient = plot_obj.obs.gradient_toggle.active.val
+
+            if calculate_gradient
+                @info "Calculating gradient"
+                plotID = plot_obj.obs.menu_plotID.selection.val
+
+                g = gradient_evaluation(sim, valid; plotID, input_obj, valid_data,
+                                        p, trait_input)
+
+                p_keys = keys(p)
+                for i in eachindex(g)
+                    f = p_keys[i] .== plot_obj.obs.parameter_keys
+                    plot_obj.obs.gradient_values[findfirst(f)][] = round(g[i]; digits = 2)
+                end
+            end
+
             still_running = false
         end
     end

@@ -8,6 +8,8 @@ using Distributions
 using Accessors
 using Statistics
 using Unitful
+using FiniteDiff
+using ForwardDiff
 
 makie_theme = Theme(fontsize = 18,
     Axis = (xgridvisible = false, ygridvisible = false,
@@ -26,6 +28,7 @@ include("dashboard/dashboard.jl")
 include("dashboard/dashbaord_layout.jl")
 include("dashboard/dashboard_plotting.jl")
 include("dashboard/dashboard_prepare_input.jl")
+include("dashboard/gradient.jl")
 
 include("doc_figures/doc_figures_utils.jl")
 include("doc_figures/clonalgrowth.jl")

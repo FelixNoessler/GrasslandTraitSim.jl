@@ -1,6 +1,4 @@
 function prepare_input(; plot_obj, sim, valid, posterior)
-
-
     # ------------- whether parts of the simulation are included
     included = NamedTuple(
         [first(s) => last(s).active.val for s in plot_obj.obs.toggles_included])
@@ -22,7 +20,9 @@ function prepare_input(; plot_obj, sim, valid, posterior)
 
     elseif samplingtype == :fixed
         parameter_vals = [s.value.val for s in plot_obj.obs.sliders_param.sliders]
-        p_fixed = sim.parameter(; input_obj)
+        p_obj = sim.Parameter()
+        p_fixed = (; zip(propertynames(p_obj), [getproperty(p_obj, k) for k in propertynames(p_obj)])...)
+
         unit_vec = unit.(collect(p_fixed))
         value_vec = Float64[]
 
@@ -30,7 +30,7 @@ function prepare_input(; plot_obj, sim, valid, posterior)
             f = plot_obj.obs.parameter_keys .== p_k
             push!(value_vec, parameter_vals[findfirst(f)])
         end
-        plot_obj.obs.parameter_keys
+
         p = (; zip(keys(p_fixed), value_vec .* unit_vec)...)
     else
         samplingtype == :posterior

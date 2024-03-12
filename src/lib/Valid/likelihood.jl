@@ -1,13 +1,14 @@
 function loglikelihood_model(sim::Module;
         p = nothing,
+        input_obj = nothing,
         input_objs = nothing,
-        valid_data = nothing,
         prealloc = nothing,
         prealloc_specific = nothing,
         θ_type = Float64,
         plotID,
         pretty_print = false,
         return_seperate = false,
+        valid_data = nothing,
         data = nothing,
         sol = nothing,
         trait_input = nothing)
@@ -18,7 +19,9 @@ function loglikelihood_model(sim::Module;
 
 
     if isnothing(sol)
-        input_obj = input_objs[Symbol(plotID)]
+        if isnothing(input_obj)
+            input_obj = input_objs[Symbol(plotID)]
+        end
         sol = sim.solve_prob(; input_obj, p, prealloc, prealloc_specific, trait_input,
                              θ_type)
     end

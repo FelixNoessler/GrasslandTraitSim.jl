@@ -133,7 +133,11 @@ function dashboard_layout(; sim, valid, variable_p)
     preset_button = Button(param_layout[1, 2]; label = "reset")
 
     ############# Parameter values
-    p = sim.parameter(; input_obj, variable_p)
+    p_obj = sim.Parameter()
+    for k in keys(variable_p)
+        setfield!(p_obj, k, variable_p[k])
+    end
+    p = (; zip(propertynames(p_obj), [getproperty(p_obj, k) for k in propertynames(p_obj)])...)
     inference_obj = sim.calibrated_parameter(; input_obj)
     inference_keys = keys(inference_obj.units)
     all_keys = collect(keys(p))
@@ -159,6 +163,15 @@ function dashboard_layout(; sim, valid, variable_p)
     [rowgap!(sliders_param.layout, i, -2) for i in 1:(length(p) - 1)]
     rowgap!(param_layout, 1, -10)
 
+    gradient_toggle = Toggle(param_layout[1, 3], active = false)
+    gradient_layout = GridLayout(param_layout[2, 3])
+    gradient_values = [Observable(0.0) for i in eachindex(keys(p))]
+    gradient_labels = [
+        Label(gradient_layout[i, 1], @lift("$($(gradient_values[i]))");
+              tellwidth = true, halign = :left)
+        for i in eachindex(keys(p))]
+    [rowgap!(gradient_layout, i, -2) for i in 1:(length(p) - 1)]
+
     #############
     axes = Dict()
     axes[:biomass] = Axis(plots_layout[1, 1:2]; alignmode = Outside(),
@@ -182,7 +195,9 @@ function dashboard_layout(; sim, valid, variable_p)
         toggles_included,
         toggle_grazmow,
         toggle_validdata,
-        lls)
+        lls,
+        gradient_values,
+        gradient_toggle)
 
     return (; fig, axes, obs)
 end
