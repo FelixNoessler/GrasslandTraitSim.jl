@@ -67,6 +67,8 @@ function one_day!(; t, container)
             end
 
             defoliation .= 0.0u"kg / (ha * d)"
+            act_growth .= 0.0u"kg / (ha * d)"
+            sen .= 0.0u"kg / (ha * d)"
 
             if !iszero(sum(patch_biomass))
                 # ------------------------------------------ mowing
@@ -117,14 +119,6 @@ function one_day!(; t, container)
                         ST = daily_input.temperature_sum[t],
                         biomass = patch_biomass)
                 end
-
-            else
-                # @warn "Sum of patch biomass = 0" maxlog=10
-                act_growth .= 0.0u"kg / (ha * d)"
-                sen .= 0.0u"kg / (ha * d)"
-
-                ## is already 0:
-                # defoliation .= 0.0u"kg / (ha * d)"
             end
 
             # -------------- net growth

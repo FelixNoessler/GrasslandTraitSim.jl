@@ -57,8 +57,8 @@ function community_height_influence(; sim, valid, path = nothing)
     p = sim.parameter(; input_obj);
 
     function sim_community_height(; α, β, community_height_red)
-        p = @set p.α_community_height = α * u"kg / (ha * m)"
-        p = @set p.β_community_height = β * u"ha * m / kg"
+        p = @set p.α_community_height = α * u"kg / ha"
+        p = @set p.β_community_height = β * u"ha / kg"
         input_obj = @set input_obj.simp.included.community_height_red .= community_height_red
         trait_input = @set trait_input.height = [0.1u"m"]
         sol_small = sim.solve_prob(; input_obj, p, trait_input);

@@ -36,8 +36,8 @@ function band_patch(;
     end
 
     if !isnothing(valid_data)
-        cutbiomass_μ = vec(ustrip.(sol.output_validation.cut_biomass))
-        t = sol.numeric_date[sol.output_validation.biomass_cutting_t]
+        cutbiomass_μ = vec(ustrip.(sol.cut_biomass))
+        t = sol.numeric_date[sol.calc.biomass_cutting_t]
 
         biomass_dist = Normal.(cutbiomass_μ, sol.p.b_biomass)
         biomass_median = median.(biomass_dist)

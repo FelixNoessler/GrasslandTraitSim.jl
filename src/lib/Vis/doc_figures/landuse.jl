@@ -79,7 +79,104 @@ function grazing_half_factor(; path = nothing)
     end
 end
 
-function trampling(sim, valid; trampling_factor = 0.01, path = nothing)
+function trampling_biomass(sim, valid; trampling_factor = 0.01, path = nothing)
+    nspecies, container = create_container(; sim, valid)
+    container = @set container.p.trampling_factor = trampling_factor * u"ha"
+
+    nbiomass = 50
+    biomass = fill(0.0, nspecies)u"kg / ha"
+    biomass_vals = LinRange(0.0, 500.0, nbiomass)u"kg / ha"
+    LD = 2.0u"ha^-1"
+
+    trampling_mat_height = Array{Quantity{Float64}}(undef, nspecies, nbiomass)
+
+    for (i, b) in enumerate(biomass_vals)
+        biomass .= b
+        container.calc.defoliation .= 0.0u"kg / (ha * d)"
+        sim.trampling!(; container, LD, biomass)
+        trampling_mat_height[:, i] = container.calc.defoliation
+    end
+    trampling_mat_height = trampling_mat_height ./ biomass .* u"d"
+
+    idx = sortperm(container.traits.height)
+    height = ustrip.(container.traits.height)[idx]
+    trampling_mat_height = trampling_mat_height[idx, :]
+
+    colorrange = (minimum(height), maximum(height))
+    colormap = :viridis
+
+    fig = Figure(; size = (700, 400))
+    Axis(fig[1, 1],
+        ylabel = "Proportion of biomass that is\nremoved by trampling [d⁻¹]",
+        xlabel = "Biomass of each species [kg ha⁻¹]",
+        title = "constant livestock density: 2 [ha⁻¹]")
+    for i in 1:nspecies
+        lines!(ustrip.(biomass_vals), trampling_mat_height[i, :];
+            linewidth = 3, label = "height=$(height[i])",
+            colormap,
+            colorrange,
+            color = height[i])
+    end
+
+    Colorbar(fig[1, 2]; colormap, colorrange, label = "Plant height [m]")
+
+    if !isnothing(path)
+        save(path, fig;)
+    else
+        display(fig)
+    end
+end
+
+function trampling_biomass_individual(sim, valid; trampling_factor = 0.01, path = nothing)
+    nspecies, container = create_container(; sim, valid)
+    container = @set container.p.trampling_factor = trampling_factor * u"ha"
+    container.traits.height .= 0.5u"m"
+
+    nbiomass = 200
+    biomass = fill(100.0, nspecies)u"kg / ha"
+    biomass_vals = LinRange(0.0, 200.0, nbiomass)u"kg / ha"
+    LD = 2.0u"ha^-1"
+
+    trampling_mat_height = Array{Quantity{Float64}}(undef, nspecies, nbiomass)
+
+    for (i, b) in enumerate(biomass_vals)
+        biomass[1] = b
+        container.calc.defoliation .= 0.0u"kg / (ha * d)"
+        sim.trampling!(; container, LD, biomass)
+        trampling_mat_height[:, i] = container.calc.defoliation
+    end
+    trampling_mat_height = ustrip.(trampling_mat_height)# ./ biomass .* u"d"
+
+    idx = sortperm(container.traits.height)
+    height = ustrip.(container.traits.height)[idx]
+    trampling_mat_height = trampling_mat_height[idx, :]
+
+    fig = Figure(; size = (700, 400))
+    Axis(fig[1, 1],
+        ylabel = "Raw biomass that is removed\nby trampling [kg ha⁻¹ d⁻¹]",
+        xlabel = "Biomass of first species (red) [kg ha⁻¹]",
+        title = """constant livestock density,
+                   all species have the same traits
+                   biomass of species 1 on x axis,
+                   all other species with 100 [kg ha⁻¹]""")
+    for i in 1:nspecies
+        lines!(ustrip.(biomass_vals), trampling_mat_height[i, :];
+            linewidth = 3,
+            color = i == 1 ? :red : :blue)
+    end
+
+    # Colorbar(fig[1, 2]; colormap, colorrange, label = "Plant height [m]")
+
+    if !isnothing(path)
+        save(path, fig;)
+    else
+        display(fig)
+    end
+
+    return nothing
+end
+
+function trampling_livestockdensity(sim, valid; trampling_factor = 0.01, path = nothing)
     nspecies, container = create_container(; sim, valid)
     container = @set container.p.trampling_factor = trampling_factor * u"ha"
 
@@ -87,14 +184,14 @@ function trampling(sim, valid; trampling_factor = 0.01, path = nothing)
     biomass = fill(100.0, nspecies)u"kg / ha"
     LDs = LinRange(0.0, 4.0, nLD)u"ha^-1"
 
-    trampling_mat_height = Array{Float64}(undef, nspecies, nLD)
+    trampling_mat_height = Array{Quantity{Float64}}(undef, nspecies, nLD)
 
     for (i, LD) in enumerate(LDs)
         container.calc.defoliation .= 0.0u"kg / (ha * d)"
         sim.trampling!(; container, LD, biomass)
-        trampling_mat_height[:, i] = ustrip.(container.calc.defoliation)
+        trampling_mat_height[:, i] = container.calc.defoliation
     end
-    trampling_mat_height = trampling_mat_height ./ 100.0
+    trampling_mat_height = trampling_mat_height ./ biomass .* u"d"
 
     idx = sortperm(container.traits.height)
     height = ustrip.(container.traits.height)[idx]
@@ -107,7 +204,7 @@ function trampling(sim, valid; trampling_factor = 0.01, path = nothing)
     Axis(fig[1, 1],
         ylabel = "Proportion of biomass that is\nremoved by trampling [d⁻¹]",
         xlabel = "Livestock density [ha⁻¹]",
-        title = "")
+        title = "constant biomass of each species: 100 [kg ha⁻¹]")
     for i in 1:nspecies
         lines!(ustrip.(LDs), trampling_mat_height[i, :];
             linewidth = 3, label = "height=$(height[i])",

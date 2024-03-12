@@ -163,19 +163,18 @@ Maximal the whole biomass of a plant species is removed by trampling.
 - `trampling_factor` [ha m⁻¹]
 - height canopy height [$m$]
 
-![Image of trampling effect](../img/trampling.svg)
+![Image of effect of biomass of plants on the trampling](../img/trampling_biomass.svg)
+![Image of effect of livestock density on trampling](../img/trampling_LD.svg)
+![](../img/trampling_biomass_individual.svg)
 """
 function trampling!(; container, LD, biomass)
     @unpack height = container.traits
-    @unpack trampling_height_exp, trampling_factor, grazing_half_factor = container.p
+    @unpack trampling_height_exp, trampling_factor, trampling_half_factor = container.p
     @unpack trampling_proportion, trampled_biomass, defoliation = container.calc
 
     h = 1 / LD
-    a = 1 / (grazing_half_factor*grazing_half_factor * h)
+    a = 1 / (trampling_half_factor*trampling_half_factor * h)
 
-    ## Exponentiation of Quantity with a variable is type unstable
-    ## therefore this is a workaround, k_exp = 2
-    # https://painterqubits.github.io/Unitful.jl/stable/trouble/#Exponentiation
     sum_biomass = sum(biomass)
     biomass_exp = sum_biomass * sum_biomass
     total_grazed = a * biomass_exp / (1u"kg^2 * ha^-2" + a * h * biomass_exp)

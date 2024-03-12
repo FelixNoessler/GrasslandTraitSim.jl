@@ -85,7 +85,9 @@ vis.grazing(sim, valid;
     leafnitrogen_graz_exp = 5,
     path = f("$docs_img/grazing_5.svg"))
 vis.grazing_half_factor(; path = f("$docs_img/grazing_half_factor.svg"))
-vis.trampling(sim, valid; path = f("$docs_img/trampling.svg"))
+vis.trampling_biomass(sim, valid; path = f("$docs_img/trampling_biomass.svg"))
+vis.trampling_livestockdensity(sim, valid; path = f("$docs_img/trampling_LD.svg"))
+vis.trampling_biomass_individual(sim, valid; path = f("$docs_img/trampling_biomass_individual.svg"))
 
 ## with patches
 vis.planar_gradient(sim; path = f("$docs_img/gradient.svg"))
