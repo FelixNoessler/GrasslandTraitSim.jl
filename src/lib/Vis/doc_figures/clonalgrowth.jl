@@ -8,7 +8,7 @@ function plot_clonalgrowth(sim, valid; path = nothing)
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies,
         patch_xdim, patch_ydim)
-    p = sim.parameter(; input_obj)
+    p = sim.Parameter()
     p = @set p.clonalgrowth_factor = 0.5
     prealloc = sim.preallocate_vectors(; input_obj);
     prealloc_specific = sim.preallocate_specific_vectors(; input_obj);

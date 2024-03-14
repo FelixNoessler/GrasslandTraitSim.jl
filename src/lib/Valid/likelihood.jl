@@ -108,7 +108,7 @@ function loglikelihood_model(sim::Module;
             end
 
             ll = logpdf(cwmtrait_d, measured_cwm)
-            ll_trait += ll -log(ntraits)
+            ll_trait += ll #-log(ntraits)
         end
     end
 

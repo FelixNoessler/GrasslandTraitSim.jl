@@ -1,7 +1,5 @@
 module Vis
 
-import Dates
-
 using CairoMakie
 using DimensionalData
 using Distributions
@@ -10,6 +8,10 @@ using Statistics
 using Unitful
 using FiniteDiff
 using ForwardDiff
+using Printf
+
+import Dates
+import CairoMakie: Makie
 
 makie_theme = Theme(fontsize = 18,
     Axis = (xgridvisible = false, ygridvisible = false,

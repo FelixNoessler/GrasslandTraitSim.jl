@@ -1,8 +1,8 @@
-function get_validation_data_plots(; plotIDs)
+function get_validation_data_plots(; plotIDs, biomass_stats = nothing)
     valid_data = Dict()
 
     for plotID in plotIDs
-        valid_data[Symbol(plotID)] = get_validation_data(; plotID)
+        valid_data[Symbol(plotID)] = get_validation_data(; plotID, biomass_stats)
     end
 
     return NamedTuple(valid_data)
@@ -12,11 +12,15 @@ function date_to_solt(d; )
     Dates.value(d - Dates.Date(2006)) + 1
 end
 
-function get_validation_data(; plotID)
+function get_validation_data(; plotID, biomass_stats = nothing)
     # ---------------------------- biomass
     biomass_sub =
         @subset data.valid.measuredbiomass :plotID .== plotID.&&
             Dates.year.(:date) .<= 2021
+
+    if !isnothing(biomass_stats)
+        biomass_sub = @subset biomass_sub :stat .∈ Ref(biomass_stats)
+    end
 
     biomass = DimArray(biomass_sub.biomass,
         (; time = date_to_solt.(biomass_sub.date; )))

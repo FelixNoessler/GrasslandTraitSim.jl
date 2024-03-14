@@ -33,19 +33,19 @@ f(path; show_img = false) = show_img ? nothing : path
 vis.potential_growth(sim, valid; path = f("$docs_img/sla_potential_growth.svg"))
 vis.W_rsa_response(sim, valid;
     path = f("$docs_img/W_rsa_response.svg"),
-    δ_wrsa = 1)
+    δ_wrsa = 1.0)
 vis.W_rsa_response(sim, valid;
     path = f("$docs_img/W_rsa_response_0_5.svg"),
     δ_wrsa = 0.5)
 vis.rsa_above_nut_response(sim, valid;
     path = f("$docs_img/rsa_above_nut_response.svg"),
-    δ_nrsa = 1)
+    δ_nrsa = 1.0)
 vis.rsa_above_nut_response(sim, valid;
     path = f("$docs_img/rsa_above_nut_response_0_5.svg"),
     δ_nrsa = 0.5)
 vis.amc_nut_response(sim, valid;
     path = f("$docs_img/amc_nut_response.svg"),
-    δ_amc = 1)
+    δ_amc = 1.0)
 vis.amc_nut_response(sim, valid;
     path = f("$docs_img/amc_nut_response_0_5.svg"),
     δ_amc = 0.5)
@@ -82,7 +82,7 @@ vis.grazing(sim, valid;
     leafnitrogen_graz_exp = 1.5,
     path = f("$docs_img/grazing_1_5.svg"))
 vis.grazing(sim, valid;
-    leafnitrogen_graz_exp = 5,
+    leafnitrogen_graz_exp = 5.0,
     path = f("$docs_img/grazing_5.svg"))
 vis.grazing_half_factor(; path = f("$docs_img/grazing_half_factor.svg"))
 vis.trampling_biomass(sim, valid; path = f("$docs_img/trampling_biomass.svg"))

@@ -95,7 +95,7 @@ end
 
 function calibrated_parameter(; input_obj = nothing)
     p = (;
-        α_sen = (Uniform(0, 0.001), as(Real, 0.0, 0.001), u"d^-1"),
+        α_sen = (Uniform(0, 0.01), as(Real, 0.0, 0.01), u"d^-1"),
         β_sen = (Uniform(0.0, 0.1),  as(Real, 0.0, 0.1), NoUnits),
         Ψ₁ = (Uniform(700.0, 3000.0), as(Real, 700.0, 3000.0), NoUnits),
         SENₘₐₓ = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0), NoUnits),
@@ -160,8 +160,8 @@ function calibrated_parameter(; input_obj = nothing)
     end
 
     prior_vec = first.(collect(p))
-    lb = quantile.(prior_vec, 0.001)
-    ub = quantile.(prior_vec, 0.95)
+    lb = quantile.(prior_vec, 0.0)
+    ub = quantile.(prior_vec, 1.0)
 
 
     lb = (; zip(keys(p), lb)...)
@@ -228,7 +228,7 @@ end
     κ_min_amc::T = F(0.2)
     β_κη_amc::T = F(10.0)
     β_amc::T = F(7.0)
-    δ_amc::T = F(0.8)
+    δ_amc::T = F(0.5)
     δ_nrsa::T = F(0.5)
     ϕ_rsa::Q17 = F(0.12)u"m^2 / g"
     η_min_rsa::T = F(0.05)
@@ -256,8 +256,19 @@ end
 
 Base.getindex(obj::Parameter, k) = getfield(obj, k)
 Base.setindex!(obj::Parameter, val, k) = setfield!(obj, k, val)
+Base.keys(obj::Parameter) = propertynames(obj)
+Base.length(obj::Parameter) = length(propertynames(obj))
 
+function Base.iterate(obj::Parameter)
+    return (obj[propertynames(obj)[1]], 2)
+end
 
+function Base.iterate(obj::Parameter, i)
+    if i > length(obj)
+        return nothing
+    end
+    return (obj[keys(obj)[i]], i + 1)
+end
 
 # function fixed_parameter(; input_obj)
 #     p = (
@@ -349,13 +360,13 @@ Base.setindex!(obj::Parameter, val, k) = setfield!(obj, k, val)
 #     return p
 # end
 
-# function add_units(x; inference_obj)
-#     for p in keys(x)
-#         x = @set x[p] = x[p] * inference_obj.units[p]
-#     end
+function add_units(x; inference_obj)
+    for p in keys(x)
+        x = @set x[p] = x[p] * inference_obj.units[p]
+    end
 
-#     return x
-# end
+    return x
+end
 
 # function add_units(x, y::T; inference_obj) where {T}
 #     for p in keys(x)

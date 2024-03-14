@@ -1,10 +1,12 @@
 function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p = (;))
-    # Makie.inline!(true)
     set_theme!(
         Theme(
+            colgap = 5,
+            rowgap = 5,
             Label = (; fontsize = 12)),
             Axis = (xgridvisible = false, ygridvisible = false,
                     topspinevisible = false, rightspinevisible = false),
+            GridLayout = (; halign = :left, valign = :top),
             GLMakie = (title = "Grassland Simulation",
                        focus_on_show = true))
 
@@ -14,14 +16,15 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
     sol = nothing
     valid_data = nothing
     trait_input = load_trait_data(valid)
+    biomass_stats = ["sade", "core"]
 
     on(plot_obj.obs.run_button.clicks) do n
         if !still_running
             still_running = true
 
-            p, input_obj = prepare_input(; plot_obj, sim, valid, posterior)
+            p, input_obj = prepare_input(; plot_obj, sim, valid, posterior, biomass_stats)
             sol = sim.solve_prob(; input_obj, p, trait_input)
-            valid_data = get_valid_data(; plot_obj, valid)
+            valid_data = get_valid_data(; plot_obj, valid, biomass_stats)
 
             show_validdata = plot_obj.obs.toggle_validdata.active.val
             if show_validdata
@@ -40,9 +43,7 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
             plot_obj.obs.lls.biomass[] = ll_obj.biomass
             plot_obj.obs.lls.traits[] = ll_obj.trait
 
-
             calculate_gradient = plot_obj.obs.gradient_toggle.active.val
-
             if calculate_gradient
                 @info "Calculating gradient"
                 plotID = plot_obj.obs.menu_plotID.selection.val
@@ -67,18 +68,9 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
 
     on(plot_obj.obs.preset_button.clicks) do n
         @info "Parameter reset"
-        included = NamedTuple(
-            [first(s) => last(s).active.val for s in plot_obj.obs.toggles_included])
-        plotID = plot_obj.obs.menu_plotID.selection.val
-        input_obj = valid.validation_input(;
-            plotID,
-            nspecies = 43,
-            included)
-        p = sim.parameter(; input_obj)
-        for p_k in keys(p)
-            f = plot_obj.obs.parameter_keys .== p_k
-            s = plot_obj.obs.sliders_param.sliders[findfirst(f)]
-            set_close_to!(s, ustrip(p[p_k]))
+        p = sim.Parameter()
+        for (i, k) in enumerate(keys(plot_obj.obs.parameter_keys))
+            Makie.set!(plot_obj.obs.tb_p[i], string(ustrip(p[k])))
         end
     end
 
@@ -96,7 +88,7 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
         valid_data = nothing
         if n
             valid_data = get_valid_data(;
-                plot_obj, valid)
+                plot_obj, valid, biomass_stats)
         end
         band_patch(; plot_obj, sol, valid_data)
         [trait_time_plot(; plot_obj, sol, valid_data, trait = t) for t in
@@ -107,10 +99,10 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
     return nothing
 end
 
-function get_valid_data(; plot_obj, valid)
+function get_valid_data(; plot_obj, valid, biomass_stats = nothing)
     plotID = plot_obj.obs.menu_plotID.selection.val
 
-    data = valid.get_validation_data(; plotID)
+    data = valid.get_validation_data(; plotID, biomass_stats)
 
     return data
 end

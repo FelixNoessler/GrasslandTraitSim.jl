@@ -59,7 +59,7 @@ input_obj = (; daily_input, simp,
 ```
 
 ```@example heterog_input
-p = sim.parameter(; input_obj) 
+p = sim.Parameter() 
 
 sol = sim.solve_prob(; input_obj, p);
 

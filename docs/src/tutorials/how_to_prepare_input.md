@@ -183,7 +183,7 @@ trait_input = (;
 
 ```@example input_creation
 ## get parameters
-p = sim.parameter(; input_obj)
+p = sim.Parameter()
 
 # if you will run many simulations, it is recommended to preallocated the vectors
 # but the simulation will also run without preallocation 

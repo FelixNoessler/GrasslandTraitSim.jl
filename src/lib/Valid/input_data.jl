@@ -14,6 +14,7 @@ function validation_input(;
         nutheterog = 0.0,
         patch_xdim = 1,
         patch_ydim = 1,
+        biomass_stats = nothing,
         included = (;
             senescence = true,
             senescence_season = true,
@@ -88,7 +89,11 @@ function validation_input(;
         @subset :plotID .== plotID
         @subset :date .<= end_date
         @transform :biomass_cutting_day = Dates.value.(:date - start_date)
-        @select :date :biomass_cutting_day :cutting_height
+        @select :date :biomass_cutting_day :cutting_height :stat
+    end
+
+    if !isnothing(biomass_stats)
+        df_cutting_day = @subset df_cutting_day :stat .∈ Ref(biomass_stats)
     end
 
     ##### what to calculate

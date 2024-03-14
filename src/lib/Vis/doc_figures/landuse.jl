@@ -1,9 +1,9 @@
-function grazing(sim, valid; grazing_half_factor = 1500, leafnitrogen_graz_exp = 1,
+function grazing(sim, valid; grazing_half_factor = 1500.0, leafnitrogen_graz_exp = 1.0,
                  path = nothing)
 
     nspecies, container = create_container(; sim, valid)
-    container = @set container.p.grazing_half_factor = grazing_half_factor
-    container = @set container.p.leafnitrogen_graz_exp = leafnitrogen_graz_exp
+    setfield!(container.p, :grazing_half_factor, grazing_half_factor)
+    setfield!(container.p, :leafnitrogen_graz_exp, leafnitrogen_graz_exp)
 
     nbiomass = 500
     LD = 2u"ha ^ -1"
@@ -224,11 +224,11 @@ function trampling_livestockdensity(sim, valid; trampling_factor = 0.01, path = 
     return nothing
 end
 
-function mowing(sim, valid; mowing_height = 0.07u"m", mowing_mid_days = 30,
+function mowing(sim, valid; mowing_height = 0.07u"m", mowing_mid_days = 30.0,
                 path = nothing)
 
     nspecies, container = create_container(; sim, valid)
-    container = @set container.p.mowing_mid_days = mowing_mid_days
+    setfield!(container.p, :mowing_mid_days, mowing_mid_days)
 
     nbiomass = 3
     biomass_vec = LinRange(0, 1000, nbiomass)u"kg / ha"

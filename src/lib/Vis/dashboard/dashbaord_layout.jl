@@ -1,72 +1,62 @@
 function dashboard_layout(; sim, valid, variable_p)
-    fig = Figure(; size = (1700, 850))
+    fig = Figure(; size = (1700, 800))
 
+    ##############################################################################
+    # Define grid layouts
+    ##############################################################################
     top_menu = GridLayout(fig[1, 1])
-    plots_layout =  GridLayout(fig[2, 1])
-    plots_trait_layout = GridLayout(plots_layout[2, 1:4])
+    sim_layout = GridLayout(top_menu[1, 2]; tellwidth = false)
+    validation_layout = GridLayout(top_menu[1, 3]; valign = :top)
+    plottingmenu_layout = GridLayout(top_menu[1, 4]; valign = :top)
+    graz_mow_layout = GridLayout(plottingmenu_layout[3, 1]; halign = :left)
 
-    param_layout = GridLayout(fig[1:2, 2]; valign = :top)
+    plots_layout = GridLayout(fig[2, 1])
+    topplots_layout = GridLayout(plots_layout[1, 1])
+    bottomplots_layout = GridLayout(plots_layout[2, 1])
 
-    left_topmenu = GridLayout(top_menu[1, 1]; )
-    right_topmenu = GridLayout(top_menu[1, 2]; valign = :top )
+    right_layout = GridLayout(fig[1:2, 2])
+    righttop_layout = GridLayout(right_layout[1, 1]; halign = :left)
+    param_layout = GridLayout(right_layout[2, 1]; tellheight = false, valign = :top)
 
-    sim_layout = GridLayout(left_topmenu[1, 2])
+    ##############################################################################
+    # Draw boxes
+    ##############################################################################
+    # Box(top_menu[1, 1], cornerradius = 10, color = (:tomato, 0.2), strokecolor = :transparent)
+    # Box(top_menu[1, 2], cornerradius = 10, color = (:tomato, 0.2), strokecolor = :transparent)
+    # Box(top_menu[1, 3], cornerradius = 10, color = (:tomato, 0.2), strokecolor = :transparent)
+    # Box(top_menu[1, 4], cornerradius = 10, color = (:tomato, 0.2), strokecolor = :transparent)
+    # Box(plots_layout[1, 1], cornerradius = 10, color = (:orange, 0.2), strokecolor = :transparent)
+    # Box(plots_layout[2, 1], cornerradius = 10, color = (:orange, 0.2), strokecolor = :transparent)
+    # Box(right_layout[1, 1], cornerradius = 10, color = (:teal, 0.2), strokecolor = :transparent)
+    # Box(right_layout[2, 1], cornerradius = 2, color = (:teal, 0.2), strokecolor = :transparent)
 
+    ##############################################################################
+    # Run button
+    ##############################################################################
+    run_button = Button(top_menu[1, 1]; label = "run")
 
-    validation_layout = GridLayout(right_topmenu[1, 1]; valign = :top)
-    plottingmenu_layout = GridLayout(right_topmenu[1, 2]; valign = :top)
-    righttoggles_layout = GridLayout(right_topmenu[1, 3]; valign = :top)
-
-
-    colsize!(fig.layout, 2, Relative(0.3))
-    rowsize!(fig.layout, 2, Relative(0.7))
-
-    run_button = Button(left_topmenu[1, 1]; label = "run")
-
-    #------------- Simulation settings
-    Box(left_topmenu[1, 2], alignmode = Outside(-8);
-        color = (:black, 0.0))
-
-    #------------- validation and plotting settings
-    Box(right_topmenu[1, 1], alignmode = Outside(-8);
-        color = (:black, 0.0))
-    Box(right_topmenu[1, 2:3], alignmode = Outside(-8);
-        color = (:black, 0.0))
-
-    ############# Number of species and patches
+    ##############################################################################
+    # Left box: turn off parts of the model
+    ##############################################################################
     Label(sim_layout[1, 1:2], "Simulation settings";
-        tellwidth = true, halign = :left,
-        font = :bold, fontsize = 16)
-
-    ###########
+        halign = :left, font = :bold, fontsize = 16)
     input_obj = valid.validation_input(; plotID = "HEG01", nspecies = 1)
     included_symbols = keys(input_obj.simp.included)
     labels = String.(included_symbols)
-
     nstart2 = length(labels) - length(labels) ÷ 2 + 1
     nend1 = nstart2 - 1
-
-    [Label(sim_layout[i+1, 1], labels[i];
-        tellwidth = true, halign = :right,
-        fontsize = 10) for i in 1:nend1]
-    [Label(sim_layout[i+2-nstart2, 3], labels[i];
-        tellwidth = true, halign = :right,
-        fontsize = 10) for i in nstart2:length(labels)]
-
-    left_toggles = [Toggle(sim_layout[i+1, 2],
-               active = true, height = 10) for i in 1:nend1]
+    [Label(sim_layout[i+1, 1], labels[i]; halign = :right, fontsize = 10) for i in 1:nend1]
+    [Label(sim_layout[i+2-nstart2, 3], labels[i]; halign = :right)
+        for i in nstart2:length(labels)]
+    left_toggles = [Toggle(sim_layout[i+1, 2], active = true, height = 10) for i in 1:nend1]
     right_toggle = [Toggle(sim_layout[i+2-nstart2, 4],
                active = true, height = 10) for i in nstart2:length(labels)]
-
     toggles_included_prep = vcat(left_toggles, right_toggle)
     toggles_included = Dict(zip(included_symbols, toggles_included_prep))
 
-    [rowgap!(sim_layout, i, dist)
-        for (i, dist) in enumerate(fill(5, length(included_symbols) ÷ 2 + 1))]
-    colgap!(sim_layout, 1, 5)
-    colgap!(sim_layout, 3, 5)
-
-    ############# Plot ID
+    ##############################################################################
+    # Middle box: validation settings
+    ##############################################################################
     Label(validation_layout[1, 1], "Validation";
         tellwidth = true, halign = :left,
         font = :bold, fontsize = 16)
@@ -76,14 +66,12 @@ function dashboard_layout(; sim, valid, variable_p)
         active = true,
         tellwidth = false,
         halign = :left)
-
     Label(validation_layout[3, 1], "Parameter:";
         tellwidth = true, halign = :left, fontsize = 16)
     menu_samplingtype = Menu(validation_layout[4, 1];
         options = zip(["fixed (see right)", "sample prior", "sample posterior"],
             [:fixed, :prior, :posterior]),
         halign = :left)
-
     Label(validation_layout[3, 2], "PlotID:";
         tellwidth = true, halign = :left, fontsize = 16)
     menu_plotID = Menu(validation_layout[4, 2];
@@ -92,11 +80,11 @@ function dashboard_layout(; sim, valid, variable_p)
         width = 100,
         halign = :left)
 
-    [rowgap!(validation_layout, i, 5) for i in 1:3]
-
-    ############# Abiotic variable
+    ##############################################################################
+    # Right box: abiotic and grazing/mowing
+    ##############################################################################
     Label(plottingmenu_layout[1, 1], "Abiotic variable (right upper plot)";
-        tellwidth = false, halign = :left, fontsize = 16)
+          halign = :left, fontsize = 16)
     menu_abiotic = Menu(plottingmenu_layout[2, 1],
         options = zip([
                 "Precipitation [mm d⁻¹]",
@@ -111,87 +99,103 @@ function dashboard_layout(; sim, valid, variable_p)
                 :temperature_sum,
                 :PAR,
             ]))
-    [rowgap!(plottingmenu_layout, i, dist) for (i, dist) in enumerate([5])]
+    Label(graz_mow_layout[1, 1], "grazing/mowing?"; fontsize = 16)
+    toggle_grazmow = Toggle(graz_mow_layout[1, 2], active = false)
 
-    ############# Checkbox bands and mowing/grazing visible?
-    Label(righttoggles_layout[1, 1], "grazing/mowing?";
-        halign = :left, valign = :top, fontsize = 16)
-    toggle_grazmow = Toggle(righttoggles_layout[1, 2], active = false)
-
-    ############# Trait Colorbar
-    rowsize!(param_layout, 1, Fixed(70))
-
-    ############# Likelihood
+    ##############################################################################
+    # Right part: likelihood and parameter settings
+    ##############################################################################
     lls = (;
         biomass = Observable(0.0),
         traits = Observable(0.0))
-    ll_label = @lift("Loglikelihood biomass: $(round($(lls.biomass))) traits: $(round($(lls.traits)))")
-    Label(param_layout[1, 1], ll_label;
-        tellwidth = false, halign = :left,
-        fontsize = 16)
+    ll_label = @lift("Loglikelihood biomass: $(round($(lls.biomass))) traits: $(round($(lls.traits)))   gradient:")
+    Label(righttop_layout[1, 1], ll_label; fontsize = 16)
+    gradient_toggle = Toggle(righttop_layout[1, 2]; active = false)
+    preset_button = Button(righttop_layout[1, 3]; label = "reset parameter")
 
-    preset_button = Button(param_layout[1, 2]; label = "reset")
-
-    ############# Parameter values
-    p_obj = sim.Parameter()
+    p = sim.Parameter()
     for k in keys(variable_p)
-        setfield!(p_obj, k, variable_p[k])
+        p[k] = variable_p[k]
     end
-    p = (; zip(propertynames(p_obj), [getproperty(p_obj, k) for k in propertynames(p_obj)])...)
     inference_obj = sim.calibrated_parameter(; input_obj)
+
+    parameter_keys = keys(p)
+
+    lb = 0.01 .* ustrip.(collect(p))
+    ub = 3 .* ustrip.(collect(p))
+
+    for k in keys(inference_obj.lb)
+        key_index = findfirst(k .== parameter_keys)
+
+        lb[key_index] = inference_obj.lb[k]
+        ub[key_index] = inference_obj.ub[k]
+    end
+    p_val = ustrip.(collect(p))
+
     inference_keys = keys(inference_obj.units)
     all_keys = collect(keys(p))
-    is_inf_p = all_keys .∈ Ref(inference_keys)
+    is_inf_p = parameter_keys .∈ Ref(keys(inference_obj.units))
+    inf_str = ifelse.(is_inf_p, "θ: ", "")
 
-    p_inf_label = (; zip(all_keys[is_inf_p], collect(p)[is_inf_p])...)
-    p_inf = (; zip(Symbol.(all_keys[is_inf_p]), collect(p)[is_inf_p])...)
-    p_fixed = (; zip(all_keys[.!is_inf_p], collect(p)[.!is_inf_p])...)
-    p = merge(p_inf_label, p_fixed)
-    p_val = ustrip.(collect(p))
-    parameter_keys = keys(merge(p_inf, p_fixed))
-    lb = vcat(collect(inference_obj.lb), 0.01 .* ustrip.(collect(p_fixed)))
-    ub = vcat(collect(inference_obj.ub), 3 .* ustrip.(collect(p_fixed)))
+    nstart2 = length(p) - length(p) ÷ 2 + 1
+    nend1 = nstart2 - 1
+    [Label(param_layout[i, 1],
+           "$(inf_str[i]) $(parameter_keys[i]) [$(@sprintf("%.1E", lb[i])), $(@sprintf("%.1E", ub[i]))]";
+           halign = :left) for i in 1:nend1]
+    [Label(param_layout[i+1-nstart2, 4],
+           "$(inf_str[i]) $(parameter_keys[i]) [$(@sprintf("%.1E", lb[i])), $(@sprintf("%.1E", ub[i]))]";
+            halign = :left) for i in nstart2:length(p)]
 
-    param_slider_prep = [(label = string(name),
-        range = LinRange(p1, p2, 1000),
-        snap = false,
-        format = "{:.5f}",
-        linewidth = 10,
-        startvalue = val) for (name, val, p1, p2) in zip(keys(p), p_val, lb, ub)]
-    sliders_param = SliderGrid(param_layout[2, 1:2], param_slider_prep...; valign = :top)
+    tb1 = [Textbox(param_layout[i, 2],
+                   stored_string = "$(p_val[i])",
+                   validator = Float64,
+             textpadding = (2, 2, 2, 2), halign = :left) for i in 1:nend1]
+    tb2 = [Textbox(param_layout[i+1-nstart2, 5],
+                   stored_string = "$(p_val[i])",
+                   validator = Float64, textpadding = (2, 2, 2, 2),
+                   halign = :left) for i in nstart2:length(p)]
+    tb_p = vcat(tb1, tb2)
 
-    [rowgap!(sliders_param.layout, i, -2) for i in 1:(length(p) - 1)]
-    rowgap!(param_layout, 1, -10)
+    gradient_values = [Observable(0.0) for _ in eachindex(p)]
+    [Label(param_layout[i, 3],
+           @lift("$(@sprintf("%.1E", $(gradient_values[i])))");
+           halign = :left) for i in 1:nend1]
+    [Label(param_layout[i+1-nstart2, 6],
+           @lift("$(@sprintf("%.1E", $(gradient_values[i])))");
+           halign = :left) for i in nstart2:length(p)]
 
-    gradient_toggle = Toggle(param_layout[1, 3], active = false)
-    gradient_layout = GridLayout(param_layout[2, 3])
-    gradient_values = [Observable(0.0) for i in eachindex(keys(p))]
-    gradient_labels = [
-        Label(gradient_layout[i, 1], @lift("$($(gradient_values[i]))");
-              tellwidth = true, halign = :left)
-        for i in eachindex(keys(p))]
-    [rowgap!(gradient_layout, i, -2) for i in 1:(length(p) - 1)]
+    ##############################################################################
+    # Adjust gap size
+    ##############################################################################
+    [rowgap!(param_layout, i, 0) for i in 1:(length(p) ÷ 2 - 1)]
+    colgap!(fig.layout, 1, 10)
+    colgap!(param_layout, 3, 15)
 
-    #############
+    ##############################################################################
+    # Plot axes
+    ##############################################################################
     axes = Dict()
-    axes[:biomass] = Axis(plots_layout[1, 1:2]; alignmode = Outside(),
+    axes[:biomass] = Axis(topplots_layout[1, 1:2]; alignmode = Outside(),
                           limits = (nothing, nothing, -100.0, 5500.0))
-    axes[:soilwater] = Axis(plots_layout[1, 3]; alignmode = Outside())
-    axes[:abiotic] = Axis(plots_layout[1, 4]; alignmode = Outside())
-    axes[:sla] = Axis(plots_trait_layout[1, 1]; alignmode = Outside())
-    axes[:rsa_above] = Axis(plots_trait_layout[1, 2]; alignmode = Outside())
-    axes[:height] = Axis(plots_trait_layout[1, 3]; alignmode = Outside())
-    axes[:lncm] = Axis(plots_trait_layout[1, 4]; alignmode = Outside())
-    axes[:amc] = Axis(plots_trait_layout[1, 5]; alignmode = Outside())
+    axes[:soilwater] = Axis(topplots_layout[1, 3]; alignmode = Outside())
+    axes[:abiotic] = Axis(topplots_layout[1, 4]; alignmode = Outside())
+    axes[:sla] = Axis(bottomplots_layout[1, 1]; alignmode = Outside())
+    axes[:rsa_above] = Axis(bottomplots_layout[1, 2]; alignmode = Outside())
+    axes[:height] = Axis(bottomplots_layout[1, 3]; alignmode = Outside())
+    axes[:lncm] = Axis(bottomplots_layout[1, 4]; alignmode = Outside())
+    axes[:amc] = Axis(bottomplots_layout[1, 5]; alignmode = Outside())
 
+    ##############################################################################
+    # Put all plot objects and observables in a named tuple
+    ##############################################################################
     obs = (;
         run_button,
         preset_button,
         menu_samplingtype,
         menu_plotID,
         menu_abiotic,
-        sliders_param,
         parameter_keys,
+        tb_p,
         toggles_included,
         toggle_grazmow,
         toggle_validdata,

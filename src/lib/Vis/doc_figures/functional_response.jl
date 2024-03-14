@@ -76,7 +76,7 @@ end
 
 function W_rsa_response(sim, valid; δ_wrsa = 0.5, path = nothing)
     nspecies, container = create_container(; sim, valid)
-    container = @set container.p.δ_wrsa = δ_wrsa
+    setfield!(container.p, :δ_wrsa, δ_wrsa)
 
     xs = 0:0.01:1
     ymat = fill(0.0, length(xs), nspecies)
@@ -156,7 +156,7 @@ end
 
 function rsa_above_nut_response(sim, valid; δ_nrsa, path = nothing)
     nspecies, container = create_container(; sim, valid)
-    container = @set container.p.δ_nrsa = δ_nrsa
+    setfield!(container.p, :δ_nrsa, δ_nrsa)
     container.calc.biomass_density_factor .= 1.0
 
     xs = 0:0.01:1

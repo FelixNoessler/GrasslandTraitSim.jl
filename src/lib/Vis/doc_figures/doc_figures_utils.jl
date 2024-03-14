@@ -11,7 +11,7 @@ function create_container(; sim, valid, nspecies = nothing)
 
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies)
-    p = sim.parameter(; input_obj)
+    p = sim.Parameter()
     calc = sim.preallocate_vectors(; input_obj)
     prealloc = sim.preallocate_vectors(; input_obj);
     prealloc_specific = sim.preallocate_specific_vectors(; input_obj);

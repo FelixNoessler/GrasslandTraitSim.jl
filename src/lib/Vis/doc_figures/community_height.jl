@@ -7,7 +7,7 @@ function plot_community_height(; sim, valid, path = nothing)
         plotID = "HEG01", nspecies = 1);
     input_obj.daily_input.grazing .= NaN * u"ha^-1"
     input_obj.daily_input.mowing .= NaN * u"m"
-    p = sim.parameter(; input_obj);
+    p = sim.Parameter()
 
     sol = sim.solve_prob(; input_obj, p, trait_input);
 
@@ -54,7 +54,7 @@ function community_height_influence(; sim, valid, path = nothing)
         plotID = "HEG01", nspecies = 1);
     input_obj.daily_input.grazing .= NaN * u"ha^-1"
     input_obj.daily_input.mowing .= NaN * u"m"
-    p = sim.parameter(; input_obj);
+    p = sim.Parameter()
 
     function sim_community_height(; α, β, community_height_red)
         p = @set p.α_community_height = α * u"kg / ha"

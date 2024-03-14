@@ -1,12 +1,9 @@
-function prepare_input(; plot_obj, sim, valid, posterior)
+function prepare_input(; plot_obj, sim, valid, posterior, biomass_stats = nothing)
     # ------------- whether parts of the simulation are included
     included = NamedTuple(
         [first(s) => last(s).active.val for s in plot_obj.obs.toggles_included])
     plotID = plot_obj.obs.menu_plotID.selection.val
-    input_obj = valid.validation_input(;
-        plotID,
-        nspecies = 43,
-        included)
+    input_obj = valid.validation_input(; plotID, nspecies = 43, included, biomass_stats)
 
     # ------------- parameter values
     p = nothing
@@ -15,23 +12,16 @@ function prepare_input(; plot_obj, sim, valid, posterior)
     if samplingtype == :prior
         inference_obj = sim.calibrated_parameter(; input_obj)
         θ = valid.sample_prior(; inference_obj)
-        θ = sim.add_units(θ; inference_obj)
-        p = sim.parameter(; input_obj, variable_p = θ)
-
-    elseif samplingtype == :fixed
-        parameter_vals = [s.value.val for s in plot_obj.obs.sliders_param.sliders]
-        p_obj = sim.Parameter()
-        p_fixed = (; zip(propertynames(p_obj), [getproperty(p_obj, k) for k in propertynames(p_obj)])...)
-
-        unit_vec = unit.(collect(p_fixed))
-        value_vec = Float64[]
-
-        for p_k in keys(p_fixed)
-            f = plot_obj.obs.parameter_keys .== p_k
-            push!(value_vec, parameter_vals[findfirst(f)])
+        p = sim.Parameter()
+        for k in keys(θ)
+            p[k] = θ[k] * unit(p[k])
         end
 
-        p = (; zip(keys(p_fixed), value_vec .* unit_vec)...)
+    elseif samplingtype == :fixed
+        p = sim.Parameter()
+        for (i, k) in enumerate(keys(plot_obj.obs.parameter_keys))
+            p[k] = parse(Float64, plot_obj.obs.tb_p[i].stored_string[]) * unit(p[k])
+        end
     else
         samplingtype == :posterior
         if isnothing(posterior)
@@ -42,10 +32,9 @@ function prepare_input(; plot_obj, sim, valid, posterior)
     end
 
     if samplingtype != :fixed
-        for p_k in keys(p)
-            f = plot_obj.obs.parameter_keys .== p_k
-            s = plot_obj.obs.sliders_param.sliders[findfirst(f)]
-            set_close_to!(s, ustrip(p[p_k]))
+        for (i, k) in enumerate(keys(plot_obj.obs.parameter_keys))
+            val = round(ustrip(p[k]); digits = 5)
+            Makie.set!(plot_obj.obs.tb_p[i], string(val))
         end
     end
 
