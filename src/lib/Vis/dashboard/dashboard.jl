@@ -1,4 +1,5 @@
-function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p = (;))
+function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p = (;),
+                   biomass_stats = nothing)
     set_theme!(
         Theme(
             colgap = 5,
@@ -8,7 +9,8 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
                     topspinevisible = false, rightspinevisible = false),
             GridLayout = (; halign = :left, valign = :top),
             GLMakie = (title = "Grassland Simulation",
-                       focus_on_show = true))
+                       focus_on_show = true,
+                       fullscreen = true))
 
     plot_obj = dashboard_layout(; sim, valid, variable_p)
 
@@ -16,7 +18,6 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
     sol = nothing
     valid_data = nothing
     trait_input = load_trait_data(valid)
-    biomass_stats = ["sade", "core"]
 
     on(plot_obj.obs.run_button.clicks) do n
         if !still_running
@@ -77,6 +78,10 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
     plot_obj.obs.run_button.clicks[] = 1
 
     on(plot_obj.obs.toggle_grazmow.active) do n
+        band_patch(; plot_obj, sol, valid_data)
+    end
+
+    on(plot_obj.obs.toggle_standingbiomass.active) do n
         band_patch(; plot_obj, sol, valid_data)
     end
 

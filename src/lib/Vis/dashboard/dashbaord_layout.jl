@@ -1,5 +1,5 @@
 function dashboard_layout(; sim, valid, variable_p)
-    fig = Figure(; size = (1700, 800))
+    fig = Figure(; size = (1800, 800))
 
     ##############################################################################
     # Define grid layouts
@@ -66,15 +66,21 @@ function dashboard_layout(; sim, valid, variable_p)
         active = true,
         tellwidth = false,
         halign = :left)
-    Label(validation_layout[3, 1], "Parameter:";
+    Label(validation_layout[3, 1], "standing biomass?";
+        halign = :left, fontsize = 16)
+    toggle_standingbiomass = Toggle(validation_layout[3, 2],
+        active = true,
+        tellwidth = false,
+        halign = :left)
+    Label(validation_layout[4, 1], "Parameter:";
         tellwidth = true, halign = :left, fontsize = 16)
-    menu_samplingtype = Menu(validation_layout[4, 1];
+    menu_samplingtype = Menu(validation_layout[5, 1];
         options = zip(["fixed (see right)", "sample prior", "sample posterior"],
             [:fixed, :prior, :posterior]),
         halign = :left)
-    Label(validation_layout[3, 2], "PlotID:";
+    Label(validation_layout[4, 2], "PlotID:";
         tellwidth = true, halign = :left, fontsize = 16)
-    menu_plotID = Menu(validation_layout[4, 2];
+    menu_plotID = Menu(validation_layout[5, 2];
         options = ["$(explo)$(lpad(i, 2, "0"))"  for explo in ["HEG", "SEG", "AEG"]
                    for i in 1:50],
         width = 100,
@@ -83,7 +89,7 @@ function dashboard_layout(; sim, valid, variable_p)
     ##############################################################################
     # Right box: abiotic and grazing/mowing
     ##############################################################################
-    Label(plottingmenu_layout[1, 1], "Abiotic variable (right upper plot)";
+    Label(plottingmenu_layout[1, 1], "Abiotic variable\n(right upper plot)";
           halign = :left, fontsize = 16)
     menu_abiotic = Menu(plottingmenu_layout[2, 1],
         options = zip([
@@ -199,6 +205,7 @@ function dashboard_layout(; sim, valid, variable_p)
         toggles_included,
         toggle_grazmow,
         toggle_validdata,
+        toggle_standingbiomass,
         lls,
         gradient_values,
         gradient_toggle)

@@ -11,12 +11,13 @@ function band_patch(;
     thin = 1
 
     t = sol.numeric_date
-    biomass = vec(sum(ustrip.(sol.output.biomass); dims = (:x, :y, :species))) ./
-                sol.simp.npatches
-    lines!(ax, t, biomass; color = :orange, linewidth = 2)
 
-
-
+    show_standingbiomass = plot_obj.obs.toggle_standingbiomass.active.val
+    if show_standingbiomass
+        biomass = vec(sum(ustrip.(sol.output.biomass); dims = (:x, :y, :species))) ./
+                    sol.simp.npatches
+        lines!(ax, t, biomass; color = :orange, linewidth = 2)
+    end
 
     show_grazmow = plot_obj.obs.toggle_grazmow.active.val
     if show_grazmow
@@ -44,7 +45,7 @@ function band_patch(;
 
         scatter!(ax, t[1:thin:end], biomass_median[1:thin:end]; color = :orange)
 
-            biomass_lower = quantile.(biomass_dist, 0.025)
+        biomass_lower = quantile.(biomass_dist, 0.025)
         biomass_upper = quantile.(biomass_dist, 0.975)
         biomass_lower5 = quantile.(biomass_dist, 0.25)
         biomass_upper5 = quantile.(biomass_dist, 0.75)
