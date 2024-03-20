@@ -39,13 +39,6 @@ function loglikelihood_model(sim::Module;
         @unpack cut_index = sol.calc
         @unpack cut_biomass = sol
 
-        # for (i,c) in enumerate(cut_index)
-        #     sim_cutted_biomass = ustrip(cut_biomass[c])
-        #     biomass_d = Normal(sim_cutted_biomass, sol.p.b_biomass)
-        #     ll_biomass += logpdf(biomass_d, data.biomass[i])
-        # end
-
-
         simulated_cutted_biomass = ustrip.(cut_biomass)[cut_index]
         biomass_d = Product(Normal.(simulated_cutted_biomass,
                                 sol.p.b_biomass);)
