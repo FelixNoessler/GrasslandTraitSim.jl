@@ -138,14 +138,5 @@ function similarity_matrix!(; input_obj, prealloc)
 
     TS .= 1 .- TS ./ maximum(TS)
 
-    ### to avoid very small numbers/zeros in the matrix
-    for i in Base.OneTo(nspecies)
-        for u in Base.OneTo(nspecies)
-            if TS[i, u] < 0.01
-                TS[i, u] = 0.01
-            end
-        end
-    end
-
     return nothing
 end
