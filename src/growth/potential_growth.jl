@@ -1,6 +1,4 @@
 @doc raw"""
-    potential_growth!(; container, biomass, PAR)
-
 Calculates the potential growth of all plant species
 in a specific patch.
 
@@ -24,13 +22,13 @@ leaf area index of the individual species
 \end{align*}
 ```
 
-- `PAR` photosynthetically active radiation [MJ ha⁻¹ d⁻¹]
+- `PAR` photosynthetically active radiation [MJ ha⁻¹]
 - `RUE_max` maximum radiation use efficiency [kg MJ⁻¹]
 - `k` extinction coefficient [-]
 - `LAItot` total leaf area index [m² m⁻²]
 - `LAIs` leaf area index of each species [m² m⁻²]
-- `potgrowth_total` total potential growth [kg ha⁻¹ d⁻¹]
-- `potgrowth` potential growth of each species [kg ha⁻¹ d⁻¹]
+- `potgrowth_total` total potential growth [kg ha⁻¹]
+- `potgrowth` potential growth of each species [kg ha⁻¹]
 
 ![Influence of the specific leaf area on the potential growth](../img/sla_potential_growth.svg)
 """
@@ -45,7 +43,7 @@ function potential_growth!(; container, biomass, PAR)
 
     if LAItot == 0 || !included.potential_growth
         @info "Zero potential growth!" maxlog=1
-        potgrowth .= 0.0u"kg / (ha * d)"
+        potgrowth .= 0.0u"kg / ha"
         return LAItot
     end
 
@@ -57,8 +55,6 @@ function potential_growth!(; container, biomass, PAR)
 end
 
 @doc raw"""
-    calculate_LAI(; container, biomass, LAIs)
-
 Calculate the leaf area index of all species of one habitat patch.
 
 ```math

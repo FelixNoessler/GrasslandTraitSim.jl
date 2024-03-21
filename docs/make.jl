@@ -1,6 +1,6 @@
 ####### build the documentation locally
-# julia --project=docs/ --startup-file=no
-# using Revise; import Pkg; Pkg.instantiate(); Pkg.develop(path="."); include("docs/make.jl")
+# julia --project=docs/
+# import Pkg; Pkg.develop(path="."); Pkg.instantiate(); include("docs/make.jl")
 ## to redo the documentation:
 # include("docs/make.jl")
 ## to clean everything for commits/push:
@@ -18,7 +18,8 @@ import GrasslandTraitSim.Vis as vis
 cp("README.md", "docs/src/index.md"; force = true)
 cp("assets/ECEM_2023_presentation.pdf", "docs/src/assets/ECEM_2023_presentation.pdf";
      force = true)
-cp("assets/Assembly_2024_presentation.pdf", "docs/src/assets/Assembly_2024_presentation.pdf";
+cp("assets/Assembly_2024_presentation.pdf",
+   "docs/src/assets/Assembly_2024_presentation.pdf";
     force = true)
 cp("assets/screenshot.png", "docs/src/img/screenshot.png"; force = true)
 
@@ -98,8 +99,15 @@ vis.plot_clonalgrowth(sim, valid; path = f("$docs_img/clonalgrowth.svg"))
 makedocs(;
     plugins = [bib],
     sitename = "GrasslandTraitSim.jl",
-    format = Documenter.HTML(prettyurls = true, mathengine = MathJax3()),
     modules = [GrasslandTraitSim, GrasslandTraitSim.Valid, GrasslandTraitSim.Vis],
+    format = Documenter.HTML(;
+        canonical="https://FelixNoessler.github.io/GrasslandTraitSim.jl",
+        edit_link="master",
+        assets = String[],
+        size_threshold = nothing,
+        prettyurls = true,
+        mathengine = MathJax3()
+    ),
     pages = Any["Home" => "index.md",
         "Model input and output" => "model_io.md",
         "Parameter" => "parameter.md",
@@ -123,6 +131,7 @@ makedocs(;
             "Likelihood" => "biodiversity_exploratories/likelihood.md",
             "Priors" => "biodiversity_exploratories/priors.md"],
         "TOC all functions" => "all_functions.md",
-        "References" => "References.md"])
+        "References & Acknowledgements" => "References.md"])
 
-deploydocs(repo = "github.com/FelixNoessler/GrasslandTraitSim.jl.git")
+deploydocs(repo = "github.com/FelixNoessler/GrasslandTraitSim.jl",
+           devbranch="master",)

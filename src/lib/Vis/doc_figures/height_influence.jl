@@ -7,7 +7,7 @@ function height_influence(sim, valid; path = nothing)
 
     for (i, height_strength_exp) in enumerate(height_strength_exps)
         container = @set container.p.height_strength_exp = height_strength_exp
-        sim.height_influence!(; container, biomass)
+        sim.light_competition!(; container, biomass)
         ymat[:, i] .= container.calc.heightinfluence
     end
 

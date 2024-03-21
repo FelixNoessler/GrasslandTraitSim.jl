@@ -1,6 +1,6 @@
 @doc raw"""
-    change_water_reserve(; container, patch_biomass, water, precipitation,
-                           LAItot, PET, WHC, PWP)
+    change_water_reserve(; container, patch_biomass, water, precipitation, LAItot, PET,
+                         WHC, PWP)
 
 Models the change of the water reserve in the soil within one day.
 
@@ -35,30 +35,30 @@ The change of the water reserve is calculated as follows:
 ```
 
 Note the unit change of the soil water content `water` and the water holding capacity
-`WHC` from [mm] to [mm d⁻¹] to compare these values to water reserve changes
+`WHC` from [mm] to [mm] to compare these values to water reserve changes
 per day.
 
 - `water` is the soil water content [mm]
-- `du_water` is the change of the water reserve in the soil [mm d⁻¹]
-- `precipitation` is the precipitation [mm d⁻¹]
-- `drain` is the drainage of water from the soil [mm d⁻¹]
-- `AET` is the actual evapotranspiration [mm d⁻¹]
-- `ATr` is the actual transpiration of water from the soil [mm d⁻¹]
-- `AEv` is the actual evaporation of water from the soil [mm d⁻¹]
+- `du_water` is the change of the water reserve in the soil [mm]
+- `precipitation` is the precipitation [mm]
+- `drain` is the drainage of water from the soil [mm]
+- `AET` is the actual evapotranspiration [mm]
+- `ATr` is the actual transpiration of water from the soil [mm]
+- `AEv` is the actual evaporation of water from the soil [mm]
 - `WHC` is the water holding capacity of the soil [mm]
 - `PWP` is the permanent wilting point of the soil [mm]
-- `PET` is the potential evapotranspiration [mm d⁻¹]
+- `PET` is the potential evapotranspiration [mm]
 - `LAItot` is the total leaf area index of all plants [-]
 """
-function change_water_reserve(; container, patch_biomass, water, precipitation,
-        LAItot, PET, WHC, PWP)
+function change_water_reserve(; container, patch_biomass, water, precipitation, LAItot,
+                              PET, WHC, PWP)
     # -------- Evapotranspiration
     AEv = evaporation(; water, WHC, PET, LAItot)
     ATr = transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
-    AET = min(water / u"d", ATr + AEv)
+    AET = min(water, ATr + AEv)
 
     # -------- Drainage
-    excess_water = (water - WHC) / u"d"
+    excess_water = water - WHC
     drain = max(excess_water + precipitation -AET, zero(excess_water))
 
     # -------- Total change in the water reserve
@@ -90,12 +90,12 @@ If the community weighted mean specific leaf area is high
 \end{align}
 ```
 
-- `ATr` is the actual transpiration of water from the soil [mm d⁻¹]
+- `ATr` is the actual transpiration of water from the soil [mm]
 - `W` is the plant available water [-]
 - `water` is the soil water content [mm]
 - `WHC` is the water holding capacity of the soil [mm]
 - `PWP` is the permanent wilting point of the soil [mm]
-- `PET` is the potential evapotranspiration [mm d⁻¹]
+- `PET` is the potential evapotranspiration [mm]
 - `LAItot` is the total leaf area index of all plants [-]
 - `sla_effect` is the effect of the community weighted
   specific leaf area on the transpiration, can range from
@@ -140,10 +140,10 @@ Evaporation of water from the soil.
     \left[1 - \min\left(1; \frac{\text{LAItot}}{3} \right) \right]
 ```
 
-- `AEv` is the actual evaporation of water from the soil [mm d⁻¹]
+- `AEv` is the actual evaporation of water from the soil [mm]
 - `water` is the soil water content [mm]
 - `WHC` is the water holding capacity of the soil [mm]
-- `PET` is the potential evapotranspiration [mm d⁻¹]
+- `PET` is the potential evapotranspiration [mm]
 - `LAItot` is the total leaf area index of all plants [-]
 """
 function evaporation(; water, WHC, PET, LAItot)

@@ -15,7 +15,9 @@ input_obj = valid.validation_input(;
     plotID = "HEG01", nspecies = 25,
     trait_seed = 99);
 p = sim.Parameter();
-sol = sim.solve_prob(; input_obj, p)
+sol = sim.solve_prob(; input_obj, p);
+
+nothing # hide
 ```
 
 

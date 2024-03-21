@@ -93,11 +93,11 @@ function dashboard_layout(; sim, valid, variable_p)
           halign = :left, fontsize = 16)
     menu_abiotic = Menu(plottingmenu_layout[2, 1],
         options = zip([
-                "Precipitation [mm d⁻¹]",
-                "Potential evapo-\ntranspiration [mm d⁻¹]",
+                "Precipitation [mm]",
+                "Potential evapo-\ntranspiration [mm]",
                 "Air temperature [°C]\n",
                 "Air temperaturesum [°C]\n",
-                "Photosynthetically active\nradiation [MJ ha⁻¹ d⁻¹]",
+                "Photosynthetically active\nradiation [MJ ha⁻¹]",
             ], [
                 :precipitation,
                 :PET,

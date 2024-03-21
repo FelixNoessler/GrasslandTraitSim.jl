@@ -16,7 +16,7 @@ flowchart LR
     N[⇅ seasonal factor] -.-> B
     end
     subgraph " "
-    F[⇅ height influence] -.-> C
+    F[⇅ light competition] -.-> C
     G[below ground competition] -.-> H
     G -.-> I
     H[↓ water stress] -.-> C
@@ -60,7 +60,7 @@ community_height_reduction
 ```@raw html
 <div class="mermaid">
 flowchart LR
-    F[⇅ height influence] --> C[[species-specific adjustment]]
+    F[⇅ light competition] --> C[[species-specific adjustment]]
     G[below ground competition] --> H
     G --> I
     H[↓ water stress] -->  C
@@ -75,7 +75,7 @@ flowchart LR
 <div class="mermaid">
 flowchart LR
     K(trait: height) -->|taller plants get\nmore light| F
-    F[⇅ height influence] --> C[[species-specific adjustment]]
+    F[⇅ light competition] --> C[[species-specific adjustment]]
 </div>
 ```
 
@@ -87,7 +87,7 @@ The potential height refers to the height that the plant would reach
 if it would not be limited by other factors.
 
 ```@docs	
-height_influence!
+light_competition!
 ```
 
 --

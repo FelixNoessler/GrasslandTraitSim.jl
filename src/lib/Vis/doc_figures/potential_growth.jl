@@ -3,7 +3,7 @@ function potential_growth(sim, valid; path = nothing)
 
     par_values = 10
     biomass = repeat([1], nspecies)u"kg / ha"
-    PARs = LinRange(0, 12, par_values)u"MJ * d^-1 * m^-2"
+    PARs = LinRange(0, 12, par_values)u"MJ * m^-2"
     ymat = Array{Float64}(undef, nspecies, par_values)
 
     for (i, PAR) in enumerate(PARs)
@@ -19,8 +19,8 @@ function potential_growth(sim, valid; path = nothing)
 
     fig = Figure(; size = (800, 400))
     Axis(fig[1, 1],
-        xlabel = "Photosynthetically active radiation [MJ m⁻² d⁻¹]",
-        ylabel = "Potential growth per biomass\n[kg kg⁻¹ ha⁻¹ d⁻¹]",
+        xlabel = "Photosynthetically active radiation [MJ m⁻²]",
+        ylabel = "Potential growth per biomass\n[kg kg⁻¹ ha⁻¹]",
         title = "Influence of the specific leaf area (SLA)")
 
     for i in nspecies:-1:1

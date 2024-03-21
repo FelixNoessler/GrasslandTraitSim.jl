@@ -1,11 +1,16 @@
 """
-    solve_prob(; input_obj, inf_p, calc = nothing)
-
+$(SIGNATURES)
 Solve the model for one site.
 
 Intialize the parameters, the state variables and the output vectors.
 In addition some vectors are preallocated to avoid allocations in the main loop.
 Then, run the main loop and store the results with all parameters in a container.
+
+All input variables are explained in a tutorial:
+[How to prepare the input data to start a simulation](@ref)
+
+There is also a tutorial on the model output:
+[How to analyse the model output](@ref)
 """
 function solve_prob(; input_obj, p, prealloc = nothing, prealloc_specific = nothing,
                      trait_input = nothing, θ_type = Float64)
@@ -43,8 +48,7 @@ function solve_prob(; input_obj, p, prealloc = nothing, prealloc_specific = noth
 end
 
 """
-    main_loop!(; container)
-
+$(SIGNATURES)
 Run the main loop for all days.
 
 Calls the function [`one_day!`](@ref) for each day and set the
@@ -61,11 +65,11 @@ function main_loop!(; container)
         for x in Base.OneTo(patch_xdim)
             for y in Base.OneTo(patch_ydim)
                 for s in Base.OneTo(nspecies)
-                    u_biomass[x, y, s] += du_biomass[x, y, s] * u"d"
+                    u_biomass[x, y, s] += du_biomass[x, y, s]
                     biomass[t, x, y, s] = u_biomass[x, y, s]
                 end
 
-                u_water[x, y] += du_water[x, y] * u"d"
+                u_water[x, y] += du_water[x, y]
                 water[t, x, y] = u_water[x, y]
             end
         end

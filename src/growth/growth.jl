@@ -4,18 +4,16 @@ include("senescence.jl")
 include("clonalgrowth.jl")
 include("potential_growth.jl")
 include("belowground_competition.jl")
-include("height_influence.jl")
+include("light_competition.jl")
 
 """
-    growth!(; t, container, biomass, water, nutrients, WHC, PWP)
-
 Calculates the actual growth of the plant species.
 """
 function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     @unpack daily_input = container
     @unpack included = container.simp
     @unpack species_specific_red, heightinfluence, Waterred, Nutred = container.calc
-    @unpack act_growth, potgrowth, neg_act_growth = container.calc
+    @unpack act_growth, potgrowth = container.calc
 
     #### potential growth
     LAItot = potential_growth!(; container,
@@ -23,7 +21,7 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
         PAR = daily_input.PAR[t])
 
     ### influence of the height of plants
-    height_influence!(; container, biomass)
+    light_competition!(; container, biomass)
 
     #### below ground competition --> trait similarity and abundance
     below_ground_competition!(; container, biomass)
@@ -41,13 +39,6 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
 
     #### final growth
     @. act_growth = potgrowth * reduction * species_specific_red
-
-    # @. neg_act_growth = act_growth < 0u"kg / (ha * d)"
-    # if any(neg_act_growth)
-    #     @warn "act_growth below zero: $(container.calc.act_growth)" maxlog = 20
-    #    @show container.p
-    #    @show container.simp
-    # end
 
     return LAItot
 end

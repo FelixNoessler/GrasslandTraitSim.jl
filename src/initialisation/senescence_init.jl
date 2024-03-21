@@ -22,7 +22,7 @@ Then, the parameter $\beta_{\text{sen}}$ is used to downscale the inverse of the
 - `sla_conv` specific leaf area [cm²g⁻¹] $\rightarrow$ this includes a unit conversion
   of the sla values (in the model the unit of the specific leaf area is m² g⁻¹)
 - `leaflifespan` leaf life span [d]
-- `μ` senescence rate [d⁻¹]
+- `μ` senescence rate [-]
   of the leaf span on the senescence rate μ
 - `β_sen` β value of a linear equation that models
   the influence of the leaf lifespan on the senescence rate μ
@@ -35,7 +35,7 @@ function senescence_rate!(; input_obj, prealloc, p)
     @unpack μ, leaflifespan =  prealloc.calc
 
     if !included.senescence
-        @. μ = 0.0u"d^-1"
+        @. μ = 0.0
         @. leaflifespan = 0.0u"d"
         return nothing
     end
@@ -43,7 +43,7 @@ function senescence_rate!(; input_obj, prealloc, p)
     @unpack α_ll, β_ll, α_sen, β_sen = p
     @. leaflifespan = 10^((α_ll - log10(sla * 10000u"g/m^2")) / β_ll) *
     365.25 / 12 * u"d"
-    μ .= α_sen .+ β_sen ./ leaflifespan
+    @. μ = α_sen + β_sen / leaflifespan
 
     return nothing
 end

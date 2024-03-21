@@ -1,6 +1,4 @@
 @doc raw"""
-    height_influence!(; container, biomass)
-
 ```math
 \text{heightinfluence} =
     1 +
@@ -12,9 +10,9 @@
   (strong influence of the plant height) [-]
 - `cwm_height` is community weighted mean height [m]
 
-![](../img/height_influence.svg)
+![light competition](../img/height_influence.svg)
 """
-function height_influence!(; container, biomass)
+function light_competition!(; container, biomass)
     @unpack relative_height, heightinfluence = container.calc
     @unpack included = container.simp
     @unpack height = container.traits

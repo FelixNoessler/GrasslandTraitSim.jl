@@ -1,6 +1,4 @@
 @doc raw"""
-    senescence!(; container, ST, biomass)
-
 Calculate the biomass that dies due to senescence.
 
 ```math
@@ -10,13 +8,13 @@ S_{txys} = μ_s \cdot \text{SEN}_t \cdot B_{txys}
 The senescence process is based on the senescence rate μ and a
 seasonal component of the senescence.
 
-- `μ` basic senescence rate [d⁻¹], see [`senescence_rate!`](@ref)
+- `μ` basic senescence rate, see [`senescence_rate!`](@ref)
 - `SEN` seasonal component of the senescence (between 1 and 3),
   see [`seasonal_component_senescence`](@ref)
 - `B` biomass dry weight [kg ha⁻¹]
 """
 function senescence!(; container, ST, biomass)
-    @unpack sen, μ = container.calc
+    @unpack senescence, μ = container.calc
     @unpack included = container.simp
 
     SEN = if included.senescence_season
@@ -25,14 +23,12 @@ function senescence!(; container, ST, biomass)
         1.0
     end
 
-    @. sen = μ * SEN * biomass
+    @. senescence = μ * SEN * biomass
 
     return nothing
 end
 
 @doc raw"""
-    seasonal_component_senescence(; container, ST)
-
 Seasonal factor for the senescence rate.
 
 ```math

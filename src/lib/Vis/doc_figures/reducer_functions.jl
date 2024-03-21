@@ -1,9 +1,8 @@
 function temperatur_reducer(sim, valid;
-        Ts = LinRange(0.0, 40.0, 500), # °C
+        Ts = collect(LinRange(0.0, 40.0, 500)) .* u"°C",
         path = nothing)
 
     nspecies, container = create_container(; sim, valid, nspecies = 1)
-    Ts = sort(ustrip.(Ts))
 
     y = Float64[]
     for T in Ts
@@ -18,11 +17,11 @@ function temperatur_reducer(sim, valid;
         title = "Temperature reducer function")
 
     if length(y) > 500
-        scatter!(Ts, y,
+        scatter!(ustrip.(Ts), y,
             markersize = 5,
             color = (:coral3, 0.5))
     else
-        lines!(Ts, y,
+        lines!(ustrip.(Ts), y,
             linewidth = 3,
             color = :coral3)
     end
@@ -37,7 +36,7 @@ function temperatur_reducer(sim, valid;
 end
 
 function radiation_reducer(sim, valid;
-        PARs = LinRange(0.0, 15.0, 1000)u"MJ / (m^2 * d)",
+        PARs = LinRange(0.0, 15.0, 1000)u"MJ / m^2",
         path = nothing)
 
     nspecies, container = create_container(; sim, valid, nspecies = 1)
@@ -54,7 +53,7 @@ function radiation_reducer(sim, valid;
     fig = Figure(; size = (700, 400))
     Axis(fig[1, 1];
         ylabel = "Growth reduction (Rred)",
-        xlabel = "Photosynthetically active radiation (PAR) [MJ m⁻² d⁻¹]",
+        xlabel = "Photosynthetically active radiation (PAR) [MJ m⁻²]",
         title = "Radiation reducer function")
 
     PARs = ustrip.(PARs)
@@ -194,7 +193,7 @@ function below_influence(sim, valid; path = nothing)
 end
 
 function seasonal_effect(sim, valid;
-        STs = LinRange(0, 3500, 1000),
+        STs = uconvert.(u"K", LinRange(0, 3500, 1000)u"°C"),
         path = nothing)
 
     nspecies, container = create_container(; sim, valid, nspecies = 1)
@@ -216,7 +215,7 @@ function seasonal_effect(sim, valid;
             markersize = 3,
             color = (:navajowhite4, 0.1))
     else
-        lines!(STs, y;
+        lines!(ustrip.(STs), y;
             linewidth = 3,
             color = :navajowhite4)
     end

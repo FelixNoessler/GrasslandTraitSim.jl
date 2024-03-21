@@ -60,7 +60,7 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
     for s in 1:nspecies
         mown[t, x, y, s] = lowbiomass_correction[s] * mow_factor *
                            proportion_mown[s] * biomass[s]
-        defoliation[s] += mown[t, x, y, s] * u"d^-1"
+        defoliation[s] += mown[t, x, y, s]
     end
 
     return nothing
@@ -85,7 +85,7 @@ a &= \frac{1}{\text{grazing_half_factor}^2 \cdot h} \\
 ```
 
 - `LD` daily livestock density [livestock units ha⁻¹]
-- `κ` daily consumption of one livestock unit [kg d⁻¹], follows [Gillet2008](@cite)
+- `κ` daily consumption of one livestock unit [kg], follows [Gillet2008](@cite)
 - `ρ` palatability,
   dependent on nitrogen per leaf mass (LNCM) [-]
 - `grazing_half_factor` is the half-saturation constant [kg ha⁻¹]
@@ -133,7 +133,7 @@ function grazing!(; t, x, y, container, LD, biomass)
     grazed_share .= low_ρ_biomass ./ sum(low_ρ_biomass)
 
     #### add grazed biomass to defoliation
-    @. grazed[t, x, y, :] = grazed_share * total_grazed * u"d"
+    @. grazed[t, x, y, :] = grazed_share * total_grazed
     @. defoliation += grazed_share * total_grazed
 
     return nothing
@@ -181,7 +181,7 @@ function trampling!(; container, LD, biomass)
     @. trampling_proportion =
         min.((height / 0.5u"m") ^ trampling_height_exp * total_grazed * trampling_factor, 1.0)
     @. trampled_biomass = biomass * trampling_proportion
-    defoliation .+= trampled_biomass ./ u"d"
+    defoliation .+= trampled_biomass
 
     return nothing
 end

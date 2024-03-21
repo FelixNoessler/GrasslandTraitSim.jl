@@ -33,23 +33,25 @@ year = Dates.year.(date)
 ntimesteps = length(date)
 ts = Base.OneTo(ntimesteps) 
 
-# --------------- PAR [MJ ha⁻¹ d⁻¹]
-PAR = ones(ntimesteps)u"MJ / (ha * d)"
+# --------------- PAR [MJ ha⁻¹]
+PAR = ones(ntimesteps)u"MJ / ha"
 
-# --------------- PET [mm d⁻¹]
-PET = ones(ntimesteps)u"mm / d"
+# --------------- PET [mm]
+PET = ones(ntimesteps)u"mm"
 
-# --------------- precipiation [mm d⁻¹]	
-precipitation = ones(ntimesteps)u"mm / d"
+# --------------- precipiation [mm]	
+precipitation = ones(ntimesteps)u"mm"
 
 # --------------- temperature [°C]
-temperature = ones(ntimesteps)#u"°C"
+temperature = ones(ntimesteps)u"°C"
 
 # --------------- yearly temperature sum [°C]
-temperature_sum = sim.cumulative_temperature(; temperature, year) 
+temperature_sum = sim.Valid.cumulative_temperature(temperature, year) 
 
 # --------------- final tuple of climatic inputs
 climatic_inputs = (; temperature, temperature_sum, PAR, PET, precipitation)
+
+nothing # hide
 ```
 
 ## Management data
@@ -84,6 +86,8 @@ for i in eachindex(grazing_starts)
 end
 
 management_tuple = (; mowing, grazing)
+
+nothing # hide
 ```
 
 ## Site variables 
@@ -102,10 +106,12 @@ site_tuple = (;
     rootdepth = 160.0, # mm
     initbiomass = 1500u"kg / ha",
     initsoilwater = 80u"mm"
-)           
+)    
+
+nothing # hide       
 ```
 
-## Fixed simulation parameters
+## Simulation settings
 ```@example input_creation
 simp = (
     ntimesteps, 
@@ -139,6 +145,8 @@ simp = (
     ## include parameter for likelihood calculation?
     likelihood_included = (; biomass = true, trait = true)
 )
+
+nothing # hide
 ```
 
 ## Putting everything together
@@ -159,6 +167,8 @@ to create the same object:**
 import GrasslandTraitSim.Valid as valid
 input_obj_HEG01 = valid.validation_input(;
     plotID = "HEG01", nspecies = 5);
+
+nothing # hide
 ```
 
 ## Traits
@@ -177,6 +187,8 @@ trait_input = (;
     ampm = [0.63, 0.52, 0.65, 0.58, 0.72],
     lmpm = [0.55, 0.49, 0.62, 0.38, 0.68],
     lncm = [19.6, 20.7, 22.7, 20.1, 23.6]u"mg/g")
+
+nothing # hide
 ```
 
 ## Run a simulation
@@ -195,4 +207,6 @@ sol = sim.solve_prob(; input_obj, p);
 
 # with static traits, with preallocation
 sol = sim.solve_prob(; input_obj, prealloc, prealloc_specific, p, trait_input);
+
+nothing # hide
 ```

@@ -60,11 +60,11 @@ function validation_input(;
         innerjoin(_, pet_sub, on = :date, makeunique = true)
         innerjoin(_, par_sub, on = :date, makeunique = true)
         @transform begin
-            :temperature_sum = yearly_temp_cumsum(:temperature, :date) #.* u"°C"
-            :temperature = :temperature #.* u"°C"
-            :precipitation = :precipitation .* u"mm / d"
-            :PET = :PET .* u"mm / d"
-            :PAR = :PAR .* 10000 .* u"MJ / (d * ha)"
+            :temperature_sum = cumulative_temperature(:temperature, Dates.year.(:date))
+            :temperature = :temperature .* u"°C"
+            :precipitation = :precipitation .* u"mm"
+            :PET = :PET .* u"mm"
+            :PAR = :PAR .* 10000 .* u"MJ / ha"
             :mowing = prepare_mowing(mow_sub) ./ 100 .* u"m"
             :grazing = prepare_grazing(graz_sub) ./ u"ha"
             :doy = Dates.dayofyear.(:date)
@@ -124,11 +124,11 @@ function validation_input(;
     end
 
     ### ----------------- abiotic
-    nut_sub = @subset data.input.nut :plotID.==plotID
+    nut_sub = @subset data.input.nut :plotID .== plotID
     totalN = nut_sub.totalN[1]
     CNratio = nut_sub.CNratio[1]
 
-    soil_sub = @subset data.input.soil :plotID.==plotID
+    soil_sub = @subset data.input.soil :plotID .== plotID
     clay = soil_sub.clay[1]
     silt = soil_sub.silt[1]
     sand = soil_sub.sand[1]
@@ -177,18 +177,33 @@ function to_numeric(d)
     return Dates.year(d) + (Dates.dayofyear(d) - 1) / daysinyear
 end
 
-function yearly_temp_cumsum(data, date)
-    all_years = Dates.year.(date)
-    unqiue_years = unique(all_years)
-    yearly_cumsum = Float64[]
+# function yearly_temp_cumsum(data, date)
+#     all_years = Dates.year.(date)
+#     unqiue_years = unique(all_years)
+#     yearly_cumsum = Float64[]
+#     temperature_filter = data .> 0
 
-    for y in unqiue_years
-        f = all_years .== y
-        append!(yearly_cumsum, cumsum(data[f]))
+#     for y in unqiue_years
+#         f = all_years .== y
+#         append!(yearly_cumsum, cumsum(data[f .&& temperature_filter]))
+#     end
+
+#     return yearly_cumsum
+# end
+
+function cumulative_temperature(temperature, year)
+    temperature = ustrip.(temperature)
+    temperature_sum = Float64[]
+    temperature[temperature .< 0] .= 0
+
+    for y in unique(year)
+        year_filter = y .== year
+        append!(temperature_sum, cumsum(temperature[year_filter]))
     end
 
-    return yearly_cumsum
+    return uconvert.(u"K", temperature_sum * u"°C")
 end
+
 
 function prepare_mowing(d::DataFrame)
     startyear = minimum(d.year)

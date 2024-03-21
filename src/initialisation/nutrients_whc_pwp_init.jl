@@ -37,14 +37,12 @@ and the last equations changes to:
 """
 function input_nutrients!(; prealloc, input_obj, p)
     @unpack nutrients = prealloc.patch_variables
-    @unpack totalN, CNratio = input_obj.site
+    @unpack totalN = input_obj.site
     @unpack included = input_obj.simp
 
     #### data from the biodiversity exploratories
     # mintotalN = 1.2525
     # maxtotalN = 30.63
-    # minCNratio = 9.0525
-    # maxCNratio = 13.6025
 
     if included.nutrient_growth_reduction
         @. nutrients = totalN / p.maxtotalN

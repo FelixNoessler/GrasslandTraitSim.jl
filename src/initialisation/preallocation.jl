@@ -22,11 +22,11 @@ function preallocate_vectors(; input_obj, T = Float64)
 
     ############# change and state variables
     du_biomass = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / (ha * d)",
+        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
         (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :du_biomass)
     du_water = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim)u"mm / d",
+        Array{T}(undef, patch_xdim, patch_ydim)u"mm",
         (x = 1:patch_xdim, y = 1:patch_ydim), name = :du_water)
     u_biomass = DimArray(
         Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
@@ -91,20 +91,15 @@ function preallocate_vectors(; input_obj, T = Float64)
         negbiomass = fill(false, ntimesteps, patch_xdim, patch_ydim, nspecies),
 
         ############ preallaocated vectors that are used in the calculations
-        potgrowth = Array{T}(undef, nspecies)u"kg / (ha * d)",
-        act_growth = Array{T}(undef, nspecies)u"kg / (ha * d)",
-        defoliation = Array{T}(undef, nspecies)u"kg / (ha * d)",
-        sen = zeros(T, nspecies)u"kg / (ha * d)",
+        potgrowth = Array{T}(undef, nspecies)u"kg / ha",
+        act_growth = Array{T}(undef, nspecies)u"kg / ha",
+        senescence = zeros(T, nspecies)u"kg / ha",
+        defoliation = Array{T}(undef, nspecies)u"kg / ha",
         species_specific_red = Array{T}(undef, nspecies),
         LAIs = Array{T}(undef, nspecies),
         biomass_per_patch = Array{T}(undef, patch_xdim, patch_ydim)u"kg / ha",
         relbiomass = Array{T}(undef, patch_xdim, patch_ydim),
         lowbiomass_correction = Array{T}(undef, nspecies),
-
-        ## warnings, debugging, avoid numerical errors
-        very_low_biomass = fill(false, nspecies),
-        nan_biomass = fill(false, nspecies),
-        neg_act_growth = fill(false, nspecies),
 
         ## cutted biomass
         mean_biomass = Array{T}(undef, nspecies)u"kg / ha",
@@ -160,7 +155,7 @@ function preallocate_vectors(; input_obj, T = Float64)
 
         ## based on traits
         leaflifespan = Array{T}(undef, nspecies)u"d",
-        μ = Array{T}(undef, nspecies)u"d^-1",
+        μ = Array{T}(undef, nspecies),
         TS = Array{T}(undef, nspecies, nspecies))
 
     return (; u, patch_variables, calc, traits, transfer_function, output)

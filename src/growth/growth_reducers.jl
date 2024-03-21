@@ -1,11 +1,9 @@
 @doc raw"""
-    radiation_reduction(; PAR, radiation_red)
-
 Reduction of radiation use efficiency at light intensities higher
 than 5 ``MJ\cdot m^{-2}\cdot d^{-1}``
 
 ```math
-\text{Rred} = \text{min}(1, 1-\gamma_1(\text{PAR}(t) - \gamma_2))
+\text{Rred} = \text{min}(1, 1- \gamma_1(\\text{PAR}(t) - \gamma_2))
 ```
 
 The equations and the parameter values are taken from [Schapendonk1998](@cite).
@@ -13,7 +11,7 @@ The equations and the parameter values are taken from [Schapendonk1998](@cite).
 - `γ₁` is the empirical parameter for a decrease in RUE for high PAR values,
   here set to 0.0445 [m² d MJ⁻¹]
 - `γ₂` is the threshold value of PAR from which starts a linear decrease in RUE,
-  here set to 5 [MJ m⁻² d⁻¹]
+  here set to 5 [MJ m⁻²]
 
 comment to the equation/figure: PAR values are usually between 0 and
 15 ``MJ\cdot m^{-2}\cdot d^{-1}`` and therefore negative values of
@@ -69,18 +67,17 @@ function temperature_reduction(; container, T)
     end
 
     @unpack T₀, T₁, T₂, T₃ = container.p
-    T = ustrip(T)
 
     if T < T₀
-        return 0
+        return 0.0
     elseif T < T₁
         return (T - T₀) / (T₁ - T₀)
     elseif T < T₂
-        return 1
+        return 1.0
     elseif T < T₃
         return (T₃ - T) / (T₃ - T₂)
     else
-        return 0
+        return 0.0
     end
 end
 
@@ -130,16 +127,20 @@ function seasonal_reduction(; container, ST)
     end
 
     @unpack SEAₘᵢₙ, SEAₘₐₓ, ST₁, ST₂ = container.p
-    ST = ustrip(ST)
 
-    if ST < 200
+    ## unit conversion from celcius to kelvin
+    # 100 °C = 373.15 K
+    # 200 °C = 473.15 K
+    # 400 °C = 673.15 K
+
+    if ST < 473.15u"K"
         return SEAₘᵢₙ
-    elseif ST < ST₁ - 200
-        return SEAₘᵢₙ + (SEAₘₐₓ - SEAₘᵢₙ) * (ST - 200) / (ST₁ - 400)
-    elseif ST < ST₁ - 100
+    elseif ST < ST₁ - 473.15u"K"
+        return SEAₘᵢₙ + (SEAₘₐₓ - SEAₘᵢₙ) * (ST - 473.15u"K") / (ST₁ - 673.15u"K")
+    elseif ST < ST₁ - 373.15u"K"
         return SEAₘₐₓ
     elseif ST < ST₂
-        return SEAₘᵢₙ + (SEAₘᵢₙ - SEAₘₐₓ) * (ST - ST₂) / (ST₂ - (ST₁ - 100))
+        return SEAₘᵢₙ + (SEAₘᵢₙ - SEAₘₐₓ) * (ST - ST₂) / (ST₂ - (ST₁ - 373.15u"K"))
     else
         return SEAₘᵢₙ
     end

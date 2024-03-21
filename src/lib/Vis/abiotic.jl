@@ -8,10 +8,10 @@ function climate_series(; sol)
         ylabel = "Water of first\npatch [mm]",
         xticklabelsvisible = false)
     peax = Axis(fig[3, 1];
-        ylabel = "Potential evapo-\ntranspiration [mm d⁻¹]",
+        ylabel = "Potential evapo-\ntranspiration [mm]",
         xticklabelsvisible = false)
     preax = Axis(fig[4, 1];
-        ylabel = "Precipitation\n[mm d⁻¹]",
+        ylabel = "Precipitation\n[mm]",
         xticklabelsvisible = false)
     tempax = Axis(fig[5, 1];
         ylabel = "Air temperature\n[°C]",
@@ -20,7 +20,7 @@ function climate_series(; sol)
         ylabel = "Air temperature\nsum [°C]",
         xticklabelsvisible = false)
     pax = Axis(fig[7, 1];
-        ylabel = "Photosynthetically active\nradiation [MJ m⁻² d⁻¹]",
+        ylabel = "Photosynthetically active\nradiation [MJ m⁻²]",
         xlabel = "Time [years]")
 
     total_biomass = total_t_biomass(sol.biomass)

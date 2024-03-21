@@ -6,10 +6,10 @@ function plant_available_water(sim, valid; path = nothing)
 
     WHC = 100u"mm"
     PWP = 0u"mm"
-    PET_vals = LinRange(0.0, 5.0, 200)u"mm / d"
+    PET_vals = LinRange(0.0, 5.0, 200)u"mm"
 
     for (i, W) in enumerate([20, 80]u"mm")
-        for (u, β_pet) in enumerate([0.1, 0.3]u"d / mm")
+        for (u, β_pet) in enumerate([0.1, 0.3]u"mm^-1")
             container = @set container.p.β_pet = β_pet
 
             x = (W - PWP) / (WHC - PWP)
@@ -22,7 +22,7 @@ function plant_available_water(sim, valid; path = nothing)
 
             Axis(fig[i, u];
                 title = i == 1 ? "β_pet = $β_pet" : "",
-                xlabel = i == 2 ? "Potential evapotranspiration PET [mm d⁻¹]" : "",
+                xlabel = i == 2 ? "Potential evapotranspiration PET [mm]" : "",
                 ylabel = u == 1 ? "Plant available water Wₚ" : "",
                 yticks = 0.0:0.2:1.0,
                 xticklabelsvisible = i == 2 ? true : false,
@@ -49,7 +49,7 @@ function plant_available_water(sim, valid; path = nothing)
 
 
     Axis(fig[3,1:2]; xticks = 0:1:10, ylabel = "probability",
-         xlabel = "Potential evapotranspiration over grass for three regions in Germany in 2006 - 2021 [mm d⁻¹]")
+         xlabel = "Potential evapotranspiration over grass for three regions in Germany in 2006 - 2021 [mm]")
     hist!(valid.data.input.pet.PET; bins=30, normalization = :probability)
 
     rowsize!(fig.layout, 3, Relative(0.2))

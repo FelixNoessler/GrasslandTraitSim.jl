@@ -12,6 +12,13 @@ using DimensionalData
 using TransformVariables
 using Accessors
 using Parameters
+using DocStringExtensions
+
+@template (FUNCTIONS, METHODS) =
+    """
+    $(SIGNATURES)
+    $(DOCSTRING)
+    """
 
 ##### submodules
 include("lib/Valid/Valid.jl")

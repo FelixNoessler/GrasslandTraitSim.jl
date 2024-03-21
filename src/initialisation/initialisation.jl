@@ -25,7 +25,7 @@ function initialization(; input_obj, p, prealloc, prealloc_specific,
     similarity_matrix!(; input_obj, prealloc)
 
     ################## Parameters ##################
-    # leaf senescence rate μ [d⁻¹]
+    # leaf senescence rate μ []
     senescence_rate!(; input_obj, prealloc, p)
 
     # linking traits to water and nutrient stress
@@ -72,17 +72,4 @@ function set_initialconditions!(; container)
     mown .= 0.0u"kg / ha"
 
     return nothing
-end
-
-function cumulative_temperature(; temperature, year)
-    temperature = ustrip.(temperature)
-    temperature_sum = Float64[]
-    temperature_filter = temperature .> 0
-
-    for y in year
-        year_filter = y .== year
-        append!(temperature_sum, cumsum(temperature[year_filter .&& temperature_filter]))
-    end
-
-    return temperature_sum #* u"°C"
 end
