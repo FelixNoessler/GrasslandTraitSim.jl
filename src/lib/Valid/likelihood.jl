@@ -38,13 +38,12 @@ function loglikelihood_model(sim::Module;
     if sol.simp.likelihood_included.biomass
         @unpack cut_index = sol.calc
         @unpack cut_biomass = sol
+        @unpack inv_ν_biomass, b_biomass = sol.p
 
         simulated_cutted_biomass = ustrip.(cut_biomass)[cut_index]
-        biomass_d = Product(Normal.(simulated_cutted_biomass,
-                                sol.p.b_biomass);)
+        biomass_d = Product(TDist(1/inv_ν_biomass) * b_biomass .+ simulated_cutted_biomass)
         ll_biomass = logpdf(biomass_d, vec(data.biomass))
     end
-
 
     ########################################################################
     ################## cwm trait likelihood
