@@ -1,5 +1,5 @@
-function plant_available_water(sim, valid; path = nothing)
-    nspecies, container = create_container(; sim, valid)
+function plant_available_water(; path = nothing)
+    nspecies, container = create_container(; )
     container.calc.biomass_density_factor .= 1.0
 
     fig = Figure(; size = (900, 800))
@@ -16,7 +16,7 @@ function plant_available_water(sim, valid; path = nothing)
             w = Float64[]
 
             for PET in PET_vals
-                sim.water_reduction!(; container, W, PET, PWP, WHC)
+                water_reduction!(; container, W, PET, PWP, WHC)
                 push!(w, container.calc.Wp[1])
             end
 
@@ -50,7 +50,7 @@ function plant_available_water(sim, valid; path = nothing)
 
     Axis(fig[3,1:2]; xticks = 0:1:10, ylabel = "probability",
          xlabel = "Potential evapotranspiration over grass for three regions in Germany in 2006 - 2021 [mm]")
-    hist!(valid.data.input.pet.PET; bins=30, normalization = :probability)
+    hist!(data.input.pet.PET; bins=30, normalization = :probability)
 
     rowsize!(fig.layout, 3, Relative(0.2))
     rowgap!(fig.layout, 1, 5)

@@ -1,20 +1,3 @@
-module Valid
-
-import CSV
-import Dates
-
-using UnPack
-using DataFrames
-using DataFramesMeta
-using DimensionalData
-using Distributions
-using LinearAlgebra
-using StatsBase
-using Statistics
-using TimeSeries
-using Unitful
-using TransformVariables
-
 include("input_data.jl")
 include("validation_data.jl")
 include("likelihood.jl")
@@ -22,12 +5,7 @@ include("prior.jl")
 include("posterior.jl")
 include("predictive_check.jl")
 
-function __init__()
-    @info "Loading grassland data from the Biodiversity Exploratories"
-    datapath = joinpath(@__DIR__, "..", "..", "..", "assets", "data")
-    load_data(datapath)
-    return nothing
-end
+
 
 function load_data(datapath)
     ########### validation data
@@ -123,6 +101,4 @@ function get_plottingdata(sim::Module;
     data = get_validation_data(; plotID)
 
     return data, sol
-end
-
 end

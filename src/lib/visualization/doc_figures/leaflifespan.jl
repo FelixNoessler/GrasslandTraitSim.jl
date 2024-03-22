@@ -1,5 +1,5 @@
-function leaflifespan(sim, valid; path = nothing)
-    nspecies, container = create_container(; sim, valid)
+function leaflifespan(; path = nothing)
+    nspecies, container = create_container(; )
 
     fig = Figure(; size = (700, 400))
     ax = Axis(fig[1, 1];

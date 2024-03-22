@@ -46,7 +46,7 @@ precipitation = ones(ntimesteps)u"mm"
 temperature = ones(ntimesteps)u"°C"
 
 # --------------- yearly temperature sum [°C]
-temperature_sum = sim.Valid.cumulative_temperature(temperature, year) 
+temperature_sum = sim.cumulative_temperature(temperature, year) 
 
 # --------------- final tuple of climatic inputs
 climatic_inputs = (; temperature, temperature_sum, PAR, PET, precipitation)
@@ -163,9 +163,8 @@ input_obj = (; daily_input = (;
 
 **For the plots from the Biodiversity Exploratories, we used the following convenience function
 to create the same object:**
-```@example
-import GrasslandTraitSim.Valid as valid
-input_obj_HEG01 = valid.validation_input(;
+```@example input_creation
+input_obj_HEG01 = sim.validation_input(;
     plotID = "HEG01", nspecies = 5);
 
 nothing # hide

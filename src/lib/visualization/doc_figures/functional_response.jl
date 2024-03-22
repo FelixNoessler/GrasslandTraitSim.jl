@@ -1,5 +1,5 @@
-function amc_nut_response(sim, valid; δ_amc, path = nothing)
-    nspecies, container = create_container(; sim, valid)
+function amc_nut_response(; δ_amc, path = nothing)
+    nspecies, container = create_container(; )
     container = @set container.p.δ_amc = δ_amc
     container.calc.biomass_density_factor .= 1.0
 
@@ -7,7 +7,7 @@ function amc_nut_response(sim, valid; δ_amc, path = nothing)
     ymat = fill(0.0, length(xs), nspecies)
 
     for (i, x) in enumerate(xs)
-        sim.nutrient_reduction!(; container, nutrients = x)
+        nutrient_reduction!(; container, nutrients = x)
         ymat[i, :] .= container.calc.amc_nut
     end
 
@@ -74,8 +74,8 @@ function amc_nut_response(sim, valid; δ_amc, path = nothing)
     return nothing
 end
 
-function W_rsa_response(sim, valid; δ_wrsa = 0.5, path = nothing)
-    nspecies, container = create_container(; sim, valid)
+function W_rsa_response(; δ_wrsa = 0.5, path = nothing)
+    nspecies, container = create_container(; )
     setfield!(container.p, :δ_wrsa, δ_wrsa)
 
     xs = 0:0.01:1
@@ -88,7 +88,7 @@ function W_rsa_response(sim, valid; δ_wrsa = 0.5, path = nothing)
 
     for (i, x) in enumerate(xs)
         W = x * u"mm"
-        sim.water_reduction!(; container, W, PET, PWP, WHC)
+        water_reduction!(; container, W, PET, PWP, WHC)
         ymat[i, :] .= container.calc.W_rsa
     end
 
@@ -154,8 +154,8 @@ function W_rsa_response(sim, valid; δ_wrsa = 0.5, path = nothing)
     return nothing
 end
 
-function rsa_above_nut_response(sim, valid; δ_nrsa, path = nothing)
-    nspecies, container = create_container(; sim, valid)
+function rsa_above_nut_response(; δ_nrsa, path = nothing)
+    nspecies, container = create_container(; )
     setfield!(container.p, :δ_nrsa, δ_nrsa)
     container.calc.biomass_density_factor .= 1.0
 
@@ -163,7 +163,7 @@ function rsa_above_nut_response(sim, valid; δ_nrsa, path = nothing)
     ymat = fill(0.0, length(xs), nspecies)
 
     for (i, x) in enumerate(xs)
-        sim.nutrient_reduction!(; container, nutrients = x)
+        nutrient_reduction!(; container, nutrients = x)
         ymat[i, :] .= container.calc.rsa_above_nut
     end
 
@@ -231,8 +231,8 @@ function rsa_above_nut_response(sim, valid; δ_nrsa, path = nothing)
     return nothing
 end
 
-function W_sla_response(sim, valid;δ_sla = 0.5, path = nothing)
-    nspecies, container = create_container(; sim, valid)
+function W_sla_response(;δ_sla = 0.5, path = nothing)
+    nspecies, container = create_container(; )
     container = @set container.p.δ_sla = δ_sla
 
     xs = 0:0.01:1
@@ -245,7 +245,7 @@ function W_sla_response(sim, valid;δ_sla = 0.5, path = nothing)
 
     for (i, x) in enumerate(xs)
         W = x * u"mm"
-        sim.water_reduction!(; container, W, PET, PWP, WHC)
+        water_reduction!(; container, W, PET, PWP, WHC)
         ymat[i, :] .= container.calc.W_sla
     end
 

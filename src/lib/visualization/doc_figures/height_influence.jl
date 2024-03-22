@@ -1,5 +1,5 @@
-function height_influence(sim, valid; path = nothing)
-    nspecies, container = create_container(; sim, valid)
+function height_influence(; path = nothing)
+    nspecies, container = create_container(; )
 
     height_strength_exps = LinRange(0.0, 1.5, 40)
     biomass = fill(50, nspecies)u"kg / ha"
@@ -7,7 +7,7 @@ function height_influence(sim, valid; path = nothing)
 
     for (i, height_strength_exp) in enumerate(height_strength_exps)
         container = @set container.p.height_strength_exp = height_strength_exp
-        sim.light_competition!(; container, biomass)
+        light_competition!(; container, biomass)
         ymat[:, i] .= container.calc.heightinfluence
     end
 

@@ -1,12 +1,12 @@
-function neighbours_surroundings(sim, valid; path = nothing)
+function neighbours_surroundings(; path = nothing)
     #####################
     mp = valid.model_parameters()
     inf_p = (; zip(Symbol.(mp.names), mp.best)...)
     input_obj = valid.validation_input(;
         plotID = "HEG01", nspecies = 25,
         patch_xdim = 5, patch_ydim = 5, nutheterog = 0.0)
-    calc = sim.preallocate_vectors(; input_obj)
-    container = sim.initialization(; input_obj, inf_p, calc)
+    calc = preallocate_vectors(; input_obj)
+    container = initialization(; input_obj, inf_p, calc)
 
     #####################
     neighbours = container.patch.neighbours[13, :]

@@ -1,5 +1,5 @@
-function potential_growth(sim, valid; path = nothing)
-    nspecies, container = create_container(; sim, valid)
+function potential_growth(; path = nothing)
+    nspecies, container = create_container(; )
 
     par_values = 10
     biomass = repeat([1], nspecies)u"kg / ha"
@@ -7,7 +7,7 @@ function potential_growth(sim, valid; path = nothing)
     ymat = Array{Float64}(undef, nspecies, par_values)
 
     for (i, PAR) in enumerate(PARs)
-        sim.potential_growth!(; container, biomass, PAR)
+        potential_growth!(; container, biomass, PAR)
         ymat[:, i] .= ustrip.(container.calc.potgrowth)
     end
 

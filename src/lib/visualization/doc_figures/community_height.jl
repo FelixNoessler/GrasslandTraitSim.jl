@@ -1,15 +1,15 @@
-function plot_community_height(; sim, valid, path = nothing)
-    trait_input = valid.input_traits()
+function plot_community_height(; path = nothing)
+    trait_input = input_traits()
     for k in keys(trait_input)
         trait_input = @set trait_input[k] = [mean(trait_input[k])]
     end
-    input_obj = valid.validation_input(;
+    input_obj = validation_input(;
         plotID = "HEG01", nspecies = 1);
     input_obj.daily_input.grazing .= NaN * u"ha^-1"
     input_obj.daily_input.mowing .= NaN * u"m"
-    p = sim.Parameter()
+    p = Parameter()
 
-    sol = sim.solve_prob(; input_obj, p, trait_input);
+    sol = solve_prob(; input_obj, p, trait_input);
 
     biomass = [1000.0, 2000.0, 3000.0]
     heights = LinRange(0.01, 2, 300)
@@ -21,7 +21,7 @@ function plot_community_height(; sim, valid, path = nothing)
 
         for (hi, h) in enumerate(heights)
             sol = @set sol.traits.height = [h * u"m"]
-            r = sim.community_height_reduction(;
+            r = community_height_reduction(;
                 container = sol, biomass = sol.u.u_biomass[1,1,:])
             red[hi, bi] = r
         end
@@ -45,27 +45,27 @@ function plot_community_height(; sim, valid, path = nothing)
 end
 
 
-function community_height_influence(; sim, valid, path = nothing)
-    trait_input = valid.input_traits()
+function community_height_influence(; path = nothing)
+    trait_input = input_traits()
     for k in keys(trait_input)
         trait_input = @set trait_input[k] = [mean(trait_input[k])]
     end
-    input_obj = valid.validation_input(;
+    input_obj = validation_input(;
         plotID = "HEG01", nspecies = 1);
     input_obj.daily_input.grazing .= NaN * u"ha^-1"
     input_obj.daily_input.mowing .= NaN * u"m"
-    p = sim.Parameter()
+    p = Parameter()
 
     function sim_community_height(; α, β, community_height_red)
         p = @set p.α_community_height = α * u"kg / ha"
         p = @set p.β_community_height = β * u"ha / kg"
         input_obj = @set input_obj.simp.included.community_height_red .= community_height_red
         trait_input = @set trait_input.height = [0.1u"m"]
-        sol_small = sim.solve_prob(; input_obj, p, trait_input);
+        sol_small = solve_prob(; input_obj, p, trait_input);
         s = vec(ustrip.(sol_small.output.biomass[:, 1, 1, 1]))
 
         trait_input = @set trait_input.height = [1.0u"m"]
-        sol_large = sim.solve_prob(; input_obj, p, trait_input);
+        sol_large = solve_prob(; input_obj, p, trait_input);
         l = vec(ustrip.(sol_large.output.biomass[:, 1, 1, 1]))
 
         return sol_small.numeric_date, s, l

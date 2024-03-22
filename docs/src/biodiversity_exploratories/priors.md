@@ -4,12 +4,11 @@
 using CairoMakie
 using Statistics
 using Distributions
-import GrasslandTraitSim.Valid as valid
 import GrasslandTraitSim as sim
 
 ## the input object specifies which processes are included
 ## here we include all processes
-input_obj = valid.validation_input(;
+input_obj = sim.validation_input(;
     plotID = "HEG01", nspecies = 1);
 inference_obj = sim.calibrated_parameter(; input_obj)
 

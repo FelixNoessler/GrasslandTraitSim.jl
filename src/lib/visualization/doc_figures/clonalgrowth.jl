@@ -1,26 +1,26 @@
-function plot_clonalgrowth(sim, valid; path = nothing)
+function plot_clonalgrowth(; path = nothing)
     nspecies = 1
     npatches = 25
     patch_xdim = 5
     patch_ydim = 5
 
     #####################
-    input_obj = valid.validation_input(;
+    input_obj = validation_input(;
         plotID = "HEG01", nspecies,
         patch_xdim, patch_ydim)
-    p = sim.Parameter()
+    p = Parameter()
     p = @set p.clonalgrowth_factor = 0.5
-    prealloc = sim.preallocate_vectors(; input_obj);
-    prealloc_specific = sim.preallocate_specific_vectors(; input_obj);
-    container = sim.initialization(; input_obj, p, prealloc, prealloc_specific)
+    prealloc = preallocate_vectors(; input_obj);
+    prealloc_specific = preallocate_specific_vectors(; input_obj);
+    container = initialization(; input_obj, p, prealloc, prealloc_specific)
     #####################
 
     container.u.u_biomass .= 2.0u"kg / ha"
     container.u.u_biomass[3, 3, :] .= 10.0u"kg / ha"
     startcondition = copy(ustrip.(container.u.u_biomass[:, :, 1]))
 
-    sim.calculate_relbiomass!(; container)
-    sim.clonalgrowth!(; container)
+    calculate_relbiomass!(; container)
+    clonalgrowth!(; container)
 
     endcondition = copy(ustrip.(container.u.u_biomass[:, :, 1]))
     colorrange = [0.0, 10.0]

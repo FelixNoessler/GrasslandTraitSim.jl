@@ -1,31 +1,3 @@
-module Vis
-
-using CairoMakie
-using DimensionalData
-using Distributions
-using Accessors
-using Statistics
-using Unitful
-using FiniteDiff
-using ForwardDiff
-using Printf
-
-import Dates
-import CairoMakie: Makie
-
-makie_theme = Theme(fontsize = 18,
-    Axis = (xgridvisible = false, ygridvisible = false,
-        topspinevisible = false, rightspinevisible = false),
-    GLMakie = (title = "Grassland Simulation",
-        focus_on_show = true))
-function set_global_theme(; theme = makie_theme)
-    set_theme!(makie_theme)
-end
-
-function __init__()
-    set_global_theme()
-end
-
 include("dashboard/dashboard.jl")
 include("dashboard/dashbaord_layout.jl")
 include("dashboard/dashboard_plotting.jl")
@@ -44,9 +16,3 @@ include("doc_figures/gradient.jl")
 include("doc_figures/plant_available_water.jl")
 include("doc_figures/leaflifespan.jl")
 include("doc_figures/community_height.jl")
-
-include("abiotic.jl")
-
-include("validation/validation.jl")
-
-end # module GrasslandTraitVis

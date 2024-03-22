@@ -1,4 +1,4 @@
-function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p = (;),
+function dashboard(; posterior = nothing, variable_p = (;),
                    biomass_stats = nothing)
     set_theme!(
         Theme(
@@ -12,20 +12,20 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
                        focus_on_show = true,
                        fullscreen = true))
 
-    plot_obj = dashboard_layout(; sim, valid, variable_p)
+    plot_obj = dashboard_layout(; variable_p)
 
     still_running = false
     sol = nothing
     valid_data = nothing
-    trait_input = load_trait_data(valid)
+    trait_input = input_traits()
 
     on(plot_obj.obs.run_button.clicks) do n
         if !still_running
             still_running = true
 
-            p, input_obj = prepare_input(; plot_obj, sim, valid, posterior, biomass_stats)
-            sol = sim.solve_prob(; input_obj, p, trait_input)
-            valid_data = get_valid_data(; plot_obj, valid, biomass_stats)
+            p, input_obj = prepare_input(; plot_obj, posterior, biomass_stats)
+            sol = solve_prob(; input_obj, p, trait_input)
+            valid_data = get_valid_data(; plot_obj, biomass_stats)
 
             show_validdata = plot_obj.obs.toggle_validdata.active.val
             if show_validdata
@@ -34,7 +34,7 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
                 update_plots(; sol, plot_obj)
             end
 
-            ll_obj = valid.loglikelihood_model(sim;
+            ll_obj = loglikelihood_model(;
                 p,
                 plotID = plot_obj.obs.menu_plotID.selection.val,
                 data = valid_data,
@@ -49,7 +49,7 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
                 @info "Calculating gradient"
                 plotID = plot_obj.obs.menu_plotID.selection.val
 
-                g = gradient_evaluation(sim, valid; plotID, input_obj, valid_data,
+                g = gradient_evaluation(; plotID, input_obj, valid_data,
                                         p, trait_input)
 
                 p_keys = keys(p)
@@ -69,7 +69,7 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
 
     on(plot_obj.obs.preset_button.clicks) do n
         @info "Parameter reset"
-        p = sim.Parameter()
+        p = Parameter()
         for (i, k) in enumerate(keys(plot_obj.obs.parameter_keys))
             Makie.set!(plot_obj.obs.tb_p[i], string(ustrip(p[k])))
         end
@@ -92,8 +92,7 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
     on(plot_obj.obs.toggle_validdata.active) do n
         valid_data = nothing
         if n
-            valid_data = get_valid_data(;
-                plot_obj, valid, biomass_stats)
+            valid_data = get_valid_data(; plot_obj, biomass_stats)
         end
         band_patch(; plot_obj, sol, valid_data)
         [trait_time_plot(; plot_obj, sol, valid_data, trait = t) for t in
@@ -104,10 +103,10 @@ function dashboard(; sim::Module, valid::Module, posterior = nothing, variable_p
     return nothing
 end
 
-function get_valid_data(; plot_obj, valid, biomass_stats = nothing)
+function get_valid_data(; plot_obj, biomass_stats = nothing)
     plotID = plot_obj.obs.menu_plotID.selection.val
 
-    data = valid.get_validation_data(; plotID, biomass_stats)
+    data = get_validation_data(; plotID, biomass_stats)
 
     return data
 end

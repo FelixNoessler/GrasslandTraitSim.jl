@@ -1,6 +1,6 @@
-function planar_gradient(sim; path = nothing)
+function planar_gradient(; path = nothing)
     mat = Array{Float64}(undef, 10, 10)
-    sim.planar_gradient!(; mat, direction = 100)
+    planar_gradient!(; mat, direction = 100)
 
     ############################
     fig = Figure(; size = (400, 300))

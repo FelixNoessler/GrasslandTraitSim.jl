@@ -5,13 +5,12 @@ I assume that you have read the tutorial on how to prepare the input data and ru
 
 ```@example output
 import GrasslandTraitSim as sim
-import GrasslandTraitSim.Valid as valid
 
 using Statistics
 using CairoMakie
 using Unitful
 
-input_obj = valid.validation_input(;
+input_obj = sim.validation_input(;
     plotID = "HEG01", nspecies = 25,
     trait_seed = 99);
 p = sim.Parameter();

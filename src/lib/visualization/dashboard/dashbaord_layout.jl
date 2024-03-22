@@ -1,4 +1,4 @@
-function dashboard_layout(; sim, valid, variable_p)
+function dashboard_layout(; variable_p)
     fig = Figure(; size = (1800, 800))
 
     ##############################################################################
@@ -40,7 +40,7 @@ function dashboard_layout(; sim, valid, variable_p)
     ##############################################################################
     Label(sim_layout[1, 1:2], "Simulation settings";
         halign = :left, font = :bold, fontsize = 16)
-    input_obj = valid.validation_input(; plotID = "HEG01", nspecies = 1)
+    input_obj = validation_input(; plotID = "HEG01", nspecies = 1)
     included_symbols = keys(input_obj.simp.included)
     labels = String.(included_symbols)
     nstart2 = length(labels) - length(labels) ÷ 2 + 1
@@ -119,11 +119,11 @@ function dashboard_layout(; sim, valid, variable_p)
     gradient_toggle = Toggle(righttop_layout[1, 2]; active = false)
     preset_button = Button(righttop_layout[1, 3]; label = "reset parameter")
 
-    p = sim.Parameter()
+    p = Parameter()
     for k in keys(variable_p)
         p[k] = variable_p[k]
     end
-    inference_obj = sim.calibrated_parameter(; input_obj)
+    inference_obj = calibrated_parameter(; input_obj)
 
     parameter_keys = keys(p)
 
@@ -138,9 +138,9 @@ function dashboard_layout(; sim, valid, variable_p)
     end
     p_val = ustrip.(collect(p))
 
-    inference_keys = keys(inference_obj.units)
+    inference_keys = keys(inference_obj.priordists)
     all_keys = collect(keys(p))
-    is_inf_p = parameter_keys .∈ Ref(keys(inference_obj.units))
+    is_inf_p = parameter_keys .∈ Ref(keys(inference_obj.priordists))
     inf_str = ifelse.(is_inf_p, "θ: ", "")
 
     nstart2 = length(p) - length(p) ÷ 2 + 1

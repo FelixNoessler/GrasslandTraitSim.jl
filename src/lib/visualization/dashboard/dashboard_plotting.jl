@@ -37,8 +37,8 @@ function band_patch(;
     end
 
     if !isnothing(valid_data)
-        cutbiomass_μ = vec(ustrip.(sol.cut_biomass))
-        t = sol.numeric_date[sol.calc.biomass_cutting_t]
+        cutbiomass_μ = vec(ustrip.(sol.valid.cut_biomass))
+        t = sol.numeric_date[sol.valid.biomass_cutting_t]
 
         biomass_dist = TDist(1/sol.p.inv_ν_biomass) * sol.p.b_biomass .+
                        cutbiomass_μ

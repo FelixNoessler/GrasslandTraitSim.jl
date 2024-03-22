@@ -11,8 +11,6 @@ using DocumenterCitations
 using GrasslandTraitSim
 
 import GrasslandTraitSim as sim
-import GrasslandTraitSim.Valid as valid
-import GrasslandTraitSim.Vis as vis
 
 ####### Copy files to docs folder
 cp("README.md", "docs/src/index.md"; force = true)
@@ -31,75 +29,55 @@ docs_img = "docs/src/img"
 f(path; show_img = false) = show_img ? nothing : path
 
 #### transfer functions
-vis.potential_growth(sim, valid; path = f("$docs_img/sla_potential_growth.svg"))
-vis.W_rsa_response(sim, valid;
-    path = f("$docs_img/W_rsa_response.svg"),
-    δ_wrsa = 1.0)
-vis.W_rsa_response(sim, valid;
-    path = f("$docs_img/W_rsa_response_0_5.svg"),
-    δ_wrsa = 0.5)
-vis.rsa_above_nut_response(sim, valid;
-    path = f("$docs_img/rsa_above_nut_response.svg"),
-    δ_nrsa = 1.0)
-vis.rsa_above_nut_response(sim, valid;
-    path = f("$docs_img/rsa_above_nut_response_0_5.svg"),
-    δ_nrsa = 0.5)
-vis.amc_nut_response(sim, valid;
-    path = f("$docs_img/amc_nut_response.svg"),
-    δ_amc = 1.0)
-vis.amc_nut_response(sim, valid;
-    path = f("$docs_img/amc_nut_response_0_5.svg"),
-    δ_amc = 0.5)
-vis.W_sla_response(sim, valid;
-    path = f("$docs_img/W_sla_response.svg"),
-    δ_sla = 1.0)
-vis.W_sla_response(sim, valid;
-    path = f("$docs_img/W_sla_response_0_5.svg"),
-    δ_sla = 0.5)
-vis.plant_available_water(sim, valid;
-    path = f("$docs_img/pet.svg"))
+sim.potential_growth(; path = f("$docs_img/sla_potential_growth.svg"))
+sim.W_rsa_response(; path = f("$docs_img/W_rsa_response.svg"), δ_wrsa = 1.0)
+sim.W_rsa_response(; path = f("$docs_img/W_rsa_response_0_5.svg"), δ_wrsa = 0.5)
+sim.rsa_above_nut_response(; path = f("$docs_img/rsa_above_nut_response.svg"),
+                           δ_nrsa = 1.0)
+sim.rsa_above_nut_response(; path = f("$docs_img/rsa_above_nut_response_0_5.svg"),
+                           δ_nrsa = 0.5)
+sim.amc_nut_response(; path = f("$docs_img/amc_nut_response.svg"), δ_amc = 1.0)
+sim.amc_nut_response(; path = f("$docs_img/amc_nut_response_0_5.svg"), δ_amc = 0.5)
+sim.W_sla_response(; path = f("$docs_img/W_sla_response.svg"), δ_sla = 1.0)
+sim.W_sla_response(; path = f("$docs_img/W_sla_response_0_5.svg"), δ_sla = 0.5)
+sim.plant_available_water(; path = f("$docs_img/pet.svg"))
 
 #### leaf lifespan
-vis.leaflifespan(sim, valid; path = f("$docs_img/leaflifespan.svg"))
+sim.leaflifespan(; path = f("$docs_img/leaflifespan.svg"))
 
 #### reducer functions
-vis.temperatur_reducer(sim, valid; path = f("$docs_img/temperature_reducer.svg"))
-vis.radiation_reducer(sim, valid; path = f("$docs_img/radiation_reducer.svg"))
-vis.height_influence(sim, valid; path = f("$docs_img/height_influence.svg"))
-vis.below_influence(sim, valid; path = f("$docs_img/below_influence.svg"))
-vis.community_height_influence(; sim, valid,
-                               path = f("$docs_img/community_height_influence.svg"))
-vis.plot_community_height(; sim, valid, path = f("$docs_img/community_height.svg"))
+sim.temperatur_reducer(; path = f("$docs_img/temperature_reducer.svg"))
+sim.radiation_reducer(; path = f("$docs_img/radiation_reducer.svg"))
+sim.height_influence(; path = f("$docs_img/height_influence.svg"))
+sim.below_influence(; path = f("$docs_img/below_influence.svg"))
+sim.community_height_influence(; path = f("$docs_img/community_height_influence.svg"))
+sim.plot_community_height(; path = f("$docs_img/community_height.svg"))
 
 #### seasonal effects
-vis.seasonal_effect(sim, valid; path = f("$docs_img/seasonal_reducer.svg"))
-vis.seasonal_component_senescence(sim, valid;
+sim.seasonal_effect(; path = f("$docs_img/seasonal_reducer.svg"))
+sim.plot_seasonal_component_senescence(;
     path = f("$docs_img/seasonal_factor_senescence.svg"))
 
 #### land use
-vis.mowing(sim, valid; path = f("$docs_img/mowing.svg"))
-vis.mow_factor(; path = f("$docs_img/mow_factor.svg"))
-vis.grazing(sim, valid;
-    leafnitrogen_graz_exp = 1.5,
-    path = f("$docs_img/grazing_1_5.svg"))
-vis.grazing(sim, valid;
-    leafnitrogen_graz_exp = 5.0,
-    path = f("$docs_img/grazing_5.svg"))
-vis.grazing_half_factor(; path = f("$docs_img/grazing_half_factor.svg"))
-vis.trampling_biomass(sim, valid; path = f("$docs_img/trampling_biomass.svg"))
-vis.trampling_livestockdensity(sim, valid; path = f("$docs_img/trampling_LD.svg"))
-vis.trampling_biomass_individual(sim, valid; path = f("$docs_img/trampling_biomass_individual.svg"))
+sim.mowing(; path = f("$docs_img/mowing.svg"))
+sim.mow_factor(; path = f("$docs_img/mow_factor.svg"))
+sim.grazing(; leafnitrogen_graz_exp = 1.5, path = f("$docs_img/grazing_1_5.svg"))
+sim.grazing(; leafnitrogen_graz_exp = 5.0, path = f("$docs_img/grazing_5.svg"))
+sim.grazing_half_factor(; path = f("$docs_img/grazing_half_factor.svg"))
+sim.trampling_biomass(; path = f("$docs_img/trampling_biomass.svg"))
+sim.trampling_livestockdensity(; path = f("$docs_img/trampling_LD.svg"))
+sim.trampling_biomass_individual(; path = f("$docs_img/trampling_biomass_individual.svg"))
 
 ## with patches
-vis.planar_gradient(sim; path = f("$docs_img/gradient.svg"))
-# vis.neighbours_surroundings(sim, valid; path = "$docs_img/neighbours.svg")
-vis.plot_clonalgrowth(sim, valid; path = f("$docs_img/clonalgrowth.svg"))
+sim.planar_gradient(; path = f("$docs_img/gradient.svg"))
+# sim.neighbours_surroundings(; path = "$docs_img/neighbours.svg")
+sim.plot_clonalgrowth(; path = f("$docs_img/clonalgrowth.svg"))
 
 # for prettyurls you need locally a live server
 makedocs(;
     plugins = [bib],
     sitename = "GrasslandTraitSim.jl",
-    modules = [GrasslandTraitSim, GrasslandTraitSim.Valid, GrasslandTraitSim.Vis],
+    modules = [GrasslandTraitSim],
     format = Documenter.HTML(;
         canonical="https://FelixNoessler.github.io/GrasslandTraitSim.jl",
         edit_link="master",

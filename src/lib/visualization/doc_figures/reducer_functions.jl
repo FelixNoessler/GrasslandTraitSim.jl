@@ -1,12 +1,12 @@
-function temperatur_reducer(sim, valid;
+function temperatur_reducer(;
         Ts = collect(LinRange(0.0, 40.0, 500)) .* u"°C",
         path = nothing)
 
-    nspecies, container = create_container(; sim, valid, nspecies = 1)
+    nspecies, container = create_container(; nspecies = 1)
 
     y = Float64[]
     for T in Ts
-        g = sim.temperature_reduction(; T, container)
+        g = temperature_reduction(; T, container)
         push!(y, g)
     end
 
@@ -35,18 +35,18 @@ function temperatur_reducer(sim, valid;
     return nothing
 end
 
-function radiation_reducer(sim, valid;
+function radiation_reducer(;
         PARs = LinRange(0.0, 15.0, 1000)u"MJ / m^2",
         path = nothing)
 
-    nspecies, container = create_container(; sim, valid, nspecies = 1)
+    nspecies, container = create_container(; nspecies = 1)
 
     PARs = sort(ustrip.(PARs)) .* unit(PARs[1])
 
     y = Float64[]
 
     for PAR in PARs
-        g = sim.radiation_reduction(; PAR, container)
+        g = radiation_reduction(; PAR, container)
         push!(y, g)
     end
 
@@ -78,8 +78,8 @@ function radiation_reducer(sim, valid;
     return nothing
 end
 
-function below_influence(sim, valid; path = nothing)
-    nspecies, container = create_container(; sim, valid)
+function below_influence(; path = nothing)
+    nspecies, container = create_container(; )
 
     #################### varying belowground_density_effect, equal biomass, random traits
     below_effects = LinRange(0, 2.0, 200)
@@ -88,7 +88,7 @@ function below_influence(sim, valid; path = nothing)
 
     for (i, below_effect) in enumerate(below_effects)
         container = @set container.p.belowground_density_effect = below_effect
-        sim.below_ground_competition!(; container, biomass)
+        below_ground_competition!(; container, biomass)
         ymat[:, i] .= container.calc.biomass_density_factor
     end
 
@@ -116,7 +116,7 @@ function below_influence(sim, valid; path = nothing)
             simp = (; included = (; belowground_competition = true)),
             p = (; belowground_density_effect = artificial_below[i],
                 biomass_dens = 80u"kg / ha"))
-        sim.below_ground_competition!(; container = c, biomass)
+        below_ground_competition!(; container = c, biomass)
 
         artificial_mat[:, i] = c.calc.biomass_density_factor
     end
@@ -192,15 +192,15 @@ function below_influence(sim, valid; path = nothing)
     return nothing
 end
 
-function seasonal_effect(sim, valid;
+function seasonal_effect(;
         STs = uconvert.(u"K", LinRange(0, 3500, 1000)u"°C"),
         path = nothing)
 
-    nspecies, container = create_container(; sim, valid, nspecies = 1)
+    nspecies, container = create_container(; nspecies = 1)
 
     y = Float64[]
     for ST in STs
-        g = sim.seasonal_reduction(; ST, container)
+        g = seasonal_reduction(; ST, container)
         push!(y, g)
     end
 
@@ -231,17 +231,17 @@ function seasonal_effect(sim, valid;
     return nothing
 end
 
-function seasonal_component_senescence(sim, valid;
+function plot_seasonal_component_senescence(;
         STs = LinRange(0, 4000, 500),
         path = nothing)
 
-    nspecies, container = create_container(; sim, valid, nspecies = 1)
+    nspecies, container = create_container(; nspecies = 1)
 
     STs = sort(STs)
 
     y = Float64[]
     for ST in STs
-        g = sim.seasonal_component_senescence(; container, ST)
+        g = seasonal_component_senescence(; container, ST)
         push!(y, g)
     end
 

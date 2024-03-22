@@ -9,7 +9,6 @@ This tutorial assumes that you have read the basic tutorial [How to prepare the 
 
 ```@example heterog_input
 import GrasslandTraitSim as sim
-import GrasslandTraitSim.Valid as valid
 
 using Unitful
 using Statistics
@@ -18,7 +17,7 @@ using CairoMakie
 patch_xdim = 2 
 patch_ydim = 1
 
-input_obj_prep = valid.validation_input(;
+input_obj_prep = sim.validation_input(;
     plotID = "HEG01", nspecies = 25,
     trait_seed = 99);
 
@@ -64,7 +63,7 @@ p = sim.Parameter()
 sol = sim.solve_prob(; input_obj, p);
 
 patch_biomass = dropdims(sum(sol.output.biomass; dims = :species); dims = :species)
-numeric_date = sim.Valid.to_numeric.(sol.date)
+numeric_date = sim.to_numeric.(sol.date)
 
 begin
     fig = Figure()

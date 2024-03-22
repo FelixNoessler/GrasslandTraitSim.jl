@@ -1,7 +1,7 @@
-function grazing(sim, valid; grazing_half_factor = 1500.0, leafnitrogen_graz_exp = 1.0,
+function grazing(; grazing_half_factor = 1500.0, leafnitrogen_graz_exp = 1.0,
                  path = nothing)
 
-    nspecies, container = create_container(; sim, valid)
+    nspecies, container = create_container(; )
     setfield!(container.p, :grazing_half_factor, grazing_half_factor)
     setfield!(container.p, :leafnitrogen_graz_exp, leafnitrogen_graz_exp)
 
@@ -12,7 +12,7 @@ function grazing(sim, valid; grazing_half_factor = 1500.0, leafnitrogen_graz_exp
 
     for (i, biomass) in enumerate(biomass_vec)
         container.calc.defoliation .= 0.0u"kg / ha"
-        sim.grazing!(; t = 1, x = 1, y = 1, container, LD,
+        grazing!(; t = 1, x = 1, y = 1, container, LD,
                      biomass = repeat([biomass], nspecies))
         grazing_mat[:, i] = ustrip.(container.calc.defoliation)
     end
@@ -79,8 +79,8 @@ function grazing_half_factor(; path = nothing)
     end
 end
 
-function trampling_biomass(sim, valid; trampling_factor = 0.01, path = nothing)
-    nspecies, container = create_container(; sim, valid)
+function trampling_biomass(; trampling_factor = 0.01, path = nothing)
+    nspecies, container = create_container(; )
     container = @set container.p.trampling_factor = trampling_factor * u"ha"
 
     nbiomass = 50
@@ -93,7 +93,7 @@ function trampling_biomass(sim, valid; trampling_factor = 0.01, path = nothing)
     for (i, b) in enumerate(biomass_vals)
         biomass .= b
         container.calc.defoliation .= 0.0u"kg / ha"
-        sim.trampling!(; container, LD, biomass)
+        trampling!(; container, LD, biomass)
         trampling_mat_height[:, i] = container.calc.defoliation
     end
     trampling_mat_height = trampling_mat_height ./ biomass
@@ -127,8 +127,8 @@ function trampling_biomass(sim, valid; trampling_factor = 0.01, path = nothing)
     end
 end
 
-function trampling_biomass_individual(sim, valid; trampling_factor = 0.01, path = nothing)
-    nspecies, container = create_container(; sim, valid)
+function trampling_biomass_individual(; trampling_factor = 0.01, path = nothing)
+    nspecies, container = create_container(; )
     container = @set container.p.trampling_factor = trampling_factor * u"ha"
     container.traits.height .= 0.5u"m"
 
@@ -142,7 +142,7 @@ function trampling_biomass_individual(sim, valid; trampling_factor = 0.01, path 
     for (i, b) in enumerate(biomass_vals)
         biomass[1] = b
         container.calc.defoliation .= 0.0u"kg / ha"
-        sim.trampling!(; container, LD, biomass)
+        trampling!(; container, LD, biomass)
         trampling_mat_height[:, i] = container.calc.defoliation
     end
     trampling_mat_height = ustrip.(trampling_mat_height)# ./ biomass .* u"d"
@@ -176,8 +176,8 @@ function trampling_biomass_individual(sim, valid; trampling_factor = 0.01, path 
     return nothing
 end
 
-function trampling_livestockdensity(sim, valid; trampling_factor = 0.01, path = nothing)
-    nspecies, container = create_container(; sim, valid)
+function trampling_livestockdensity(; trampling_factor = 0.01, path = nothing)
+    nspecies, container = create_container(; )
     container = @set container.p.trampling_factor = trampling_factor * u"ha"
 
     nLD = 500
@@ -188,7 +188,7 @@ function trampling_livestockdensity(sim, valid; trampling_factor = 0.01, path = 
 
     for (i, LD) in enumerate(LDs)
         container.calc.defoliation .= 0.0u"kg / ha"
-        sim.trampling!(; container, LD, biomass)
+        trampling!(; container, LD, biomass)
         trampling_mat_height[:, i] = container.calc.defoliation
     end
     trampling_mat_height = trampling_mat_height ./ biomass
@@ -224,10 +224,10 @@ function trampling_livestockdensity(sim, valid; trampling_factor = 0.01, path = 
     return nothing
 end
 
-function mowing(sim, valid; mowing_height = 0.07u"m", mowing_mid_days = 30.0,
+function mowing(; mowing_height = 0.07u"m", mowing_mid_days = 30.0,
                 path = nothing)
 
-    nspecies, container = create_container(; sim, valid)
+    nspecies, container = create_container(; )
     setfield!(container.p, :mowing_mid_days, mowing_mid_days)
 
     nbiomass = 3
@@ -236,7 +236,7 @@ function mowing(sim, valid; mowing_height = 0.07u"m", mowing_mid_days = 30.0,
 
     for (i, biomass) in enumerate(biomass_vec)
         container.calc.defoliation .= 0.0u"kg / ha"
-        sim.mowing!(; t = 1, x = 1, y = 1, container, mowing_height,
+        mowing!(; t = 1, x = 1, y = 1, container, mowing_height,
                     biomass = fill(biomass, nspecies), mowing_all = fill(NaN, 5))
 
         mowing_mat[:, i] = ustrip.(container.calc.defoliation)

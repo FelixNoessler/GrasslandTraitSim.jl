@@ -69,25 +69,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         H_rsa = Array{T}(undef, nspecies),
         H_sla = Array{T}(undef, nspecies))
 
-
-
-    cutting_height = Float64[]
-    biomass_cutting_t = Int64[]
-    biomass_cutting_numeric_date = Float64[]
-    biomass_cutting_index = Int64[]
-    if haskey(input_obj, :output_validation)
-        @unpack biomass_cutting_t, biomass_cutting_numeric_date,
-                cutting_height, biomass_cutting_index = input_obj.output_validation
-    end
-
     calc = (;
-
-        ########### preparation for cut biomass
-        biomass_cutting_t,
-        biomass_cutting_numeric_date,
-        cut_index = biomass_cutting_index,
-        cutting_height = cutting_height,
-
         negbiomass = fill(false, ntimesteps, patch_xdim, patch_ydim, nspecies),
 
         ############ preallaocated vectors that are used in the calculations
@@ -163,12 +145,22 @@ end
 
 function preallocate_specific_vectors(; input_obj, T = Float64)
     biomass_cutting_t = Int64[]
+    cutting_height = Float64[]
+    biomass_cutting_t = Int64[]
+    biomass_cutting_numeric_date = Float64[]
+    biomass_cutting_index = Int64[]
+
     if haskey(input_obj, :output_validation)
-        @unpack biomass_cutting_t = input_obj.output_validation
+        @unpack biomass_cutting_t, biomass_cutting_numeric_date,
+                cutting_height, biomass_cutting_index,
+                biomass_cutting_t = input_obj.output_validation
     end
+
     cut_biomass = fill(T(NaN), length(biomass_cutting_t))u"kg/ha"
 
-    return (; cut_biomass)
+    return (; valid = (; cut_biomass, biomass_cutting_t, biomass_cutting_numeric_date,
+            cut_index = biomass_cutting_index,
+            cutting_height = cutting_height))
 end
 
 function preallocate(; input_obj, Tdiff = nothing)
@@ -192,4 +184,31 @@ function preallocate_specific(; input_obj, Tdiff = nothing)
     diff = preallocate_specific_vectors(; input_obj, T = Tdiff)
 
     return (; normal, diff)
+end
+
+
+struct PreallocCache
+    normal::Vector{Any}
+    diff::Vector{Any}
+end
+
+function PreallocCache()
+    return PreallocCache(fill(nothing, Threads.nthreads()), fill(nothing, Threads.nthreads()))
+end
+
+function get_buffer(buffer::PreallocCache, T, id; input_obj)
+    if T <: ForwardDiff.Dual
+        if isnothing(buffer.diff[id])
+            buffer.diff[id] = preallocate_vectors(; input_obj, T)
+        end
+
+        return buffer.diff[id]
+
+    elseif T <: Float64
+        if isnothing(buffer.normal[id])
+            buffer.normal[id] = preallocate_vectors(; input_obj, T)
+        end
+
+        return buffer.normal[id]
+    end
 end
