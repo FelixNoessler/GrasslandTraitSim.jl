@@ -1,6 +1,4 @@
 @doc raw"""
-    below_ground_competition!(; container, biomass)
-
 Models the below-ground competiton between plants.
 
 Plant available nutrients and water are reduced if a large biomass of plant
@@ -118,8 +116,6 @@ end
 
 
 @doc raw"""
-    water_reduction!(; container, water, water_growth_reduction, PET, PWP, WHC)
-
 Reduction of growth based on the plant available water
 and the traits specific leaf area and root surface area
 per aboveground biomass.
@@ -263,8 +259,6 @@ end
 
 
 """
-    nutrient_reduction!(; container, nutrient_growth_reduction, nutrients)
-
 Reduction of growth based on plant available nutrients and
 the traits arbuscular mycorrhizal colonisation and
 root surface area / aboveground biomass.

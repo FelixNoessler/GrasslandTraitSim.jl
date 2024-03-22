@@ -10,8 +10,6 @@ function inverse_logit(x)
 end
 
 """
-    random_traits!(; calc, input_obj)
-
 Generate random traits for the simulation.
 
 The traits are generated using a bivariate Gaussian mixture model
@@ -81,8 +79,6 @@ function random_traits!(; prealloc, input_obj)
 end
 
 @doc raw"""
-    similarity_matrix!(; input_obj, calc)
-
 Calculates the similarity between plants concerning their investment
 in fine roots and collaboration with mycorrhiza.
 

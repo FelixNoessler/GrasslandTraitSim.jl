@@ -1,6 +1,4 @@
 @doc raw"""
-    clonalgrowth!(; container)
-
 Yearly clonal growth.
 
 ```math

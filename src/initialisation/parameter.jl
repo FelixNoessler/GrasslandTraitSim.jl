@@ -1,159 +1,188 @@
 """
-$(SIGNATURES)
+    Parameter(; kwargs...)
 
-Here is an overview of the parameters that are used in the model. The parameters are............
+Here is an overview of the parameters that are used in the model. The parameters are...
 $(FIELDS)
 """
 @with_kw mutable struct Parameter{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9,
                                   Q10, Q11, Q12, Q13, Q14, Q15, Q16} @deftype T
 
-    """\n
+    """
     Maximum radiation use efficiency, \\
     see [`potential_growth!`](@ref) \\
     """
     RUE_max::Q1 = F(3 / 1000) * u"kg / MJ"
 
-    """\n
+    """
     Extinction coefficient, \\
-    see [`potential_growth!`](@ref)\n
+    see [`potential_growth!`](@ref) \\
     """
     k = F(0.6)
 
-    """\n
-    α value of a linear equation that relate the leaf life span to the senescence rate, \\
-    see [`senescence_rate!`](@ref)\n
+    """
+    senescence rate-intercept of a linear equation that relate the leaf life span to the senescence rate, \\
+    see [`senescence_rate!`](@ref) \\
     """
     α_sen = F(0.0002)
 
-    """\n
+    """
     slope of a linear equation that relates the leaf life span to the senescence rate, \\
-    see [`senescence_rate!`](@ref)\n
+    see [`senescence_rate!`](@ref) \\
     """
     β_sen::Q2 = F(0.03)u"d"
 
-    """\n
+    """
     transform SLA to leaflifespan,\\
-    equation given by [Reich1992](@cite)\n
+    equation given by [Reich1992](@cite) \\
     """
     α_ll = F(2.41)
 
-    """\n
+    """
     transform SLA to leaflifespan,\\
-    equation given by [Reich1992](@cite)\n
+    equation given by [Reich1992](@cite) \\
     """
     β_ll = F(0.38)
 
-    """\n
+    """
     emperature threshold: senescence starts to increase, \\
-    see [`seasonal_component_senescence`](@ref)\n
+    see [`seasonal_component_senescence`](@ref) \\
     """
     Ψ₁ = F(775.0)
 
-    """\n
+    """
     temperature threshold: senescence reaches maximum, \\
-    see [`seasonal_component_senescence`](@ref)\n
+    see [`seasonal_component_senescence`](@ref) \\
     """
     Ψ₂ = F(3000.0)
 
-    """\n
+    """
     maximal seasonality factor for the senescence rate, \\
-    see [`seasonal_component_senescence`](@ref)\n
+    see [`seasonal_component_senescence`](@ref) \\
     """
     SENₘₐₓ = F(3.0)
 
-    """\n
+    """
     Proportion of biomass that growths to the neighbouring cells, \\
-    see [`clonalgrowth!`](@ref)\n
+    see [`clonalgrowth!`](@ref) \\
     """
     clonalgrowth_factor = F(0.05)
 
-    "see [`radiation_reduction`](@ref)"
+    """
+    is the empirical parameter for a decrease in radiation use efficiency
+    for values of the photosynthetically active radiation (PAR) higher than `γ2`, \\
+    see [`radiation_reduction`](@ref)
+    """
     γ1::Q3 = F(0.0445)u"m^2 / MJ"
 
-    "see [`radiation_reduction`](@ref) "
+    """
+    is the threshold value of PAR from which starts a linear decrease
+    in radiation use efficiency, \\
+    see [`radiation_reduction`](@ref) \\
+    """
     γ2::Q4 = F(5.0)u"MJ / m^2"
 
-    "see [`temperature_reduction`](@ref)"
+    """
+    is the lower temperature threshold for growth, \\
+    see [`temperature_reduction`](@ref) \\
+    """
     T₀::Q5 = F(3.0)u"°C"
 
-    "see [`temperature_reduction`](@ref)"
+    """
+    is the lower bound for the optimal temperature for growth, \\
+    see [`temperature_reduction`](@ref) \\
+    """
     T₁::Q5 = F(12.0)u"°C"
 
-    "see [`temperature_reduction`](@ref)"
+    """
+    is the upper bound for the optiomal temperature for growth, \\
+    see [`temperature_reduction`](@ref) \\
+    """
     T₂::Q5 = F(20.0)u"°C"
 
-    "see [`temperature_reduction`](@ref)"
+    """
+    is the maximum temperature for growth, \\
+    see [`temperature_reduction`](@ref) \\
+    """
     T₃::Q5 = F(35.0)u"°C"
 
-    "[`seasonal_reduction`](@ref)"
+    """
+    is the minimum value of the seasonal effect, \\
+    see [`seasonal_reduction`](@ref) \\
+    """
     SEAₘᵢₙ = F(0.7)
 
-    "[`seasonal_reduction`](@ref)"
+    """
+    is the maximum value of the seasonal effect, \\
+    see [`seasonal_reduction`](@ref) \\
+    """
     SEAₘₐₓ = F(1.3)
 
-    """\n
-    898.15K = 625 °C, \\
-    see [`seasonal_reduction`](@ref)
+    """
+    is a threshold of the temperature degree days,
+    above which the seasonality factor is set to `SEAₘᵢₙ` and
+    descreases to `SEAₘₐₓ`, 898.15K = 625 °C, \\
+    see [`seasonal_reduction`](@ref) \\
     """
     ST₁::Q6 = F(898.15)u"K"
 
-    """\n
-    1573.15 K = 1300.0 °C, \\
-    see [`seasonal_reduction`](@ref)\n
+    """
+    is a threshold of the temperature degree-days,
+    where the seasonality growth factor is set to `SEAₘᵢₙ`, 1573.15 K = 1300.0 °C, \\
+    see [`seasonal_reduction`](@ref) \\
     """
     ST₂::Q6 = F(1573.15)u"K"
     α_community_height::Q7 = F(10000.0)u"kg / ha "
     β_community_height::Q8 = F(0.0005)u"ha / kg"
     exp_community_height = F(0.9)
 
-    """\n
+    """
     controls how strongly taller plants gets more light for growth, \\
-    see [`light_competition!`](@ref)\n
+    see [`light_competition!`](@ref) \\
     """
     height_strength_exp = F(0.5)
 
-    """\n
+    """
     number of days after a mowing event when the plants are grown back to
     half of their normal size, \\
-    see [`mowing!`](@ref)\n
+    see [`mowing!`](@ref) \\
     """
     mowing_mid_days = F(10.0)
     mowfactor_β = F(0.05)
 
-    """\n
+    """
     controls how strongly grazers prefer plant species with high leaf nitrogen content, \\
-    see [`grazing!`](@ref)\n
+    see [`grazing!`](@ref) \\
     """
     leafnitrogen_graz_exp = F(1.5)
 
-    """\n
+    """
     defines together with the height of the plants and the livestock density
     the proportion of biomass that is trampled [ha m⁻¹], \\
-    see [`trampling!`](@ref)\n
+    see [`trampling!`](@ref) \\
     """
     trampling_factor::Q9 = F(0.01)u"ha"
     trampling_height_exp = F(0.5)
     trampling_half_factor = F(10000.0)
 
-    """\n
+    """
     total biomass [kg ha⁻¹] when the daily consumption by grazers reaches half
     of their maximal consumption defined by κ · livestock density, \\
-    see [`grazing!`](@ref)\n
+    see [`grazing!`](@ref) \\
     """
     grazing_half_factor = F(1000.0)
 
-    """"\n
+    """"
     maximal consumption of a livestock unit per day, \\
-    see [`grazing!`](@ref)\n
+    see [`grazing!`](@ref) \\
     """
     κ::Q10 = F(22.0)u"kg"
     lowbiomass::Q11 = F(100.0)u"kg / ha"
 
-    """\n
+    """
     if the matrix multiplication between the trait similarity matrix and
     the biomass equals `biomass_dens` the available water and nutrients
     for growth are not in- or decreased,
-    see [`below_ground_competition!`](@ref)\n
+    see [`below_ground_competition!`](@ref) \\
     """
     biomass_dens::Q11 = F(1200.0)u"kg / ha"
     lowbiomass_k::Q12= F(0.1)u"ha / kg"
@@ -162,7 +191,7 @@ $(FIELDS)
     the available water and nutrients are in- or decreased
     if the matrix multiplication between the trait similarity matrix and
     the biomass of the species is above or below of `biomass_dens`,
-    see [`below_ground_competition!`]\n
+    see [`below_ground_competition!`] \\
     """
     belowground_density_effect = F(2.0)
     α_pet::Q13 = F(2.0)u"mm"
@@ -172,14 +201,14 @@ $(FIELDS)
     reference community weighted mean specific leaf area,
     if the community weighted mean specific leaf area is
     equal to `sla_tr` then transpiration is neither increased nor decreased,
-    see `transpiration`](@ref)\n
+    see `transpiration`](@ref) \\
     """
     sla_tr::Q15 = F(0.03)u"m^2 / g"
 
-    """\n
+    """
     controls how strongly a community mean specific leaf area that deviates
     from `sla_tr` is affecting the transpiration,
-    see [`transpiration`](@ref)\n
+    see [`transpiration`](@ref) \\
     """
     sla_tr_exponent = F(0.4)
     ϕ_sla::Q15 = F(0.025)u"m^2 / g"
@@ -188,24 +217,24 @@ $(FIELDS)
     β_η_sla::Q16 = F(75.0)u"g / m^2"
     β_sla = F(5.0)
 
-    """\n
+    """
     maximal reduction of the plant-available water linked to the trait root surface area /
     aboveground biomass,
-    see [`init_transfer_functions!`](@ref)\n
+    see [`init_transfer_functions!`](@ref) \\
     """
     δ_wrsa = F(0.8)
 
-    """\n
+    """
     maximal reduction of the plant-available water linked to the trait specific leaf area,
-    see [`init_transfer_functions!`](@ref)\n
+    see [`init_transfer_functions!`](@ref) \\
     """
     δ_sla = F(0.5)
 
-    """\n
+    """
     based on the maximum total N of ≈ 30.63 [g kg⁻¹] in the data from the
     Biodiversity Exploratories \\
     [explo14446v19](@cite)[explo18787v6](@cite)[explo23846v10](@cite)[explo31210v6](@cite),
-    see [`input_nutrients!`](@ref)\n
+    see [`input_nutrients!`](@ref) \\
     """
     maxtotalN = F(35.0)
     ϕ_amc = F(0.35)
@@ -215,17 +244,17 @@ $(FIELDS)
     β_κη_amc = F(10.0)
     β_amc = F(7.0)
 
-    """\n
+    """
     maximal reduction of the plant-available nutrients linked to the trait
     arbuscular mycorrhizal colonisation rate,\\
-    see [`init_transfer_functions!`](@ref)\n
+    see [`init_transfer_functions!`](@ref) \\
     """
     δ_amc = F(0.5)
 
-    """\n
+    """
     maximal reduction of the plant-available nutrients linked to the trait
     root surface area / aboveground biomass,\\
-    see [`init_transfer_functions!`](@ref)\n
+    see [`init_transfer_functions!`](@ref) \\
     """
     δ_nrsa = F(0.5)
     ϕ_rsa::Q15 = F(0.12)u"m^2 / g"
@@ -235,6 +264,7 @@ $(FIELDS)
     β_κη_rsa::Q16 = F(40.0)u"g / m^2"
     β_rsa = F(7.0)
     b_biomass = F(1000.0)
+    inv_ν_biomass = F(0.2)
     b_sla = F(0.0005)
     b_lncm = F(0.5)
     b_amc = F(0.001)
@@ -247,7 +277,7 @@ function exlude_parameter(; input_obj)
 
     excl_p = Symbol[]
     if !likelihood_included.biomass
-        append!(excl_p, [:b_biomass])
+        append!(excl_p, [:b_biomass, :inv_ν_biomass])
     end
 
     if !likelihood_included.trait
@@ -343,6 +373,8 @@ function calibrated_parameter(; input_obj = nothing)
         β_sen = (Uniform(0.0, 0.1),  as(Real, 0.0, 0.1), NoUnits),
         Ψ₁ = (Uniform(700.0, 3000.0), as(Real, 700.0, 3000.0), NoUnits),
         SENₘₐₓ = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0), NoUnits),
+        SEAₘᵢₙ = (Uniform(0.5, 1.0), as(Real, 0.5, 1.0), NoUnits),
+        SEAₘₐₓ = (Uniform(1.0, 2.0), as(Real, 1.0, 2.0), NoUnits),
         α_community_height = (Uniform(0.0, 20000.0), as(Real, 0.0, 20000.0),
                               u"kg / ha"),
         β_community_height = (Uniform(0.0, 0.01), as(Real, 0.0, 0.01), u"ha / kg"),
@@ -389,6 +421,7 @@ function calibrated_parameter(; input_obj = nothing)
         β_κη_rsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), u"g/m^2"),
         β_rsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), NoUnits),
         b_biomass = (truncated(Cauchy(0, 300); lower = 0.0), asℝ₊, NoUnits),
+        inv_ν_biomass = (Uniform(0.0, 0.5), as(Real, 0.0, 0.5), NoUnits),
         b_sla = (truncated(Cauchy(0, 0.05); lower = 0.0), asℝ₊, NoUnits),
         b_lncm = (truncated(Cauchy(0, 0.5); lower = 0.0), asℝ₊, NoUnits),
         b_amc = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊, NoUnits),

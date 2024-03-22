@@ -1,7 +1,4 @@
 @doc raw"""
-    change_water_reserve(; container, patch_biomass, water, precipitation, LAItot, PET,
-                         WHC, PWP)
-
 Models the change of the water reserve in the soil within one day.
 
 Precipitation fills the water reserve (`precipitation`).
@@ -68,8 +65,6 @@ function change_water_reserve(; container, patch_biomass, water, precipitation, 
 end
 
 @doc raw"""
-    transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
-
 Transpiration of water from the plants.
 
 The transpiration is dependent on the plant available water (`W`),
@@ -130,8 +125,6 @@ function transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
 end
 
 @doc raw"""
-    evaporation(; water, WHC, PET, LAItot)
-
 Evaporation of water from the soil.
 
 ```math

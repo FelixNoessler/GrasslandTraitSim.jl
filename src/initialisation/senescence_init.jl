@@ -1,6 +1,4 @@
 @doc raw"""
-    senescence_rate!(; calc, inf_p)
-
 Intialize the senescence rate based on the specific leaf area
 
 In order to derive the senescence rate, the leaf life span is calculated first.

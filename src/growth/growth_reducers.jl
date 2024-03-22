@@ -3,7 +3,7 @@ Reduction of radiation use efficiency at light intensities higher
 than 5 ``MJ\cdot m^{-2}\cdot d^{-1}``
 
 ```math
-\text{Rred} = \text{min}(1, 1- \gamma_1(\\text{PAR}(t) - \gamma_2))
+\text{Rred} = \text{min}(1, 1- \gamma_1(\text{PAR}(t) - \gamma_2))
 ```
 
 The equations and the parameter values are taken from [Schapendonk1998](@cite).
@@ -31,8 +31,6 @@ function radiation_reduction(; container, PAR)
 end
 
 @doc raw"""
-    temperature_reduction(; T, temperature_growth_reduction)
-
 Reduction of the potential growth if the temperature is low or too high
 with a step function.
 
@@ -82,8 +80,6 @@ function temperature_reduction(; container, T)
 end
 
 @doc raw"""
-    seasonal_reduction(; ST, season_red)
-
 Reduction of growth due to seasonal effects. The function is based on
 the yearly cumulative sum of the daily mean temperatures (`ST`).
 
@@ -148,8 +144,6 @@ end
 
 
 @doc raw"""
-    community_height_reduction(; container, biomass)
-
 Only one species is used for the simulation:
 ![Image of the community height reducer fucntion](../img/community_height.svg)
 ![Image of the effect of the community height reduction](../img/community_height_influence.svg)

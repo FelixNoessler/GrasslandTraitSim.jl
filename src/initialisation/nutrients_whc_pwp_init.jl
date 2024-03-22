@@ -1,6 +1,4 @@
 @doc raw"""
-    input_nutrients!(; calc, input_obj, inf_p, nutheterog, totalN, CNratio)
-
 Derive a nutrient index by combining total nitrogen and carbon to nitrogen ratio.
 
 ```math
@@ -52,8 +50,6 @@ function input_nutrients!(; prealloc, input_obj, p)
 end
 
 @doc raw"""
-    input_WHC_PWP!(; calc, input_obj)
-
 Derive walter holding capacity (WHC) and
 permanent wilting point (PWP) from soil properties.
 
@@ -109,8 +105,6 @@ function input_WHC_PWP!(; prealloc, input_obj)
 end
 
 """
-    planar_gradient!(; mat, direction)
-
 Helper function to fill a matrix with a gradient with values from 0 to 1.
 
 The `direction` controls the direction of the gradient.

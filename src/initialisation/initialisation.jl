@@ -6,8 +6,6 @@ include("transferfunctions_init.jl")
 
 
 """
-    initialization(; input_obj, inf_p, calc, trait_input = nothing)
-
 Initialize the simulation object.
 """
 function initialization(; input_obj, p, prealloc, prealloc_specific,
@@ -46,8 +44,6 @@ function initialization(; input_obj, p, prealloc, prealloc_specific,
 end
 
 """
-    set_initialconditions!(; container)
-
 Set the initial conditions for the state variables.
 
 Each plant species (`u_biomass`) gets an equal share of

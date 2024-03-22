@@ -1,6 +1,4 @@
 """
-    init_transfer_functions!(; calc, p)
-
 Initialisation of the transfer functions that link the traits to
 the response to water and nutrient stress.
 """

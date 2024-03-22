@@ -1,12 +1,4 @@
 @doc raw"""
-    mowing!(;
-        calc,
-        mowing_height,
-        days_since_last_mowing,
-        height,
-        biomass,
-        mowing_mid_days)
-
 ```math
 \begin{align}
     \lambda &= \frac{\text{mown_height}}{\text{height}}\\
@@ -67,8 +59,6 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
 end
 
 @doc raw"""
-    grazing!(; t, x, y, container, LD, biomass)
-
 ```math
 \begin{align}
 \rho &= \left(\frac{LNCM}{LNCM_{cwm]}}\right) ^ {\text{leafnitrogen_graz_exp}} \\
@@ -140,8 +130,6 @@ function grazing!(; t, x, y, container, LD, biomass)
 end
 
 @doc raw"""
-    trampling!(; container, LD, biomass)
-
 ```math
 \begin{align}
 \text{trampled_proportion} &=
@@ -187,8 +175,6 @@ function trampling!(; container, LD, biomass)
 end
 
 @doc raw"""
-    calculate_relbiomass!(; calc, p)
-
 Relative biomass of the patches in relation to the mean biomass of the overall grassland.
 
 ```math
