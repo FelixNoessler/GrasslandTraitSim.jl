@@ -22,5 +22,4 @@ mowing!
 ```@docs
 grazing!
 trampling!
-calculate_relbiomass!
 ```

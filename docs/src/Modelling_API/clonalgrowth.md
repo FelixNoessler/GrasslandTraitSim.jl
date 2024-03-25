@@ -6,4 +6,5 @@ CurrentModule=GrasslandTraitSim
     
 ```@docs
 clonalgrowth!
+calculate_relbiomass!
 ```

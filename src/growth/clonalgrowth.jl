@@ -99,3 +99,30 @@ function clonalgrowth!(; container)
 
     return nothing
 end
+
+
+@doc raw"""
+Relative biomass of the patches in relation to the mean biomass of the overall grassland.
+
+```math
+\text{relbiomass} = \frac{\text{patch_biomass}}{\text{mpatch_biomass}}
+```
+
+- `relbiomass` relative biomass of each patch [-]
+- `patch_biomass` sum of the biomass of all species in one patch [kg ha⁻¹]
+- `mpatch_biomass` mean of the sum of the biomass of all species in all patches [kg ha⁻¹]
+"""
+function calculate_relbiomass!(; container)
+    @unpack biomass_per_patch, relbiomass = container.calc
+    @unpack u_biomass = container.u
+    @unpack patch_xdim, patch_ydim = container.simp
+
+    for x in Base.OneTo(patch_xdim)
+        for y in Base.OneTo(patch_ydim)
+            biomass_per_patch[x, y] = mean(@view u_biomass[x, y, :])
+        end
+    end
+    relbiomass .= biomass_per_patch ./ mean(biomass_per_patch)
+
+    return nothing
+end
