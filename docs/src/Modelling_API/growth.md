@@ -17,7 +17,7 @@ flowchart LR
     end
     subgraph " "
     F[⇅ light competition] -.-> C
-    G[below ground competition] -.-> H
+    G[belowground competition] -.-> H
     G -.-> I
     H[↓ water stress] -.-> C
     I[↓ nutrient stress] -.-> C
