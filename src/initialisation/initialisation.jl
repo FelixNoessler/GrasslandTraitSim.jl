@@ -7,6 +7,13 @@ include("transferfunctions_init.jl")
 
 """
 Initialize the simulation object.
+
+The function is called once at the beginning of the simulation within [`solve_prob`](@ref).
+
+The [traits](@ref "Initialization of traits") of the species are generated,
+the [parameters](@ref "Initialization of parameters") are initialized and the
+[initial conditions of the state variables](@ref "Set the initial conditions of the state variables")
+are set.
 """
 function initialization(; input_obj, p, prealloc, prealloc_specific,
                         trait_input = nothing, θ_type = Float64)

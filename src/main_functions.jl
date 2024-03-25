@@ -1,8 +1,9 @@
 """
-$(SIGNATURES)
 Solve the model for one site.
 
-Intialize the parameters, the state variables and the output vectors.
+Intialize the parameters, the state variables and the output vectors
+(see [`initialization`](@ref)).
+
 In addition some vectors are preallocated to avoid allocations in the main loop.
 Then, run the main loop and store the results with all parameters in a container.
 
@@ -48,7 +49,6 @@ function solve_prob(; input_obj, p, prealloc = nothing, prealloc_specific = noth
 end
 
 """
-$(SIGNATURES)
 Run the main loop for all days.
 
 Calls the function [`one_day!`](@ref) for each day and set the

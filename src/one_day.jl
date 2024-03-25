@@ -18,6 +18,8 @@ B_{t+1xys} = B_{txys} + G_{act, txys} - S_{txys} - M_{txys}
     ``xy`` [kg ha⁻¹]
     - `calc.defoliation```_{s}`` is then directly added to `u.du_biomass` for each patch
 
+> **Note:** for an overview of all biomass processes, see [Biomass dynamics](@ref)
+
 ## Soil water change during one day
 
 ```math
