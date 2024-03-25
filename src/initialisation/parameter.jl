@@ -131,7 +131,19 @@ $(FIELDS)
     see [`seasonal_reduction`](@ref) \\
     """
     ST₂::Q6 = F(1573.15)u"K"
-    α_community_height::Q7 = F(0.0)u"m"
+
+    """
+    part of logistic function that relates the community weighted mean height
+    to a growth reducer ∈ [0, 1], \\
+    see [`community_height_reduction`](@ref) \\
+    """
+    α_community_height::Q7 = F(0.5)u"m"
+
+    """
+    part of logistic function that relates the community weighted mean height
+    to a growth reducer ∈ [0, 1], \\
+    see [`community_height_reduction`](@ref) \\
+    """
     β_community_height::Q8 = F(5.0)u"m^-1"
 
     """
@@ -184,7 +196,7 @@ $(FIELDS)
     see [`below_ground_competition!`](@ref) \\
     """
     biomass_dens::Q11 = F(1200.0)u"kg / ha"
-    lowbiomass_k::Q12= F(0.1)u"ha / kg"
+    lowbiomass_k::Q12 = F(0.1)u"ha / kg"
 
     """
     the available water and nutrients are in- or decreased
@@ -374,8 +386,8 @@ function calibrated_parameter(; input_obj = nothing)
         SENₘₐₓ = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0)),
         SEAₘᵢₙ = (Uniform(0.5, 1.0), as(Real, 0.5, 1.0)),
         SEAₘₐₓ = (Uniform(1.0, 2.0), as(Real, 1.0, 2.0)),
-        α_community_height = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
-        β_community_height = (Uniform(0.0, 10.0), as(Real, 0.0, 10.0)),
+        # α_community_height = (Uniform(-5.0, 5.0), as(Real, -5.0, 5.0)),
+        # β_community_height = (Uniform(-10.0, 0.0), as(Real, -10.0, 0.0)),
         height_strength_exp = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
         mowing_mid_days = (truncated(Normal(10.0, 30.0); lower = 0.0, upper = 60.0),
                            as(Real, 0.0, 60.0)),

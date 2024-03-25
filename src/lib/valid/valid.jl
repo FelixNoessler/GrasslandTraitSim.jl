@@ -21,7 +21,8 @@ function load_data(datapath)
     mtraits = CSV.read("$datapath/validation/cwm_cwv_traits.csv",
         DataFrame)
 
-    traits = (cwm = [mtraits.cwm_sla mtraits.cwm_lncm mtraits.cwm_amc mtraits.cwm_rsa_above mtraits.cwm_height],
+    traits = (
+        cwm = [mtraits.cwm_sla mtraits.cwm_lncm mtraits.cwm_amc mtraits.cwm_rsa_above mtraits.cwm_height],
         cwv = [mtraits.cwv_sla mtraits.cwv_lncm mtraits.cwv_amc mtraits.cwv_rsa_above mtraits.cwv_height],
         dim = [:sla, :lncm, :amc, :rsa_above, :height],
         t = mtraits.date,
@@ -70,6 +71,8 @@ function load_data(datapath)
     input_traits = CSV.read("$datapath/input/traits.csv",
         DataFrame)
 
+    f = input_traits.lmpm .> input_traits.ampm
+    input_traits.lmpm[f] = input_traits.ampm[f]
     input = (;
         traits = input_traits,
         clim,

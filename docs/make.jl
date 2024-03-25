@@ -29,7 +29,9 @@ docs_img = "docs/src/img"
 f(path; show_img = false) = show_img ? nothing : path
 
 #### transfer functions
-sim.potential_growth(; path = f("$docs_img/sla_potential_growth.svg"))
+sim.potential_growth_function(; path = f("$docs_img/potential_growth_function.svg"))
+sim.potential_growth(; path = f("$docs_img/potential_growth.svg"))
+sim.lai_traits(; path = f("$docs_img/sla_leaf_lai.svg"))
 sim.W_rsa_response(; path = f("$docs_img/W_rsa_response.svg"), δ_wrsa = 1.0)
 sim.W_rsa_response(; path = f("$docs_img/W_rsa_response_0_5.svg"), δ_wrsa = 0.5)
 sim.rsa_above_nut_response(; path = f("$docs_img/rsa_above_nut_response.svg"),

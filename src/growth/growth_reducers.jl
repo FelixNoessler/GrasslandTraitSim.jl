@@ -162,8 +162,9 @@ function community_height_reduction(; container, biomass)
 
     @unpack relative_height = container.calc
     @unpack height = container.traits
-    @unpack β_community_height, α_community_height = container.p
+    @unpack α_community_height, β_community_height = container.p
     relative_height .= height .* biomass ./ sum(biomass)
     height_cwm = sum(relative_height)
-    return 1 / (1 + exp(-β_community_height * (height_cwm - α_community_height)))
+
+    return 1 / (1 + exp(β_community_height * (α_community_height - height_cwm)))
 end

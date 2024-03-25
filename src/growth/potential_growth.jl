@@ -30,13 +30,14 @@ leaf area index of the individual species
 - `potgrowth_total` total potential growth [kg ha⁻¹]
 - `potgrowth` potential growth of each species [kg ha⁻¹]
 
-![Influence of the specific leaf area on the potential growth](../img/sla_potential_growth.svg)
+![](../img/potential_growth_function.svg)
+![](../img/potential_growth.svg)
 """
 function potential_growth!(; container, biomass, PAR)
     @unpack included = container.simp
     @unpack LAIs, potgrowth = container.calc
 
-    LAItot = calculate_LAI(; container, biomass, LAIs)
+    LAItot = calculate_LAI(; container, biomass)
     # if LAItot < 0
     #     @error "LAItot below zero: $LAItot" maxlog=10
     # end
@@ -71,9 +72,10 @@ Calculate the leaf area index of all species of one habitat patch.
 There is a unit conversion from the `SLA` and the `biomass`
 to the unitless `LAI` involved.
 
-The array `LAIs` is mutated inplace.
+![](../img/sla_leaf_lai.svg)
 """
-function calculate_LAI(; container, biomass, LAIs)
+function calculate_LAI(; container, biomass)
+    @unpack LAIs = container.calc
     @unpack sla, lmpm, ampm = container.traits
     @unpack nspecies = container.simp
 
