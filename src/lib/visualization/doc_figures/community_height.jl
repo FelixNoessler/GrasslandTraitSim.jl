@@ -11,7 +11,7 @@ function plot_community_height(; path = nothing)
             @reset container.traits.height = [h * u"m"]
 
             LAItot = potential_growth!(; container, biomass, PAR = container.daily_input.PAR[150])
-            r = community_height_reduction(; container, biomass, LAItot)
+            r = community_height_reduction(; container, biomass)
             pot_gr = ustrip(sum(container.calc.potgrowth))
 
             lais[li] = round(LAItot; digits = 1)
