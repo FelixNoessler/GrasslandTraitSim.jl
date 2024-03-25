@@ -131,9 +131,8 @@ $(FIELDS)
     see [`seasonal_reduction`](@ref) \\
     """
     ST₂::Q6 = F(1573.15)u"K"
-    α_community_height::Q7 = F(10000.0)u"kg / ha "
-    β_community_height::Q8 = F(0.0005)u"ha / kg"
-    exp_community_height = F(0.9)
+    α_community_height::Q7 = F(0.0)u"m"
+    β_community_height::Q8 = F(5.0)u"m^-1"
 
     """
     controls how strongly taller plants gets more light for growth, \\
@@ -357,7 +356,7 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.community_height_red
-        append!(excl_p, [:β_community_height, :α_community_height])
+        append!(excl_p, [:α_community_height, :β_community_height])
     end
 
     if !included.height_competition
@@ -375,9 +374,8 @@ function calibrated_parameter(; input_obj = nothing)
         SENₘₐₓ = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0)),
         SEAₘᵢₙ = (Uniform(0.5, 1.0), as(Real, 0.5, 1.0)),
         SEAₘₐₓ = (Uniform(1.0, 2.0), as(Real, 1.0, 2.0)),
-        α_community_height = (Uniform(0.0, 20000.0), as(Real, 0.0, 20000.0)),
-        β_community_height = (Uniform(0.0, 0.01), as(Real, 0.0, 0.01)),
-        exp_community_height = (Uniform(0.0, 1.0), as(Real, 0.0, 1.0)),
+        α_community_height = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
+        β_community_height = (Uniform(0.0, 10.0), as(Real, 0.0, 10.0)),
         height_strength_exp = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
         mowing_mid_days = (truncated(Normal(10.0, 30.0); lower = 0.0, upper = 60.0),
                            as(Real, 0.0, 60.0)),

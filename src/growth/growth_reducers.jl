@@ -144,9 +144,14 @@ end
 
 
 @doc raw"""
+```math
+r = \frac{1}{1 + \exp(-\beta_{\text{community height}} \cdot
+                      (h_{\text{cwm}} - \alpha_{\text{community height}}))}
+```
+
 Only one species is used for the simulation:
-![Image of the community height reducer fucntion](../img/community_height.svg)
-![Image of the effect of the community height reduction](../img/community_height_influence.svg)
+![Height reducer fucntion](../img/community_height.svg)
+![Effect of the community height reduction](../img/community_height_influence.svg)
 """
 function community_height_reduction(; container, biomass)
     @unpack included = container.simp
@@ -157,9 +162,8 @@ function community_height_reduction(; container, biomass)
 
     @unpack relative_height = container.calc
     @unpack height = container.traits
-    @unpack β_community_height, α_community_height, exp_community_height = container.p
+    @unpack β_community_height, α_community_height = container.p
     relative_height .= height .* biomass ./ sum(biomass)
-    height_cwm = ustrip(sum(relative_height))
-    x = (1 / height_cwm)^exp_community_height * sum(biomass)
-    return 1 / (1 + exp(β_community_height * (x - α_community_height)))
+    height_cwm = sum(relative_height)
+    return 1 / (1 + exp(-β_community_height * (height_cwm - α_community_height)))
 end
