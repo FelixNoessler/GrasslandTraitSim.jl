@@ -1,5 +1,6 @@
 function potential_growth(; path = nothing)
     nspecies, container = create_container(; )
+    @reset container.simp.included.community_height_red = false
 
     par_values = 10
     biomass = container.u.u_biomass[1, 1, :]
@@ -42,6 +43,8 @@ end
 
 function potential_growth_function(; path = nothing)
     nspecies, container = create_container(; )
+    @reset container.simp.included.community_height_red = false
+
     biomass = container.u.u_biomass[1, 1, :]
     biomass_vals = LinRange(0, 100, 150)u"kg / ha"
 
@@ -74,11 +77,7 @@ end
 
 function lai_traits(; path = nothing)
     nspecies, container = create_container()
-
     biomass = container.u.u_biomass[1, 1, :]
-    LAItot = potential_growth!(; container,
-        biomass,
-        PAR = container.daily_input.PAR[150])
 
     calculate_LAI(; container, biomass)
     val = container.calc.LAIs

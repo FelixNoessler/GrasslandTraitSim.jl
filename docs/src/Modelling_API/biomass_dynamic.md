@@ -20,7 +20,7 @@ flowchart LR
 </script> 
 ```
 
-> **Note:** Forcing functions and influence of soil water is omitted in this diagram.
+> **Note:** Forcing functions and influence of soil water are omitted in this diagram.
 
 **The change of the biomass of the plant species is modelled by...**
 - [growth processes](@ref "Growth")

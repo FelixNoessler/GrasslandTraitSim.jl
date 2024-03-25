@@ -35,6 +35,7 @@ growth!
 ```@docs
 potential_growth!
 calculate_LAI
+community_height_reduction
 ```
 
 ---- 
@@ -45,13 +46,12 @@ plant species without any species-specific reduction:
 - ☀ the photosynthetically active radiation [`radiation_reduction`](@ref)
 - 🌡 the air temperature [`temperature_reduction`](@ref)
 - 📈 a seasonal effect, that is modelled by the accumulated degree days [`seasonal_reduction`](@ref)
-- an effect that a smaller plant community can build up less biomass [`community_height_reduction`](@ref)
+
 
 ```@docs
 radiation_reduction
 temperature_reduction
 seasonal_reduction
-community_height_reduction
 ```
 
 --

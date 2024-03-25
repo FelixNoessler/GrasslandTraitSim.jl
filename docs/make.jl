@@ -14,12 +14,14 @@ import GrasslandTraitSim as sim
 
 ####### Copy files to docs folder
 cp("README.md", "docs/src/index.md"; force = true)
-cp("assets/ECEM_2023_presentation.pdf", "docs/src/assets/ECEM_2023_presentation.pdf";
-     force = true)
+cp("assets/ECEM_2023_presentation.pdf",
+   "docs/src/assets/ECEM_2023_presentation.pdf"; force = true)
 cp("assets/Assembly_2024_presentation.pdf",
-   "docs/src/assets/Assembly_2024_presentation.pdf";
-    force = true)
-cp("assets/screenshot.png", "docs/src/img/screenshot.png"; force = true)
+   "docs/src/assets/Assembly_2024_presentation.pdf"; force = true)
+cp("assets/screenshot.png",
+   "docs/src/assets/screenshot.png"; force = true)
+cp("assets/biomass_dynamic_overview.png",
+   "docs/src/assets/biomass_dynamic_overview.png"; force = true)
 
 ####### Create Bilbiography
 bib = CitationBibliography("docs/src/lit.bib"; style = :numeric)

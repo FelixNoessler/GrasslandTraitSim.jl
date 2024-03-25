@@ -13,6 +13,8 @@ Here are slides from presentations that show concepts of the models:
 - [European Conference on Ecological Modelling 2023](assets/ECEM_2023_presentation.pdf)
 - [Biodiversity Exploratories Assembly 2024](assets/Assembly_2024_presentation.pdf)
 
+![](assets/biomass_dynamic_overview.png)
+
 ## Quick install
 
 1. [Download Julia](https://julialang.org/downloads/).
@@ -32,23 +34,21 @@ For more information on installing unregistered packages, see [here](https://pkg
 
 ```julia
 import GrasslandTraitSim as sim
-import GrasslandTraitSim.Valid as valid
 
-input_obj = valid.validation_input(; plotID = "HEG01", nspecies = 25);
-p = sim.parameter(; input_obj)
-sol = sim.solve_prob(; input_obj, p);
+trait_input = sim.input_traits();
+input_obj = sim.validation_input(; plotID = "HEG01", nspecies = 43);
+p = sim.Parameter();
+sol = sim.solve_prob(; input_obj, p, trait_input);
 ```
 
 ## Start the GUI for checking the calibration results
 
 ```julia
-using GLMakie
 import GrasslandTraitSim as sim
-import GrasslandTraitSim.Valid as valid
-import GrasslandTraitSim.Vis as vis
+using GLMakie
 GLMakie.activate!()
 
-vis.dashboard(; sim, valid)
+sim.dashboard()
 ```
 
-![](img/screenshot.png)
+![](assets/screenshot.png)

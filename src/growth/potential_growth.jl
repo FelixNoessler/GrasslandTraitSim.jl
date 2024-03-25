@@ -30,6 +30,8 @@ leaf area index of the individual species
 - `potgrowth_total` total potential growth [kg ha⁻¹]
 - `potgrowth` potential growth of each species [kg ha⁻¹]
 
+- an effect that a smaller plant community can build up less biomass [`community_height_reduction`](@ref)
+
 ![](../img/potential_growth_function.svg)
 ![](../img/potential_growth.svg)
 """
@@ -48,9 +50,11 @@ function potential_growth!(; container, biomass, PAR)
         return LAItot
     end
 
+    height_community_red = community_height_reduction(; container, biomass)
+
     @unpack RUE_max, k = container.p
     potgrowth_total = PAR * RUE_max * (1 - exp(-k * LAItot))
-    @. potgrowth = potgrowth_total * LAIs / LAItot
+    @. potgrowth = potgrowth_total * LAIs / LAItot * height_community_red
 
     return LAItot
 end
@@ -84,4 +88,30 @@ function calculate_LAI(; container, biomass)
     end
 
     return sum(LAIs)
+end
+
+@doc raw"""
+```math
+r = \frac{1}{1 + \exp(-\beta_{\text{community height}} \cdot
+                      (h_{\text{cwm}} - \alpha_{\text{community height}}))}
+```
+
+Only one species is used for the simulation:
+![Height reducer fucntion](../img/community_height.svg)
+![Effect of the community height reduction](../img/community_height_influence.svg)
+"""
+function community_height_reduction(; container, biomass)
+    @unpack included = container.simp
+    if !included.community_height_red
+        @info "No community height growth reduction!" maxlog=1
+        return 1.0
+    end
+
+    @unpack relative_height = container.calc
+    @unpack height = container.traits
+    @unpack α_community_height, β_community_height = container.p
+    relative_height .= height .* biomass ./ sum(biomass)
+    height_cwm = sum(relative_height)
+
+    return 1 / (1 + exp(β_community_height * (α_community_height - height_cwm)))
 end

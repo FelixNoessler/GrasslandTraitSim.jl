@@ -141,30 +141,3 @@ function seasonal_reduction(; container, ST)
         return SEAₘᵢₙ
     end
 end
-
-
-@doc raw"""
-```math
-r = \frac{1}{1 + \exp(-\beta_{\text{community height}} \cdot
-                      (h_{\text{cwm}} - \alpha_{\text{community height}}))}
-```
-
-Only one species is used for the simulation:
-![Height reducer fucntion](../img/community_height.svg)
-![Effect of the community height reduction](../img/community_height_influence.svg)
-"""
-function community_height_reduction(; container, biomass)
-    @unpack included = container.simp
-    if !included.community_height_red
-        @info "No community height growth reduction!" maxlog=1
-        return 1.0
-    end
-
-    @unpack relative_height = container.calc
-    @unpack height = container.traits
-    @unpack α_community_height, β_community_height = container.p
-    relative_height .= height .* biomass ./ sum(biomass)
-    height_cwm = sum(relative_height)
-
-    return 1 / (1 + exp(β_community_height * (α_community_height - height_cwm)))
-end
