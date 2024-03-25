@@ -141,24 +141,12 @@ flowchart LR
 </div>
 ```
 
-The species differ in the response to water stress by the different [specific leaf areas](@ref "Specific leaf area linked to water stress") and [root surface areas per above ground biomass](@ref "Root surface area / aboveground biomass linked to water stress"). The values of both response curves are multiplied to get factor that reduces the plant available water.
+The species differ in their response to water stress by the different trait values of the specific leaf area and the root surface areas per above ground biomass. The values of both response functions are multiplied to get factor that reduces the growth. 
 
 It is implemented in [`water_reduction!`](@ref).
 
 ```@docs
 water_reduction!
-```
-
----
-#### Specific leaf area linked to water stress
-
-```@docs
-```
-
---- 
-#### Root surface area / aboveground biomass linked to water stress
-
-```@docs
 ```
 
 ### Nutrient stress
@@ -188,7 +176,6 @@ It is implemented in [`nutrient_reduction!`](@ref).
 ```@docs
 nutrient_reduction!
 ```
-
 
 ```@raw html
 <script type="module">

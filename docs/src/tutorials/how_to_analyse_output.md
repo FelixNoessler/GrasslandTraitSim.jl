@@ -36,10 +36,14 @@ For plotting the values with `Makie.jl`, we have to remove the units with `ustri
 species_biomass = dropdims(mean(sol.output.biomass; dims = (:x, :y)); dims = (:x, :y))
 total_biomass = vec(sum(species_biomass; dims = :species))
 
-lines(sol.numeric_date, ustrip.(total_biomass), color = :darkgreen, linewidth = 2;
+fig, _ = lines(sol.numeric_date, ustrip.(total_biomass), color = :darkgreen, linewidth = 2;
       axis = (; ylabel = "Aboveground dry biomass [kg ha⁻¹]", 
                 xlabel = "Date [year]"))
+fig
+save("biomass.svg", fig); nothing # hide
 ```
+
+![](biomass.svg)
 
 ## Share of each species
 
@@ -85,7 +89,10 @@ begin
 
     fig
 end
+save("share_biomass.svg", fig); nothing # hide
 ```
+
+![](share_biomass.svg)
 
 ## Soil water content
 
@@ -96,9 +103,13 @@ Similarly, we plot the soil water content over time:
 # we have to first calculate the mean soil water content per site
 soil_water_per_site = dropdims(mean(sol.output.water; dims = (:x, :y)); dims = (:x, :y))
 
-lines(sol.numeric_date, ustrip.(soil_water_per_site), color = :blue, linewidth = 2;
+fig, _ = lines(sol.numeric_date, ustrip.(soil_water_per_site), color = :blue, linewidth = 2;
       axis = (; ylabel = "Soil water content [mm]", xlabel = "Date [year]"))
+fig
+save("soil_water_content.svg", fig); nothing # hide
 ```
+
+![](soil_water_content.svg)
 
 ## Community weighted mean traits
 
@@ -133,7 +144,10 @@ begin
     
     fig
 end
+save("traits_time.svg", fig); nothing # hide
 ```
+
+![](traits_time.svg)
 
 ## Grazed and mown biomass
 
@@ -158,7 +172,10 @@ begin
       lines!(sol.numeric_date, ustrip.(vec(cum_mown)), color = :black, linewidth = 2;)
       fig
 end
+save("grazed_mown.svg", fig); nothing # hide
 ```
+
+![](grazed_mown.svg)
 
 ## Shannon and Simpson diversity
 
@@ -185,4 +202,7 @@ begin
     lines!(sol.numeric_date, simpson, color = :black, linewidth = 2;)
     fig
 end
+save("shannon_simpson.svg", fig); nothing # hide
 ```
+
+![](shannon_simpson.svg)

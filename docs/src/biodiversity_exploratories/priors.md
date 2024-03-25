@@ -29,4 +29,7 @@ begin
 
     fig
 end
+save("priors.svg", fig); nothing # hide
 ```
+
+![](priors.svg)

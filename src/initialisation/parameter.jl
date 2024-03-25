@@ -137,14 +137,14 @@ $(FIELDS)
     to a growth reducer ∈ [0, 1], \\
     see [`community_height_reduction`](@ref) \\
     """
-    α_community_height::Q7 = F(0.5)u"m"
+    α_comH::Q7 = F(0.5)u"m"
 
     """
     part of logistic function that relates the community weighted mean height
     to a growth reducer ∈ [0, 1], \\
     see [`community_height_reduction`](@ref) \\
     """
-    β_community_height::Q8 = F(5.0)u"m^-1"
+    β_comH::Q8 = F(5.0)u"m^-1"
 
     """
     controls how strongly taller plants gets more light for growth, \\
@@ -368,7 +368,7 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.community_height_red
-        append!(excl_p, [:α_community_height, :β_community_height])
+        append!(excl_p, [:α_comH, :β_comH])
     end
 
     if !included.height_competition
@@ -386,8 +386,8 @@ function calibrated_parameter(; input_obj = nothing)
         SENₘₐₓ = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0)),
         SEAₘᵢₙ = (Uniform(0.5, 1.0), as(Real, 0.5, 1.0)),
         SEAₘₐₓ = (Uniform(1.0, 2.0), as(Real, 1.0, 2.0)),
-        # α_community_height = (Uniform(-5.0, 5.0), as(Real, -5.0, 5.0)),
-        # β_community_height = (Uniform(-10.0, 0.0), as(Real, -10.0, 0.0)),
+        # α_comH = (Uniform(-5.0, 5.0), as(Real, -5.0, 5.0)),
+        # β_comH = (Uniform(-10.0, 0.0), as(Real, -10.0, 0.0)),
         height_strength_exp = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
         mowing_mid_days = (truncated(Normal(10.0, 30.0); lower = 0.0, upper = 60.0),
                            as(Real, 0.0, 60.0)),

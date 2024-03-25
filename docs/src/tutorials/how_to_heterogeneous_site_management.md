@@ -79,4 +79,7 @@ begin
     
     fig
 end
+save("het_management.svg", fig); nothing # hide
 ```
+
+![](het_management.svg)
