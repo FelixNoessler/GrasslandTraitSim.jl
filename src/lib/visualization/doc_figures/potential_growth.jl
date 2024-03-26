@@ -1,90 +1,13 @@
 ################################################################
 # Plots for potential growth
 ################################################################
-function potential_growth_par_lai(; path = nothing)
-    nspecies, container = create_container(; )
-    @reset container.simp.included.community_height_red = false
-
-    par_values = 10
-    biomass = container.u.u_biomass[1, 1, :]
-    PARs = LinRange(0, 12, par_values)u"MJ * m^-2"
-    ymat = Array{Float64}(undef, nspecies, par_values)
-
-    for (i, PAR) in enumerate(PARs)
-        potential_growth!(; container, biomass, PAR)
-        ymat[:, i] .= ustrip.(container.calc.potgrowth)
-    end
-
-    idx = sortperm(container.calc.LAIs)
-    ymat = ymat[idx, :]
-    sla = ustrip.(container.calc.LAIs[idx])
-    colorrange = (minimum(sla), maximum(sla))
-    colormap = :viridis
-
-    fig = Figure(; size = (600, 400))
-    Axis(fig[1, 1],
-        xlabel = "Photosynthetically active radiation [MJ m⁻²]",
-        ylabel = "Potential growth [kg ha⁻¹]")
-
-    for i in nspecies:-1:1
-        lines!(ustrip.(PARs), ymat[i, :];
-            colorrange,
-            colormap,
-            color = sla[i])
-    end
-    Colorbar(fig[1, 2]; colormap, colorrange, label = "Leaf area index [-]")
-
-    if !isnothing(path)
-        save(path, fig;)
-    else
-        display(fig)
-    end
-
-    return nothing
-end
-
-
-function potential_growth_lai(; path = nothing)
-    nspecies, container = create_container(; )
-    @reset container.simp.included.community_height_red = false
-
-    biomass = container.u.u_biomass[1, 1, :]
-    biomass_vals = LinRange(0, 100, 150)u"kg / ha"
-
-    ymat = Array{Float64}(undef, length(biomass_vals))
-    lai_tot = Array{Float64}(undef, length(biomass_vals))
-
-    for (i,b) in enumerate(biomass_vals)
-        biomass .= b
-        potential_growth!(; container, biomass, PAR = container.daily_input.PAR[150])
-
-        ymat[i] = ustrip(sum(container.calc.potgrowth))
-        lai_tot[i] = sum(container.calc.LAIs)
-    end
-
-    fig = Figure(; size = (600, 400))
-    Axis(fig[1, 1],
-        xlabel = "Total leaf area index [-]",
-        ylabel = "Total potential growth [kg ha⁻¹]",
-        title = "Without community height reduction")
-    lines!(lai_tot, ymat; linewidth = 3.0)
-
-    if !isnothing(path)
-        save(path, fig;)
-    else
-        display(fig)
-    end
-
-    return nothing
-end
-
 function potential_growth_lai_height(; path = nothing)
     nspecies, container = create_container(; )
     biomass = container.u.u_biomass[1, 1, :]
     biomass_vals = LinRange(0, 100, 150)u"kg / ha"
 
-    height_vals = reverse([0.2, 0.5, 1.0]u"m")
-    ymat = Array{Float64}(undef, 3, length(biomass_vals))
+    height_vals = reverse([0.2, 0.5, 1.0, 100000.0]u"m")
+    ymat = Array{Float64}(undef, length(height_vals), length(biomass_vals))
     lai_tot = Array{Float64}(undef, length(biomass_vals))
 
     for (hi, h) in enumerate(height_vals)
@@ -93,7 +16,7 @@ function potential_growth_lai_height(; path = nothing)
             biomass .= b
             potential_growth!(; container, biomass, PAR = container.daily_input.PAR[150])
 
-            ymat[hi, i] = ustrip(sum(container.calc.potgrowth))
+            ymat[hi, i] = ustrip(container.calc.com.potgrowth_total)
             lai_tot[i] = sum(container.calc.LAIs)
         end
     end
@@ -103,11 +26,13 @@ function potential_growth_lai_height(; path = nothing)
         xlabel = "Total leaf area index [-]",
         ylabel = "Total potential growth [kg ha⁻¹]")
     lines!(lai_tot, ymat[1, :]; linewidth = 3.0,
-           label = "$(ustrip(height_vals[1]))")
+           label = "without com. height red.")
     lines!(lai_tot, ymat[2, :]; linewidth = 3.0,
         label = "$(ustrip(height_vals[2]))")
     lines!(lai_tot, ymat[3, :]; linewidth = 3.0,
         label = "$(ustrip(height_vals[3]))")
+    lines!(lai_tot, ymat[4, :]; linewidth = 3.0,
+        label = "$(ustrip(height_vals[4]))")
     axislegend("Community weighted\nmean height [m]";
                position = :lt, framevisible = true)
 
@@ -131,13 +56,11 @@ function potential_growth_height_lai(; path = nothing)
         for (hi, h) in enumerate(heights)
             biomass .= biomass_val[li]
             @reset container.traits.height = [h * u"m"]
+            potential_growth!(; container, biomass, PAR = container.daily_input.PAR[150])
+            pot_gr = ustrip(container.calc.com.potgrowth_total)
 
-            LAItot = potential_growth!(; container, biomass, PAR = container.daily_input.PAR[150])
-            r = community_height_reduction(; container, biomass)
-            pot_gr = ustrip(sum(container.calc.potgrowth))
-
-            lais[li] = round(LAItot; digits = 1)
-            red[li, hi] = pot_gr * r
+            lais[li] = round(container.calc.com.LAItot; digits = 1)
+            red[li, hi] = pot_gr
         end
     end
 
@@ -166,7 +89,6 @@ function lai_traits(; path = nothing)
     nspecies, container = create_container()
     biomass = container.u.u_biomass[1, 1, :]
 
-    calculate_LAI(; container, biomass)
     val = container.calc.LAIs
 
     idx = sortperm(container.traits.sla)
@@ -205,15 +127,14 @@ function potential_growth_height(; path = nothing)
 
     for (hi, h) in enumerate(heights)
         @reset container.traits.height = [h * u"m"]
-        r = community_height_reduction(; container, biomass)
-        red[hi] = r
+        potential_growth!(; container, biomass, PAR = container.daily_input.PAR[150])
+        red[hi] = container.calc.com.comH_reduction
     end
 
     fig = Figure()
     Axis(fig[1,1]; xlabel = "Community weighted mean height [m]",
-         ylabel = "Growth reduction factor [-]")
-    linewidth = 3.0
-    lines!(heights, red; linewidth)
+         ylabel = "Community height growth reduction factor [-]")
+    lines!(heights, red; linewidth = 3.0)
 
     if !isnothing(path)
         save(path, fig;)
@@ -233,7 +154,7 @@ function community_height_influence(; path = nothing)
         plotID = "HEG01", nspecies = 1);
     input_obj.daily_input.grazing .= NaN * u"ha^-1"
     input_obj.daily_input.mowing .= NaN * u"m"
-    p = Parameter()
+    p = SimulationParameter()
 
     function sim_community_height(; community_height_red)
         @reset input_obj.simp.included.community_height_red .= community_height_red

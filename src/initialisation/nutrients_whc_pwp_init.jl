@@ -103,26 +103,3 @@ function input_WHC_PWP!(; prealloc, input_obj)
 
     return nothing
 end
-
-"""
-Helper function to fill a matrix with a gradient with values from 0 to 1.
-
-The `direction` controls the direction of the gradient.
-
-![](../img/gradient.svg)
-"""
-function planar_gradient!(; mat, direction = 100)
-    # based on:
-    # https://github.com/EcoJulia/NeutralLandscapes.jl/blob/main/src/makers/planargradient.jl
-
-    eastness = sin(deg2rad(direction))
-    southness = -1cos(deg2rad(direction))
-    rows, cols = axes(mat)
-    mat .= rows .* southness .+ cols' .* eastness
-
-    mn = minimum(mat)
-    mx = maximum(mat)
-    mat .= (mat .- mn) ./ (mx - mn)
-
-    return nothing
-end

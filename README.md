@@ -37,7 +37,7 @@ import GrasslandTraitSim as sim
 
 trait_input = sim.input_traits();
 input_obj = sim.validation_input(; plotID = "HEG01", nspecies = 43);
-p = sim.Parameter();
+p = sim.SimulationParameter();
 sol = sim.solve_prob(; input_obj, p, trait_input);
 ```
 

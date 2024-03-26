@@ -34,8 +34,7 @@ growth!
 
 ```@docs
 potential_growth!
-calculate_LAI
-community_height_reduction
+calculate_LAI!
 ```
 
 ---- 
@@ -69,22 +68,16 @@ flowchart LR
 ```
 
 
-### [Influence of plant height](@id plant_height)
+### Light competition
 
 ```@raw html
 <div class="mermaid">
 flowchart LR
-    K(trait: height) -->|taller plants get\nmore light| F
+    L[Leaf area index] -->|species with more leaf area\nget higher share| F
+    K[trait: height] -->|taller plants get\nmore light| F
     F[⇅ light competition] --> C[[species-specific adjustment]]
 </div>
 ```
-
-Taller plants get more light and can therefore growth more than smaller plants. 
-This is modelled by the influence of the potential height in relation to the community 
-weighted mean potential height.
-
-The potential height refers to the height that the plant would reach 
-if it would not be limited by other factors.
 
 ```@docs	
 light_competition!

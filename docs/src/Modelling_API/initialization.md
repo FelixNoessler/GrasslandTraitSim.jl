@@ -46,7 +46,6 @@ The patch specific parameters are:
 ```@docs
 input_WHC_PWP!
 input_nutrients!
-planar_gradient!
 ```
 
 ## Set the initial conditions of the state variables

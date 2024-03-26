@@ -70,12 +70,14 @@ function preallocate_vectors(; input_obj, T = Float64)
         H_sla = Array{T}(undef, nspecies))
 
     calc = (;
+        com = CommunityLevel1(),
+
         negbiomass = fill(false, ntimesteps, patch_xdim, patch_ydim, nspecies),
 
         ############ preallaocated vectors that are used in the calculations
-        potgrowth = Array{T}(undef, nspecies)u"kg / ha",
+        light_competition = Array{T}(undef, nspecies),
         act_growth = Array{T}(undef, nspecies)u"kg / ha",
-        senescence = zeros(T, nspecies)u"kg / ha",
+        senescence = Array{T}(undef, nspecies)u"kg / ha",
         defoliation = Array{T}(undef, nspecies)u"kg / ha",
         species_specific_red = Array{T}(undef, nspecies),
         LAIs = Array{T}(undef, nspecies),
@@ -141,6 +143,12 @@ function preallocate_vectors(; input_obj, T = Float64)
         TS = Array{T}(undef, nspecies, nspecies))
 
     return (; u, patch_variables, calc, traits, transfer_function, output)
+end
+
+@with_kw mutable struct CommunityLevel1{T, Q} @deftype T
+    LAItot = 0.0
+    potgrowth_total::Q = 0.0u"kg/ha"
+    comH_reduction = 1.0
 end
 
 function preallocate_specific_vectors(; input_obj, T = Float64)

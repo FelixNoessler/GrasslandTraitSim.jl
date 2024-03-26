@@ -13,7 +13,7 @@ using Unitful
 input_obj = sim.validation_input(;
     plotID = "HEG01", nspecies = 25,
     trait_seed = 99);
-p = sim.Parameter();
+p = sim.SimulationParameter();
 sol = sim.solve_prob(; input_obj, p);
 
 nothing # hide

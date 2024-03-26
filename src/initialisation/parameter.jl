@@ -1,10 +1,10 @@
 """
-    Parameter(; kwargs...)
+    SimulationParameter(; kwargs...)
 
 Here is an overview of the parameters that are used in the model. The parameters are...
 $(FIELDS)
 """
-@with_kw mutable struct Parameter{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9,
+@with_kw mutable struct SimulationParameter{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9,
                                   Q10, Q11, Q12, Q13, Q14, Q15, Q16} @deftype T
 
     """
@@ -18,6 +18,18 @@ $(FIELDS)
     see [`potential_growth!`](@ref) \\
     """
     k = F(0.6)
+
+    """
+    is the community weighted mean height, where the community height growth reducer is 0.5, \\
+    see [`potential_growth!`](@ref) \\
+    """
+    α_comH::Q7 = F(0.5)u"m"
+
+    """
+    is the slope of the logistic function that relates the community weighted mean height to the community height growth reducer, \\
+    see [`potential_growth!`](@ref) \\
+    """
+    β_comH::Q8 = F(5.0)u"m^-1"
 
     """
     senescence rate-intercept of a linear equation that relate the leaf life span to the senescence rate, \\
@@ -133,24 +145,10 @@ $(FIELDS)
     ST₂::Q6 = F(1573.15)u"K"
 
     """
-    part of logistic function that relates the community weighted mean height
-    to a growth reducer ∈ [0, 1], \\
-    see [`community_height_reduction`](@ref) \\
-    """
-    α_comH::Q7 = F(0.5)u"m"
-
-    """
-    part of logistic function that relates the community weighted mean height
-    to a growth reducer ∈ [0, 1], \\
-    see [`community_height_reduction`](@ref) \\
-    """
-    β_comH::Q8 = F(5.0)u"m^-1"
-
-    """
     controls how strongly taller plants gets more light for growth, \\
     see [`light_competition!`](@ref) \\
     """
-    height_strength_exp = F(0.5)
+    β_H = F(0.5)
 
     """
     number of days after a mowing event when the plants are grown back to
@@ -372,7 +370,7 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.height_competition
-        append!(excl_p, [:height_strength_exp])
+        append!(excl_p, [:β_H])
     end
 
     return excl_p
@@ -380,15 +378,15 @@ end
 
 function calibrated_parameter(; input_obj = nothing)
     p = (;
+        # α_comH = (Uniform(-5.0, 5.0), as(Real, -5.0, 5.0)),
+        # β_comH = (Uniform(-10.0, 0.0), as(Real, -10.0, 0.0)),
         α_sen = (Uniform(0, 0.01), as(Real, 0.0, 0.01)),
         β_sen = (Uniform(0.0, 0.1),  as(Real, 0.0, 0.1)),
         Ψ₁ = (Uniform(700.0, 3000.0), as(Real, 700.0, 3000.0)),
         SENₘₐₓ = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0)),
         SEAₘᵢₙ = (Uniform(0.5, 1.0), as(Real, 0.5, 1.0)),
         SEAₘₐₓ = (Uniform(1.0, 2.0), as(Real, 1.0, 2.0)),
-        # α_comH = (Uniform(-5.0, 5.0), as(Real, -5.0, 5.0)),
-        # β_comH = (Uniform(-10.0, 0.0), as(Real, -10.0, 0.0)),
-        height_strength_exp = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
+        β_H = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
         mowing_mid_days = (truncated(Normal(10.0, 30.0); lower = 0.0, upper = 60.0),
                            as(Real, 0.0, 60.0)),
         leafnitrogen_graz_exp = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
@@ -459,24 +457,24 @@ end
 
 
 F = Float64
-function Parameter(dual_type)
+function SimulationParameter(dual_type)
     global F = dual_type
-    p = Parameter()
+    p = SimulationParameter()
     global F = Float64
 
     return p
 end
 
-Base.getindex(obj::Parameter, k) = getfield(obj, k)
-Base.setindex!(obj::Parameter, val, k) = setfield!(obj, k, val)
-Base.keys(obj::Parameter) = propertynames(obj)
-Base.length(obj::Parameter) = length(propertynames(obj))
+Base.getindex(obj::SimulationParameter, k) = getfield(obj, k)
+Base.setindex!(obj::SimulationParameter, val, k) = setfield!(obj, k, val)
+Base.keys(obj::SimulationParameter) = propertynames(obj)
+Base.length(obj::SimulationParameter) = length(propertynames(obj))
 
-function Base.iterate(obj::Parameter)
+function Base.iterate(obj::SimulationParameter)
     return (obj[propertynames(obj)[1]], 2)
 end
 
-function Base.iterate(obj::Parameter, i)
+function Base.iterate(obj::SimulationParameter, i)
     if i > length(obj)
         return nothing
     end
@@ -484,10 +482,9 @@ function Base.iterate(obj::Parameter, i)
 end
 
 
-function add_units(x; p = Parameter())
+function add_units(x; p = SimulationParameter())
     for k in keys(x)
-        x = @set x[k] = x[k] * unit(p[k])
+        @reset x[k] = x[k] * unit(p[k])
     end
-
     return x
 end

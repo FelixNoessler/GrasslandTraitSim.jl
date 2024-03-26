@@ -47,8 +47,10 @@ per day.
 - `PET` is the potential evapotranspiration [mm]
 - `LAItot` is the total leaf area index of all plants [-]
 """
-function change_water_reserve(; container, patch_biomass, water, precipitation, LAItot,
+function change_water_reserve(; container, patch_biomass, water, precipitation,
                               PET, WHC, PWP)
+    @unpack LAItot = container.calc.com
+
     # -------- Evapotranspiration
     AEv = evaporation(; water, WHC, PET, LAItot)
     ATr = transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)

@@ -119,7 +119,7 @@ function dashboard_layout(; variable_p)
     gradient_toggle = Toggle(righttop_layout[1, 2]; active = false)
     preset_button = Button(righttop_layout[1, 3]; label = "reset parameter")
 
-    p = Parameter()
+    p = SimulationParameter()
     for k in keys(variable_p)
         p[k] = variable_p[k]
     end

@@ -31,10 +31,8 @@ docs_img = "docs/src/img"
 f(path; show_img = false) = show_img ? nothing : path
 
 #### potential growth
-sim.potential_growth_lai(; path = f("$docs_img/potential_growth_lai.svg"))
 sim.potential_growth_lai_height(; path = f("$docs_img/potential_growth_lai_height.svg"))
 sim.potential_growth_height_lai(; path = f("$docs_img/potential_growth_height_lai.svg"))
-sim.potential_growth_par_lai(; path = f("$docs_img/potential_growth_par_lai.svg"))
 sim.lai_traits(; path = f("$docs_img/lai_traits.svg"))
 sim.potential_growth_height(; path = f("$docs_img/potential_growth_height.svg"))
 sim.community_height_influence(; path = f("$docs_img/community_height_influence.svg"))
@@ -76,21 +74,18 @@ sim.trampling_biomass(; path = f("$docs_img/trampling_biomass.svg"))
 sim.trampling_livestockdensity(; path = f("$docs_img/trampling_LD.svg"))
 sim.trampling_biomass_individual(; path = f("$docs_img/trampling_biomass_individual.svg"))
 
-## with patches
-sim.planar_gradient(; path = f("$docs_img/gradient.svg"))
-# sim.neighbours_surroundings(; path = "$docs_img/neighbours.svg")
+##  clonal growth
 sim.plot_clonalgrowth(; path = f("$docs_img/clonalgrowth.svg"))
 
 # for prettyurls you need locally a live server
 makedocs(;
+    warnonly  = true,
     plugins = [bib],
     sitename = "GrasslandTraitSim.jl",
     modules = [GrasslandTraitSim],
     format = Documenter.HTML(;
-        canonical="https://FelixNoessler.github.io/GrasslandTraitSim.jl",
-        edit_link="master",
-        assets = String[],
-        size_threshold = nothing,
+        canonical = "https://FelixNoessler.github.io/GrasslandTraitSim.jl",
+        edit_link = "master",
         prettyurls = true,
         mathengine = MathJax3()
     ),

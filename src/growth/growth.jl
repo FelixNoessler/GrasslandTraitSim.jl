@@ -12,15 +12,14 @@ Calculates the actual growth of the plant species.
 function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     @unpack daily_input = container
     @unpack included = container.simp
-    @unpack species_specific_red, heightinfluence, Waterred, Nutred = container.calc
-    @unpack act_growth, potgrowth = container.calc
+    @unpack species_specific_red, light_competition, Waterred, Nutred = container.calc
+    @unpack act_growth = container.calc
+    @unpack potgrowth_total = container.calc.com
 
     #### potential growth
-    LAItot = potential_growth!(; container,
-        biomass,
-        PAR = daily_input.PAR[t])
+    potential_growth!(; container, biomass, PAR = daily_input.PAR[t])
 
-    ### influence of the height of plants
+    ### influence of the leaf areay index and the height of the plants
     light_competition!(; container, biomass)
 
     #### below ground competition --> trait similarity and abundance
@@ -33,11 +32,11 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     Tred = temperature_reduction(; container, T = daily_input.temperature[t])
     Seasonalred = seasonal_reduction(; container, ST = daily_input.temperature_sum[t])
 
-    @. species_specific_red = heightinfluence * Waterred * Nutred
+    @. species_specific_red = light_competition * Waterred * Nutred
     reduction = Rred * Tred * Seasonalred
 
     #### final growth
-    @. act_growth = potgrowth * reduction * species_specific_red
+    @. act_growth = potgrowth_total * reduction * species_specific_red
 
-    return LAItot
+    return nothing
 end

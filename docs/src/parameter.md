@@ -5,7 +5,7 @@ CurrentModule = GrasslandTraitSim
 # Model Parameter
 
 ```@docs
-Parameter
+SimulationParameter
 ```
 
 In addition, regression equation from [Gupta1979](@cite) is used to derive the water holding capacity and the permanent wilting point (see [`input_WHC_PWP!`](@ref)).

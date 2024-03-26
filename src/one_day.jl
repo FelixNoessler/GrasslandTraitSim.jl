@@ -62,8 +62,6 @@ function one_day!(; t, container)
     @unpack WHC, PWP, nutrients = container.patch_variables
     @unpack act_growth, senescence, defoliation = container.calc
 
-    LAItot = 0.0
-
     ## -------- clonal growth
     if doy[t] == 250 && npatches > 1 && included.clonalgrowth
         clonalgrowth!(; container)
@@ -121,7 +119,7 @@ function one_day!(; t, container)
                 end
 
                 # ------------------------------------------ growth
-                LAItot = growth!(; t, container,
+                growth!(; t, container,
                     biomass = patch_biomass,
                     W = u_water[x, y],
                     nutrients = nutrients[x, y],
@@ -140,7 +138,7 @@ function one_day!(; t, container)
             @. du_biomass[x, y, :] = act_growth - senescence - defoliation
 
             # --------------------- water dynamics
-            du_water[x, y] = change_water_reserve(; container, patch_biomass, LAItot,
+            du_water[x, y] = change_water_reserve(; container, patch_biomass,
                 water = u_water[x, y],
                 precipitation = daily_input.precipitation[t],
                 PET = daily_input.PET[t],
