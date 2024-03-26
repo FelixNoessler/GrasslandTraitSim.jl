@@ -30,10 +30,16 @@ bib = CitationBibliography("docs/src/lit.bib"; style = :numeric)
 docs_img = "docs/src/img"
 f(path; show_img = false) = show_img ? nothing : path
 
+#### potential growth
+sim.potential_growth_lai(; path = f("$docs_img/potential_growth_lai.svg"))
+sim.potential_growth_lai_height(; path = f("$docs_img/potential_growth_lai_height.svg"))
+sim.potential_growth_height_lai(; path = f("$docs_img/potential_growth_height_lai.svg"))
+sim.potential_growth_par_lai(; path = f("$docs_img/potential_growth_par_lai.svg"))
+sim.lai_traits(; path = f("$docs_img/lai_traits.svg"))
+sim.potential_growth_height(; path = f("$docs_img/potential_growth_height.svg"))
+sim.community_height_influence(; path = f("$docs_img/community_height_influence.svg"))
+
 #### transfer functions
-sim.potential_growth_function(; path = f("$docs_img/potential_growth_function.svg"))
-sim.potential_growth(; path = f("$docs_img/potential_growth.svg"))
-sim.lai_traits(; path = f("$docs_img/sla_leaf_lai.svg"))
 sim.W_rsa_response(; path = f("$docs_img/W_rsa_response.svg"), δ_wrsa = 1.0)
 sim.W_rsa_response(; path = f("$docs_img/W_rsa_response_0_5.svg"), δ_wrsa = 0.5)
 sim.rsa_above_nut_response(; path = f("$docs_img/rsa_above_nut_response.svg"),
@@ -54,8 +60,6 @@ sim.temperatur_reducer(; path = f("$docs_img/temperature_reducer.svg"))
 sim.radiation_reducer(; path = f("$docs_img/radiation_reducer.svg"))
 sim.height_influence(; path = f("$docs_img/height_influence.svg"))
 sim.below_influence(; path = f("$docs_img/below_influence.svg"))
-sim.community_height_influence(; path = f("$docs_img/community_height_influence.svg"))
-sim.plot_community_height(; path = f("$docs_img/community_height.svg"))
 
 #### seasonal effects
 sim.seasonal_effect(; path = f("$docs_img/seasonal_reducer.svg"))

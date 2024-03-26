@@ -32,8 +32,10 @@ leaf area index of the individual species
 
 - an effect that a smaller plant community can build up less biomass [`community_height_reduction`](@ref)
 
-![](../img/potential_growth_function.svg)
-![](../img/potential_growth.svg)
+![](../img/potential_growth_lai.svg)
+![](../img/potential_growth_lai_height.svg)
+![](../img/potential_growth_height_lai.svg)
+![](../img/potential_growth_par_lai.svg)
 """
 function potential_growth!(; container, biomass, PAR)
     @unpack included = container.simp
@@ -76,7 +78,7 @@ Calculate the leaf area index of all species of one habitat patch.
 There is a unit conversion from the `SLA` and the `biomass`
 to the unitless `LAI` involved.
 
-![](../img/sla_leaf_lai.svg)
+![](../img/lai_traits.svg)
 """
 function calculate_LAI(; container, biomass)
     @unpack LAIs = container.calc
@@ -91,14 +93,14 @@ function calculate_LAI(; container, biomass)
 end
 
 @doc raw"""
+Reduction of the potential growth based on low community weighted mean height.
+
 ```math
-r = \frac{1}{1 + \exp(-\beta_{\text{community height}} \cdot
-                      (h_{\text{cwm}} - \alpha_{\text{community height}}))}
+r = \frac{1}{1 + \exp(-\beta_{comH}} \cdot (H_{cwm} - \alpha_{comH}))}
 ```
 
-Only one species is used for the simulation:
-![Height reducer fucntion](../img/community_height.svg)
-![Effect of the community height reduction](../img/community_height_influence.svg)
+![](../img/potential_growth_height.svg)
+![](../img/community_height_influence.svg)
 """
 function community_height_reduction(; container, biomass)
     @unpack included = container.simp
