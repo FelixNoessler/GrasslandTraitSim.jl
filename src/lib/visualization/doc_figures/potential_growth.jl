@@ -89,6 +89,7 @@ function lai_traits(; path = nothing)
     nspecies, container = create_container()
     biomass = container.u.u_biomass[1, 1, :]
 
+    potential_growth!(; container, biomass, PAR = container.daily_input.PAR[150])
     val = container.calc.LAIs
 
     idx = sortperm(container.traits.sla)
