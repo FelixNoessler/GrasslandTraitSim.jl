@@ -81,13 +81,13 @@ end
 function below_influence(; path = nothing)
     nspecies, container = create_container(; )
 
-    #################### varying belowground_density_effect, equal biomass, random traits
+    #################### varying β_TSB, equal biomass, random traits
     below_effects = LinRange(0, 2.0, 200)
     biomass = fill(50.0, nspecies)u"kg / ha"
     ymat = Array{Float64}(undef, nspecies, length(below_effects))
 
     for (i, below_effect) in enumerate(below_effects)
-        container = @set container.p.belowground_density_effect = below_effect
+        container = @set container.p.β_TSB = below_effect
         below_ground_competition!(; container, biomass)
         ymat[:, i] .= container.calc.biomass_density_factor
     end
@@ -114,8 +114,8 @@ function below_influence(; path = nothing)
                     TS = mat,
                     biomass_density_factor = zeros(3)),
             simp = (; included = (; belowground_competition = true)),
-            p = (; belowground_density_effect = artificial_below[i],
-                biomass_dens = 80u"kg / ha"))
+            p = (; β_TSB = artificial_below[i],
+                α_TSB = 80u"kg / ha"))
         below_ground_competition!(; container = c, biomass)
 
         artificial_mat[:, i] = c.calc.biomass_density_factor
@@ -130,7 +130,7 @@ function below_influence(; path = nothing)
 
     fig = Figure(; size = (900, 800))
     Axis(fig[1, 1];
-        # xlabel = "Strength of resource partitioning\n(belowground_density_effect)",
+        # xlabel = "Strength of resource partitioning\n(β_TSB)",
         xticklabelsvisible = false,
         title = "Real community with equal biomass")
     ylims!(-0.1, nothing)
@@ -143,7 +143,7 @@ function below_influence(; path = nothing)
     Colorbar(fig[1, 2]; colorrange, colormap, label = "Mean trait similarity")
 
     ax2 = Axis(fig[2, 1];
-        xlabel = "Strength of resource partitioning\n(belowground_density_effect)",
+        xlabel = "Strength of resource partitioning\n(β_TSB)",
         title = "Artificial community")
     for i in 1:3
         lines!(artificial_below, artificial_mat[i, :];
@@ -156,7 +156,7 @@ function below_influence(; path = nothing)
 
     # Axis(fig[3, 1];
     #     xlabel = "Mean trait similarity",
-    #     title = "belowground_density_effect = $(below_density_effect)")
+    #     title = "β_TSB = $(below_density_effect)")
     # ylims!(-0.1, nothing)
     # lines!(quantile(mean_traitsim, [0.0, 1.0]), [1, 1];
     #     color = :black)

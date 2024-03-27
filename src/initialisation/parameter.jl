@@ -189,20 +189,20 @@ $(FIELDS)
 
     """
     if the matrix multiplication between the trait similarity matrix and
-    the biomass equals `biomass_dens` the available water and nutrients
+    the biomass equals `α_TSB` the available water and nutrients
     for growth are not in- or decreased,
     see [`below_ground_competition!`](@ref) \\
     """
-    biomass_dens::Q11 = F(1200.0)u"kg / ha"
+    α_TSB::Q11 = F(1200.0)u"kg / ha"
     lowbiomass_k::Q12 = F(0.1)u"ha / kg"
 
     """
     the available water and nutrients are in- or decreased
     if the matrix multiplication between the trait similarity matrix and
-    the biomass of the species is above or below of `biomass_dens`,
+    the biomass of the species is above or below of `α_TSB`,
     see [`below_ground_competition!`] \\
     """
-    belowground_density_effect = F(2.0)
+    β_TSB = F(2.0)
     α_pet::Q13 = F(2.0)u"mm"
     β_pet::Q14 = F(1.2)u"mm^-1"
 
@@ -336,7 +336,7 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.belowground_competition
-        append!(excl_p, [:biomass_dens, :belowground_density_effect])
+        append!(excl_p, [:α_TSB, :β_TSB])
     end
 
     if !included.grazing
@@ -398,9 +398,8 @@ function calibrated_parameter(; input_obj = nothing)
         κ = (Uniform(12.0, 22.5), as(Real, 12.0, 22.5)),
         lowbiomass = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0)),
         lowbiomass_k = (Uniform(0.0, 1.0), as(Real, 0.0, 1.0)),
-        biomass_dens = (truncated(Normal(1000.0, 1000.0); lower = 0.0), asℝ₊),
-        belowground_density_effect = (truncated(Normal(1.0, 0.5); lower = 0.0),
-                                      asℝ₊),
+        α_TSB = (truncated(Normal(1000.0, 1000.0); lower = 0.0), asℝ₊),
+        β_TSB = (truncated(Normal(1.0, 0.5); lower = 0.0), asℝ₊),
         α_pet = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
         β_pet = (truncated(Normal(1.0, 1.0); lower = 0.0), asℝ₊),
         sla_tr = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊),

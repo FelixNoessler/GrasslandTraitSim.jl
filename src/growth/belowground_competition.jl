@@ -62,8 +62,8 @@ TS \cdot B =
 The factors are then calculated as follows:
 ```math
 \text{biomass_density_factor} =
-    \left(\frac{TS \cdot B}{\text{biomass_dens}}\right) ^
-    {- \text{belowground_density_effect}} \\
+    \left(\frac{TS \cdot B}{\text{α_TSB}}\right) ^
+    {- \text{β_TSB}} \\
 ```
 
 The reduction factors control the density and increases the "functional dispersion"
@@ -79,7 +79,7 @@ and the root surface area devided by the above ground biomass (`rsa_above`).
   plant available nutrients and soil water [-]
 - `TS` is the trait similarity matrix, $TS \in [0,1]^{N \times N}$ [-]
 - `B` is the biomass vector, $B \in [0, ∞]^{N}$ [kg ha⁻¹]
-- `belowground_density_effect` is the exponent of the below ground
+- `β_TSB` is the exponent of the below ground
   competition factor [-]
 
 ![](../img/below_influence.svg)
@@ -94,13 +94,13 @@ function below_ground_competition!(; container, biomass)
         return nothing
     end
 
-    @unpack belowground_density_effect, biomass_dens = container.p
+    @unpack β_TSB, α_TSB = container.p
     LinearAlgebra.mul!(TS_biomass, TS, biomass)
 
 
     ## biomass density factor should be between 0.33 and 3.0
     for i in eachindex(biomass_density_factor)
-        biomass_factor = (TS_biomass[i] / biomass_dens) ^ -belowground_density_effect
+        biomass_factor = (TS_biomass[i] / α_TSB) ^ -β_TSB
 
         if biomass_factor > 3.0
             biomass_factor = 3.0
