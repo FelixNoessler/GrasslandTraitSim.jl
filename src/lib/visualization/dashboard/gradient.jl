@@ -34,13 +34,13 @@ mutable struct ParameterCache{T}
 end
 
 function ParameterCache()
-    return ParameterCache(SimulationParameter1(), nothing)
+    return ParameterCache(SimulationParameter(), nothing)
 end
 
 function get_buffer(buffer::ParameterCache, T)
     if T <: ForwardDiff.Dual
         if isnothing(buffer.diff)
-            buffer.diff = SimulationParameter1(T)
+            buffer.diff = SimulationParameter(T)
         end
         return buffer.diff
 

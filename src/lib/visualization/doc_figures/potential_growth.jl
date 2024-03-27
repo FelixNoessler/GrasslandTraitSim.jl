@@ -155,7 +155,7 @@ function community_height_influence(; path = nothing)
         plotID = "HEG01", nspecies = 1);
     input_obj.daily_input.grazing .= NaN * u"ha^-1"
     input_obj.daily_input.mowing .= NaN * u"m"
-    p = SimulationParameter1()
+    p = SimulationParameter()
 
     function sim_community_height(; community_height_red)
         @reset input_obj.simp.included.community_height_red .= community_height_red

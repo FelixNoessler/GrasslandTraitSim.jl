@@ -9,7 +9,7 @@ H_{cwm, txy} &= \sum_{s=1}^{S}\frac{B_{txys}}{B_{tot, txy}} \cdot H_s
 \end{align*}
 ```
 
-Parameter, see also [`SimulationParameter1`](@ref):
+Parameter, see also [`SimulationParameter`](@ref):
 - ``\beta_H`` (`β_LIG_height`) controls how strongly taller plants gets more light for growth [-]
 
 Variables:

@@ -1,10 +1,10 @@
 """
-    SimulationParameter1(; kwargs...)
+    SimulationParameter(; kwargs...)
 
 Here is an overview of the parameters that are used in the model. The parameters are...
 $(FIELDS)
 """
-@with_kw mutable struct SimulationParameter1{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9,
+@with_kw mutable struct SimulationParameter{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9,
                                   Q10, Q11, Q12, Q13, Q14, Q15, Q16} @deftype T
 
     """
@@ -448,24 +448,24 @@ end
 
 
 F = Float64
-function SimulationParameter1(dual_type)
+function SimulationParameter(dual_type)
     global F = dual_type
-    p = SimulationParameter1()
+    p = SimulationParameter()
     global F = Float64
 
     return p
 end
 
-Base.getindex(obj::SimulationParameter1, k) = getfield(obj, k)
-Base.setindex!(obj::SimulationParameter1, val, k) = setfield!(obj, k, val)
-Base.keys(obj::SimulationParameter1) = propertynames(obj)
-Base.length(obj::SimulationParameter1) = length(propertynames(obj))
+Base.getindex(obj::SimulationParameter, k) = getfield(obj, k)
+Base.setindex!(obj::SimulationParameter, val, k) = setfield!(obj, k, val)
+Base.keys(obj::SimulationParameter) = propertynames(obj)
+Base.length(obj::SimulationParameter) = length(propertynames(obj))
 
-function Base.iterate(obj::SimulationParameter1)
+function Base.iterate(obj::SimulationParameter)
     return (obj[propertynames(obj)[1]], 2)
 end
 
-function Base.iterate(obj::SimulationParameter1, i)
+function Base.iterate(obj::SimulationParameter, i)
     if i > length(obj)
         return nothing
     end
@@ -473,7 +473,7 @@ function Base.iterate(obj::SimulationParameter1, i)
 end
 
 
-function add_units(x; p = SimulationParameter1())
+function add_units(x; p = SimulationParameter())
     for k in keys(x)
         @reset x[k] = x[k] * unit(p[k])
     end

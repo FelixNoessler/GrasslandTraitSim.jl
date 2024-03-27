@@ -12,13 +12,13 @@ function prepare_input(; plot_obj, posterior, biomass_stats = nothing)
     if samplingtype == :prior
         inference_obj = calibrated_parameter(; input_obj)
         θ = sample_prior(; inference_obj)
-        p = SimulationParameter1()
+        p = SimulationParameter()
         for k in keys(θ)
             p[k] = θ[k] * unit(p[k])
         end
 
     elseif samplingtype == :fixed
-        p = SimulationParameter1()
+        p = SimulationParameter()
         for (i, k) in enumerate(keys(plot_obj.obs.parameter_keys))
             p[k] = parse(Float64, plot_obj.obs.tb_p[i].stored_string[]) * unit(p[k])
         end

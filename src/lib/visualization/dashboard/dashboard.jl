@@ -69,7 +69,7 @@ function dashboard(; posterior = nothing, variable_p = (;),
 
     on(plot_obj.obs.preset_button.clicks) do n
         @info "Parameter reset"
-        p = SimulationParameter1()
+        p = SimulationParameter()
         for (i, k) in enumerate(keys(plot_obj.obs.parameter_keys))
             Makie.set!(plot_obj.obs.tb_p[i], string(ustrip(p[k])))
         end
