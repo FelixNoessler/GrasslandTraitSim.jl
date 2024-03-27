@@ -1,10 +1,10 @@
 """
-    SimulationParameter(; kwargs...)
+    SimulationParameter1(; kwargs...)
 
 Here is an overview of the parameters that are used in the model. The parameters are...
 $(FIELDS)
 """
-@with_kw mutable struct SimulationParameter{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9,
+@with_kw mutable struct SimulationParameter1{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9,
                                   Q10, Q11, Q12, Q13, Q14, Q15, Q16} @deftype T
 
     """
@@ -151,18 +151,10 @@ $(FIELDS)
     β_LIG_height = F(0.5)
 
     """
-    number of days after a mowing event when the plants are grown back to
-    half of their normal size, \\
-    see [`mowing!`](@ref) \\
-    """
-    α_MOW_days = F(10.0)
-    β_MOW_days = F(0.05)
-
-    """
     controls how strongly grazers prefer plant species with high leaf nitrogen content, \\
     see [`grazing!`](@ref) \\
     """
-    β_ρ = F(1.5)
+    β_ρ_lnc = F(1.5)
 
     """
     defines together with the height of the plants and the livestock density
@@ -178,14 +170,15 @@ $(FIELDS)
     of their maximal consumption defined by κ · livestock density, \\
     see [`grazing!`](@ref) \\
     """
-    grazing_half_factor = F(1000.0)
+    α_GRZ = F(1000.0)
 
     """"
     maximal consumption of a livestock unit per day, \\
     see [`grazing!`](@ref) \\
     """
     κ::Q10 = F(22.0)u"kg"
-    lowbiomass::Q11 = F(100.0)u"kg / ha"
+    α_lowB::Q11 = F(100.0)u"kg / ha"
+    β_lowB::Q12 = F(0.1)u"ha / kg"
 
     """
     if the matrix multiplication between the trait similarity matrix and
@@ -194,7 +187,7 @@ $(FIELDS)
     see [`below_ground_competition!`](@ref) \\
     """
     α_TSB::Q11 = F(1200.0)u"kg / ha"
-    lowbiomass_k::Q12 = F(0.1)u"ha / kg"
+
 
     """
     the available water and nutrients are in- or decreased
@@ -203,8 +196,8 @@ $(FIELDS)
     see [`below_ground_competition!`] \\
     """
     β_TSB = F(2.0)
-    α_pet::Q13 = F(2.0)u"mm"
-    β_pet::Q14 = F(1.2)u"mm^-1"
+    α_PET::Q13 = F(2.0)u"mm"
+    β_PET::Q14 = F(1.2)u"mm^-1"
 
     """
     reference community weighted mean specific leaf area,
@@ -272,6 +265,7 @@ $(FIELDS)
     κ_min_rsa = F(0.4)
     β_κη_rsa::Q16 = F(40.0)u"g / m^2"
     β_rsa = F(7.0)
+
     b_biomass = F(1000.0)
     inv_ν_biomass = F(0.2)
     b_sla = F(0.0005)
@@ -328,7 +322,7 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.pet_growth_reduction
-        append!(excl_p, [:α_pet, :β_pet])
+        append!(excl_p, [:α_PET, :β_PET])
     end
 
     if !included.sla_transpiration
@@ -340,7 +334,7 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.grazing
-        append!(excl_p, [:β_ρ, :κ, :grazing_half_factor])
+        append!(excl_p, [:β_ρ_lnc, :κ, :α_GRZ])
     end
 
     if !included.trampling
@@ -348,12 +342,12 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.mowing
-        mowing_names = [:α_MOW_days, :β_MOW_days]
+        mowing_names = []
         append!(excl_p, mowing_names)
     end
 
     if !included.grazing && !included.mowing
-        append!(excl_p, [:lowbiomass, :lowbiomass_k])
+        append!(excl_p, [:α_lowB, :β_lowB])
     end
 
     if !included.senescence
@@ -387,21 +381,19 @@ function calibrated_parameter(; input_obj = nothing)
         SEA_min = (Uniform(0.5, 1.0), as(Real, 0.5, 1.0)),
         SEA_max = (Uniform(1.0, 2.0), as(Real, 1.0, 2.0)),
         β_LIG_height = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
-        α_MOW_days = (truncated(Normal(10.0, 30.0); lower = 0.0, upper = 60.0),
-                           as(Real, 0.0, 60.0)),
-        β_ρ = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
+        β_ρ_lnc = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
         β_TRM = (truncated(Normal(0.0, 0.05); lower = 0.0), asℝ₊),
         β_TRM_height = (Uniform(0.0, 3.0), as(Real, 0.0, 3.0)),
         α_TRM = (truncated(Normal(10000.0, 1000.0); lower = 0.0), asℝ₊),
-        grazing_half_factor = (truncated(Normal(500.0, 1000.0); lower = 0.0, upper = 2000.0),
+        α_GRZ = (truncated(Normal(500.0, 1000.0); lower = 0.0, upper = 2000.0),
                                as(Real, 0.0, 2000.0)),
         κ = (Uniform(12.0, 22.5), as(Real, 12.0, 22.5)),
-        lowbiomass = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0)),
-        lowbiomass_k = (Uniform(0.0, 1.0), as(Real, 0.0, 1.0)),
+        α_lowB = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0)),
+        β_lowB = (Uniform(0.0, 1.0), as(Real, 0.0, 1.0)),
         α_TSB = (truncated(Normal(1000.0, 1000.0); lower = 0.0), asℝ₊),
         β_TSB = (truncated(Normal(1.0, 0.5); lower = 0.0), asℝ₊),
-        α_pet = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
-        β_pet = (truncated(Normal(1.0, 1.0); lower = 0.0), asℝ₊),
+        α_PET = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
+        β_PET = (truncated(Normal(1.0, 1.0); lower = 0.0), asℝ₊),
         α_TR_sla = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊),
         β_TR_sla = (truncated(Normal(1.0, 5.0); lower = 0.0), asℝ₊),
         ϕ_sla = (Uniform(0.01, 0.03), as(Real, 0.01, 0.03)),
@@ -456,24 +448,24 @@ end
 
 
 F = Float64
-function SimulationParameter(dual_type)
+function SimulationParameter1(dual_type)
     global F = dual_type
-    p = SimulationParameter()
+    p = SimulationParameter1()
     global F = Float64
 
     return p
 end
 
-Base.getindex(obj::SimulationParameter, k) = getfield(obj, k)
-Base.setindex!(obj::SimulationParameter, val, k) = setfield!(obj, k, val)
-Base.keys(obj::SimulationParameter) = propertynames(obj)
-Base.length(obj::SimulationParameter) = length(propertynames(obj))
+Base.getindex(obj::SimulationParameter1, k) = getfield(obj, k)
+Base.setindex!(obj::SimulationParameter1, val, k) = setfield!(obj, k, val)
+Base.keys(obj::SimulationParameter1) = propertynames(obj)
+Base.length(obj::SimulationParameter1) = length(propertynames(obj))
 
-function Base.iterate(obj::SimulationParameter)
+function Base.iterate(obj::SimulationParameter1)
     return (obj[propertynames(obj)[1]], 2)
 end
 
-function Base.iterate(obj::SimulationParameter, i)
+function Base.iterate(obj::SimulationParameter1, i)
     if i > length(obj)
         return nothing
     end
@@ -481,7 +473,7 @@ function Base.iterate(obj::SimulationParameter, i)
 end
 
 
-function add_units(x; p = SimulationParameter())
+function add_units(x; p = SimulationParameter1())
     for k in keys(x)
         @reset x[k] = x[k] * unit(p[k])
     end

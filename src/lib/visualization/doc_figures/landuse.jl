@@ -1,9 +1,9 @@
-function grazing(; grazing_half_factor = 1500.0, β_ρ = 1.0,
+function grazing(; α_GRZ = 1500.0, β_ρ_lnc = 1.0,
                  path = nothing)
 
     nspecies, container = create_container(; )
-    setfield!(container.p, :grazing_half_factor, grazing_half_factor)
-    setfield!(container.p, :β_ρ, β_ρ)
+    setfield!(container.p, :α_GRZ, α_GRZ)
+    setfield!(container.p, :β_ρ_lnc, β_ρ_lnc)
 
     nbiomass = 500
     LD = 2u"ha ^ -1"
@@ -47,14 +47,14 @@ function grazing(; grazing_half_factor = 1500.0, β_ρ = 1.0,
     return nothing
 end
 
-function grazing_half_factor(; path = nothing)
+function α_GRZ(; path = nothing)
     fig = Figure(; size = (700, 400))
     Axis(fig[1, 1],
         xlabel = "Total biomass [green dry mass kg ha⁻¹]",
         ylabel = "Grazed biomass (totgraz)\n[green dry mass kg ha⁻¹]",
         title = "")
 
-    for grazing_half_factor in [750, 1500, 2000]
+    for α_GRZ in [750, 1500, 2000]
         x = 0:3000
 
         LD = 2
@@ -62,14 +62,14 @@ function grazing_half_factor(; path = nothing)
         k_exp = 2
         μₘₐₓ = κ * LD
         h = 1 / μₘₐₓ
-        a = 1 / (grazing_half_factor^k_exp * h)
+        a = 1 / (α_GRZ^k_exp * h)
         y = @. a * x^k_exp / (1^k_exp + a * h * x^k_exp)
 
-        lines!(x, y, label = "$grazing_half_factor",
+        lines!(x, y, label = "$α_GRZ",
             linewidth = 3)
     end
 
-    axislegend("grazing_half_factor";
+    axislegend("α_GRZ";
         framevisible = true, position = :rb)
 
     if !isnothing(path)
@@ -224,11 +224,9 @@ function trampling_livestockdensity(; β_TRM = 0.01, path = nothing)
     return nothing
 end
 
-function mowing(; mowing_height = 0.07u"m", α_MOW_days = 30.0,
+function mowing(; mowing_height = 0.07u"m",
                 path = nothing)
-
     nspecies, container = create_container(; )
-    setfield!(container.p, :α_MOW_days, α_MOW_days)
 
     nbiomass = 3
     biomass_vec = LinRange(0, 1000, nbiomass)u"kg / ha"
@@ -262,32 +260,6 @@ function mowing(; mowing_height = 0.07u"m", α_MOW_days = 30.0,
     end
 
     Colorbar(fig[1, 2]; colorrange, colormap, label = "Plant height [m]")
-
-    if !isnothing(path)
-        save(path, fig;)
-    else
-        display(fig)
-    end
-
-    return nothing
-end
-
-function mow_factor(; path = nothing)
-    fig = Figure(; size = (700, 400))
-    Axis(fig[1, 1],
-        xlabel = "Time since last mowing event [day]\n(days_since_last_mowing)",
-        ylabel = "Regrowth of plants (mow_factor)",
-        title = "")
-
-    for α_MOW_days in [20, 40, 100]
-        x = 0:200
-        y = @. 1 / (1 + exp(-0.05 * (x - α_MOW_days)))
-
-        lines!(x, y, label = "$α_MOW_days",
-            linewidth = 3)
-    end
-
-    axislegend("α_MOW_days"; framevisible = true, position = :rb)
 
     if !isnothing(path)
         save(path, fig;)

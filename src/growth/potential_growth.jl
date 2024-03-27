@@ -10,7 +10,7 @@ fPARi_{txy} &= \left(1 - \exp\left(-k \cdot LAI_{tot, txy}\right)\right) \cdot
 \end{align*}
 ```
 
-Parameter, see also [`SimulationParameter`](@ref):
+Parameter, see also [`SimulationParameter1`](@ref):
 - ``RUE_{max}`` (`RUE_max`) maximum radiation use efficiency [kg MJ⁻¹]
 - ``k`` (`k`) extinction coefficient [-]
 - ``\alpha_{comH}`` (`α_comH`) is the community weighted mean height, where the community height growth reducer is 0.5 [m]

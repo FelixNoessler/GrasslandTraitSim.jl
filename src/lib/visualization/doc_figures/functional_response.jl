@@ -81,7 +81,7 @@ function W_rsa_response(; δ_wrsa = 0.5, path = nothing)
     xs = 0:0.01:1
     ymat = fill(0.0, length(xs), nspecies)
 
-    PET = container.p.α_pet
+    PET = container.p.α_PET
     WHC = 1u"mm"
     PWP = 0u"mm"
     container.calc.biomass_density_factor .= 1.0
@@ -238,7 +238,7 @@ function W_sla_response(;δ_sla = 0.5, path = nothing)
     xs = 0:0.01:1
     ymat = fill(0.0, length(xs), nspecies)
 
-    PET = container.p.α_pet
+    PET = container.p.α_PET
     WHC = 1u"mm"
     PWP = 0u"mm"
     container.calc.biomass_density_factor .= 1.0

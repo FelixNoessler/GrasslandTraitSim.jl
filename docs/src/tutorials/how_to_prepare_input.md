@@ -194,7 +194,7 @@ nothing # hide
 
 ```@example input_creation
 ## get parameters
-p = sim.SimulationParameter()
+p = sim.SimulationParameter1()
 
 # if you will run many simulations, it is recommended to preallocated the vectors
 # but the simulation will also run without preallocation 

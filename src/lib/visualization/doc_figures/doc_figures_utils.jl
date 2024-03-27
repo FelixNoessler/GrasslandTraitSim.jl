@@ -11,7 +11,7 @@ function create_container(; nspecies = nothing)
 
     input_obj = validation_input(;
         plotID = "HEG01", nspecies)
-    p = SimulationParameter()
+    p = SimulationParameter1()
     prealloc = preallocate_vectors(; input_obj);
     prealloc_specific = preallocate_specific_vectors(; input_obj);
     container = initialization(; input_obj, p, prealloc, prealloc_specific,

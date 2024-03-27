@@ -1,56 +1,23 @@
 @doc raw"""
-```math
-\begin{align}
-    \lambda &= \frac{\text{mown_height}}{\text{height}}\\
-    \text{mow_factor} &= \frac{1}{1+exp(-0.1*(\text{days_since_last_mowing}
-        - \text{α_MOW_days})}\\
-    \text{mow} &= \lambda \cdot \text{biomass}
-\end{align}
-```
-
-The mow_factor has been included to account for the fact that less biomass is mown
-when the last mowing event was not long ago.
 Influence of mowing for plant species with different heights ($height$):
 ![Image of mowing effect](../img/mowing.svg)
-
-Visualisation of the `mow_factor`:
-![](../img/mow_factor.svg)
 """
 function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
     @unpack height = container.traits
     @unpack defoliation, proportion_mown, lowbiomass_correction = container.calc
     @unpack mown = container.output
-    @unpack α_MOW_days, β_MOW_days, lowbiomass, lowbiomass_k = container.p
+    @unpack α_lowB, β_lowB = container.p
     @unpack nspecies = container.simp
-
-    days_since_last_mowing = 200
-
-    tstart = t - 200 < 1 ? 1 : t - 200
-    mowing_last200 = @view mowing_all[t-1:-1:tstart]
-
-    for i in eachindex(mowing_last200)
-        if i == 1
-            continue
-        end
-
-        if !isnan(mowing_last200[i]) && !iszero(mowing_last200[i])
-            days_since_last_mowing = i
-            break
-        end
-    end
 
     # --------- proportion of plant height that is mown
     proportion_mown .= max.(height .- mowing_height, 0.0u"m") ./ height
 
-    # --------- if meadow is too often mown, less biomass is removed
-    ## the 'α_MOW_days' is the day where the plants are grown
-    ## back to their normal size/2
-    mow_factor = 1.0 / (1.0 + exp(-β_MOW_days * (days_since_last_mowing - α_MOW_days)))
-    @. lowbiomass_correction =  1.0 / (1.0 + exp(-lowbiomass_k * (biomass - lowbiomass)))
+    # --------- if low species biomass, the plant height is low -> less biomass is mown
+    @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (biomass - α_lowB)))
 
     # --------- add the removed biomass to the defoliation vector
     for s in 1:nspecies
-        mown[t, x, y, s] = lowbiomass_correction[s] * mow_factor *
+        mown[t, x, y, s] = lowbiomass_correction[s] *
                            proportion_mown[s] * biomass[s]
         defoliation[s] += mown[t, x, y, s]
     end
@@ -61,10 +28,10 @@ end
 @doc raw"""
 ```math
 \begin{align}
-\rho &= \left(\frac{LNCM}{LNCM_{cwm]}}\right) ^ {\text{β_ρ}} \\
+\rho &= \left(\frac{LNCM}{LNCM_{cwm]}}\right) ^ {\text{β_ρ_lnc}} \\
 μₘₐₓ &= κ \cdot \text{LD} \\
 h &= \frac{1}{μₘₐₓ} \\
-a &= \frac{1}{\text{grazing_half_factor}^2 \cdot h} \\
+a &= \frac{1}{\text{α_GRZ}^2 \cdot h} \\
 \text{totgraz} &= \frac{a \cdot (\sum \text{biomass})^2}
                     {1 + a\cdot h\cdot (\sum \text{biomass})^2} \\
 \text{share} &= \frac{
@@ -78,38 +45,38 @@ a &= \frac{1}{\text{grazing_half_factor}^2 \cdot h} \\
 - `κ` daily consumption of one livestock unit [kg], follows [Gillet2008](@cite)
 - `ρ` palatability,
   dependent on nitrogen per leaf mass (LNCM) [-]
-- `grazing_half_factor` is the half-saturation constant [kg ha⁻¹]
+- `α_GRZ` is the half-saturation constant [kg ha⁻¹]
 - equation partly based on [Moulin2021](@cite)
 
 Influence of grazing (livestock density = 2), all plant species have
 an equal amount of biomass (total biomass / 3)
 and a leaf nitrogen content of 15, 30 and 40 mg/g:
 
-- `β_ρ` = 1.5
+- `β_ρ_lnc` = 1.5
 ![](../img/grazing_1_5.svg)
 
-- `β_ρ` = 5
+- `β_ρ_lnc` = 5
 ![](../img/grazing_5.svg)
 
-Influence of `grazing_half_factor`:
-![](../img/grazing_half_factor.svg)
+Influence of `α_GRZ`:
+![](../img/α_GRZ.svg)
 """
 function grazing!(; t, x, y, container, LD, biomass)
     @unpack lncm = container.traits
-    @unpack grazing_half_factor, β_ρ, κ,
-            lowbiomass, lowbiomass_k = container.p
+    @unpack α_GRZ, β_ρ_lnc, κ,
+            α_lowB, β_lowB = container.p
     @unpack defoliation, grazed_share, relative_lncm, ρ,
             lowbiomass_correction, low_ρ_biomass = container.calc
     @unpack grazed = container.output
 
     ## Palatability ρ
     relative_lncm .= lncm .* biomass ./ sum(biomass)
-    ρ .= (lncm ./ sum(relative_lncm)) .^ β_ρ
+    ρ .= (lncm ./ sum(relative_lncm)) .^ β_ρ_lnc
 
     ## Grazing
     μₘₐₓ = κ * LD
     h = 1 / μₘₐₓ
-    a = 1 / (grazing_half_factor*grazing_half_factor * h)
+    a = 1 / (α_GRZ*α_GRZ * h)
 
     ## Exponentiation of Quantity with a variable is type unstable
     ## therefore this is a workaround, k_exp = 2
@@ -118,7 +85,7 @@ function grazing!(; t, x, y, container, LD, biomass)
     biomass_exp = sum_biomass * sum_biomass
     total_grazed = a * biomass_exp / (1u"kg^2 * ha^-2" + a * h * biomass_exp)
 
-    @. lowbiomass_correction =  1.0 / (1.0 + exp(-lowbiomass_k * (biomass - lowbiomass)))
+    @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (biomass - α_lowB)))
     @. low_ρ_biomass = lowbiomass_correction * ρ * biomass
     grazed_share .= low_ρ_biomass ./ sum(low_ρ_biomass)
 

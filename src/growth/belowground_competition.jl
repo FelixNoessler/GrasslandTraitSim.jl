@@ -240,8 +240,8 @@ function water_reduction!(; container, W, PET, PWP, WHC)
 
     pet_adjustment = 1.0
     if included.pet_growth_reduction
-        @unpack α_pet, β_pet = container.p
-        pet_adjustment = exp(-β_pet * (PET - α_pet))
+        @unpack α_PET, β_PET = container.p
+        pet_adjustment = exp(-β_PET * (PET - α_PET))
     end
 
     @unpack W_sla, W_rsa, Wp, biomass_density_factor = container.calc
