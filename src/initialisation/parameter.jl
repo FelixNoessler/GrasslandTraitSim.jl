@@ -71,7 +71,7 @@ $(FIELDS)
     maximal seasonality factor for the senescence rate, \\
     see [`seasonal_component_senescence`](@ref) \\
     """
-    SENₘₐₓ = F(3.0)
+    SEN_max = F(3.0)
 
     """
     Proportion of biomass that growths to the neighbouring cells, \\
@@ -81,17 +81,17 @@ $(FIELDS)
 
     """
     is the empirical parameter for a decrease in radiation use efficiency
-    for values of the photosynthetically active radiation (PAR) higher than `γ2`, \\
+    for values of the photosynthetically active radiation (PAR) higher than `γ₂`, \\
     see [`radiation_reduction`](@ref)
     """
-    γ1::Q3 = F(0.0445)u"m^2 / MJ"
+    γ₁::Q3 = F(0.0445)u"m^2 / MJ"
 
     """
     is the threshold value of PAR from which starts a linear decrease
     in radiation use efficiency, \\
     see [`radiation_reduction`](@ref) \\
     """
-    γ2::Q4 = F(5.0)u"MJ / m^2"
+    γ₂::Q4 = F(5.0)u"MJ / m^2"
 
     """
     is the lower temperature threshold for growth, \\
@@ -121,25 +121,25 @@ $(FIELDS)
     is the minimum value of the seasonal effect, \\
     see [`seasonal_reduction`](@ref) \\
     """
-    SEAₘᵢₙ = F(0.7)
+    SEA_min = F(0.7)
 
     """
     is the maximum value of the seasonal effect, \\
     see [`seasonal_reduction`](@ref) \\
     """
-    SEAₘₐₓ = F(1.3)
+    SEA_max = F(1.3)
 
     """
     is a threshold of the temperature degree days,
-    above which the seasonality factor is set to `SEAₘᵢₙ` and
-    descreases to `SEAₘₐₓ`, 898.15K = 625 °C, \\
+    above which the seasonality factor is set to `SEA_min` and
+    descreases to `SEA_max`, 898.15K = 625 °C, \\
     see [`seasonal_reduction`](@ref) \\
     """
     ST₁::Q6 = F(898.15)u"K"
 
     """
     is a threshold of the temperature degree-days,
-    where the seasonality growth factor is set to `SEAₘᵢₙ`, 1573.15 K = 1300.0 °C, \\
+    where the seasonality growth factor is set to `SEA_min`, 1573.15 K = 1300.0 °C, \\
     see [`seasonal_reduction`](@ref) \\
     """
     ST₂::Q6 = F(1573.15)u"K"
@@ -148,30 +148,30 @@ $(FIELDS)
     controls how strongly taller plants gets more light for growth, \\
     see [`light_competition!`](@ref) \\
     """
-    β_H = F(0.5)
+    β_LIG_height = F(0.5)
 
     """
     number of days after a mowing event when the plants are grown back to
     half of their normal size, \\
     see [`mowing!`](@ref) \\
     """
-    mowing_mid_days = F(10.0)
-    mowfactor_β = F(0.05)
+    α_MOW_days = F(10.0)
+    β_MOW_days = F(0.05)
 
     """
     controls how strongly grazers prefer plant species with high leaf nitrogen content, \\
     see [`grazing!`](@ref) \\
     """
-    leafnitrogen_graz_exp = F(1.5)
+    β_ρ = F(1.5)
 
     """
     defines together with the height of the plants and the livestock density
     the proportion of biomass that is trampled [ha m⁻¹], \\
     see [`trampling!`](@ref) \\
     """
-    trampling_factor::Q9 = F(0.01)u"ha"
-    trampling_height_exp = F(0.5)
-    trampling_half_factor = F(10000.0)
+    β_TRM::Q9 = F(0.01)u"ha"
+    β_TRM_height = F(0.5)
+    α_TRM = F(10000.0)
 
     """
     total biomass [kg ha⁻¹] when the daily consumption by grazers reaches half
@@ -302,7 +302,7 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.radiation_red
-        append!(excl_p, [:γ1, :γ2])
+        append!(excl_p, [:γ₁, :γ₂])
     end
 
     if !included.temperature_growth_reduction
@@ -310,7 +310,7 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.season_red
-        append!(excl_p, [:SEAₘᵢₙ, :SEAₘₐₓ, :ST₁, :ST₂])
+        append!(excl_p, [:SEA_min, :SEA_max, :ST₁, :ST₂])
     end
 
     if !included.water_growth_reduction
@@ -340,15 +340,15 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.grazing
-        append!(excl_p, [:leafnitrogen_graz_exp, :κ, :grazing_half_factor])
+        append!(excl_p, [:β_ρ, :κ, :grazing_half_factor])
     end
 
     if !included.trampling
-        append!(excl_p, [:trampling_factor, :trampling_half_factor, :trampling_height_exp])
+        append!(excl_p, [:β_TRM, :α_TRM, :β_TRM_height])
     end
 
     if !included.mowing
-        mowing_names = [:mowing_mid_days, :mowfactor_β]
+        mowing_names = [:α_MOW_days, :β_MOW_days]
         append!(excl_p, mowing_names)
     end
 
@@ -362,7 +362,7 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.senescence || !included.senescence_season
-        append!(excl_p, [:Ψ₁, :Ψ₂, :SENₘₐₓ])
+        append!(excl_p, [:Ψ₁, :Ψ₂, :SEN_max])
     end
 
     if !included.community_height_red
@@ -370,7 +370,7 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.height_competition
-        append!(excl_p, [:β_H])
+        append!(excl_p, [:β_LIG_height])
     end
 
     return excl_p
@@ -383,16 +383,16 @@ function calibrated_parameter(; input_obj = nothing)
         α_sen = (Uniform(0, 0.01), as(Real, 0.0, 0.01)),
         β_sen = (Uniform(0.0, 0.1),  as(Real, 0.0, 0.1)),
         Ψ₁ = (Uniform(700.0, 3000.0), as(Real, 700.0, 3000.0)),
-        SENₘₐₓ = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0)),
-        SEAₘᵢₙ = (Uniform(0.5, 1.0), as(Real, 0.5, 1.0)),
-        SEAₘₐₓ = (Uniform(1.0, 2.0), as(Real, 1.0, 2.0)),
-        β_H = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
-        mowing_mid_days = (truncated(Normal(10.0, 30.0); lower = 0.0, upper = 60.0),
+        SEN_max = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0)),
+        SEA_min = (Uniform(0.5, 1.0), as(Real, 0.5, 1.0)),
+        SEA_max = (Uniform(1.0, 2.0), as(Real, 1.0, 2.0)),
+        β_LIG_height = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
+        α_MOW_days = (truncated(Normal(10.0, 30.0); lower = 0.0, upper = 60.0),
                            as(Real, 0.0, 60.0)),
-        leafnitrogen_graz_exp = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
-        trampling_factor = (truncated(Normal(0.0, 0.05); lower = 0.0), asℝ₊),
-        trampling_height_exp = (Uniform(0.0, 3.0), as(Real, 0.0, 3.0)),
-        trampling_half_factor = (truncated(Normal(10000.0, 1000.0); lower = 0.0), asℝ₊),
+        β_ρ = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
+        β_TRM = (truncated(Normal(0.0, 0.05); lower = 0.0), asℝ₊),
+        β_TRM_height = (Uniform(0.0, 3.0), as(Real, 0.0, 3.0)),
+        α_TRM = (truncated(Normal(10000.0, 1000.0); lower = 0.0), asℝ₊),
         grazing_half_factor = (truncated(Normal(500.0, 1000.0); lower = 0.0, upper = 2000.0),
                                as(Real, 0.0, 2000.0)),
         κ = (Uniform(12.0, 22.5), as(Real, 12.0, 22.5)),

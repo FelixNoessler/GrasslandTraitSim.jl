@@ -10,7 +10,7 @@ H_{cwm, txy} &= \sum_{s=1}^{S}\frac{B_{txys}}{B_{tot, txy}} \cdot H_s
 ```
 
 Parameter, see also [`SimulationParameter`](@ref):
-- ``\beta_H`` (`β_H`) controls how strongly taller plants gets more light for growth [-]
+- ``\beta_H`` (`β_LIG_height`) controls how strongly taller plants gets more light for growth [-]
 
 Variables:
 - ``LAI_{txys}`` (`LAI`) leaf area index of species `s` at time `t` and patch `xy` [-]
@@ -45,11 +45,11 @@ function light_competition!(; container, biomass)
         @. heightinfluence = 1.0
     else
         @unpack relative_height = container.calc
-        @unpack β_H = container.p
+        @unpack β_LIG_height = container.p
 
         relative_height .= height .* biomass ./ sum(biomass)
         height_cwm = sum(relative_height)
-        @. heightinfluence = (height / height_cwm) ^ β_H
+        @. heightinfluence = (height / height_cwm) ^ β_LIG_height
     end
 
     @. light_competition = LAIs / LAItot * heightinfluence

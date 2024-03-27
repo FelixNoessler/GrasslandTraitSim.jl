@@ -26,8 +26,8 @@ function radiation_reduction(; container, PAR)
         return 1.0
     end
 
-    @unpack γ1, γ2 = container.p
-    return min(1.0, 1.0 − uconvert(NoUnits, γ1 * (PAR − γ2)))
+    @unpack γ₁, γ₂ = container.p
+    return min(1.0, 1.0 − uconvert(NoUnits, γ₁ * (PAR − γ₂)))
 end
 
 @doc raw"""
@@ -87,17 +87,17 @@ the yearly cumulative sum of the daily mean temperatures (`ST`).
 \text{seasonal}(ST) =
     \begin{cases}
     SEA_{min} & \text{if } ST < 200 \\
-    SEAₘᵢₙ + (SEAₘₐₓ - SEAₘᵢₙ) * \frac{ST - 200}{ST₁ - 400} &
+    SEA_min + (SEA_max - SEA_min) * \frac{ST - 200}{ST₁ - 400} &
         \text{if } 200 < ST < ST₁ - 200 \\
     SEA_{max} & \text{if } ST₁ - 200 < ST < ST₁ - 100 \\
-    SEAₘᵢₙ + (SEAₘᵢₙ - SEAₘₐₓ) * \frac{ST - ST₂}{ST₂ - ST₁ - 100} &
+    SEA_min + (SEA_min - SEA_max) * \frac{ST - ST₂}{ST₂ - ST₁ - 100} &
         \text{if } ST₁ - 100 < ST < ST₂ \\
     SEA_{min} & \text{if } ST > ST₂ \\
     \end{cases}
 ```
 
 This empirical function was developed by [Jouven2006](@cite). In contrast to
-[Jouven2006](@cite) `SEAₘᵢₙ`, `SEAₘₐₓ`, `ST₁` and `ST₂` are not species specific
+[Jouven2006](@cite) `SEA_min`, `SEA_max`, `ST₁` and `ST₂` are not species specific
 parameters, but are fixed for all species. The values of the parameters are based on
 [Jouven2006](@cite) and were chosen to resemble the mean of all functional
 groups that were described there.
@@ -107,8 +107,8 @@ use of already stored resources. A seasonal factor below one means that
 growth is reduced as the plant stores resources [Jouven2006](@cite).
 
 - `ST` is the yearly cumulative sum of the daily mean temperatures
-- `SEAₘᵢₙ` is the minimum value of the seasonal effect, here set to 0.67 [-]
-- `SEAₘₐₓ` is the maximum value of the seasonal effect, here set to 1.33 [-]
+- `SEA_min` is the minimum value of the seasonal effect, here set to 0.67 [-]
+- `SEA_max` is the maximum value of the seasonal effect, here set to 1.33 [-]
 -  `ST₁` and `ST₂` are parameters that describe the thresholds of the step function,
    here set to 625 and 1300 [°C d]
 
@@ -122,7 +122,7 @@ function seasonal_reduction(; container, ST)
         return 1.0
     end
 
-    @unpack SEAₘᵢₙ, SEAₘₐₓ, ST₁, ST₂ = container.p
+    @unpack SEA_min, SEA_max, ST₁, ST₂ = container.p
 
     ## unit conversion from celcius to kelvin
     # 100 °C = 373.15 K
@@ -130,14 +130,14 @@ function seasonal_reduction(; container, ST)
     # 400 °C = 673.15 K
 
     if ST < 473.15u"K"
-        return SEAₘᵢₙ
+        return SEA_min
     elseif ST < ST₁ - 473.15u"K"
-        return SEAₘᵢₙ + (SEAₘₐₓ - SEAₘᵢₙ) * (ST - 473.15u"K") / (ST₁ - 673.15u"K")
+        return SEA_min + (SEA_max - SEA_min) * (ST - 473.15u"K") / (ST₁ - 673.15u"K")
     elseif ST < ST₁ - 373.15u"K"
-        return SEAₘₐₓ
+        return SEA_max
     elseif ST < ST₂
-        return SEAₘᵢₙ + (SEAₘᵢₙ - SEAₘₐₓ) * (ST - ST₂) / (ST₂ - (ST₁ - 373.15u"K"))
+        return SEA_min + (SEA_min - SEA_max) * (ST - ST₂) / (ST₂ - (ST₁ - 373.15u"K"))
     else
-        return SEAₘᵢₙ
+        return SEA_min
     end
 end

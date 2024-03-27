@@ -3,7 +3,7 @@
 \begin{align}
     \lambda &= \frac{\text{mown_height}}{\text{height}}\\
     \text{mow_factor} &= \frac{1}{1+exp(-0.1*(\text{days_since_last_mowing}
-        - \text{mowing_mid_days})}\\
+        - \text{α_MOW_days})}\\
     \text{mow} &= \lambda \cdot \text{biomass}
 \end{align}
 ```
@@ -20,7 +20,7 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
     @unpack height = container.traits
     @unpack defoliation, proportion_mown, lowbiomass_correction = container.calc
     @unpack mown = container.output
-    @unpack mowing_mid_days, mowfactor_β, lowbiomass, lowbiomass_k = container.p
+    @unpack α_MOW_days, β_MOW_days, lowbiomass, lowbiomass_k = container.p
     @unpack nspecies = container.simp
 
     days_since_last_mowing = 200
@@ -43,9 +43,9 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
     proportion_mown .= max.(height .- mowing_height, 0.0u"m") ./ height
 
     # --------- if meadow is too often mown, less biomass is removed
-    ## the 'mowing_mid_days' is the day where the plants are grown
+    ## the 'α_MOW_days' is the day where the plants are grown
     ## back to their normal size/2
-    mow_factor = 1.0 / (1.0 + exp(-mowfactor_β * (days_since_last_mowing - mowing_mid_days)))
+    mow_factor = 1.0 / (1.0 + exp(-β_MOW_days * (days_since_last_mowing - α_MOW_days)))
     @. lowbiomass_correction =  1.0 / (1.0 + exp(-lowbiomass_k * (biomass - lowbiomass)))
 
     # --------- add the removed biomass to the defoliation vector
@@ -61,7 +61,7 @@ end
 @doc raw"""
 ```math
 \begin{align}
-\rho &= \left(\frac{LNCM}{LNCM_{cwm]}}\right) ^ {\text{leafnitrogen_graz_exp}} \\
+\rho &= \left(\frac{LNCM}{LNCM_{cwm]}}\right) ^ {\text{β_ρ}} \\
 μₘₐₓ &= κ \cdot \text{LD} \\
 h &= \frac{1}{μₘₐₓ} \\
 a &= \frac{1}{\text{grazing_half_factor}^2 \cdot h} \\
@@ -85,10 +85,10 @@ Influence of grazing (livestock density = 2), all plant species have
 an equal amount of biomass (total biomass / 3)
 and a leaf nitrogen content of 15, 30 and 40 mg/g:
 
-- `leafnitrogen_graz_exp` = 1.5
+- `β_ρ` = 1.5
 ![](../img/grazing_1_5.svg)
 
-- `leafnitrogen_graz_exp` = 5
+- `β_ρ` = 5
 ![](../img/grazing_5.svg)
 
 Influence of `grazing_half_factor`:
@@ -96,7 +96,7 @@ Influence of `grazing_half_factor`:
 """
 function grazing!(; t, x, y, container, LD, biomass)
     @unpack lncm = container.traits
-    @unpack grazing_half_factor, leafnitrogen_graz_exp, κ,
+    @unpack grazing_half_factor, β_ρ, κ,
             lowbiomass, lowbiomass_k = container.p
     @unpack defoliation, grazed_share, relative_lncm, ρ,
             lowbiomass_correction, low_ρ_biomass = container.calc
@@ -104,7 +104,7 @@ function grazing!(; t, x, y, container, LD, biomass)
 
     ## Palatability ρ
     relative_lncm .= lncm .* biomass ./ sum(biomass)
-    ρ .= (lncm ./ sum(relative_lncm)) .^ leafnitrogen_graz_exp
+    ρ .= (lncm ./ sum(relative_lncm)) .^ β_ρ
 
     ## Grazing
     μₘₐₓ = κ * LD
@@ -133,7 +133,7 @@ end
 ```math
 \begin{align}
 \text{trampled_proportion} &=
-    \text{height} \cdot \text{LD} \cdot \text{trampling_factor}  \\
+    \text{height} \cdot \text{LD} \cdot \text{β_TRM}  \\
 \text{trampled_biomass} &=
     \min(\text{biomass} ⋅ \text{trampled_proportion},
         \text{biomass}) \\
@@ -148,7 +148,7 @@ Maximal the whole biomass of a plant species is removed by trampling.
 
 - `biomass` [$\frac{kg}{ha}$]
 - `LD` daily livestock density [$\frac{\text{livestock units}}{ha}$]
-- `trampling_factor` [ha m⁻¹]
+- `β_TRM` [ha m⁻¹]
 - height canopy height [$m$]
 
 ![Image of effect of biomass of plants on the trampling](../img/trampling_biomass.svg)
@@ -157,17 +157,17 @@ Maximal the whole biomass of a plant species is removed by trampling.
 """
 function trampling!(; container, LD, biomass)
     @unpack height = container.traits
-    @unpack trampling_height_exp, trampling_factor, trampling_half_factor = container.p
+    @unpack β_TRM_height, β_TRM, α_TRM = container.p
     @unpack trampling_proportion, trampled_biomass, defoliation = container.calc
 
     h = 1 / LD
-    a = 1 / (trampling_half_factor*trampling_half_factor * h)
+    a = 1 / (α_TRM*α_TRM * h)
 
     sum_biomass = sum(biomass)
     biomass_exp = sum_biomass * sum_biomass
     total_grazed = a * biomass_exp / (1u"kg^2 * ha^-2" + a * h * biomass_exp)
     @. trampling_proportion =
-        min.((height / 0.5u"m") ^ trampling_height_exp * total_grazed * trampling_factor, 1.0)
+        min.((height / 0.5u"m") ^ β_TRM_height * total_grazed * β_TRM, 1.0)
     @. trampled_biomass = biomass * trampling_proportion
     defoliation .+= trampled_biomass
 

@@ -1,9 +1,9 @@
-function grazing(; grazing_half_factor = 1500.0, leafnitrogen_graz_exp = 1.0,
+function grazing(; grazing_half_factor = 1500.0, β_ρ = 1.0,
                  path = nothing)
 
     nspecies, container = create_container(; )
     setfield!(container.p, :grazing_half_factor, grazing_half_factor)
-    setfield!(container.p, :leafnitrogen_graz_exp, leafnitrogen_graz_exp)
+    setfield!(container.p, :β_ρ, β_ρ)
 
     nbiomass = 500
     LD = 2u"ha ^ -1"
@@ -79,9 +79,9 @@ function grazing_half_factor(; path = nothing)
     end
 end
 
-function trampling_biomass(; trampling_factor = 0.01, path = nothing)
+function trampling_biomass(; β_TRM = 0.01, path = nothing)
     nspecies, container = create_container(; )
-    container = @set container.p.trampling_factor = trampling_factor * u"ha"
+    container = @set container.p.β_TRM = β_TRM * u"ha"
 
     nbiomass = 50
     biomass = fill(0.0, nspecies)u"kg / ha"
@@ -127,9 +127,9 @@ function trampling_biomass(; trampling_factor = 0.01, path = nothing)
     end
 end
 
-function trampling_biomass_individual(; trampling_factor = 0.01, path = nothing)
+function trampling_biomass_individual(; β_TRM = 0.01, path = nothing)
     nspecies, container = create_container(; )
-    container = @set container.p.trampling_factor = trampling_factor * u"ha"
+    container = @set container.p.β_TRM = β_TRM * u"ha"
     container.traits.height .= 0.5u"m"
 
     nbiomass = 200
@@ -176,9 +176,9 @@ function trampling_biomass_individual(; trampling_factor = 0.01, path = nothing)
     return nothing
 end
 
-function trampling_livestockdensity(; trampling_factor = 0.01, path = nothing)
+function trampling_livestockdensity(; β_TRM = 0.01, path = nothing)
     nspecies, container = create_container(; )
-    container = @set container.p.trampling_factor = trampling_factor * u"ha"
+    container = @set container.p.β_TRM = β_TRM * u"ha"
 
     nLD = 500
     biomass = fill(100.0, nspecies)u"kg / ha"
@@ -224,11 +224,11 @@ function trampling_livestockdensity(; trampling_factor = 0.01, path = nothing)
     return nothing
 end
 
-function mowing(; mowing_height = 0.07u"m", mowing_mid_days = 30.0,
+function mowing(; mowing_height = 0.07u"m", α_MOW_days = 30.0,
                 path = nothing)
 
     nspecies, container = create_container(; )
-    setfield!(container.p, :mowing_mid_days, mowing_mid_days)
+    setfield!(container.p, :α_MOW_days, α_MOW_days)
 
     nbiomass = 3
     biomass_vec = LinRange(0, 1000, nbiomass)u"kg / ha"
@@ -279,15 +279,15 @@ function mow_factor(; path = nothing)
         ylabel = "Regrowth of plants (mow_factor)",
         title = "")
 
-    for mowing_mid_days in [20, 40, 100]
+    for α_MOW_days in [20, 40, 100]
         x = 0:200
-        y = @. 1 / (1 + exp(-0.05 * (x - mowing_mid_days)))
+        y = @. 1 / (1 + exp(-0.05 * (x - α_MOW_days)))
 
-        lines!(x, y, label = "$mowing_mid_days",
+        lines!(x, y, label = "$α_MOW_days",
             linewidth = 3)
     end
 
-    axislegend("mowing_mid_days"; framevisible = true, position = :rb)
+    axislegend("α_MOW_days"; framevisible = true, position = :rb)
 
     if !isnothing(path)
         save(path, fig;)

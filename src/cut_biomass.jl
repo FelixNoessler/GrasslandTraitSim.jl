@@ -25,12 +25,12 @@ function cut_biomass!(; cut_index, t, ch, container, biomass)
     @unpack mowing = container.daily_input
 
     days_since_last_mowing = 200
-    mowing_mid_days = 0.0
-    mowfactor_β = 0.0
+    α_MOW_days = 0.0
+    β_MOW_days = 0.0
 
     ## if mowing is not included, cutted biomass shouldn't raise an error
     if included.mowing
-        @unpack mowing_mid_days, mowfactor_β = container.p
+        @unpack α_MOW_days, β_MOW_days = container.p
 
         tstart = t - 200 < 1 ? 1 : t - 200
         mowing_last200 = @view mowing[t-1:-1:tstart]
@@ -51,9 +51,9 @@ function cut_biomass!(; cut_index, t, ch, container, biomass)
     proportion_mown .= max.(height .- ch * u"m", 0.0u"m") ./ height
 
     # --------- if meadow is too often mown, less biomass is removed
-    ## the 'mowing_mid_days' is the day where the plants are grown
+    ## the 'α_MOW_days' is the day where the plants are grown
     ## back to their normal size/2
-    mow_factor = 1.0 / (1.0 + exp(-mowfactor_β * (days_since_last_mowing - mowing_mid_days)))
+    mow_factor = 1.0 / (1.0 + exp(-β_MOW_days * (days_since_last_mowing - α_MOW_days)))
 
     species_cut_biomass .= mow_factor .* proportion_mown .* biomass
     cut_biomass_sum = sum(species_cut_biomass)

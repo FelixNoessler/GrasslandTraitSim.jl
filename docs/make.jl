@@ -67,8 +67,8 @@ sim.plot_seasonal_component_senescence(;
 #### land use
 sim.mowing(; path = f("$docs_img/mowing.svg"))
 sim.mow_factor(; path = f("$docs_img/mow_factor.svg"))
-sim.grazing(; leafnitrogen_graz_exp = 1.5, path = f("$docs_img/grazing_1_5.svg"))
-sim.grazing(; leafnitrogen_graz_exp = 5.0, path = f("$docs_img/grazing_5.svg"))
+sim.grazing(; β_ρ = 1.5, path = f("$docs_img/grazing_1_5.svg"))
+sim.grazing(; β_ρ = 5.0, path = f("$docs_img/grazing_5.svg"))
 sim.grazing_half_factor(; path = f("$docs_img/grazing_half_factor.svg"))
 sim.trampling_biomass(; path = f("$docs_img/trampling_biomass.svg"))
 sim.trampling_livestockdensity(; path = f("$docs_img/trampling_LD.svg"))
