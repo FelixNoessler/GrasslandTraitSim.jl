@@ -80,7 +80,7 @@ If the community weighted mean specific leaf area is high
 \begin{align}
     \text{W} &= \frac{\text{water} - \text{PWP}}{\text{WHC} - \text{PWP}} \\
     \text{sla_effect} &=
-        \left(\frac{\text{cwm_sla}}{\text{sla_tr}} \right)^{\text{sla_tr_exponent}} \\
+        \left(\frac{\text{cwm_sla}}{\text{α_TR_sla}} \right)^{\text{β_TR_sla}} \\
     \text{ATr} &=
         \text{W} \cdot \text{PET} \cdot \text{sla_effect} \cdot
         \min\left(1; \frac{\text{LAItot}}{3} \right)
@@ -98,10 +98,10 @@ If the community weighted mean specific leaf area is high
   specific leaf area on the transpiration, can range from
   0 (no transpiraiton at all) to ∞ (very strong transpiration) [-]
 - `cwm_sla` is the community weighted mean specific leaf area [m² kg⁻¹]
-- `sla_tr` is a specific leaf area, if the `cwm_sla` equals `sla_tr`
+- `α_TR_sla` is a specific leaf area, if the `cwm_sla` equals `α_TR_sla`
   the `sla_effect` is 1 [m² kg⁻¹]
-- `sla_tr_exponent` is the exponent in the `sla_effect` function and influences
-  how strong a `cwm_sla` that deviates from `sla_tr`
+- `β_TR_sla` is the exponent in the `sla_effect` function and influences
+  how strong a `cwm_sla` that deviates from `α_TR_sla`
   changes the `sla_effect` [-]
 """
 function transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
@@ -111,13 +111,13 @@ function transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
     sla_effect = 1.0
     if included.sla_transpiration
         @unpack sla = container.traits
-        @unpack sla_tr, sla_tr_exponent = container.p
+        @unpack α_TR_sla, β_TR_sla = container.p
         @unpack relative_sla = container.calc
 
         # community weighted mean specific leaf area
         relative_sla .= sla .* patch_biomass ./ sum(patch_biomass)
         cwm_sla = sum(relative_sla)
-        sla_effect = (cwm_sla / sla_tr)^sla_tr_exponent
+        sla_effect = (cwm_sla / α_TR_sla)^β_TR_sla
     end
 
     ####### plant available water:

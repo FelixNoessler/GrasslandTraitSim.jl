@@ -209,17 +209,17 @@ $(FIELDS)
     """
     reference community weighted mean specific leaf area,
     if the community weighted mean specific leaf area is
-    equal to `sla_tr` then transpiration is neither increased nor decreased,
+    equal to `α_TR_sla` then transpiration is neither increased nor decreased,
     see `transpiration`](@ref) \\
     """
-    sla_tr::Q15 = F(0.03)u"m^2 / g"
+    α_TR_sla::Q15 = F(0.03)u"m^2 / g"
 
     """
     controls how strongly a community mean specific leaf area that deviates
-    from `sla_tr` is affecting the transpiration,
+    from `α_TR_sla` is affecting the transpiration,
     see [`transpiration`](@ref) \\
     """
-    sla_tr_exponent = F(0.4)
+    β_TR_sla = F(0.4)
     ϕ_sla::Q15 = F(0.025)u"m^2 / g"
     η_min_sla = F(-0.8)
     η_max_sla = F(0.8)
@@ -332,7 +332,7 @@ function exlude_parameter(; input_obj)
     end
 
     if !included.sla_transpiration
-        append!(excl_p, [:sla_tr, :sla_tr_exponent])
+        append!(excl_p, [:α_TR_sla, :β_TR_sla])
     end
 
     if !included.belowground_competition
@@ -402,8 +402,8 @@ function calibrated_parameter(; input_obj = nothing)
         β_TSB = (truncated(Normal(1.0, 0.5); lower = 0.0), asℝ₊),
         α_pet = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
         β_pet = (truncated(Normal(1.0, 1.0); lower = 0.0), asℝ₊),
-        sla_tr = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊),
-        sla_tr_exponent = (truncated(Normal(1.0, 5.0); lower = 0.0), asℝ₊),
+        α_TR_sla = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊),
+        β_TR_sla = (truncated(Normal(1.0, 5.0); lower = 0.0), asℝ₊),
         ϕ_sla = (Uniform(0.01, 0.03), as(Real, 0.01, 0.03)),
         η_min_sla = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
         η_max_sla = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
