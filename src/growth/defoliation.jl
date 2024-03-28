@@ -13,12 +13,11 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
     proportion_mown .= max.(height .- mowing_height, 0.0u"m") ./ height
 
     # --------- if low species biomass, the plant height is low -> less biomass is mown
-    @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (biomass - α_lowB)))
+    @. lowbiomass_correction =  1.0 / (1.0 + exp(β_lowB * (α_lowB - biomass)))
 
     # --------- add the removed biomass to the defoliation vector
     for s in 1:nspecies
-        mown[t, x, y, s] = lowbiomass_correction[s] *
-                           proportion_mown[s] * biomass[s]
+        mown[t, x, y, s] = lowbiomass_correction[s] * proportion_mown[s] * biomass[s]
         defoliation[s] += mown[t, x, y, s]
     end
 
@@ -69,27 +68,23 @@ function grazing!(; t, x, y, container, LD, biomass)
             lowbiomass_correction, low_ρ_biomass = container.calc
     @unpack grazed = container.output
 
+    #################################### total grazed biomass
+    sum_biomass = sum(biomass)
+    biomass_exp = sum_biomass * sum_biomass
+    total_grazed = κ * LD * biomass_exp / (α_GRZ * α_GRZ + biomass_exp)
+
+    #################################### share of grazed biomass per species
     ## Palatability ρ
     relative_lncm .= lncm .* biomass ./ sum(biomass)
     ρ .= (lncm ./ sum(relative_lncm)) .^ β_ρ_lnc
 
-    ## Grazing
-    μₘₐₓ = κ * LD
-    h = 1 / μₘₐₓ
-    a = 1 / (α_GRZ*α_GRZ * h)
-
-    ## Exponentiation of Quantity with a variable is type unstable
-    ## therefore this is a workaround, k_exp = 2
-    # https://painterqubits.github.io/Unitful.jl/stable/trouble/#Exponentiation
-    sum_biomass = sum(biomass)
-    biomass_exp = sum_biomass * sum_biomass
-    total_grazed = a * biomass_exp / (1u"kg^2 * ha^-2" + a * h * biomass_exp)
-
+    ## species with low biomass are less grazed
     @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (biomass - α_lowB)))
     @. low_ρ_biomass = lowbiomass_correction * ρ * biomass
+
     grazed_share .= low_ρ_biomass ./ sum(low_ρ_biomass)
 
-    #### add grazed biomass to defoliation
+    #################################### add grazed biomass to defoliation
     @. grazed[t, x, y, :] = grazed_share * total_grazed
     @. defoliation += grazed_share * total_grazed
 
@@ -124,18 +119,22 @@ Maximal the whole biomass of a plant species is removed by trampling.
 """
 function trampling!(; container, LD, biomass)
     @unpack height = container.traits
-    @unpack β_TRM_height, β_TRM, α_TRM = container.p
-    @unpack trampling_proportion, trampled_biomass, defoliation = container.calc
+    @unpack β_TRM_height, β_TRM, α_TRM, α_lowB, β_lowB = container.p
+    @unpack lowbiomass_correction, trampled_share, trampled_biomass,
+            defoliation = container.calc
 
-    h = 1 / LD
-    a = 1 / (α_TRM*α_TRM * h)
-
+    #################################### Total trampled biomass
     sum_biomass = sum(biomass)
     biomass_exp = sum_biomass * sum_biomass
-    total_grazed = a * biomass_exp / (1u"kg^2 * ha^-2" + a * h * biomass_exp)
-    @. trampling_proportion =
-        min.((height / 0.5u"m") ^ β_TRM_height * total_grazed * β_TRM, 1.0)
-    @. trampled_biomass = biomass * trampling_proportion
+    total_trampled = LD * β_TRM * biomass_exp / (α_TRM * α_TRM + biomass_exp)
+
+    #################################### Share of trampled biomass per species
+    @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (biomass - α_lowB)))
+    @. trampled_share = (height / 0.5u"m") ^ β_TRM_height *
+                        lowbiomass_correction * biomass / sum_biomass
+
+    #################################### Add trampled biomass to defoliation
+    @. trampled_biomass = trampled_share * total_trampled
     defoliation .+= trampled_biomass
 
     return nothing

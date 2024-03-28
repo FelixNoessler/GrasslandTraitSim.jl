@@ -4,7 +4,7 @@
 Here is an overview of the parameters that are used in the model. The parameters are...
 $(FIELDS)
 """
-@with_kw mutable struct SimulationParameter{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8, Q9,
+@with_kw mutable struct SimulationParameter{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8,
                                   Q10, Q11, Q12, Q13, Q14, Q15, Q16} @deftype T
 
     """
@@ -161,16 +161,16 @@ $(FIELDS)
     the proportion of biomass that is trampled [ha m⁻¹], \\
     see [`trampling!`](@ref) \\
     """
-    β_TRM::Q9 = F(0.01)u"ha"
+    β_TRM::Q10 = F(5.0)u"kg"
     β_TRM_height = F(0.5)
-    α_TRM = F(10000.0)
+    α_TRM::Q11 = F(10000.0)u"kg / ha"
 
     """
     total biomass [kg ha⁻¹] when the daily consumption by grazers reaches half
     of their maximal consumption defined by κ · livestock density, \\
     see [`grazing!`](@ref) \\
     """
-    α_GRZ = F(1000.0)
+    α_GRZ::Q11 = F(1000.0)u"kg / ha"
 
     """"
     maximal consumption of a livestock unit per day, \\

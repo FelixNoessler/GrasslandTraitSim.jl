@@ -1,9 +1,14 @@
-function grazing(; α_GRZ = 1500.0, β_ρ_lnc = 1.0,
-                 path = nothing)
+function grazing(; α_GRZ = nothing, β_ρ_lnc = nothing, path = nothing)
 
     nspecies, container = create_container(; )
-    setfield!(container.p, :α_GRZ, α_GRZ)
-    setfield!(container.p, :β_ρ_lnc, β_ρ_lnc)
+
+    if !isnothing(α_GRZ)
+        container.p.α_GRZ = α_GRZ
+    end
+
+    if !isnothing(β_ρ_lnc)
+        container.p.β_ρ_lnc = β_ρ_lnc
+    end
 
     nbiomass = 500
     LD = 2u"ha ^ -1"
@@ -79,9 +84,12 @@ function α_GRZ(; path = nothing)
     end
 end
 
-function trampling_biomass(; β_TRM = 0.01, path = nothing)
+function trampling_biomass(; β_TRM = nothing, path = nothing)
     nspecies, container = create_container(; )
-    container = @set container.p.β_TRM = β_TRM * u"ha"
+
+    if !isnothing(β_TRM)
+        container.p.β_TRM = β_TRM * u"ha / kg"
+    end
 
     nbiomass = 50
     biomass = fill(0.0, nspecies)u"kg / ha"
@@ -127,10 +135,12 @@ function trampling_biomass(; β_TRM = 0.01, path = nothing)
     end
 end
 
-function trampling_biomass_individual(; β_TRM = 0.01, path = nothing)
+function trampling_biomass_individual(; β_TRM = nothing, path = nothing)
     nspecies, container = create_container(; )
-    container = @set container.p.β_TRM = β_TRM * u"ha"
-    container.traits.height .= 0.5u"m"
+
+    if !isnothing(β_TRM)
+        container.p.β_TRM = β_TRM * u"kg"
+    end
 
     nbiomass = 200
     biomass = fill(100.0, nspecies)u"kg / ha"
@@ -176,9 +186,11 @@ function trampling_biomass_individual(; β_TRM = 0.01, path = nothing)
     return nothing
 end
 
-function trampling_livestockdensity(; β_TRM = 0.01, path = nothing)
+function trampling_livestockdensity(; β_TRM = nothing, path = nothing)
     nspecies, container = create_container(; )
-    container = @set container.p.β_TRM = β_TRM * u"ha"
+    if !isnothing(β_TRM)
+        container.p.β_TRM = β_TRM * u"kg / ha"
+    end
 
     nLD = 500
     biomass = fill(100.0, nspecies)u"kg / ha"
