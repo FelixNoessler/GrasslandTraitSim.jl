@@ -100,7 +100,10 @@ makedocs(;
             "Initialization" => "Modelling_API/initialization.md",
             "Biomass dynamic" => Any[
                 "Overview" => "Modelling_API/biomass_dynamic.md",
-                "Growth" => "Modelling_API/growth.md",
+                "Growth: overview" => "Modelling_API/growth.md",
+                "Growth: potential growth" => "Modelling_API/growth_potential_growth.md",
+                "Growth: community adjustment" => "Modelling_API/growth_env_factors.md",
+                "Growth: species-specific adjustment" => "Modelling_API/growth_species_specific.md",
                 "Senescence" => "Modelling_API/senescence.md",
                 "Mowing, grazing, and trampling" => "Modelling_API/defoliation.md",
                 "Clonal growth" => "Modelling_API/clonalgrowth.md",

@@ -60,8 +60,8 @@ function validation_input(;
         innerjoin(_, pet_sub, on = :date, makeunique = true)
         innerjoin(_, par_sub, on = :date, makeunique = true)
         @transform begin
-            :temperature_sum = cumulative_temperature(:temperature, Dates.year.(:date))
             :temperature = :temperature .* u"°C"
+            :temperature_sum = cumulative_temperature(:temperature .* u"°C", Dates.year.(:date))
             :precipitation = :precipitation .* u"mm"
             :PET = :PET .* u"mm"
             :PAR = :PAR .* 10000 .* u"MJ / ha"
@@ -192,16 +192,16 @@ end
 # end
 
 function cumulative_temperature(temperature, year)
-    temperature = ustrip.(temperature)
-    temperature_sum = Float64[]
-    temperature[temperature .< 0] .= 0
+    temperature_diff = temperature .- 0.0u"°C"
+    temperature_sum = eltype(temperature_diff)[]
+    temperature_diff[temperature_diff .< 0u"K"] .= 0u"K"
 
     for y in unique(year)
         year_filter = y .== year
-        append!(temperature_sum, cumsum(temperature[year_filter]))
+        append!(temperature_sum, cumsum(temperature_diff[year_filter]))
     end
 
-    return uconvert.(u"K", temperature_sum * u"°C")
+    return temperature_sum
 end
 
 

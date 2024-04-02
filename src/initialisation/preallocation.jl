@@ -70,7 +70,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         H_sla = Array{T}(undef, nspecies))
 
     calc = (;
-        com = CommunityLevel1(),
+        com = CommunityLevel(),
 
         negbiomass = fill(false, ntimesteps, patch_xdim, patch_ydim, nspecies),
 
@@ -145,10 +145,13 @@ function preallocate_vectors(; input_obj, T = Float64)
     return (; u, patch_variables, calc, traits, transfer_function, output)
 end
 
-@with_kw mutable struct CommunityLevel1{T, Q} @deftype T
+@with_kw mutable struct CommunityLevel{T, Q} @deftype T
     LAItot = 0.0
     potgrowth_total::Q = 0.0u"kg/ha"
     comH_reduction = 1.0
+    RAD = 1.0
+    SEA = 1.0
+    TEMP = 1.0
 end
 
 function preallocate_specific_vectors(; input_obj, T = Float64)

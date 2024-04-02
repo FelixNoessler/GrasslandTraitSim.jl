@@ -1,143 +1,166 @@
 @doc raw"""
-Reduction of radiation use efficiency at light intensities higher
-than 5 ``MJ\cdot m^{-2}\cdot d^{-1}``
+Reduction of radiation use efficiency at high radiation levels.
 
 ```math
-\text{Rred} = \text{min}(1, 1- \gamma_1(\text{PAR}(t) - \gamma_2))
+RAD_{txy} = \min\left(1,\, 1-\gamma_1\left(PAR_{txy} - \gamma_2\right)\right)
 ```
 
 The equations and the parameter values are taken from [Schapendonk1998](@cite).
 
-- `γ₁` is the empirical parameter for a decrease in RUE for high PAR values,
-  here set to 0.0445 [m² d MJ⁻¹]
-- `γ₂` is the threshold value of PAR from which starts a linear decrease in RUE,
-  here set to 5 [MJ m⁻²]
+Parameter, see also [`SimulationParameter`](@ref):
+- ``\gamma_1`` (`γ₁`) controls the steepness of the linear decrease in
+  radiation use efficiency for high ``PAR_{txy}`` values [MJ⁻¹ ha]
+- ``\gamma_2`` (`γ₂`) threshold value of ``PAR_{txy}`` from which starts
+  a linear decrease in radiation use efficiency [MJ ha⁻¹]
 
-comment to the equation/figure: PAR values are usually between 0 and
-15 ``MJ\cdot m^{-2}\cdot d^{-1}`` and therefore negative values of
-Rred are very unlikely
+Variables:
+- ``PAR_{txy}`` (`PAR`) photosynthetic active radiation [MJ ha⁻¹]
+
+Output:
+- ``RAD_{txy}`` (`RAD`) growth reduction factor based on too high radiation [-]
+
 ![Image of the radiation reducer function](../img/radiation_reducer.svg)
 """
-function radiation_reduction(; container, PAR)
+function radiation_reduction!(; container, PAR)
     @unpack included = container.simp
+    @unpack com = container.calc
 
     if !included.radiation_red
         @info "No radiation reduction!" maxlog=1
-        return 1.0
+        com.RAD = 1.0
+        return nothing
     end
 
     @unpack γ₁, γ₂ = container.p
-    return min(1.0, 1.0 − uconvert(NoUnits, γ₁ * (PAR − γ₂)))
+    com.RAD = min(1.0, 1.0 − γ₁ * (PAR − γ₂))
+
+    return nothing
 end
 
 @doc raw"""
-Reduction of the potential growth if the temperature is low or too high
-with a step function.
+Reduction of the growth if the temperature is low or too high.
 
 ```math
-\text{temperature_reduction}(T) =
+TEMP_{txy} =
     \begin{cases}
-    0 & \text{if } T < T_0 \\
-    \frac{T - T_0}{T_1 - T_0} & \text{if } T_0 < T < T_1 \\
-    1 & \text{if } T_1 < T < T_2 \\
-    \frac{T_3 - T}{T_3 - T_2} & \text{if } T_2 < T < T_3 \\
-    0 & \text{if } T > T_3 \\
+    0 & \text{if } T_{txy} < T_0 \\
+    \frac{T_{txy} - T_0}{T_1 - T_0} & \text{if } T_0 < T_{txy} < T_1 \\
+    1 & \text{if } T_1 < T_{txy} < T_2 \\
+    \frac{T_3 - T_{txy}}{T_3 - T_2} & \text{if } T_2 < T_{txy} < T_3 \\
+    0 & \text{if } T_{txy} > T_3 \\
     \end{cases}
 ```
 
-Equations are taken from [Moulin2021](@cite) and theses are based on
-[Schapendonk1998](@cite). `T₁` is in [Moulin2021](@cite) a
-species specific parameter, but here it is set to 12°C for all species.
+Equation are from [Jouven2006](@cite) and theses are based on
+[Schapendonk1998](@cite).
 
-- `T₀` is the lower temperature threshold for growth, here set to 3°C
-- `T₁` is the lower bound for the optimal temperature for growth, here set to 12°C
-- `T₂` is the upper bound for the optiomal temperature for growth, here set to 20°C
-- `T₃` is the maximum temperature for growth, here set to 35°C
+Parameter, see also [`SimulationParameter`](@ref):
+- ``T_0`` (`T₀`) minimum temperature for growth [°C]
+- ``T_1`` (`T₁`) lower limit of optimum temperature for growth [°C]
+- ``T_2`` (`T₂`) upper limit of optimum temperature for growth [°C]
+- ``T_3`` (`T₃`) maximum temperature for growth [°C]
+
+Variables:
+- ``T_{txy}`` (`temperature`) mean air temperature [°C]
+
+Output:
+- ``TEMP_{txy}`` (`TEMP`) temperature growth factor [-]
 
 ![Image of the temperature reducer function](../img/temperature_reducer.svg)
 """
-function temperature_reduction(; container, T)
+function temperature_reduction!(; container, T)
     @unpack included = container.simp
+    @unpack com = container.calc
 
     if !included.temperature_growth_reduction
         @info "No temperature reduction!" maxlog=1
-        return 1.0
+        com.TEMP = 1.0
+        return nothing
     end
 
     @unpack T₀, T₁, T₂, T₃ = container.p
 
     if T < T₀
-        return 0.0
+        com.TEMP = 0.0
     elseif T < T₁
-        return (T - T₀) / (T₁ - T₀)
+        com.TEMP = (T - T₀) / (T₁ - T₀)
     elseif T < T₂
-        return 1.0
+        com.TEMP = 1.0
     elseif T < T₃
-        return (T₃ - T) / (T₃ - T₂)
+        com.TEMP = (T₃ - T) / (T₃ - T₂)
     else
-        return 0.0
+        com.TEMP = 0.0
     end
+
+    return nothing
 end
 
 @doc raw"""
 Reduction of growth due to seasonal effects. The function is based on
-the yearly cumulative sum of the daily mean temperatures (`ST`).
+the yearly cumulative sum of the daily mean temperatures.
 
 ```math
-\text{seasonal}(ST) =
-    \begin{cases}
-    SEA_{min} & \text{if } ST < 200 \\
-    SEA_min + (SEA_max - SEA_min) * \frac{ST - 200}{ST₁ - 400} &
-        \text{if } 200 < ST < ST₁ - 200 \\
-    SEA_{max} & \text{if } ST₁ - 200 < ST < ST₁ - 100 \\
-    SEA_min + (SEA_min - SEA_max) * \frac{ST - ST₂}{ST₂ - ST₁ - 100} &
-        \text{if } ST₁ - 100 < ST < ST₂ \\
-    SEA_{min} & \text{if } ST > ST₂ \\
-    \end{cases}
+\begin{align*}
+    SEA_{txy} &=
+        \begin{cases}
+        SEA_{\text{min}} & \text{if}\;\; ST_{txy} < 200\,\mathrm{K}  \\
+        SEA_{\text{min}} + (SEA_{\text{max}} - SEA_{\text{min}}) \cdot \frac{ST_{txy} - 200\,\mathrm{K}}{ST_1 - 400\,\mathrm{K}} &
+            \text{if}\;\; 200\,\mathrm{K} < ST_{txy} < ST_1 - 200\,\mathrm{K} \\
+        SEA_{\text{max}} & \text{if}\;\; ST_1 - 200\,\mathrm{K} < ST_{txy} < ST_1 - 100\,\mathrm{K} \\
+        SEA_{\text{min}} + (SEA_{\text{min}} - SEA_{\text{max}}) \cdot \frac{ST_{txy} - ST_2}{ST_2 - ST_1 - 100\,\mathrm{K}} &
+            \text{if}\;\; ST_1 - 100\,\mathrm{K} < ST_{txy} < ST_2 \\
+        SEA_{\text{min}} & \text{if}\;\; ST_{txy} > ST_2
+        \end{cases} \\
+    ST_{txy} &= \sum_{i=t\bmod{365}}^{t} \max\left(0\,\mathrm{K},\, T_{ixy} - 0\,\mathrm{°C}\right)
+\end{align*}
 ```
 
-This empirical function was developed by [Jouven2006](@cite). In contrast to
-[Jouven2006](@cite) `SEA_min`, `SEA_max`, `ST₁` and `ST₂` are not species specific
-parameters, but are fixed for all species. The values of the parameters are based on
-[Jouven2006](@cite) and were chosen to resemble the mean of all functional
-groups that were described there.
-
-A seasonal factor greater than one means that growth is increased by the
-use of already stored resources. A seasonal factor below one means that
+This empirical function was developed by [Jouven2006](@cite).
+A seasonal factor greater than one means that growth is increased
+by the use of already stored resources. A seasonal factor below one means that
 growth is reduced as the plant stores resources [Jouven2006](@cite).
 
-- `ST` is the yearly cumulative sum of the daily mean temperatures
-- `SEA_min` is the minimum value of the seasonal effect, here set to 0.67 [-]
-- `SEA_max` is the maximum value of the seasonal effect, here set to 1.33 [-]
--  `ST₁` and `ST₂` are parameters that describe the thresholds of the step function,
-   here set to 625 and 1300 [°C d]
+Parameter, see also [`SimulationParameter`](@ref):
+- ``ST_1`` (`ST₁`) is a threshold of the yearly accumulated temperature,
+  above which the seasonality factor decreases from ``SEA_{\text{max}}``
+  to ``SEA_{\text{min}}`` [K]
+- ``ST_2`` (`ST₂`) is a threshold of the yearly accumulated temperature,
+  above which the seasonality factor is set to ``SEA_{\text{min}}`` [K]
+- ``SEA_{\text{min}}`` (`SEA_min`) is the minimum value of the seasonal effect [-]
+- ``SEA_{\text{max}}`` (`SEA_max`) is the maximum value of the seasonal effect [-]
+
+Variables:
+- ``ST_{txy}`` (`ST`) yearly cumulative mean air temperature [K]
+- ``T_{txy}`` (`temperature`) mean air temperature [°C]
+
+Output:
+- ``SEA_{txy}`` (`SEA`) seasonal growth factor [-]
 
 ![Image of the seasonal effect function](../img/seasonal_reducer.svg)
 """
-function seasonal_reduction(; container, ST)
+function seasonal_reduction!(; container, ST)
     @unpack included = container.simp
+    @unpack com = container.calc
 
     if !included.season_red
         @info "No seasonal reduction!" maxlog=1
-        return 1.0
+        com.SEA = 1.0
+        return nothing
     end
 
     @unpack SEA_min, SEA_max, ST₁, ST₂ = container.p
 
-    ## unit conversion from celcius to kelvin
-    # 100 °C = 373.15 K
-    # 200 °C = 473.15 K
-    # 400 °C = 673.15 K
-
-    if ST < 473.15u"K"
-        return SEA_min
-    elseif ST < ST₁ - 473.15u"K"
-        return SEA_min + (SEA_max - SEA_min) * (ST - 473.15u"K") / (ST₁ - 673.15u"K")
-    elseif ST < ST₁ - 373.15u"K"
-        return SEA_max
+    if ST < 200.0u"K"
+        com.SEA = SEA_min
+    elseif ST < ST₁ - 200.0u"K"
+        com.SEA = SEA_min + (SEA_max - SEA_min) * (ST - 200.0u"K") / (ST₁ - 400.0u"K")
+    elseif ST < ST₁ - 100.0u"K"
+        com.SEA = SEA_max
     elseif ST < ST₂
-        return SEA_min + (SEA_min - SEA_max) * (ST - ST₂) / (ST₂ - (ST₁ - 373.15u"K"))
+        com.SEA = SEA_min + (SEA_min - SEA_max) * (ST - ST₂) / (ST₂ - (ST₁ - 100.0u"K"))
     else
-        return SEA_min
+        com.SEA = SEA_min
     end
+
+    return nothing
 end

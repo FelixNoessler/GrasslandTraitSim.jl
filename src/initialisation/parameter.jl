@@ -80,69 +80,69 @@ $(FIELDS)
     clonalgrowth_factor = F(0.05)
 
     """
-    is the empirical parameter for a decrease in radiation use efficiency
-    for values of the photosynthetically active radiation (PAR) higher than `γ₂`, \\
-    see [`radiation_reduction`](@ref)
+    controls the steepness of the linear decrease in radiation use efficiency
+    for high values of the photosynthetically active radiation (`PAR`)\\
+    see [`radiation_reduction!`](@ref)
     """
-    γ₁::Q3 = F(0.0445)u"m^2 / MJ"
+    γ₁::Q3 = F(4.45e-6)u"ha / MJ"  # uconvert(u"ha/MJ", 0.0445u"m^2 / MJ")
 
     """
-    is the threshold value of PAR from which starts a linear decrease
-    in radiation use efficiency, \\
-    see [`radiation_reduction`](@ref) \\
+    threshold value of `PAR` from which starts a linear decrease in
+    radiation use efficiency \\
+    see [`radiation_reduction!`](@ref) \\
     """
-    γ₂::Q4 = F(5.0)u"MJ / m^2"
+    γ₂::Q4 = F(50000.0)u"MJ / ha" # uconvert(u"MJ/ha", 5.0u"MJ / m^2")
 
     """
     is the lower temperature threshold for growth, \\
-    see [`temperature_reduction`](@ref) \\
+    see [`temperature_reduction!`](@ref) \\
     """
-    T₀::Q5 = F(3.0)u"°C"
+    T₀::Q5 = F(4.0)u"°C"
 
     """
     is the lower bound for the optimal temperature for growth, \\
-    see [`temperature_reduction`](@ref) \\
+    see [`temperature_reduction!`](@ref) \\
     """
-    T₁::Q5 = F(12.0)u"°C"
+    T₁::Q5 = F(10.0)u"°C"
 
     """
     is the upper bound for the optiomal temperature for growth, \\
-    see [`temperature_reduction`](@ref) \\
+    see [`temperature_reduction!`](@ref) \\
     """
     T₂::Q5 = F(20.0)u"°C"
 
     """
     is the maximum temperature for growth, \\
-    see [`temperature_reduction`](@ref) \\
+    see [`temperature_reduction!`](@ref) \\
     """
     T₃::Q5 = F(35.0)u"°C"
 
     """
     is the minimum value of the seasonal effect, \\
-    see [`seasonal_reduction`](@ref) \\
+    see [`seasonal_reduction!`](@ref) \\
     """
     SEA_min = F(0.7)
 
     """
     is the maximum value of the seasonal effect, \\
-    see [`seasonal_reduction`](@ref) \\
+    see [`seasonal_reduction!`](@ref) \\
     """
     SEA_max = F(1.3)
 
     """
     is a threshold of the temperature degree days,
     above which the seasonality factor is set to `SEA_min` and
-    descreases to `SEA_max`, 898.15K = 625 °C, \\
-    see [`seasonal_reduction`](@ref) \\
+    descreases to `SEA_max`, \\
+    see [`seasonal_reduction!`](@ref) \\
     """
-    ST₁::Q6 = F(898.15)u"K"
+    ST₁::Q6 = F(775.0)u"K"
 
     """
     is a threshold of the temperature degree-days,
-    where the seasonality growth factor is set to `SEA_min`, 1573.15 K = 1300.0 °C, \\
-    see [`seasonal_reduction`](@ref) \\
+    where the seasonality growth factor is set to `SEA_min`, \\
+    see [`seasonal_reduction!`](@ref) \\
     """
-    ST₂::Q6 = F(1573.15)u"K"
+    ST₂::Q6 = F(1450.0)u"K"
 
     """
     controls how strongly taller plants gets more light for growth, \\

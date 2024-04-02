@@ -9,10 +9,10 @@ CurrentModule = GrasslandTraitSim
 ### [Daily abiotic conditions](@id climate_input)
 | Variable          | Description                                       | used in |
 | ----------------- | ------------------------------------------------- | ------- |
-| `temperature`     | Temperature [°C]                                  | [`temperature_reduction`](@ref) |
-| `temperature_sum` | Yearly cumulative temperature [°C]                | [`seasonal_reduction`](@ref), [`seasonal_component_senescence`](@ref)         |
+| `temperature`     | Temperature [°C]                                  | [`temperature_reduction!`](@ref) |
+| `temperature_sum` | Yearly cumulative temperature [°C]                | [`seasonal_reduction!`](@ref), [`seasonal_component_senescence`](@ref)         |
 | `precipitation`   | Precipitation [mm d⁻¹]                            | [`change_water_reserve`](@ref) |
-| `PAR`             | Photosynthetically active radiation [MJ ha⁻¹ d⁻¹] | [`potential_growth!`](@ref), [`radiation_reduction`](@ref) |
+| `PAR`             | Photosynthetically active radiation [MJ ha⁻¹ d⁻¹] | [`potential_growth!`](@ref), [`radiation_reduction!`](@ref) |
 | `PET`             | Potential evapotranspiration [mm d⁻¹]             |[`water_reduction!`](@ref), [`evaporation`](@ref), [`transpiration`](@ref)        |
 
 

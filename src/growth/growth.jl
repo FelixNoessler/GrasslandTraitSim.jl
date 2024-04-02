@@ -7,36 +7,37 @@ include("belowground_competition.jl")
 include("light_competition.jl")
 
 """
-Calculates the actual growth of the plant species.
+Calculates the growth of the plant species.
+
+**The growth of the plants is modelled by...**
+- [Potential growth](@ref)
+- [Community growth adjustment by environmental and seasonal factors](@ref)
+- [Species-specific growth adjustment](@ref)
 """
 function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     @unpack daily_input = container
     @unpack included = container.simp
-    @unpack species_specific_red, light_competition, Waterred, Nutred = container.calc
-    @unpack act_growth = container.calc
-    @unpack potgrowth_total = container.calc.com
+    @unpack act_growth, com, species_specific_red, light_competition, Waterred,
+            Nutred = container.calc
 
-    #### potential growth
+    ########### Potential growth
     potential_growth!(; container, biomass, PAR = daily_input.PAR[t])
 
-    ### influence of the leaf areay index and the height of the plants
+    ########### Community growth adjustment by environmental and seasonal factors
+    radiation_reduction!(; container, PAR = daily_input.PAR[t])
+    temperature_reduction!(; container, T = daily_input.temperature[t])
+    seasonal_reduction!(; container, ST = daily_input.temperature_sum[t])
+    community_red = com.RAD * com.SEA * com.TEMP
+
+    ########### Species-specific growth adjustment
     light_competition!(; container, biomass)
-
-    #### below ground competition --> trait similarity and abundance
     below_ground_competition!(; container, biomass)
-
-    #### growth reducer
     water_reduction!(; container, W, PWP, WHC, PET = daily_input.PET[t])
     nutrient_reduction!(; container, nutrients)
-    Rred = radiation_reduction(; container, PAR = daily_input.PAR[t])
-    Tred = temperature_reduction(; container, T = daily_input.temperature[t])
-    Seasonalred = seasonal_reduction(; container, ST = daily_input.temperature_sum[t])
-
     @. species_specific_red = light_competition * Waterred * Nutred
-    reduction = Rred * Tred * Seasonalred
 
-    #### final growth
-    @. act_growth = potgrowth_total * reduction * species_specific_red
+    ########### Final growth
+    @. act_growth = com.potgrowth_total * community_red * species_specific_red
 
     return nothing
 end

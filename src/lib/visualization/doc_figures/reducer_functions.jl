@@ -1,18 +1,61 @@
-function temperatur_reducer(;
-        Ts = collect(LinRange(0.0, 40.0, 500)) .* u"°C",
+function radiation_reducer(;
+        PARs = LinRange(0.0, 15.0 * 100^2, 1000)u"MJ / ha",
         path = nothing)
+
+    nspecies, container = create_container(; nspecies = 1)
+
+    PARs = sort(ustrip.(PARs)) .* unit(PARs[1])
+
+    y = Float64[]
+
+    for PAR in PARs
+        radiation_reduction!(; PAR, container)
+        push!(y, container.calc.com.RAD)
+    end
+
+    fig = Figure(; size = (700, 400))
+    Axis(fig[1, 1];
+        ylabel = "Growth reduction (RAD)",
+        xlabel = "Photosynthetically active radiation (PAR) [MJ ha⁻¹]",
+        title = "Radiation reducer function")
+
+    PARs = ustrip.(PARs)
+
+    if length(y) > 1000
+        scatter!(PARs, y,
+            markersize = 5,
+            color = (:magenta, 0.05))
+    else
+        lines!(PARs, y,
+            linewidth = 3,
+            color = :magenta)
+    end
+    ylims!(-0.05, 1.05)
+
+    if !isnothing(path)
+        save(path, fig;)
+    else
+        display(fig)
+    end
+
+    return nothing
+end
+
+function temperatur_reducer(;
+    Ts = collect(LinRange(0.0, 40.0, 500)) .* u"°C",
+    path = nothing)
 
     nspecies, container = create_container(; nspecies = 1)
 
     y = Float64[]
     for T in Ts
-        g = temperature_reduction(; T, container)
-        push!(y, g)
+        temperature_reduction!(; T, container)
+        push!(y, container.calc.com.TEMP)
     end
 
     fig = Figure(; size = (700, 400))
     Axis(fig[1, 1];
-        ylabel = "Growth reduction",
+        ylabel = "Growth reduction (TEMP)",
         xlabel = "Air temperature [°C]",
         title = "Temperature reducer function")
 
@@ -35,39 +78,35 @@ function temperatur_reducer(;
     return nothing
 end
 
-function radiation_reducer(;
-        PARs = LinRange(0.0, 15.0, 1000)u"MJ / m^2",
-        path = nothing)
+function seasonal_effect(;
+    STs = LinRange(0, 3500, 1000)u"K",
+    path = nothing)
 
     nspecies, container = create_container(; nspecies = 1)
 
-    PARs = sort(ustrip.(PARs)) .* unit(PARs[1])
-
     y = Float64[]
-
-    for PAR in PARs
-        g = radiation_reduction(; PAR, container)
-        push!(y, g)
+    for ST in STs
+        seasonal_reduction!(; ST, container)
+        push!(y, container.calc.com.SEA)
     end
 
     fig = Figure(; size = (700, 400))
     Axis(fig[1, 1];
-        ylabel = "Growth reduction (Rred)",
-        xlabel = "Photosynthetically active radiation (PAR) [MJ m⁻²]",
-        title = "Radiation reducer function")
-
-    PARs = ustrip.(PARs)
+        ylabel = "Seasonal factor (SEA)",
+        xlabel = "Yearly accumulated temperature (ST) [K]",
+        title = "Seasonal effect")
 
     if length(y) > 1000
-        scatter!(PARs, y,
-            markersize = 5,
-            color = (:magenta, 0.05))
+        scatter!(STs, y;
+            markersize = 3,
+            color = (:navajowhite4, 0.1))
     else
-        lines!(PARs, y,
+        lines!(ustrip.(STs), y;
             linewidth = 3,
-            color = :magenta)
+            color = :navajowhite4)
     end
-    ylims!(-0.05, 1.05)
+
+    ylims!(-0.05, 1.6)
 
     if !isnothing(path)
         save(path, fig;)
@@ -192,44 +231,7 @@ function below_influence(; path = nothing)
     return nothing
 end
 
-function seasonal_effect(;
-        STs = uconvert.(u"K", LinRange(0, 3500, 1000)u"°C"),
-        path = nothing)
 
-    nspecies, container = create_container(; nspecies = 1)
-
-    y = Float64[]
-    for ST in STs
-        g = seasonal_reduction(; ST, container)
-        push!(y, g)
-    end
-
-    fig = Figure(; size = (700, 400))
-    Axis(fig[1, 1];
-        ylabel = "Seasonal factor (seasonal)",
-        xlabel = "Accumulated degree days (ST) [°C]",
-        title = "Seasonal effect")
-
-    if length(y) > 1000
-        scatter!(STs, y;
-            markersize = 3,
-            color = (:navajowhite4, 0.1))
-    else
-        lines!(ustrip.(STs), y;
-            linewidth = 3,
-            color = :navajowhite4)
-    end
-
-    ylims!(-0.05, 1.6)
-
-    if !isnothing(path)
-        save(path, fig;)
-    else
-        display(fig)
-    end
-
-    return nothing
-end
 
 function plot_seasonal_component_senescence(;
         STs = LinRange(0, 4000, 500),
