@@ -6,7 +6,7 @@ Derive a nutrient index by combining total nitrogen and carbon to nitrogen ratio
 \text{CN_scaled} &= \frac{\text{CNratio} - \text{minCNratio}}
                     {\text{maxCNratio} - \text{minCN_ratio}} \\
 \text{totalN_scaled} &= \frac{\text{totalN} - \text{mintotalN}}
-                        {\text{maxtotalN} - \text{mintotalN}} \\
+                        {\text{N_max} - \text{mintotalN}} \\
 \text{nutrients} &= \frac{1}{1 + exp(-\text{totalN_β} ⋅ \text{totalN_scaled}
                                      -\text{CN_β} ⋅ \text{CN_scaled}⁻¹)}
 \end{align*}
@@ -17,7 +17,7 @@ Derive a nutrient index by combining total nitrogen and carbon to nitrogen ratio
 - `minCNratio`: minimum carbon to nitrogen ratio [-]
 - `maxCNratio`: maximum carbon to nitrogen ratio [-]
 - `mintotalN`: minimum total nitrogen [g kg⁻¹]
-- `maxtotalN`: maximum total nitrogen [g kg⁻¹]
+- `N_max`: maximum total nitrogen [g kg⁻¹]
 - `totalN_β`: scaling parameter for total nitrogen [-]
 - `CN_β`: scaling parameter for carbon to nitrogen ratio [-]
 - `nutrients`: nutrient index [-]
@@ -40,10 +40,10 @@ function input_nutrients!(; prealloc, input_obj, p)
 
     #### data from the biodiversity exploratories
     # mintotalN = 1.2525
-    # maxtotalN = 30.63
+    # N_max = 30.63
 
     if included.nutrient_growth_reduction
-        @. nutrients = totalN / p.maxtotalN
+        @. nutrients = totalN / p.N_max
     end
 
     return nothing
@@ -88,18 +88,18 @@ can be seen in the folling table:
 """
 function input_WHC_PWP!(; prealloc, input_obj)
     @unpack WHC, PWP = prealloc.patch_variables
-    @unpack sand, silt, clay, organic, bulk, rootdepth, totalN, CNratio = input_obj.site
+    @unpack sand, silt, clay, organic, bulk, rootdepth = input_obj.site
 
-    @. WHC = (0.005678 * sand +
-              0.009228 * silt +
-              0.009135 * clay +
-              0.006103 * organic -
-              0.2696 * bulk) * rootdepth * u"mm"
-    @. PWP = (-5.9e-5 * sand +
-              0.001142 * silt +
-              0.005766 * clay +
-              0.002228 * organic +
-              0.02671 * bulk) * rootdepth * u"mm"
+    @. WHC = (0.5678 * sand +
+        0.9228 * silt +
+        0.9135 * clay +
+        0.6103 * organic -
+        0.2696u"cm^3/g" * bulk) * rootdepth
+    @. PWP = (-0.0059 * sand +
+        0.1142 * silt +
+        0.5766 * clay +
+        0.2228 * organic +
+        0.02671u"cm^3/g" * bulk) * rootdepth
 
     return nothing
 end

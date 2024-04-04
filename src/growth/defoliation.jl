@@ -8,12 +8,17 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
     @unpack mown = container.output
     @unpack α_lowB, β_lowB = container.p
     @unpack nspecies = container.simp
+    @unpack included = container.simp
 
     # --------- proportion of plant height that is mown
     proportion_mown .= max.(height .- mowing_height, 0.0u"m") ./ height
 
     # --------- if low species biomass, the plant height is low -> less biomass is mown
-    @. lowbiomass_correction =  1.0 / (1.0 + exp(β_lowB * (α_lowB - biomass)))
+    if included.lowbiomass_avoidance
+        @. lowbiomass_correction =  1.0 / (1.0 + exp(β_lowB * (α_lowB - biomass)))
+    else
+        lowbiomass_correction .= 1.0
+    end
 
     # --------- add the removed biomass to the defoliation vector
     for s in 1:nspecies
@@ -62,11 +67,11 @@ Influence of `α_GRZ`:
 """
 function grazing!(; t, x, y, container, LD, biomass)
     @unpack lncm = container.traits
-    @unpack α_GRZ, β_ρ_lnc, κ,
-            α_lowB, β_lowB = container.p
+    @unpack α_GRZ, β_ρ_lnc, κ, α_lowB, β_lowB = container.p
     @unpack defoliation, grazed_share, relative_lncm, ρ,
             lowbiomass_correction, low_ρ_biomass = container.calc
     @unpack grazed = container.output
+    @unpack included = container.simp
 
     #################################### total grazed biomass
     sum_biomass = sum(biomass)
@@ -79,7 +84,11 @@ function grazing!(; t, x, y, container, LD, biomass)
     ρ .= (lncm ./ sum(relative_lncm)) .^ β_ρ_lnc
 
     ## species with low biomass are less grazed
-    @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (biomass - α_lowB)))
+    if included.lowbiomass_avoidance
+        @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (biomass - α_lowB)))
+    else
+        lowbiomass_correction .= 1.0
+    end
     @. low_ρ_biomass = lowbiomass_correction * ρ * biomass
 
     grazed_share .= low_ρ_biomass ./ sum(low_ρ_biomass)
@@ -122,6 +131,7 @@ function trampling!(; container, LD, biomass)
     @unpack β_TRM_height, β_TRM, α_TRM, α_lowB, β_lowB = container.p
     @unpack lowbiomass_correction, trampled_share, trampled_biomass,
             defoliation = container.calc
+    @unpack included = container.simp
 
     #################################### Total trampled biomass
     sum_biomass = sum(biomass)
@@ -129,7 +139,11 @@ function trampling!(; container, LD, biomass)
     total_trampled = LD * β_TRM * biomass_exp / (α_TRM * α_TRM + biomass_exp)
 
     #################################### Share of trampled biomass per species
-    @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (biomass - α_lowB)))
+    if included.lowbiomass_avoidance
+        @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (biomass - α_lowB)))
+    else
+        lowbiomass_correction .= 1.0
+    end
     @. trampled_share = (height / 0.5u"m") ^ β_TRM_height *
                         lowbiomass_correction * biomass / sum_biomass
 

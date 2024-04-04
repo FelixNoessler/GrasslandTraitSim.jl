@@ -63,11 +63,12 @@ function preallocate_vectors(; input_obj, T = Float64)
     ############# Transfer function
     transfer_function = (;
         K_amc = Array{T}(undef, nspecies),
-        H_amc = Array{T}(undef, nspecies),
+        A_amc = Array{T}(undef, nspecies),
         K_wrsa = Array{T}(undef, nspecies),
         K_nrsa = Array{T}(undef, nspecies),
-        H_rsa = Array{T}(undef, nspecies),
-        H_sla = Array{T}(undef, nspecies))
+        A_wrsa = Array{T}(undef, nspecies),
+        A_nrsa = Array{T}(undef, nspecies),
+        A_sla = Array{T}(undef, nspecies))
 
     calc = (;
         com = CommunityLevel(),
@@ -115,11 +116,11 @@ function preallocate_vectors(; input_obj, T = Float64)
         ## nutrient reducer function
         nutrients_splitted = Array{T}(undef, nspecies),
         Nutred = Array{T}(undef, nspecies),
-        amc_nut = Array{T}(undef, nspecies),
-        rsa_above_nut = Array{T}(undef, nspecies),
+        N_amc = Array{T}(undef, nspecies),
+        N_rsa = Array{T}(undef, nspecies),
 
         ## water reducer function
-        Wp = Array{T}(undef, nspecies),
+        W_p = Array{T}(undef, nspecies),
         Waterred = Array{T}(undef, nspecies),
         W_sla = Array{T}(undef, nspecies),
         W_rsa = Array{T}(undef, nspecies),

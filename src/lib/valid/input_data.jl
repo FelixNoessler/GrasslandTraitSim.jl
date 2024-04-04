@@ -23,6 +23,7 @@ function validation_input(;
             mowing = true,
             trampling = true,
             grazing = true,
+            lowbiomass_avoidance = true,
             belowground_competition = true,
             community_height_red = true,
             height_competition = true,
@@ -125,16 +126,15 @@ function validation_input(;
 
     ### ----------------- abiotic
     nut_sub = @subset data.input.nut :plotID .== plotID
-    totalN = nut_sub.totalN[1]
-    CNratio = nut_sub.CNratio[1]
+    totalN = nut_sub.totalN[1] * u"g / kg"
 
     soil_sub = @subset data.input.soil :plotID .== plotID
-    clay = soil_sub.clay[1]
-    silt = soil_sub.silt[1]
-    sand = soil_sub.sand[1]
-    organic = soil_sub.organic[1]
-    bulk = soil_sub.bulk[1]
-    rootdepth = soil_sub.rootdepth[1]
+    clay = soil_sub.clay[1] / 100
+    silt = soil_sub.silt[1] / 100
+    sand = soil_sub.sand[1] / 100
+    organic = soil_sub.organic[1] / 100
+    bulk = soil_sub.bulk[1] * u"g / cm^3"
+    rootdepth = soil_sub.rootdepth[1] * u"mm"
 
     return (
         doy = daily_data_prep.doy,
@@ -156,7 +156,6 @@ function validation_input(;
             initbiomass,
             initsoilwater,
             totalN,
-            CNratio,
             clay,
             silt,
             sand,

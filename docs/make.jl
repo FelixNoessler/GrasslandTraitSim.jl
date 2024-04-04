@@ -38,16 +38,16 @@ sim.potential_growth_height(; path = f("$docs_img/potential_growth_height.svg"))
 sim.community_height_influence(; path = f("$docs_img/community_height_influence.svg"))
 
 #### transfer functions
-sim.W_rsa_response(; path = f("$docs_img/W_rsa_response.svg"), δ_wrsa = 1.0)
-sim.W_rsa_response(; path = f("$docs_img/W_rsa_response_0_5.svg"), δ_wrsa = 0.5)
-sim.rsa_above_nut_response(; path = f("$docs_img/rsa_above_nut_response.svg"),
+sim.plot_W_rsa(; path = f("$docs_img/plot_W_rsa.svg"), δ_wrsa = 1.0)
+sim.plot_W_rsa(; path = f("$docs_img/W_rsa_response_0_5.svg"), δ_wrsa = 0.5)
+sim.plot_N_rsa(; path = f("$docs_img/plot_N_rsa.svg"),
                            δ_nrsa = 1.0)
-sim.rsa_above_nut_response(; path = f("$docs_img/rsa_above_nut_response_0_5.svg"),
+sim.plot_N_rsa(; path = f("$docs_img/rsa_above_nut_response_0_5.svg"),
                            δ_nrsa = 0.5)
-sim.amc_nut_response(; path = f("$docs_img/amc_nut_response.svg"), δ_amc = 1.0)
-sim.amc_nut_response(; path = f("$docs_img/amc_nut_response_0_5.svg"), δ_amc = 0.5)
-sim.W_sla_response(; path = f("$docs_img/W_sla_response.svg"), δ_sla = 1.0)
-sim.W_sla_response(; path = f("$docs_img/W_sla_response_0_5.svg"), δ_sla = 0.5)
+sim.plot_N_amc(; path = f("$docs_img/plot_N_amc.svg"), δ_amc = 1.0)
+sim.plot_N_amc(; path = f("$docs_img/amc_nut_response_0_5.svg"), δ_amc = 0.5)
+sim.plot_W_sla(; path = f("$docs_img/plot_W_sla.svg"), δ_sla = 1.0)
+sim.plot_W_sla(; path = f("$docs_img/W_sla_response_0_5.svg"), δ_sla = 0.5)
 sim.plant_available_water(; path = f("$docs_img/pet.svg"))
 
 #### leaf lifespan

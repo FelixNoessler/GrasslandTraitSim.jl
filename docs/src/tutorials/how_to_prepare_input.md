@@ -96,14 +96,13 @@ For an explanation of the variables, see [here](@ref site_input).
 
 ```@example input_creation
 site_tuple = (;
-    totalN = 5.0,      # g kg⁻¹
-    CNratio = 10.0,    # -
-    clay = 50.0,       # %
-    silt = 45.0,       # %
-    sand = 5.0,        # %
-    organic = 6.0,     # %
-    bulk = 0.7,        # g cm⁻³
-    rootdepth = 160.0, # mm
+    totalN = 5.0u"g / kg",
+    clay = 0.5,       
+    silt = 0.45,       
+    sand = 0.05,        
+    organic = 0.06,     
+    bulk = 0.7u"g / cm^3",
+    rootdepth = 160.0u"mm",
     initbiomass = 1500u"kg / ha",
     initsoilwater = 80u"mm"
 )    
@@ -131,6 +130,7 @@ simp = (
         mowing = true,
         trampling = true,
         grazing = true,
+        lowbiomass_avoidance = true,
         belowground_competition = true,
         community_height_red = true,
         height_competition = true,

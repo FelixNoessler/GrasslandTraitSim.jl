@@ -9,8 +9,8 @@ function gradient_evaluation(; plotID, input_obj, valid_data, p, trait_input)
 
         p_obj = get_buffer(p_cache, θ_type)
         for (i,k) in enumerate(p_keys)
-            unit_k = unit(getproperty(p_obj, k))
-            setfield!(p_obj, k, x[i] * unit_k)
+            unit_k = unit(p_obj[k])
+            p_obj[k] = x[i] * unit_k
         end
 
         loglikelihood_model(;

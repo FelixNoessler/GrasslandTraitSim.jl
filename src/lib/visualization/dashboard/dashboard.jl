@@ -55,7 +55,7 @@ function dashboard(; posterior = nothing, variable_p = (;),
                 p_keys = keys(p)
                 for i in eachindex(g)
                     f = p_keys[i] .== plot_obj.obs.parameter_keys
-                    plot_obj.obs.gradient_values[findfirst(f)][] = round(g[i]; digits = 2)
+                    plot_obj.obs.gradient_values[findfirst(f)][] = 2.0 #round(g[i]; digits = 2)
                 end
             end
 

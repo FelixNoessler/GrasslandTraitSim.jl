@@ -124,11 +124,11 @@ function similarity_matrix!(; input_obj, prealloc)
     amc_resid .= (amc .- mean(amc)) ./ std(amc)
     rsa_above_resid .= (rsa_above .- mean(rsa_above)) ./ std(rsa_above)
 
-    TS .= 0.0
     for i in Base.OneTo(nspecies)
         for u in Base.OneTo(nspecies)
-            TS[i, u] += abs(amc_resid[i] - amc_resid[u])
-            TS[i, u] += abs(rsa_above_resid[i] - rsa_above_resid[u])
+            TS[i, u] = sqrt(
+                (amc_resid[i] - amc_resid[u]) ^ 2 +
+                (rsa_above_resid[i] - rsa_above_resid[u]) ^ 2)
         end
     end
 

@@ -65,7 +65,7 @@ flowchart LR
     K["water holding capacity WHC [mm]"]
     L["permanent wilting point PWP [mm]"]
     P["scaled soil water content Wsc [-]"]
-    M["plant available water Wp [-]"]
+    M["plant available water W_p [-]"]
     H["potential evapotranspiration PET [mm]"]
     R[trait: root surface area /\n aboveground biomass]
     S[trait: specific leaf area]

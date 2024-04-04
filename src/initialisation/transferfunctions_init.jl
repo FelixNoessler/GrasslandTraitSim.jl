@@ -7,22 +7,25 @@ function init_transfer_functions!(; input_obj, prealloc, p)
 
     if included.water_growth_reduction
         @unpack δ_sla, δ_wrsa, ϕ_rsa, ϕ_sla, η_min_sla, η_max_sla,
-                κ_min_rsa, β_κη_rsa, β_η_sla = p
+                κ_red_wrsa, β_κη_wrsa, β_η_sla, η_max_wrsa, η_min_wrsa = p
         @unpack rsa_above, sla = prealloc.traits
-        @unpack K_wrsa, H_sla = prealloc.transfer_function
+        @unpack K_wrsa, A_sla, A_wrsa = prealloc.transfer_function
 
         ##### Specific leaf area
-        @. H_sla = η_min_sla + (η_max_sla - η_min_sla) / (1 + exp(-β_η_sla * (sla - ϕ_sla)))
+        @. A_sla = η_min_sla + (η_max_sla - η_min_sla) / (1 + exp(-β_η_sla * (sla - ϕ_sla)))
 
         #### Root surface area per above ground biomass
-        @. K_wrsa = 1 - (1 - κ_min_rsa) / (1 + exp(-β_κη_rsa * (rsa_above - ϕ_rsa))) * δ_wrsa
+        @. K_wrsa = 1 - κ_red_wrsa*δ_wrsa / (1 + exp(-β_κη_wrsa * (rsa_above - ϕ_rsa)))
+        @. A_wrsa = η_max_wrsa + (η_min_wrsa - η_max_wrsa) /
+            (1 + exp(-β_κη_wrsa * (rsa_above - ϕ_rsa)))
     end
 
     if included.nutrient_growth_reduction
         @unpack δ_amc, δ_nrsa, ϕ_amc, ϕ_rsa, η_min_amc, η_max_amc,
-                κ_min_amc, κ_min_rsa, β_κη_amc, β_κη_rsa = p
+                κ_red_amc, κ_red_nrsa, β_κη_amc, β_κη_nrsa,
+                η_min_nrsa, η_max_nrsa = p
         @unpack amc, rsa_above = prealloc.traits
-        @unpack K_amc, H_amc, K_nrsa = prealloc.transfer_function
+        @unpack K_amc, A_amc, K_nrsa, A_nrsa = prealloc.transfer_function
 
         #### Arbuscular mycorrhizal colonisation
         for amc_val in amc
@@ -31,21 +34,14 @@ function init_transfer_functions!(; input_obj, prealloc, p)
             end
         end
 
-        @. H_amc = η_max_amc + (η_min_amc - η_max_amc) / (1 + exp(-β_κη_amc * (amc - ϕ_amc)))
-        @. K_amc = 1 - (1 - κ_min_amc) / (1 + exp(-β_κη_amc * (amc - ϕ_amc))) * δ_amc
+        @. A_amc = η_max_amc - (η_max_amc - η_min_amc) /
+            (1 + exp(-β_κη_amc * (amc - ϕ_amc)))
+        @. K_amc = 1 - κ_red_amc*δ_amc / (1 + exp(-β_κη_amc * (amc - ϕ_amc)))
 
         #### Root surface area per above ground biomass
-        @. K_nrsa = 1 - (1 - κ_min_rsa) / (1 + exp(-β_κη_rsa * (rsa_above - ϕ_rsa))) * δ_nrsa
-    end
-
-    if included.water_growth_reduction || included.nutrient_growth_reduction
-        @unpack ϕ_rsa, η_min_rsa, η_max_rsa, β_κη_rsa = p
-        @unpack rsa_above = prealloc.traits
-        @unpack H_rsa = prealloc.transfer_function
-
-        #### Root surface area per above ground biomass
-        @. H_rsa = η_max_rsa + (η_min_rsa - η_max_rsa) /
-        (1 + exp(-β_κη_rsa * (rsa_above - ϕ_rsa)))
+        @. K_nrsa = 1 - κ_red_nrsa*δ_nrsa / (1 + exp(-β_κη_nrsa * (rsa_above - ϕ_rsa)))
+        @. A_nrsa = η_max_nrsa + (η_min_nrsa - η_max_nrsa) /
+            (1 + exp(-β_κη_nrsa * (rsa_above - ϕ_rsa)))
     end
 
     return nothing

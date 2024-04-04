@@ -17,7 +17,7 @@ function plant_available_water(; path = nothing)
 
             for PET in PET_vals
                 water_reduction!(; container, W, PET, PWP, WHC)
-                push!(w, container.calc.Wp[1])
+                push!(w, container.calc.W_p[1])
             end
 
             Axis(fig[i, u];

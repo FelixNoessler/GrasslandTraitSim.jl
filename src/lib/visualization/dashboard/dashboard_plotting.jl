@@ -17,6 +17,12 @@ function band_patch(;
         biomass = vec(sum(ustrip.(sol.output.biomass); dims = (:x, :y, :species))) ./
                     sol.simp.npatches
         lines!(ax, t, biomass; color = :orange, linewidth = 2)
+
+        # mean_speciesbiomass = biomass ./ sol.simp.nspecies
+        # species_biomass = dropdims(mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims = (:x, :y))
+        # biomass_var = vec(sum((mean_speciesbiomass .- species_biomass) .^ 2; dims = :species)) ./ mean_speciesbiomass
+        # lines!(ax, t, biomass .+ biomass_var; color = :orange, linestyle = :dash, linewidth = 2)
+        # lines!(ax, t, biomass .- biomass_var; color = :orange, linestyle = :dash, linewidth = 2)
     end
 
     show_grazmow = plot_obj.obs.toggle_grazmow.active.val
@@ -128,9 +134,9 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
     relative_biomass = species_biomass ./ total_biomass
 
     ##  mean
-    weighted_trait = trait_vals .* relative_biomass'
+    weighted_trait = Matrix(trait_vals .* relative_biomass')
     cwm_trait = vec(sum(weighted_trait; dims = 1))
-
+    cwv_trait = vec(sum(relative_biomass .* (cwm_trait .- trait_vals') .^ 2; dims = 2)) ./ cwm_trait
     ax.xlabel = "Time [years]"
 
     ### trait values of all species
@@ -159,6 +165,8 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
     median_trait = median.(cwm_trait_dist)
 
     lines!(ax, t, median_trait, color = :blue)
+    band!(ax, t, median_trait .+ cwv_trait, median_trait .- cwv_trait;
+        color = (:blue, 0.3))
     ax.ylabel = "CWM: $trait_name"
 
     if !isnothing(valid_data)
