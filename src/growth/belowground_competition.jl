@@ -97,16 +97,15 @@ function below_ground_competition!(; container, biomass)
     @unpack β_TSB, α_TSB = container.p
     LinearAlgebra.mul!(TS_biomass, TS, biomass)
 
-
     ## biomass density factor should be between 0.33 and 3.0
     for i in eachindex(biomass_density_factor)
-        biomass_factor = (TS_biomass[i] / α_TSB) ^ -β_TSB
+        biomass_factor = (α_TSB / TS_biomass[i]) ^ β_TSB
 
-        if biomass_factor > 3.0
-            biomass_factor = 3.0
-        elseif biomass_factor < 0.33
-            biomass_factor = 0.33
-        end
+        # if biomass_factor > 3.0
+        #     biomass_factor = 3.0
+        # elseif biomass_factor < 0.33
+        #     biomass_factor = 0.33
+        # end
 
         biomass_density_factor[i] = biomass_factor
     end
@@ -158,23 +157,23 @@ stress reduction.
 
 **Initialization:**
 
-The specicies-specifc parameter `H_sla` is initialized
+The specicies-specifc parameter `A_sla` is initialized
 and later used in the reduction function.
 
 ```math
-\text{H_sla} = \text{min_sla_mid} +
+\text{A_sla} = \text{min_sla_mid} +
     \frac{\text{max_sla_mid} - \text{min_sla_mid}}
     {1 + exp(-\text{β_sla_mid} \cdot (sla - \text{mid_sla}))}
 ```
 
 - `sla` is the specific leaf area of the species [m² g⁻¹]
-- `min_sla_mid` is the minimum of `H_sla` that
+- `min_sla_mid` is the minimum of `A_sla` that
   can be reached with a very low specific leaf area [-]
-- `max_sla_mid` is the maximum of `H_sla` that
+- `max_sla_mid` is the maximum of `A_sla` that
   can be reached with a very high specific leaf area [-]
 - `mid_sla` is a mean specific leaf area [m² g⁻¹]
 - `β_sla_mid` is a parameter that defines the steepness
-  of function that relate the `sla` to `H_sla`
+  of function that relate the `sla` to `A_sla`
 
 
 **Reduction factor based on the plant availabe water:**
@@ -182,17 +181,17 @@ and later used in the reduction function.
 \text{W_sla} = 1 - \text{δ_sla} +
     \frac{\text{δ_sla}}
     {1 + exp(-\text{k_sla} \cdot
-        (\text{Wp} - \text{H_sla}))}
+        (\text{W_p} - \text{A_sla}))}
 ```
 
 - `W_sla` is the reduction factor for the growth based on the
   specific leaf area [-]
-- `H_sla` is the value of the plant available water
+- `A_sla` is the value of the plant available water
   at which the reduction factor is in the middle between
   1 - `δ_sla` and 1 [-]
 - `δ_sla` is the maximal reduction of the
   growth based on the specific leaf area
-- `Wp` is the plant available water [-]
+- `W_p` is the plant available water [-]
 - `k_sla` is a parameter that defines the steepness of the reduction function
 
 **Overview over the parameters:**
@@ -205,12 +204,12 @@ and later used in the reduction function.
 | `β_sla_mid`               | fixed                     | 75 [g m⁻²]     |
 | `k_sla`                   | fixed                     | 5 [-]          |
 | `δ_sla` | calibrated                | -              |
-| `H_sla`      | species-specific, derived | -              |
+| `A_sla`      | species-specific, derived | -              |
 
 **Influence of the `δ_sla`:**
 
 `δ_sla` equals 1:
-![](../img/W_sla_response.svg)
+![](../img/plot_W_sla.svg)
 
 `δ_sla` equals 0.5:
 ![](../img/W_sla_response_0_5.svg)
@@ -222,7 +221,7 @@ root surface area per above ground biomass (`rsa_above`).
 - the strength of the reduction is modified by the parameter `δ_wrsa`
 
 `δ_wrsa` equals 1:
-![Graphical overview of the functional response](../img/W_rsa_response.svg)
+![Graphical overview of the functional response](../img/plot_W_rsa.svg)
 
 `δ_wrsa` equals 0.5:
 # ![Graphical overview of the functional response](../img/W_rsa_response_0_5.svg)
@@ -241,16 +240,16 @@ function water_reduction!(; container, W, PET, PWP, WHC)
     pet_adjustment = 1.0
     if included.pet_growth_reduction
         @unpack α_PET, β_PET = container.p
-        pet_adjustment = exp(-β_PET * (PET - α_PET))
+        pet_adjustment = exp(β_PET * (α_PET - PET))
     end
 
-    @unpack W_sla, W_rsa, Wp, biomass_density_factor = container.calc
-    @unpack δ_sla, δ_wrsa, β_sla, β_rsa = container.p
-    @unpack K_wrsa, H_rsa, H_sla = container.transfer_function
+    @unpack W_sla, W_rsa, W_p, biomass_density_factor = container.calc
+    @unpack δ_sla, δ_wrsa, β_sla, β_wrsa = container.p
+    @unpack K_wrsa, A_wrsa, A_sla = container.transfer_function
 
-    @. Wp = min(biomass_density_factor * Wsc * pet_adjustment, 3.0)
-    @. W_sla = 1 - δ_sla + δ_sla / (1 + exp(-β_sla * (Wp - H_sla)))
-    @. W_rsa = 1 - δ_wrsa + (K_wrsa + δ_wrsa - 1) / (1 + exp(-β_rsa * (Wp - H_rsa)))
+    @. W_p = biomass_density_factor * Wsc * pet_adjustment
+    @. W_sla = 1 - δ_sla + δ_sla / (1 + exp(-β_sla * (W_p - A_sla)))
+    @. W_rsa = 1 - δ_wrsa + (K_wrsa + δ_wrsa - 1) / (1 + exp(-β_wrsa * (W_p - A_wrsa)))
     @. Waterred = W_sla * W_rsa
 
     return nothing
@@ -269,7 +268,7 @@ arbuscular mycorrhizal colonisation (`AMC`).
 - the strength of the reduction is modified by the parameter `δ_amc`
 
 `δ_amc` equals 1:
-![Graphical overview of the AMC functional response](../img/amc_nut_response.svg)
+![Graphical overview of the AMC functional response](../img/plot_N_amc.svg)
 
 `δ_amc` equals 0.5:
 ![Graphical overview of the AMC functional response](../img/amc_nut_response_0_5.svg)
@@ -280,7 +279,7 @@ root surface area per above ground biomass (`rsa_above`).
 - the strength of the reduction is modified by the parameter `δ_nrsa`
 
 `δ_nrsa` equals 1:
-![Graphical overview of the functional response](../img/rsa_above_nut_response.svg)
+![Graphical overview of the functional response](../img/plot_N_rsa.svg)
 
 `δ_nrsa` equals 0.5:
 ![Graphical overview of the functional response](../img/rsa_above_nut_response_0_5.svg)
@@ -295,18 +294,18 @@ function nutrient_reduction!(; container, nutrients)
         return nothing
     end
 
-    @unpack K_amc, H_amc, K_nrsa, H_rsa = container.transfer_function
-    @unpack δ_amc, δ_nrsa, β_amc, β_rsa = container.p
+    @unpack K_amc, A_amc, K_nrsa, A_nrsa = container.transfer_function
+    @unpack δ_amc, δ_nrsa, β_amc, β_nrsa = container.p
     @unpack nutrients_splitted, biomass_density_factor,
-            amc_nut, nutrients_splitted, rsa_above_nut,
+            N_amc, nutrients_splitted, N_rsa,
             nutrients_splitted = container.calc
 
     @. nutrients_splitted = nutrients * biomass_density_factor
-    @. amc_nut = 1 - δ_amc + (K_amc + δ_amc - 1) /
-                 (1 + exp(-β_amc * (nutrients_splitted - H_amc)))
-    @. rsa_above_nut = 1 - δ_nrsa + (K_nrsa + δ_nrsa - 1) /
-                       (1 + exp(-β_rsa * (nutrients_splitted - H_rsa)))
-    @. Nutred = max(amc_nut, rsa_above_nut)
+    @. N_amc = 1 - δ_amc + (K_amc + δ_amc - 1) /
+               (1 + exp(-β_amc * (nutrients_splitted - A_amc)))
+    @. N_rsa = 1 - δ_nrsa + (K_nrsa + δ_nrsa - 1) /
+               (1 + exp(-β_nrsa * (nutrients_splitted - A_nrsa)))
+    @. Nutred = max(N_amc, N_rsa)
 
     return nothing
 end
