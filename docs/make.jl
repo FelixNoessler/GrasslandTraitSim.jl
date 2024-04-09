@@ -75,6 +75,7 @@ sim.trampling_biomass_individual(; path = f("$docs_img/trampling_biomass_individ
 
 ##  clonal growth
 sim.plot_clonalgrowth(; path = f("$docs_img/clonalgrowth.svg"))
+sim.animate_clonalgrowth(; path = f("$docs_img/clonalgrowth_animation.mp4"))
 
 # for prettyurls you need locally a live server
 makedocs(;

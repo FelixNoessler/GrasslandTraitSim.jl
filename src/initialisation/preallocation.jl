@@ -82,8 +82,6 @@ function preallocate_vectors(; input_obj, T = Float64)
         defoliation = Array{T}(undef, nspecies)u"kg / ha",
         species_specific_red = Array{T}(undef, nspecies),
         LAIs = Array{T}(undef, nspecies),
-        biomass_per_patch = Array{T}(undef, patch_xdim, patch_ydim)u"kg / ha",
-        relbiomass = Array{T}(undef, patch_xdim, patch_ydim),
         lowbiomass_correction = Array{T}(undef, nspecies),
 
         ## cutted biomass
@@ -96,7 +94,6 @@ function preallocate_vectors(; input_obj, T = Float64)
 
         ## helper variables for generation of traits
         traitmat = Matrix{T}(undef, 7, nspecies),
-        similarity_matprep = Array{T}(undef, nspecies, nspecies),
         amc_resid = Array{T}(undef, nspecies),
         rsa_above_resid = Array{T}(undef, nspecies),
 

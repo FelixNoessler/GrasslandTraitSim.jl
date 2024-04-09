@@ -169,6 +169,7 @@ function community_height_influence(; path = nothing)
 
         return sol_small.numeric_date, s, l
     end
+    tstep = 30
 
     fig = Figure(; size = (600, 600))
 
@@ -176,15 +177,16 @@ function community_height_influence(; path = nothing)
          title = "Without community height reduction",
          xlabel = "", ylabel = "", xticklabelsvisible = false)
     t, s, l = sim_community_height(; community_height_red = false)
-    lines!(t, l; label = "1.0 m")
-    lines!(t, s; label = "0.1 m")
+    lines!(t[1:tstep:end], l[1:tstep:end]; label = "1.0 m")
+    lines!(t[1:tstep:end], s[1:tstep:end]; label = "0.1 m")
 
     Axis(fig[2, 1]; limits = (nothing, nothing, 0, nothing),
         title = "With community height reduction",
         xlabel = "Date [year]", ylabel = "")
     t, s, l = sim_community_height(; community_height_red = true)
-    lines!(t, l; label = "1.0 m")
-    lines!(t, s; label = "0.1 m")
+
+    lines!(t[1:tstep:end], l[1:tstep:end]; label = "1.0 m")
+    lines!(t[1:tstep:end], s[1:tstep:end]; label = "0.1 m")
     axislegend(; framevisible = false, position = :rb)
 
     Label(fig[1:2, 0], "Dry aboveground biomass [kg ha⁻¹]",

@@ -1,6 +1,6 @@
 function plot_W_rsa(; δ_wrsa = 0.5, path = nothing)
     nspecies, container = create_container(; param = (; δ_wrsa))
-    xs = LinRange(0, 1.5, 300)
+    xs = LinRange(0, 1.5, 20)
     ymat = fill(0.0, length(xs), nspecies)
 
     PET = container.p.α_PET
@@ -94,7 +94,7 @@ end
 
 function plot_W_sla(;δ_sla = 0.5, path = nothing)
     nspecies, container = create_container(; param = (; δ_sla))
-    xs = LinRange(0, 1.5, 300)
+    xs = LinRange(0, 1.5, 20)
     ymat = fill(0.0, length(xs), nspecies)
 
     PET = container.p.α_PET

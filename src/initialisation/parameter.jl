@@ -77,7 +77,7 @@ $(FIELDS)
     Proportion of biomass that growths to the neighbouring cells, \\
     see [`clonalgrowth!`](@ref) \\
     """
-    clonalgrowth_factor = F(0.05)
+    clonalgrowth_factor = F(0.1)
 
     """
     controls the steepness of the linear decrease in radiation use efficiency

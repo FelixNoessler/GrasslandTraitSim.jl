@@ -121,7 +121,7 @@ function below_influence(; path = nothing)
     nspecies, container = create_container(; )
 
     #################### varying β_TSB, equal biomass, random traits
-    below_effects = LinRange(0, 2.0, 200)
+    below_effects = LinRange(0, 2.0, 30)
     biomass = fill(50.0, nspecies)u"kg / ha"
     ymat = Array{Float64}(undef, nspecies, length(below_effects))
 

@@ -10,7 +10,7 @@ function grazing(; α_GRZ = nothing, β_ρ_lnc = nothing, path = nothing)
         container.p.β_ρ_lnc = β_ρ_lnc
     end
 
-    nbiomass = 500
+    nbiomass = 50
     LD = 2u"ha ^ -1"
     biomass_vec = LinRange(0, 500, nbiomass)u"kg / ha"
     grazing_mat = Array{Float64}(undef, nspecies, nbiomass)
@@ -60,7 +60,7 @@ function α_GRZ(; path = nothing)
         title = "")
 
     for α_GRZ in [750, 1500, 2000]
-        x = 0:3000
+        x = LinRange(0, 3000, 30)
 
         LD = 2
         κ = 22
@@ -137,12 +137,13 @@ end
 
 function trampling_biomass_individual(; β_TRM = nothing, path = nothing)
     nspecies, container = create_container(; )
+    container.traits.height .= 0.7u"m"
 
     if !isnothing(β_TRM)
         container.p.β_TRM = β_TRM * u"kg"
     end
 
-    nbiomass = 200
+    nbiomass = 30
     biomass = fill(100.0, nspecies)u"kg / ha"
     biomass_vals = LinRange(0.0, 200.0, nbiomass)u"kg / ha"
     LD = 2.0u"ha^-1"
@@ -169,7 +170,7 @@ function trampling_biomass_individual(; β_TRM = nothing, path = nothing)
                    all species have the same traits
                    biomass of species 1 on x axis,
                    all other species with 100 [kg ha⁻¹]""")
-    for i in 1:nspecies
+    for i in 1:2
         lines!(ustrip.(biomass_vals), trampling_mat_height[i, :];
             linewidth = 3,
             color = i == 1 ? :red : :blue)
@@ -192,7 +193,7 @@ function trampling_livestockdensity(; β_TRM = nothing, path = nothing)
         container.p.β_TRM = β_TRM * u"kg / ha"
     end
 
-    nLD = 500
+    nLD = 10
     biomass = fill(100.0, nspecies)u"kg / ha"
     LDs = LinRange(0.0, 4.0, nLD)u"ha^-1"
 

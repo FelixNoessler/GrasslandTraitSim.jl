@@ -2,7 +2,7 @@ function plot_N_amc(; δ_amc = 0.5, path = nothing)
     nspecies, container = create_container(; param = (; δ_amc))
     container.calc.biomass_density_factor .= 1.0
 
-    xs = LinRange(0.0, 1.5, 300)
+    xs = LinRange(0.0, 1.5, 20)
     ymat = fill(0.0, length(xs), nspecies)
 
     for (i, x) in enumerate(xs)
@@ -94,7 +94,7 @@ function plot_N_rsa(; δ_nrsa = 0.8, path = nothing)
     nspecies, container = create_container(; param = (; δ_nrsa))
     container.calc.biomass_density_factor .= 1.0
 
-    xs = LinRange(0, 1.5, 300)
+    xs = LinRange(0, 1.5, 20)
     ymat = fill(0.0, length(xs), nspecies)
 
     for (i, x) in enumerate(xs)
