@@ -88,7 +88,7 @@ function below_ground_competition!(; container, biomass)
     @unpack biomass_density_factor, TS_biomass, TS = container.calc
     @unpack included = container.simp
 
-    if !included.belowground_competition
+    if haskey(included, :belowground_competition) && !included.belowground_competition
         @info "No below ground competition for resources!" maxlog=1
         @. biomass_density_factor = 1.0
         return nothing
@@ -229,7 +229,7 @@ root surface area per above ground biomass (`rsa_above`).
 function water_reduction!(; container, W, PET, PWP, WHC)
     @unpack included = container.simp
     @unpack Waterred = container.calc
-    if !included.water_growth_reduction
+    if haskey(included, :water_growth_reduction) && !included.water_growth_reduction
         @info "No water reduction!" maxlog=1
         @. Waterred = 1.0
         return nothing
@@ -238,7 +238,7 @@ function water_reduction!(; container, W, PET, PWP, WHC)
     Wsc = W > WHC ? 1.0 : W > PWP ? (W - PWP) / (WHC - PWP) : 0.0
 
     pet_adjustment = 1.0
-    if included.pet_growth_reduction
+    if !haskey(included, :pet_growth_reduction) || included.pet_growth_reduction
         @unpack α_PET, β_PET = container.p
         pet_adjustment = exp(β_PET * (α_PET - PET))
     end
@@ -288,7 +288,7 @@ function nutrient_reduction!(; container, nutrients)
     @unpack included = container.simp
     @unpack Nutred = container.calc
 
-    if !included.nutrient_growth_reduction
+    if haskey(included, :nutrient_growth_reduction) && !included.nutrient_growth_reduction
         @info "No nutrient reduction!" maxlog=1
         @. Nutred = 1.0
         return nothing

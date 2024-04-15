@@ -37,13 +37,13 @@ function potential_growth!(; container, biomass, PAR)
 
     calculate_LAI!(; container, biomass)
 
-    if !included.potential_growth
+    if haskey(included, :potential_growth) && !included.potential_growth
         @info "Zero potential growth!" maxlog=1
         com.potgrowth_total = 0.0u"kg / ha"
         return nothing
     end
 
-    if !included.community_height_red
+    if haskey(included, :community_height_red) && !included.community_height_red
         @info "No community height growth reduction!" maxlog=1
         com.comH_reduction = 1.0
     else

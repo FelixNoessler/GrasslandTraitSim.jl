@@ -17,7 +17,7 @@ function senescence!(; container, ST, biomass)
     @unpack senescence, μ = container.calc
     @unpack included = container.simp
 
-    SEN = if included.senescence_season
+    SEN = if !haskey(included, :senescence_season) || included.senescence_season
         seasonal_component_senescence(; container, ST)
     else
         1.0

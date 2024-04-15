@@ -63,7 +63,8 @@ function one_day!(; t, container)
     @unpack act_growth, senescence, defoliation = container.calc
 
     ## -------- clonal growth
-    if doy[t] == 250 && npatches > 1 && included.clonalgrowth
+    if doy[t] == 250 && npatches > 1 &&
+       (!haskey(included, :clonalgrowth) || included.clonalgrowth)
         clonalgrowth!(; container)
     end
 
@@ -84,8 +85,23 @@ function one_day!(; t, container)
             senescence .= 0.0u"kg / ha"
 
             if !iszero(sum(patch_biomass))
+                # ------------------------------------------ growth
+                growth!(; t, container,
+                    biomass = patch_biomass,
+                    W = u_water[x, y],
+                    nutrients = nutrients[x, y],
+                    WHC = WHC[x, y],
+                    PWP = PWP[x, y])
+
+                # ------------------------------------------ senescence
+                if !haskey(included, :senescence) || included.senescence
+                    senescence!(; container,
+                        ST = daily_input.temperature_sum[t],
+                        biomass = patch_biomass)
+                end
+
                 # ------------------------------------------ mowing
-                if included.mowing
+                if !haskey(included, :mowing) || included.mowing
                     mowing_height = if daily_input.mowing isa Vector
                         daily_input.mowing[t]
                     else
@@ -107,30 +123,15 @@ function one_day!(; t, container)
                 end
 
                 if !isnan(LD)
-                    if included.grazing
+                    if !haskey(included, :grazing) || included.grazing
                         grazing!(; t, x, y, container, LD,
                             biomass = patch_biomass)
                     end
 
-                    if included.trampling
+                    if !haskey(included, :trampling) || included.trampling
                         trampling!(; container, LD,
                             biomass = patch_biomass)
                     end
-                end
-
-                # ------------------------------------------ growth
-                growth!(; t, container,
-                    biomass = patch_biomass,
-                    W = u_water[x, y],
-                    nutrients = nutrients[x, y],
-                    WHC = WHC[x, y],
-                    PWP = PWP[x, y])
-
-                # ------------------------------------------ senescence
-                if included.senescence
-                    senescence!(; container,
-                        ST = daily_input.temperature_sum[t],
-                        biomass = patch_biomass)
                 end
             end
 

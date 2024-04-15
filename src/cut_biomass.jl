@@ -21,7 +21,6 @@ function cut_biomass!(; cut_index, ch, container, biomass)
     @unpack height = container.traits
     @unpack species_cut_biomass = container.calc
     @unpack proportion_mown = container.calc
-    @unpack included = container.simp
     @unpack mowing = container.daily_input
 
 
