@@ -2,164 +2,166 @@
     SimulationParameter(; kwargs...)
 
 Here is an overview of the parameters that are used in the model. The parameters are...
-$(FIELDS)
+
+
+$(MYNEWFIELDS)
 """
 @with_kw mutable struct SimulationParameter{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8,
                                   Q10, Q11, Q12, Q13, Q14, Q15, Q16, Q17} @deftype T
 
     """
-    Maximum radiation use efficiency, \\
-    see [`potential_growth!`](@ref) \\
+    Maximum radiation use efficiency,
+    see [`potential_growth!`](@ref)
     """
     RUE_max::Q1 = F(3 / 1000) * u"kg / MJ"
 
     """
-    Extinction coefficient, \\
-    see [`potential_growth!`](@ref) \\
+    Extinction coefficient,
+    see [`potential_growth!`](@ref)
     """
     k = F(0.6)
 
     """
-    is the community weighted mean height, where the community height growth reducer is 0.5, \\
-    see [`potential_growth!`](@ref) \\
+    is the community weighted mean height, where the community height growth reducer is 0.5,
+    see [`potential_growth!`](@ref)
     """
     α_comH::Q7 = F(0.5)u"m"
 
     """
-    is the slope of the logistic function that relates the community weighted mean height to the community height growth reducer, \\
-    see [`potential_growth!`](@ref) \\
+    is the slope of the logistic function that relates the community weighted mean height to the community height growth reducer,
+    see [`potential_growth!`](@ref)
     """
     β_comH::Q8 = F(5.0)u"m^-1"
 
     """
-    senescence rate-intercept of a linear equation that relate the leaf life span to the senescence rate, \\
-    see [`senescence_rate!`](@ref) \\
+    senescence rate-intercept of a linear equation that relate the leaf life span to the senescence rate,
+    see [`senescence_rate!`](@ref)
     """
     α_sen = F(0.0002)
 
     """
-    slope of a linear equation that relates the leaf life span to the senescence rate, \\
-    see [`senescence_rate!`](@ref) \\
+    slope of a linear equation that relates the leaf life span to the senescence rate,
+    see [`senescence_rate!`](@ref)
     """
     β_sen::Q2 = F(0.03)u"d"
 
     """
-    transform SLA to leaflifespan,\\
-    equation given by [Reich1992](@cite) \\
+    transform SLA to leaflifespan,
+    equation given by [Reich1992](@cite)
     """
     α_ll = F(2.41)
 
     """
-    transform SLA to leaflifespan,\\
-    equation given by [Reich1992](@cite) \\
+    transform SLA to leaflifespan,
+    equation given by [Reich1992](@cite)
     """
     β_ll = F(0.38)
 
     """
-    emperature threshold: senescence starts to increase, \\
-    see [`seasonal_component_senescence`](@ref) \\
+    emperature threshold: senescence starts to increase,
+    see [`seasonal_component_senescence`](@ref)
     """
     Ψ₁ = F(775.0)
 
     """
-    temperature threshold: senescence reaches maximum, \\
-    see [`seasonal_component_senescence`](@ref) \\
+    temperature threshold: senescence reaches maximum,
+    see [`seasonal_component_senescence`](@ref)
     """
     Ψ₂ = F(3000.0)
 
     """
-    maximal seasonality factor for the senescence rate, \\
-    see [`seasonal_component_senescence`](@ref) \\
+    maximal seasonality factor for the senescence rate,
+    see [`seasonal_component_senescence`](@ref)
     """
     SEN_max = F(3.0)
 
     """
-    Proportion of biomass that growths to the neighbouring cells, \\
-    see [`clonalgrowth!`](@ref) \\
+    Proportion of biomass that growths to the neighbouring cells,
+    see [`clonalgrowth!`](@ref)
     """
     clonalgrowth_factor = F(0.1)
 
     """
     controls the steepness of the linear decrease in radiation use efficiency
-    for high values of the photosynthetically active radiation (`PAR`)\\
+    for high values of the photosynthetically active radiation (`PAR`)
     see [`radiation_reduction!`](@ref)
     """
     γ₁::Q3 = F(4.45e-6)u"ha / MJ"  # uconvert(u"ha/MJ", 0.0445u"m^2 / MJ")
 
     """
     threshold value of `PAR` from which starts a linear decrease in
-    radiation use efficiency \\
-    see [`radiation_reduction!`](@ref) \\
+    radiation use efficiency
+    see [`radiation_reduction!`](@ref)
     """
     γ₂::Q4 = F(50000.0)u"MJ / ha" # uconvert(u"MJ/ha", 5.0u"MJ / m^2")
 
     """
-    is the lower temperature threshold for growth, \\
-    see [`temperature_reduction!`](@ref) \\
+    is the lower temperature threshold for growth,
+    see [`temperature_reduction!`](@ref)
     """
     T₀::Q5 = F(4.0)u"°C"
 
     """
-    is the lower bound for the optimal temperature for growth, \\
-    see [`temperature_reduction!`](@ref) \\
+    is the lower bound for the optimal temperature for growth,
+    see [`temperature_reduction!`](@ref)
     """
     T₁::Q5 = F(10.0)u"°C"
 
     """
-    is the upper bound for the optiomal temperature for growth, \\
-    see [`temperature_reduction!`](@ref) \\
+    is the upper bound for the optiomal temperature for growth,
+    see [`temperature_reduction!`](@ref)
     """
     T₂::Q5 = F(20.0)u"°C"
 
     """
-    is the maximum temperature for growth, \\
-    see [`temperature_reduction!`](@ref) \\
+    is the maximum temperature for growth,
+    see [`temperature_reduction!`](@ref)
     """
     T₃::Q5 = F(35.0)u"°C"
 
     """
-    is the minimum value of the seasonal effect, \\
-    see [`seasonal_reduction!`](@ref) \\
+    is the minimum value of the seasonal effect,
+    see [`seasonal_reduction!`](@ref)
     """
     SEA_min = F(0.7)
 
     """
-    is the maximum value of the seasonal effect, \\
-    see [`seasonal_reduction!`](@ref) \\
+    is the maximum value of the seasonal effect,
+    see [`seasonal_reduction!`](@ref)
     """
     SEA_max = F(1.3)
 
     """
     is a threshold of the temperature degree days,
     above which the seasonality factor is set to `SEA_min` and
-    descreases to `SEA_max`, \\
-    see [`seasonal_reduction!`](@ref) \\
+    descreases to `SEA_max`,
+    see [`seasonal_reduction!`](@ref)
     """
     ST₁::Q6 = F(775.0)u"K"
 
     """
     is a threshold of the temperature degree-days,
-    where the seasonality growth factor is set to `SEA_min`, \\
-    see [`seasonal_reduction!`](@ref) \\
+    where the seasonality growth factor is set to `SEA_min`,
+    see [`seasonal_reduction!`](@ref)
     """
     ST₂::Q6 = F(1450.0)u"K"
 
     """
-    controls how strongly taller plants gets more light for growth, \\
-    see [`light_competition!`](@ref) \\
+    controls how strongly taller plants gets more light for growth,
+    see [`light_competition!`](@ref)
     """
     β_LIG_height = F(0.5)
 
     """
-    controls how strongly grazers prefer plant species with high leaf nitrogen content, \\
-    see [`grazing!`](@ref) \\
+    controls how strongly grazers prefer plant species with high leaf nitrogen content,
+    see [`grazing!`](@ref)
     """
     β_ρ_lnc = F(1.5)
 
     """
     defines together with the height of the plants and the livestock density
-    the proportion of biomass that is trampled [ha m⁻¹], \\
-    see [`trampling!`](@ref) \\
+    the proportion of biomass that is trampled [ha m⁻¹],
+    see [`trampling!`](@ref)
     """
     β_TRM::Q10 = F(5.0)u"kg"
     β_TRM_height = F(0.5)
@@ -167,14 +169,14 @@ $(FIELDS)
 
     """
     total biomass [kg ha⁻¹] when the daily consumption by grazers reaches half
-    of their maximal consumption defined by κ · livestock density, \\
-    see [`grazing!`](@ref) \\
+    of their maximal consumption defined by κ · livestock density,
+    see [`grazing!`](@ref)
     """
     α_GRZ::Q11 = F(1000.0)u"kg / ha"
 
-    """"
-    maximal consumption of a livestock unit per day, \\
-    see [`grazing!`](@ref) \\
+    """
+    maximal consumption of a livestock unit per day,
+    see [`grazing!`](@ref)
     """
     κ::Q10 = F(22.0)u"kg"
     α_lowB::Q11 = F(100.0)u"kg / ha"
@@ -184,7 +186,7 @@ $(FIELDS)
     if the matrix multiplication between the trait similarity matrix and
     the biomass equals `α_TSB` the available water and nutrients
     for growth are not in- or decreased,
-    see [`below_ground_competition!`](@ref) \\
+    see [`below_ground_competition!`](@ref)
     """
     α_TSB::Q11 = F(1200.0)u"kg / ha"
 
@@ -192,7 +194,7 @@ $(FIELDS)
     controls how strongly the biomass density factor deviates from one,
     if the matrix multiplication between the trait similarity matrix and
     the biomass of the species is above or below of `α_TSB`,
-    see [`below_ground_competition!`] \\
+    see [`below_ground_competition!`]
     """
     β_TSB = F(2.0)
     α_PET::Q13 = F(2.0)u"mm"
@@ -202,14 +204,14 @@ $(FIELDS)
     reference community weighted mean specific leaf area,
     if the community weighted mean specific leaf area is
     equal to `α_TR_sla` then transpiration is neither increased nor decreased,
-    see `transpiration`](@ref) \\
+    see `transpiration`](@ref)
     """
     α_TR_sla::Q15 = F(0.03)u"m^2 / g"
 
     """
     controls how strongly a community mean specific leaf area that deviates
     from `α_TR_sla` is affecting the transpiration,
-    see [`transpiration`](@ref) \\
+    see [`transpiration`](@ref)
     """
     β_TR_sla = F(0.4)
     ϕ_sla::Q15 = F(0.025)u"m^2 / g"
@@ -221,21 +223,21 @@ $(FIELDS)
     """
     maximal reduction of the plant-available water linked to the trait root surface area /
     aboveground biomass,
-    see [`init_transfer_functions!`](@ref) \\
+    see [`init_transfer_functions!`](@ref)
     """
     δ_wrsa = F(0.8)
 
     """
     maximal reduction of the plant-available water linked to the trait specific leaf area,
-    see [`init_transfer_functions!`](@ref) \\
+    see [`init_transfer_functions!`](@ref)
     """
     δ_sla = F(0.5)
 
     """
     based on the maximum total N of ≈ 30.63 [g kg⁻¹] in the data from the
-    Biodiversity Exploratories \\
+    Biodiversity Exploratories
     [explo14446v19](@cite)[explo18787v6](@cite)[explo23846v10](@cite)[explo31210v6](@cite),
-    see [`input_nutrients!`](@ref) \\
+    see [`input_nutrients!`](@ref)
     """
     N_max::Q17 = F(35.0)u"g/kg"
     ϕ_amc = F(0.35)
@@ -247,15 +249,15 @@ $(FIELDS)
 
     """
     maximal reduction of the plant-available nutrients linked to the trait
-    arbuscular mycorrhizal colonisation rate,\\
-    see [`init_transfer_functions!`](@ref) \\
+    arbuscular mycorrhizal colonisation rate,
+    see [`init_transfer_functions!`](@ref)
     """
     δ_amc = F(0.5)
 
     """
     maximal reduction of the plant-available nutrients linked to the trait
-    root surface area / aboveground biomass,\\
-    see [`init_transfer_functions!`](@ref) \\
+    root surface area / aboveground biomass,
+    see [`init_transfer_functions!`](@ref)
     """
     δ_nrsa = F(0.9)
     ϕ_rsa::Q15 = F(0.12)u"m^2 / g"

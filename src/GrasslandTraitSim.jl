@@ -30,6 +30,41 @@ using Unitful
     $(DOCSTRING)
     """
 
+struct MyNewFields <: DocStringExtensions.Abbreviation
+end
+
+const MYNEWFIELDS = MyNewFields()
+
+function DocStringExtensions.format(abbrv::MyNewFields, buf, doc)
+    local docs = get(doc.data, :fields, Dict())
+    local binding = doc.data[:binding]
+    local object = Docs.resolve(binding)
+    local fields = isabstracttype(object) ? Symbol[] : fieldnames(object)
+
+    p = SimulationParameter()
+    p_dict = Dict()
+    for field in fields
+        p_dict[field] = split(docs[field], "Default:")[1] #docs[field]
+    end
+
+    fields_ordered = sort(collect(keys(p_dict)))
+
+    println(buf, "| Parameter | Value | Description |")
+    println(buf, "|:---------:|:------|:------------|")
+
+    for k in fields_ordered
+        print(buf, "| `$(k)` | $(p[k]) | ")
+        for line in split(p_dict[k], "\n")
+            print(buf, " ", rstrip(line))
+        end
+        println(buf, " |")
+    end
+
+    println(buf)
+
+    return nothing
+end
+
 include("lib/valid/valid.jl")
 include("lib/visualization/visualization.jl")
 include("main_functions.jl")
