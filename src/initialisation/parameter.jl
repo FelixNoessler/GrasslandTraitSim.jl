@@ -281,13 +281,12 @@ end
 
 
 function SimulationParameter(input_obj::NamedTuple; exclude_not_used)
+    p = SimulationParameter()
+
     if exclude_not_used
-        p = SimulationParameter()
         exclude_parameters = exlude_parameter(; input_obj)
         f = collect(keys(p)) .∉ Ref(exclude_parameters)
         p = (; zip(keys(p)[f], collect(p)[f])...)
-    else
-        p = SimulationParameter()
     end
 
     return p
@@ -389,6 +388,7 @@ function exlude_parameter(; input_obj)
 
     if haskey(included, :lowbiomass_avoidance) && !included.lowbiomass_avoidance
         append!(excl_p, [:α_lowB, :β_lowB])
+
     end
 
     return excl_p
@@ -396,64 +396,64 @@ end
 
 !function calibrated_parameter(; input_obj = nothing)
     p = (;
-        α_comH = (Uniform(-5.0, 5.0), as(Real, -5.0, 5.0)),
-        # β_comH = (Uniform(-10.0, 0.0), as(Real, -10.0, 0.0)),
-        # α_sen = (Uniform(0, 0.01), as(Real, 0.0, 0.01)),
-        # β_sen = (Uniform(0.0, 0.1),  as(Real, 0.0, 0.1)),
-        # Ψ₁ = (Uniform(700.0, 3000.0), as(Real, 700.0, 3000.0)),
-        # SEN_max = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0)),
-        # SEA_min = (Uniform(0.5, 1.0), as(Real, 0.5, 1.0)),
-        # SEA_max = (Uniform(1.0, 2.0), as(Real, 1.0, 2.0)),
-        # ST₂ = (Uniform(1200.0, 3000.0), as(Real, 1200.0, 3000.0)),
-        # β_LIG_height = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
-        # β_ρ_lnc = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
-        # β_TRM = (truncated(Normal(0.0, 0.05); lower = 0.0), asℝ₊),
-        # β_TRM_height = (Uniform(0.0, 3.0), as(Real, 0.0, 3.0)),
-        # α_TRM = (truncated(Normal(10000.0, 1000.0); lower = 0.0), asℝ₊),
-        # α_GRZ = (truncated(Normal(500.0, 1000.0); lower = 0.0, upper = 2000.0),
-        #                        as(Real, 0.0, 2000.0)),
-        # κ = (Uniform(12.0, 22.5), as(Real, 12.0, 22.5)),
-        # α_lowB = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0)),
-        # β_lowB = (Uniform(0.0, 1.0), as(Real, 0.0, 1.0)),
-        # α_TSB = (truncated(Normal(1000.0, 1000.0); lower = 0.0), asℝ₊),
-        # β_TSB = (truncated(Normal(1.0, 0.5); lower = 0.0), asℝ₊),
-        # α_PET = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
-        # β_PET = (truncated(Normal(1.0, 1.0); lower = 0.0), asℝ₊),
-        # α_TR_sla = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊),
-        # β_TR_sla = (truncated(Normal(1.0, 5.0); lower = 0.0), asℝ₊),
-        # ϕ_sla = (Uniform(0.01, 0.03), as(Real, 0.01, 0.03)),
-        # η_min_sla = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
-        # η_max_sla = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
-        # β_η_sla = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0)),
-        # β_sla = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0)),
-        # δ_wrsa = (Uniform(0.0, 1.0), as𝕀),
-        # δ_sla = (Uniform(0.0, 1.0), as𝕀),
-        # ϕ_amc = (Uniform(0.1, 0.5), as(Real, 0.1, 0.5)),
-        # η_min_amc = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
-        # η_max_amc = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
-        # κ_red_amc = (Uniform(0.0, 1.0), as𝕀),
-        # β_κη_amc = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0)),
-        # β_amc = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0)),
-        # δ_amc = (Uniform(0.0, 1.0), as𝕀),
-        # δ_nrsa = (Uniform(0.0, 1.0), as𝕀),
-        # ϕ_rsa = (Uniform(0.1, 0.25), as(Real, 0.1, 0.25)),
-        # η_min_wrsa = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
-        # η_min_nrsa = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
-        # η_max_wrsa =(Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
-        # η_max_nrsa =(Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
-        # κ_red_wrsa = (Uniform(0.0, 1.0), as𝕀),
-        # κ_red_nrsa = (Uniform(0.0, 1.0), as𝕀),
-        # β_κη_wrsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0)),
-        # β_κη_nrsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0)),
-        # β_wrsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0)),
-        # β_nrsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0)),
-        # b_biomass = (truncated(Cauchy(0, 300); lower = 0.0), asℝ₊),
-        # inv_ν_biomass = (Uniform(0.0, 0.5), as(Real, 0.0, 0.5)),
-        # b_sla = (truncated(Cauchy(0, 0.05); lower = 0.0), asℝ₊),
-        # b_lncm = (truncated(Cauchy(0, 0.5); lower = 0.0), asℝ₊),
-        # b_amc = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊),
-        # b_height = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊),
-        # b_rsa_above = (truncated(Cauchy(0, 0.01); lower = 0.0), asℝ₊)
+        α_comH = (Uniform(0.0, 2.0), as(Real, 0.0, 2.0)),
+        β_comH = (Uniform(0.0, 10.0), as(Real, 0.0, 10.0)),
+        α_sen = (Uniform(0, 0.01), as(Real, 0.0, 0.01)),
+        β_sen = (Uniform(0.0, 0.1),  as(Real, 0.0, 0.1)),
+        Ψ₁ = (Uniform(700.0, 3000.0), as(Real, 700.0, 3000.0)),
+        SEN_max = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0)),
+        SEA_min = (Uniform(0.5, 1.0), as(Real, 0.5, 1.0)),
+        SEA_max = (Uniform(1.0, 2.0), as(Real, 1.0, 2.0)),
+        ST₂ = (Uniform(1200.0, 3000.0), as(Real, 1200.0, 3000.0)),
+        β_LIG_height = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
+        β_ρ_lnc = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
+        β_TRM = (truncated(Normal(0.0, 2.0); lower = 0.0), asℝ₊),
+        β_TRM_height = (Uniform(0.0, 3.0), as(Real, 0.0, 3.0)),
+        α_TRM = (truncated(Normal(10000.0, 1000.0); lower = 0.0), asℝ₊),
+        α_GRZ = (truncated(Normal(500.0, 1000.0); lower = 0.0, upper = 2000.0),
+                               as(Real, 0.0, 2000.0)),
+        κ = (Uniform(12.0, 22.5), as(Real, 12.0, 22.5)),
+        α_lowB = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0)),
+        β_lowB = (Uniform(0.0, 1.0), as(Real, 0.0, 1.0)),
+        α_TSB = (truncated(Normal(1000.0, 1000.0); lower = 0.0), asℝ₊),
+        β_TSB = (truncated(Normal(1.0, 0.5); lower = 0.0), asℝ₊),
+        α_PET = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
+        β_PET = (truncated(Normal(1.0, 1.0); lower = 0.0), asℝ₊),
+        α_TR_sla = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊),
+        β_TR_sla = (truncated(Normal(1.0, 5.0); lower = 0.0), asℝ₊),
+        ϕ_sla = (Uniform(0.01, 0.03), as(Real, 0.01, 0.03)),
+        η_min_sla = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
+        η_max_sla = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
+        β_η_sla = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0)),
+        β_sla = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0)),
+        δ_wrsa = (Uniform(0.0, 1.0), as𝕀),
+        δ_sla = (Uniform(0.0, 1.0), as𝕀),
+        ϕ_amc = (Uniform(0.1, 0.5), as(Real, 0.1, 0.5)),
+        η_min_amc = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
+        η_max_amc = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
+        κ_red_amc = (Uniform(0.0, 1.0), as𝕀),
+        β_κη_amc = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0)),
+        β_amc = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0)),
+        δ_amc = (Uniform(0.0, 1.0), as𝕀),
+        δ_nrsa = (Uniform(0.0, 1.0), as𝕀),
+        ϕ_rsa = (Uniform(0.1, 0.25), as(Real, 0.1, 0.25)),
+        η_min_wrsa = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
+        η_min_nrsa = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
+        η_max_wrsa =(Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
+        η_max_nrsa =(Uniform(-1.0, 1.0), as(Real, -1.0, 1.0)),
+        κ_red_wrsa = (Uniform(0.0, 1.0), as𝕀),
+        κ_red_nrsa = (Uniform(0.0, 1.0), as𝕀),
+        β_κη_wrsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0)),
+        β_κη_nrsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0)),
+        β_wrsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0)),
+        β_nrsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0)),
+        b_biomass = (truncated(Cauchy(0, 300); lower = 0.0), asℝ₊),
+        inv_ν_biomass = (Uniform(0.0, 0.5), as(Real, 0.0, 0.5)),
+        b_sla = (truncated(Cauchy(0, 0.05); lower = 0.0), asℝ₊),
+        b_lncm = (truncated(Cauchy(0, 0.5); lower = 0.0), asℝ₊),
+        b_amc = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊),
+        b_height = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊),
+        b_rsa_above = (truncated(Cauchy(0, 0.01); lower = 0.0), asℝ₊)
     )
 
     # if !isnothing(input_obj)

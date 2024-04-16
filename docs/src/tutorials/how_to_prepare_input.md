@@ -121,29 +121,14 @@ simp = (
     nutheterog = 0.0, 
     trait_seed = missing,  
     
-    ## which processes to include
-    included = (;
-        senescence = true,
-        senescence_season = true,
-        potential_growth = true,
-        clonalgrowth = true,
-        mowing = true,
-        trampling = true,
-        grazing = true,
-        lowbiomass_avoidance = true,
-        belowground_competition = true,
-        community_height_red = true,
-        height_competition = true,
-        pet_growth_reduction = true,
-        sla_transpiration = true,
-        water_growth_reduction = true,
-        nutrient_growth_reduction = true,
-        temperature_growth_reduction = true,
-        season_red = true,
-        radiation_red = true),
+    ## which processes to include, see extra tutorial
+    ## empty tuple means, that everything is included
+    included = (;),
     
     ## include parameter for likelihood calculation?
-    likelihood_included = (; biomass = true, trait = true)
+    ## again empty tuple means that everything is included
+    ## here we say that don't need the parameters for the likelihood
+    likelihood_included = (; biomass = false, trait = false)
 )
 
 nothing # hide

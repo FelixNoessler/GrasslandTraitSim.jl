@@ -95,7 +95,8 @@ makedocs(;
         "Tutorials" => Any[
             "Prepare input and run simulation" => "tutorials/how_to_prepare_input.md",
             "Analyse model output" => "tutorials/how_to_analyse_output.md",
-            "Heterogenous site or management conditions" => "tutorials/how_to_heterogeneous_site_management.md" ],
+            "Heterogenous site or management conditions" => "tutorials/how_to_heterogeneous_site_management.md",
+            "Turn-off subprocesses" => "tutorials/how_to_turnoff_subprocesses.md",],
         "Model description" => Any[
             "Difference equation" => "Modelling_API/main_equations.md",
             "Initialization" => "Modelling_API/initialization.md",
