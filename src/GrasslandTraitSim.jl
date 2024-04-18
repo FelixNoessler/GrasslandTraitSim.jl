@@ -50,7 +50,7 @@ function DocStringExtensions.format(abbrv::MyNewFields, buf, doc)
     fields_ordered = sort(collect(keys(p_dict)))
 
     println(buf, "| Parameter | Value | Description |")
-    println(buf, "|:---------:|:------|:------------|")
+    println(buf, "|----------:|:------|:------------|")
 
     for k in fields_ordered
         print(buf, "| `$(k)` | $(p[k]) | ")

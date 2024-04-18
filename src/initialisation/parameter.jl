@@ -1,7 +1,10 @@
 """
     SimulationParameter(; kwargs...)
 
-Here is an overview of the parameters that are used in the model. The parameters are...
+Here is an overview of the parameters that are used in the model. In addition
+to the parameters listed here, a regression equation with parameters not listed here
+from [Gupta1979](@cite) is used to derive the water holding capacity and
+the permanent wilting point (see [`input_WHC_PWP!`](@ref)).
 
 
 $(MYNEWFIELDS)
