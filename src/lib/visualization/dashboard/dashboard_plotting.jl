@@ -46,8 +46,7 @@ function band_patch(;
         cutbiomass_μ = vec(ustrip.(sol.valid.cut_biomass))
         t = sol.numeric_date[sol.valid.biomass_cutting_t]
 
-        biomass_dist = TDist(1/sol.p.inv_ν_biomass) * sol.p.b_biomass .+
-                       cutbiomass_μ
+        biomass_dist = Normal.(cutbiomass_μ, sol.p.b_biomass)
         biomass_median = median.(biomass_dist)
 
         scatter!(ax, t[1:thin:end], biomass_median[1:thin:end]; color = :orange)

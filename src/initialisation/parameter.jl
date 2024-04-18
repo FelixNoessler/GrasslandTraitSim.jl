@@ -276,7 +276,6 @@ $(MYNEWFIELDS)
     β_nrsa = F(7.0)
 
     b_biomass = F(1000.0)
-    inv_ν_biomass = F(0.2)
     b_sla = F(0.0005)
     b_lncm = F(0.5)
     b_amc = F(0.001)
@@ -302,7 +301,7 @@ function exlude_parameter(; input_obj)
 
     excl_p = Symbol[]
     if haskey(likelihood_included, :biomass) && !likelihood_included.biomass
-        append!(excl_p, [:b_biomass, :inv_ν_biomass])
+        append!(excl_p, [:b_biomass])
     end
 
     if haskey(likelihood_included, :trait) && !likelihood_included.trait
@@ -453,7 +452,6 @@ end
         β_wrsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0)),
         β_nrsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0)),
         b_biomass = (truncated(Cauchy(0, 300); lower = 0.0), asℝ₊),
-        inv_ν_biomass = (Uniform(0.0, 0.5), as(Real, 0.0, 0.5)),
         b_sla = (truncated(Cauchy(0, 0.05); lower = 0.0), asℝ₊),
         b_lncm = (truncated(Cauchy(0, 0.5); lower = 0.0), asℝ₊),
         b_amc = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊),

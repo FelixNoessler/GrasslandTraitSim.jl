@@ -37,10 +37,11 @@ function loglikelihood_model(;
 
     if sol.simp.likelihood_included.biomass
         @unpack cut_index, cut_biomass = sol.valid
-        @unpack inv_ν_biomass, b_biomass = sol.p
+        @unpack b_biomass = sol.p
 
         simulated_cutted_biomass = ustrip.(cut_biomass)[cut_index]
-        biomass_d = Product(TDist(1/inv_ν_biomass) * b_biomass .+ simulated_cutted_biomass)
+        biomass_d = Product(Normal.(simulated_cutted_biomass, b_biomass))
+
         ll_biomass = logpdf(biomass_d, vec(data.biomass))
     end
 
