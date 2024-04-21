@@ -70,6 +70,8 @@ function preallocate_vectors(; input_obj, T = Float64)
         A_nrsa = Array{T}(undef, nspecies),
         A_sla = Array{T}(undef, nspecies))
 
+    global F = T
+
     calc = (;
         com = CommunityLevel(),
 
@@ -140,16 +142,18 @@ function preallocate_vectors(; input_obj, T = Float64)
         μ = Array{T}(undef, nspecies),
         TS = Array{T}(undef, nspecies, nspecies))
 
+    global F = Float64
+
     return (; u, patch_variables, calc, traits, transfer_function, output)
 end
 
 @with_kw mutable struct CommunityLevel{T, Q} @deftype T
-    LAItot = 0.0
-    potgrowth_total::Q = 0.0u"kg/ha"
-    comH_reduction = 1.0
-    RAD = 1.0
-    SEA = 1.0
-    TEMP = 1.0
+    LAItot = F(0.0)
+    potgrowth_total::Q = F(0.0) * u"kg/ha"
+    comH_reduction = F(1.0)
+    RAD = F(1.0)
+    SEA = F(1.0)
+    TEMP = F(1.0)
 end
 
 function preallocate_specific_vectors(; input_obj, T = Float64)
