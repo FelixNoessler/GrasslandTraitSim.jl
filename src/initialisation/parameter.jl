@@ -40,13 +40,13 @@ $(MYNEWFIELDS)
     senescence rate-intercept of a linear equation that relate the leaf life span to the senescence rate,
     see [`senescence_rate!`](@ref)
     """
-    α_sen = F(0.0002)
+    α_sen = F(0.0)
 
     """
     slope of a linear equation that relates the leaf life span to the senescence rate,
     see [`senescence_rate!`](@ref)
     """
-    β_sen::Q2 = F(0.03)u"d"
+    β_sen::Q2 = F(0.9)u"d"
 
     """
     transform SLA to leaflifespan,
@@ -402,8 +402,8 @@ end
     p = (;
         α_comH = (Uniform(0.0, 2.0), as(Real, 0.0, 2.0)),
         β_comH = (Uniform(0.0, 10.0), as(Real, 0.0, 10.0)),
-        α_sen = (Uniform(0, 0.01), as(Real, 0.0, 0.01)),
-        β_sen = (Uniform(0.0, 0.1),  as(Real, 0.0, 0.1)),
+        # α_sen = (Uniform(0, 0.01), as(Real, 0.0, 0.01)),
+        β_sen = (Uniform(0.8, 1.0),  as(Real, 0.8, 1.0)),
         Ψ₁ = (Uniform(700.0, 3000.0), as(Real, 700.0, 3000.0)),
         SEN_max = (Uniform(1.0, 4.0), as(Real, 1.0, 4.0)),
         SEA_min = (Uniform(0.5, 1.0), as(Real, 0.5, 1.0)),
