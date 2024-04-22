@@ -51,18 +51,22 @@ $(MYNEWFIELDS)
     ## 2 Belowground competition
     ####################################################################################
     """
-    2::``\\alpha_{TSB}``::if the matrix multiplication between the trait similarity matrix and
-    the biomass equals `α_TSB` the available water and nutrients
-    for growth are not in- or decreased,
+    2::``\\alpha_{TSB}``::part of the equation of the biomass density factor ``D_{txys}``,
+    if the matrix multiplication between the trait similarity matrix and the biomass
+    equals ``\\alpha_{TSB}`` the biomass density factor is one and the available water
+    and nutrients for growth are neither in- nor decreased, a lower value of the matrix
+    multiplication leads to biomass density factor above one and an increase of
+    the available water and nutrients for growth,
     see [`below_ground_competition!`](@ref)
     """
     α_TSB::Q11 = F(1200.0)u"kg / ha"
 
     """
-    2::``\\beta_{TSB}``::controls how strongly the biomass density factor
+    2::``\\beta_{TSB}``::part of the equation of the biomass density factor ``D_{txys}``,
+    controls how strongly the biomass density factor
     deviates from one, if the matrix multiplication between the
     trait similarity matrix and the biomass of the species is above
-    or below of `α_TSB`,
+    or below ``\\alpha_{TSB}``,
     see [`below_ground_competition!`](@ref)
     """
     β_TSB = F(2.0)
@@ -86,148 +90,237 @@ $(MYNEWFIELDS)
     β_PET::Q14 = F(1.2)u"mm^-1"
 
     """
-    2::``\\delta_{sla}``::maximal reduction of the plant-available water linked
-    to the trait specific leaf area,
-    see [`init_transfer_functions!`](@ref)
+    2::``\\delta_{sla}``::part of the growth reducer based on the water stress
+    and the specific leaf area ``W_{sla, txys}`` function;
+    maximal possible growth reduction,
+    see [`water_reduction!`](@ref)
     """
     δ_sla = F(0.5)
 
     """
-    2::``\\beta_{sla}``::
+    2::``\\beta_{sla}``::part of the growth reducer based on the water stress
+    and the specific leaf area function ``W_{sla, txys}``;
+    slope of the logistic function, controls how steep
+    the transition from ``1-\\delta_{sla}`` to 1 is,
+    see [`water_reduction!`](@ref)
     """
     β_sla = F(5.0)
 
     """
-    2::``\\eta_{\\min, sla}``::hhhh
+    2::``\\eta_{\\min, sla}``::part of the growth reducer based on the water stress
+    and the specific leaf area function ``W_{sla, txys}``;
+    minimum of the midpoint of the logistic function ``A_{sla, s}`` for ``W_{sla, txys}``,
+    see [`water_reduction!`](@ref)
     """
     η_min_sla = F(-0.8)
 
     """
-    2::``\\eta_{\\max, sla}``::hhhh
+    2::``\\eta_{\\max, sla}``::part of the growth reducer based on the water stress
+    and the specific leaf area function ``W_{sla, txys}``;
+    maximum of the midpoint of the logistic function ``A_{sla, s}`` for ``W_{sla, txys}``,
+    see [`water_reduction!`](@ref)
     """
     η_max_sla = F(0.8)
 
     """
-    2::``\\phi{sla}``::hhhh
+    2::``\\phi{sla}``::part of the growth reducer based on the water stress and the
+    specific leaf area function ``W_{sla, txys}``; is the specific leaf area where
+    the species has a value of ``A_{sla, s}`` that is halfway between
+    ``\\eta_{\\min, sla}`` and ``\\eta_{\\max, sla}``,
+    see [`water_reduction!`](@ref)
     """
     ϕ_sla::Q15 = F(0.025)u"m^2 / g"
 
     """
-    2::``\\beta_{\\eta, sla}``::hhhh
+    2::``\\beta_{\\eta, sla}``::part of the growth reducer based on the water stress
+    and the specific leaf area function ``W_{sla, txys}``; slope of a logistic function
+    that relates the specific leaf area to ``A_{sla, s}``,
+    see [`water_reduction!`](@ref)
     """
     β_η_sla::Q16 = F(75.0)u"g / m^2"
 
     """
-    2::``\\delta_{wrsa}``::maximal reduction of the plant-available water linked to the trait root surface area /
-    aboveground biomass,
-    see [`init_transfer_functions!`](@ref)
+    2::``\\delta_{wrsa}``::part of the growth reducer based on the
+    root surface area per aboveground biomass and the water stress function
+    ``W_{rsa, txys}``; maximal possible reduction & calibrated
+    see [`water_reduction!`](@ref)
     """
     δ_wrsa = F(0.8)
 
     """
-    2::``\\beta_{wrsa}``::hhhh
+    2::``\\beta_{wrsa}``::part of the growth reducer based on the root surface area
+    per aboveground biomass and the water stress function ``W_{rsa, txys}``;
+    slope of the logistic function, controls how steep the transition
+    from ``1-\\delta_{wrsa}`` to ``K_{wrsa, s}`` is,
+    see [`water_reduction!`](@ref)
     """
     β_wrsa = F(7.0)
 
     """
-    2::``\\kappa_{\\text{red}, wrsa}``::hhhh
+    2::``\\kappa_{\\text{red}, wrsa}``::part of the growth reducer based
+    on the root surface area per aboveground biomass and the water stress function
+    ``W_{rsa, txys}``; influences the lower bound for ``K_{wrsa, s}``,
+    that is given by ``1 - \\delta_{wrsa}\\cdot\\kappa_{\\text{red}, wrsa}``,
+    see [`water_reduction!`](@ref)
     """
     κ_red_wrsa = F(0.6)
 
     """
-    2::``\\phi_{rsa}``::hhhh
+    2::``\\phi_{rsa}``::part of the growth reducer based on the
+    root surface area per aboveground biomass and the water stress
+    function ``W_{rsa, txys}`` and the nutrient stress function ``N_{rsa, txys}``;
+    is the root surface area per aboveground biomass area where the species have
+    values of ``A_{wrsa, s}`` (``A_{nrsa, s}``) and ``K_{wrsa, s}`` (``K_{nrsa, s}``)
+    that are halfway between the minimum and the maximum of
+    ``A_{wrsa, s}`` (``A_{nrsa, s}``) and ``K_{wrsa, s}`` (``K_{nrsa, s}``),
+    see [`water_reduction!`](@ref)
     """
     ϕ_rsa::Q15 = F(0.12)u"m^2 / g"
 
     """
-    2::``\\beta_{\\kappa\\eta, wrsa}``::hhhh
+    2::``\\beta_{\\kappa\\eta, wrsa}``::part of the growth reducer based on the root
+    surface area per aboveground biomass and the water stress function ``W_{rsa, txys}``;
+    is the slope of the two logistic functions that relate the root surface area per
+    aboveground biomass to ``K_{wrsa, s}`` and ``A_{nrsa, s}``,
+    see [`water_reduction!`](@ref)
     """
     β_κη_wrsa::Q16 = F(40.0)u"g / m^2"
 
     """
-    2::``\\eta_{\\min, wrsa}``::hhhh
+    2::``\\eta_{\\min, wrsa}``::part of the growth reducer based on the
+    root surface area per aboveground biomass and the water stress function
+        ``W_{rsa, txys}``; minimal possible value of ``A_{wrsa, s}``,
+    see [`water_reduction!`](@ref)
     """
     η_min_wrsa = F(0.05)
 
     """
-    2::``\\eta_{\\max, wrsa}``::hh
+    2::``\\eta_{\\max, wrsa}``::part of the growth reducer based on the root surface
+    area per aboveground biomass and the water stress function ``W_{rsa, txys}``;
+    maximal possible value of ``A_{wrsa, s}``,
+    see [`water_reduction!`](@ref)
     """
     η_max_wrsa = F(0.6)
 
     """
-    2::``N_{\\max}``::based on the maximum total N of ≈ 30.63 [g kg⁻¹] in the data from the
-    Biodiversity Exploratories
+    2::``N_{\\max}``:: maximal total soil nitrogen, based on the maximum total N
+    of ≈ 30.63 [g kg⁻¹] in the data from the Biodiversity Exploratories
     [explo14446v19](@cite)[explo18787v6](@cite)[explo23846v10](@cite)[explo31210v6](@cite),
     see [`input_nutrients!`](@ref)
     """
     N_max::Q17 = F(35.0)u"g/kg"
 
     """
-    2::``\\delta_{amc}``::maximal reduction of the plant-available nutrients linked to the trait
-    arbuscular mycorrhizal colonisation rate,
-    see [`init_transfer_functions!`](@ref)
+    2::``\\delta_{amc}``::part of the growth reducer based on the
+    arbuscular mycorrhizal colonization rate and the nutrient stress function
+    ``N_{amc, txys}``; maximal possible growth reduction,
+    see [`nutrient_reduction!`](@ref)
     """
     δ_amc = F(0.5)
 
     """
-    2::``\\beta_{amc}``::hhhh
+    2::``\\beta_{amc}``::part of the growth reducer based on the arbuscular
+    mycorrhizal colonization rate and the nutrient stress function ``N_{amc, txys}``;
+    slope of a logistic function that calculates the growth reducer ``N_{amc, txys}``,
+    see [`nutrient_reduction!`](@ref)
     """
     β_amc = F(7.0)
 
     """
-    2::``\\kappa_{\\text{red}, amc}``::hhhh
+    2::``\\kappa_{\\text{red}, amc}``::part of the growth reducer based on the
+    arbuscular mycorrhizal colonization rate and the nutrient stress function
+    ``N_{amc, txys}``; influences the lower bound for ``K_{amc, s}``,
+    that is given by ``1 - \\delta_{amc}\\cdot\\kappa_{\\text{red}, amc}``,
+    see [`nutrient_reduction!`](@ref)
     """
     κ_red_amc = F(0.5)
 
     """
-    2::``\\beta_{\\kappa\\eta, amc}``::hhhh
+    2::``\\beta_{\\kappa\\eta, amc}``::part of the growth reducer based on the
+    arbuscular mycorrhizal colonization rate and the nutrient stress function
+    ``N_{amc, txys}``; is the slope of the two logistic functions that relate
+    the arbuscular mycorrhizal colonization rate to ``K_{amc, s}`` and ``A_{amc, s}``,
+    see [`nutrient_reduction!`](@ref)
     """
     β_κη_amc = F(10.0)
 
     """
-    2::``\\eta_{\\min, amc}``::hhhh
+    2::``\\eta_{\\min, amc}``::part of the growth reducer based on the
+    arbuscular mycorrhizal colonization rate and the nutrient stress function
+    ``N_{amc, txys}``; minimal possible value of ``A_{amc, s}``,
+    see [`nutrient_reduction!`](@ref)
     """
     η_min_amc = F(0.05)
 
     """
-    2::``\\eta_{\\max, amc}``::hhhh
+    2::``\\eta_{\\max, amc}``::part of the growth reducer based on
+    the arbuscular mycorrhizal colonization rate and the nutrient stress function
+    ``N_{amc, txys}``; maximal possible value of ``A_{amc, s}``,
+    see [`nutrient_reduction!`](@ref)
     """
     η_max_amc = F(0.6)
 
     """
-    2::``\\phi_{amc}``::hhhh
+    2::``\\phi_{amc}``::part of the growth reducer based on the
+    arbuscular mycorrhizal colonization rate and the nutrient stress function
+    ``N_{amc, txys}``; is the arbuscular mycorrhizal colonization rate where
+    the species have values of ``A_{amc, s}`` and ``K_{amc, s}``
+    that are halfway between the minimum and the maximum of
+    ``A_{amc, s}`` and ``K_{amc, s}``,
+    see [`nutrient_reduction!`](@ref)
     """
     ϕ_amc = F(0.35)
 
     """
-    2::``\\delta_{nrsa}``::maximal reduction of the plant-available nutrients linked to the trait
-    root surface area / aboveground biomass,
-    see [`init_transfer_functions!`](@ref)
+    2::``\\delta_{nrsa}``::part of the growth reducer based on the
+    root surface area per aboveground biomass and the nutrient stress function
+    ``N_{rsa, txys}``; maximal growth reduction,
+    see [`nutrient_reduction!`](@ref)
     """
     δ_nrsa = F(0.9)
 
     """
-    2::``\\beta_{nrsa}``::hhhh
+    2::``\\beta_{nrsa}``:: part of the growth reducer based on
+    the root surface area per aboveground biomass and the nutrient stress
+    function ``N_{rsa, txys}``; slope of a logistic function
+    that calculates the growth reducer ``N_{rsa, txys}``,
+    see [`nutrient_reduction!`](@ref)
     """
     β_nrsa = F(7.0)
 
     """
-    2::``\\kappa_{\\text{red}, nrsa}``::hhhh
+    2::``\\kappa_{\\text{red}, nrsa}``::part of the growth reducer based on
+    the root surface area per aboveground biomass and the nutrient stress
+    function ``N_{rsa, txys}``; is the slope of the two logistic functions
+    that relate the root surface area per aboveground biomass
+    to ``K_{nrsa, s}`` and ``A_{nrsa, s}``,
+    see [`nutrient_reduction!`](@ref)
     """
     κ_red_nrsa = F(0.6)
 
     """
-    2::``\\beta_{\\kappa\\eta, nrsa}``::hhhh
+    2::``\\beta_{\\kappa\\eta, nrsa}``::part of the growth reducer based on
+    the root surface area per aboveground biomass and the nutrient stress
+    function ``N_{rsa, txys}``; is the slope of the two logistic functions
+    that relate the root surface area per
+    aboveground biomass to ``K_{nrsa, s}`` and ``A_{nrsa, s}``,
+    see [`nutrient_reduction!`](@ref)
     """
     β_κη_nrsa::Q16 = F(40.0)u"g / m^2"
 
     """
-    2::``\\eta_{\\min, nrsa}``::hhhh
+    2::``\\eta_{\\min, nrsa}``::part of the growth reducer based on the
+    root surface area per aboveground biomass and the nutrient
+    stress function ``N_{rsa, txys}``; minimal possible value of ``A_{nrsa, s}``,
+    see [`nutrient_reduction!`](@ref)
     """
     η_min_nrsa = F(0.05)
 
     """
-    2::``\\eta_{\\max, nrsa}``::hhhh
+    2::``\\eta_{\\max, nrsa}``::part of the growth reducer based on the
+    root surface area per aboveground biomass and the nutrient
+    stress function ``N_{rsa, txys}``; maximal possible value of ``A_{nrsa, s}``,
+    see [`nutrient_reduction!`](@ref)
     """
     η_max_nrsa = F(0.6)
 
@@ -235,15 +328,16 @@ $(MYNEWFIELDS)
     ## 3 Environmental and seasonal growth adjustment
     ####################################################################################
     """
-    3::``\\gamma_1``::controls the steepness of the linear decrease in radiation use efficiency
-    for high values of the photosynthetically active radiation (`PAR`)
+    3::``\\gamma_1``::controls the steepness of the linear decrease in
+    radiation use efficiency for high values of the photosynthetically
+    active radiation (`PAR`),
     see [`radiation_reduction!`](@ref)
     """
     γ₁::Q3 = F(4.45e-6)u"ha / MJ"  # uconvert(u"ha/MJ", 0.0445u"m^2 / MJ")
 
     """
     3::``\\gamma_2``::threshold value of `PAR` from which starts a linear decrease in
-    radiation use efficiency
+    radiation use efficiency,
     see [`radiation_reduction!`](@ref)
     """
     γ₂::Q4 = F(50000.0)u"MJ / ha" # uconvert(u"MJ/ha", 5.0u"MJ / m^2")
@@ -288,13 +382,13 @@ $(MYNEWFIELDS)
     ST₂::Q6 = F(1450.0)u"K"
 
     """
-    3::``SEA_{\\min}``::is the minimum value of the seasonal effect,
+    3::``SEA_{\\min}``::is the minimal value of the seasonal effect,
     see [`seasonal_reduction!`](@ref)
     """
     SEA_min = F(0.7)
 
     """
-    3::``SEA_{\\max}``::is the maximum value of the seasonal effect,
+    3::``SEA_{\\max}``::is the maximal value of the seasonal effect,
     see [`seasonal_reduction!`](@ref)
     """
     SEA_max = F(1.3)
@@ -350,14 +444,16 @@ $(MYNEWFIELDS)
     ## 5 Management
     ####################################################################################
     """
-    5::``\\beta_{PAL, lnc}``::controls how strongly grazers prefer plant species with high leaf nitrogen content,
+    5::``\\beta_{PAL, lnc}``::controls how strongly grazers prefer
+    plant species with high leaf nitrogen content,
     see [`grazing!`](@ref)
     """
     β_ρ_lnc = F(1.5)
 
     """
-    5::``\\alpha_{GRZ}``::total biomass [kg ha⁻¹] when the daily consumption by grazers reaches half
-    of their maximal consumption defined by κ · livestock density,
+    5::``\\alpha_{GRZ}``::total biomass [kg ha⁻¹] when the daily
+    consumption by grazers reaches half of their
+    maximal consumption defined by κ · livestock density,
     see [`grazing!`](@ref)
     """
     α_GRZ::Q11 = F(1000.0)u"kg / ha"
@@ -369,29 +465,30 @@ $(MYNEWFIELDS)
     κ::Q10 = F(22.0)u"kg"
 
     """
-    5::``\\alpha_{TRM}``::hhhhhhh
+    5::``\\alpha_{TRM}``::
     """
     α_TRM::Q11 = F(10000.0)u"kg / ha"
 
     """
-    5::``\\beta_{TRM}``::defines together with the height of the plants and the livestock density
+    5::``\\beta_{TRM}``::defines together with the height of
+    the plants and the livestock density
     the proportion of biomass that is trampled [ha m⁻¹],
     see [`trampling!`](@ref)
     """
     β_TRM::Q10 = F(5.0)u"kg"
 
     """
-    5::``\\beta_{TRM, H}``::hhhhhhh
+    5::``\\beta_{TRM, H}``::
     """
     β_TRM_height = F(0.5)
 
     """
-    5::``\\alpha_{\\text{low}B}``::hhhhh
+    5::``\\alpha_{\\text{low}B}``::
     """
     α_lowB::Q11 = F(100.0)u"kg / ha"
 
     """
-    5::``\\beta_{\\text{low}B}``::hhhhh
+    5::``\\beta_{\\text{low}B}``::
     """
     β_lowB::Q12 = F(0.1)u"ha / kg"
 
@@ -416,7 +513,8 @@ $(MYNEWFIELDS)
     α_TR_sla::Q15 = F(0.03)u"m^2 / g"
 
     """
-    7::``\\beta_{TR, sla}``::controls how strongly a community mean specific leaf area that deviates
+    7::``\\beta_{TR, sla}``::controls how strongly a
+    community mean specific leaf area that deviates
     from `α_TR_sla` is affecting the transpiration,
     see [`transpiration`](@ref)
     """
@@ -426,32 +524,32 @@ $(MYNEWFIELDS)
     ## 8 Variance parameter for likelihood
     ####################################################################################
     """
-    8::``\\sigma_{B}``::hhh
+    8::``\\sigma_{B}``::
     """
     b_biomass = F(1000.0)
 
     """
-    8::``\\sigma_{sla}``::hhh
+    8::``\\sigma_{sla}``::
     """
     b_sla = F(0.0005)
 
     """
-    8::``\\sigma_{lnc}``::hhh
+    8::``\\sigma_{lnc}``::
     """
     b_lncm = F(0.5)
 
     """
-    8::``\\sigma_{amc}``::hhh
+    8::``\\sigma_{amc}``::
     """
     b_amc = F(0.001)
 
     """
-    8::``\\sigma_{H}``::hhh
+    8::``\\sigma_{H}``::
     """
     b_height = F(0.01)
 
     """
-    8::``\\sigma_{rsa}``::hhh
+    8::``\\sigma_{rsa}``::
     """
     b_rsa_above = F(0.004)
 end
@@ -571,7 +669,7 @@ function exlude_parameter(; input_obj)
     return excl_p
 end
 
-!function calibrated_parameter(; input_obj = nothing)
+function calibrated_parameter(; input_obj = nothing)
     p = (;
         α_comH = (Uniform(0.0, 2.0), as(Real, 0.0, 2.0)),
         β_comH = (Uniform(0.0, 10.0), as(Real, 0.0, 10.0)),
