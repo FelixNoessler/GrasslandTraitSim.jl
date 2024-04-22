@@ -12,7 +12,6 @@ using DataFramesMeta
 using DimensionalData
 using Distributions
 using DocStringExtensions
-# using FiniteDiff
 using ForwardDiff
 using JLD2
 using LinearAlgebra
@@ -41,25 +40,46 @@ function DocStringExtensions.format(abbrv::MyNewFields, buf, doc)
     local object = Docs.resolve(binding)
     local fields = isabstracttype(object) ? Symbol[] : fieldnames(object)
 
+    param_groups = [
+        "**Light interception and competition**",
+        "**Belowground competition**",
+        "**Environmental and seasonal growth adjustment**",
+        "**Senescence**",
+        "**Management**",
+        "**Clonal growth**",
+        "**Water dynamics**",
+        "**Variance parameter for likelihood**"
+    ]
+
     p = SimulationParameter()
-    p_dict = Dict()
+    latex_symbols = []
+    field_docs = []
+    field_group = []
+
     for field in fields
-        p_dict[field] = split(docs[field], "Default:")[1] #docs[field]
+        first_part = split(docs[field], "Default:")[1]
+        group_num, latex_symbol, doc_str = split(first_part, "::")
+        push!(field_group, parse(Int64, group_num))
+        push!(latex_symbols, latex_symbol)
+        push!(field_docs, doc_str)
     end
 
-    fields_ordered = sort(collect(keys(p_dict)))
+    for g in 1:maximum(field_group)
+        println(buf)
+        println(buf, "# $(param_groups[g])")
+        println(buf)
+        println(buf, "| Parameter | Symbol | Value        | Description |")
+        println(buf, "| --------- | ------------ |:-------------|:------------|")
 
-    println(buf, "| Parameter | Value | Description |")
-    println(buf, "|----------:|:------|:------------|")
-
-    for k in fields_ordered
-        print(buf, "| `$(k)` | $(p[k]) | ")
-        for line in split(p_dict[k], "\n")
-            print(buf, " ", rstrip(line))
+        is = findall(field_group .== g)
+        for i in is
+            print(buf, "| `$(fields[i])` | $(latex_symbols[i]) | $(p[fields[i]]) | ")
+            for line in split(field_docs[i], "\n")
+                print(buf, " ", rstrip(line))
+            end
+            println(buf, " |")
         end
-        println(buf, " |")
     end
-
     println(buf)
 
     return nothing

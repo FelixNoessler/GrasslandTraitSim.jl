@@ -23,7 +23,7 @@ We calculate the likelihood of observing the measured biomass ``B_{m}`` given th
 
 ## Community weighted mean traits
 
-We can calculate community weighted mean traits from the observed community composition by weighting species mean trait values by their cover. In the same way, we can calculate community weighted mean traits for our simulated plant community (see [here](@ref "Derived outputs (community weighted mean traits)")). Then, we can calculate the likelihood of observing the measured community weighted mean trait ``CWM_{m}`` (e.g. ``sla_m``) given the simulated community weighted mean trait ``CWM_{sim}`` (e.g. ``sla_{sim}``):
+We can calculate community weighted mean traits from the observed community composition by weighting species mean trait values by their cover. In the same way, we can calculate community weighted mean traits for our simulated plant community. Then, we can calculate the likelihood of observing the measured community weighted mean trait ``CWM_{m}`` (e.g. ``sla_m``) given the simulated community weighted mean trait ``CWM_{sim}`` (e.g. ``sla_{sim}``):
 
 ```math
     CWM_{m} \sim \text{truncated}(\text{Laplace}(\mu = CWM_{sim}, b = b\_cwm); \text{ lower}=0)
