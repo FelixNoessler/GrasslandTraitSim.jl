@@ -19,6 +19,7 @@ using Parameters
 using Printf
 using Statistics
 using StatsBase
+using PrettyTables
 using TimeSeries
 using TransformVariables
 using Unitful
@@ -68,7 +69,7 @@ function DocStringExtensions.format(abbrv::MyNewFields, buf, doc)
         println(buf)
         println(buf, "# $(param_groups[g])")
         println(buf)
-        println(buf, "| Parameter | Symbol | Value        | Description |")
+        println(buf, "| Parameter | Symbol       | Value        | Description |")
         println(buf, "| --------- | ------------ |:-------------|:------------|")
 
         is = findall(field_group .== g)

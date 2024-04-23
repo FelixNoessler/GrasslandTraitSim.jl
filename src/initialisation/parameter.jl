@@ -9,7 +9,7 @@ the permanent wilting point (see [`input_WHC_PWP!`](@ref)).
 
 $(MYNEWFIELDS)
 """
-@with_kw mutable struct SimulationParameter{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8,
+@with_kw_noshow mutable struct SimulationParameter{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8,
                                   Q10, Q11, Q12, Q13, Q14, Q15, Q16, Q17} @deftype T
 
     ####################################################################################
@@ -565,6 +565,14 @@ function SimulationParameter(input_obj::NamedTuple; exclude_not_used)
     end
 
     return p
+end
+
+function Base.show(io::IO, obj::SimulationParameter)
+    p_names = collect(keys(obj))
+    vals = [obj[k] for k in p_names]
+    m = hcat(p_names, vals)
+    pretty_table(io, m; header = ["Parameter", "Value"],  alignment=[:r, :l], crop = :none)
+    return nothing
 end
 
 function exlude_parameter(; input_obj)
