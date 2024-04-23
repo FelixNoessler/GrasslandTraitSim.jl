@@ -32,7 +32,7 @@ end
 @doc raw"""
 ```math
 \begin{align}
-\rho &= \left(\frac{LNCM}{LNCM_{cwm]}}\right) ^ {\text{β_ρ_lnc}} \\
+\rho &= \left(\frac{LNCM}{LNCM_{cwm]}}\right) ^ {\text{β_PAL_lnc}} \\
 μₘₐₓ &= κ \cdot \text{LD} \\
 h &= \frac{1}{μₘₐₓ} \\
 a &= \frac{1}{\text{α_GRZ}^2 \cdot h} \\
@@ -56,10 +56,10 @@ Influence of grazing (livestock density = 2), all plant species have
 an equal amount of biomass (total biomass / 3)
 and a leaf nitrogen content of 15, 30 and 40 mg/g:
 
-- `β_ρ_lnc` = 1.5
+- `β_PAL_lnc` = 1.5
 ![](../img/grazing_1_5.svg)
 
-- `β_ρ_lnc` = 5
+- `β_PAL_lnc` = 5
 ![](../img/grazing_5.svg)
 
 Influence of `α_GRZ`:
@@ -67,7 +67,7 @@ Influence of `α_GRZ`:
 """
 function grazing!(; t, x, y, container, LD, biomass)
     @unpack lncm = container.traits
-    @unpack α_GRZ, β_ρ_lnc, κ, α_lowB, β_lowB = container.p
+    @unpack α_GRZ, β_PAL_lnc, κ, α_lowB, β_lowB = container.p
     @unpack defoliation, grazed_share, relative_lncm, ρ,
             lowbiomass_correction, low_ρ_biomass = container.calc
     @unpack grazed = container.output
@@ -81,7 +81,7 @@ function grazing!(; t, x, y, container, LD, biomass)
     #################################### share of grazed biomass per species
     ## Palatability ρ
     relative_lncm .= lncm .* biomass ./ sum(biomass)
-    ρ .= (lncm ./ sum(relative_lncm)) .^ β_ρ_lnc
+    ρ .= (lncm ./ sum(relative_lncm)) .^ β_PAL_lnc
 
     ## species with low biomass are less grazed
     if !haskey(included, :lowbiomass_avoidance) || included.lowbiomass_avoidance
@@ -128,7 +128,7 @@ Maximal the whole biomass of a plant species is removed by trampling.
 """
 function trampling!(; container, LD, biomass)
     @unpack height = container.traits
-    @unpack β_TRM_height, β_TRM, α_TRM, α_lowB, β_lowB = container.p
+    @unpack β_TRM_H, β_TRM, α_TRM, α_lowB, β_lowB = container.p
     @unpack lowbiomass_correction, trampled_share, trampled_biomass,
             defoliation = container.calc
     @unpack included = container.simp
@@ -144,7 +144,7 @@ function trampling!(; container, LD, biomass)
     else
         lowbiomass_correction .= 1.0
     end
-    @. trampled_share = (height / 0.5u"m") ^ β_TRM_height *
+    @. trampled_share = (height / 0.5u"m") ^ β_TRM_H *
                         lowbiomass_correction * biomass / sum_biomass
 
     #################################### Add trampled biomass to defoliation

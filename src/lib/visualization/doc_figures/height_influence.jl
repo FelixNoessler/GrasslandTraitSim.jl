@@ -5,8 +5,8 @@ function height_influence(; path = nothing)
     biomass = fill(50, nspecies)u"kg / ha"
     ymat = Array{Float64}(undef, nspecies, length(height_strength_exps))
 
-    for (i, β_LIG_height) in enumerate(height_strength_exps)
-        container = @set container.p.β_LIG_height = β_LIG_height
+    for (i, β_H) in enumerate(height_strength_exps)
+        container = @set container.p.β_H = β_H
         light_competition!(; container, biomass)
         ymat[:, i] .= container.calc.heightinfluence
     end
@@ -20,7 +20,7 @@ function height_influence(; path = nothing)
     fig = Figure(; size = (700, 400))
     ax = Axis(fig[1, 1];
         ylabel = "Plant height growth factor (heightinfluence)",
-        xlabel = "Influence strength of the plant height (β_LIG_height)")
+        xlabel = "Influence strength of the plant height (β_H)")
 
     for i in Base.OneTo(nspecies)
         lines!(height_strength_exps, ymat[i, :];

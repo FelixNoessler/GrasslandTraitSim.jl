@@ -1,4 +1,4 @@
-function grazing(; α_GRZ = nothing, β_ρ_lnc = nothing, path = nothing)
+function grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, path = nothing)
 
     nspecies, container = create_container(; )
 
@@ -6,8 +6,8 @@ function grazing(; α_GRZ = nothing, β_ρ_lnc = nothing, path = nothing)
         container.p.α_GRZ = α_GRZ
     end
 
-    if !isnothing(β_ρ_lnc)
-        container.p.β_ρ_lnc = β_ρ_lnc
+    if !isnothing(β_PAL_lnc)
+        container.p.β_PAL_lnc = β_PAL_lnc
     end
 
     nbiomass = 50

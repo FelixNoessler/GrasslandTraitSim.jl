@@ -1,5 +1,5 @@
 function animate_clonalgrowth(; path = "clonalgrowth_animation.mp4",
-                              clonalgrowth_factor = nothing)
+                              β_clo = nothing)
     nspecies = 1
     npatches = 100
     patch_xdim = 10
@@ -10,8 +10,8 @@ function animate_clonalgrowth(; path = "clonalgrowth_animation.mp4",
         plotID = "HEG01", nspecies,
         patch_xdim, patch_ydim)
     p = SimulationParameter()
-    if !isnothing(clonalgrowth_factor)
-        p.clonalgrowth_factor = clonalgrowth_factor
+    if !isnothing(β_clo)
+        p.β_clo = β_clo
     end
     prealloc = preallocate_vectors(; input_obj);
     prealloc_specific = preallocate_specific_vectors(; input_obj);
@@ -59,7 +59,7 @@ function animate_clonalgrowth(; path = "clonalgrowth_animation.mp4",
     return nothing
 end
 
-function plot_clonalgrowth(; path = nothing, clonalgrowth_factor = nothing)
+function plot_clonalgrowth(; path = nothing, β_clo = nothing)
     nspecies = 1
     npatches = 25
     patch_xdim = 5
@@ -70,8 +70,8 @@ function plot_clonalgrowth(; path = nothing, clonalgrowth_factor = nothing)
         plotID = "HEG01", nspecies,
         patch_xdim, patch_ydim)
     p = SimulationParameter()
-    if !isnothing(clonalgrowth_factor)
-        p.clonalgrowth_factor = clonalgrowth_factor
+    if !isnothing(β_clo)
+        p.β_clo = β_clo
     end
     prealloc = preallocate_vectors(; input_obj);
     prealloc_specific = preallocate_specific_vectors(; input_obj);

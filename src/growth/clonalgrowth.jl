@@ -11,7 +11,7 @@ function clonalgrowth!(; container)
     @unpack patch_xdim, patch_ydim, nspecies = container.simp
     @unpack clonalgrowth = container.calc
     @unpack u_biomass = container.u
-    @unpack clonalgrowth_factor = container.p
+    @unpack β_clo = container.p
 
     clonalgrowth .= 0.0u"kg / ha"
     x_add = [1, 0, -1, 0]
@@ -31,10 +31,10 @@ function clonalgrowth!(; container)
                 for s in Base.OneTo(nspecies)
                     ## growth to neighbour patch
                     clonalgrowth[x_neighbour, y_neighbour, s] +=
-                        u_biomass[x, y, s] * clonalgrowth_factor
+                        u_biomass[x, y, s] * β_clo
 
                     ## biomass is removed from own patch
-                    clonalgrowth[x, y, s] -= u_biomass[x, y, s] * clonalgrowth_factor
+                    clonalgrowth[x, y, s] -= u_biomass[x, y, s] * β_clo
                 end
             end
 

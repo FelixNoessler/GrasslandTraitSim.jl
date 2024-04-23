@@ -45,7 +45,7 @@ $(MYNEWFIELDS)
     1::``\\beta_{H}``::controls how strongly taller plants gets more light for growth,
     see [`light_competition!`](@ref)
     """
-    β_LIG_height = F(0.5)
+    β_H = F(0.5)
 
     ####################################################################################
     ## 2 Belowground competition
@@ -448,7 +448,7 @@ $(MYNEWFIELDS)
     plant species with high leaf nitrogen content,
     see [`grazing!`](@ref)
     """
-    β_ρ_lnc = F(1.5)
+    β_PAL_lnc = F(1.5)
 
     """
     5::``\\alpha_{GRZ}``::total biomass [kg ha⁻¹] when the daily
@@ -480,7 +480,7 @@ $(MYNEWFIELDS)
     """
     5::``\\beta_{TRM, H}``::
     """
-    β_TRM_height = F(0.5)
+    β_TRM_H = F(0.5)
 
     """
     5::``\\alpha_{\\text{low}B}``::
@@ -499,7 +499,7 @@ $(MYNEWFIELDS)
     6::``\\beta_{clo}``::Proportion of biomass that growths to the neighbouring cells,
     see [`clonalgrowth!`](@ref)
     """
-    clonalgrowth_factor = F(0.1)
+    β_clo = F(0.1)
 
     ####################################################################################
     ## 7 Water dynamics
@@ -584,7 +584,7 @@ function exlude_parameter(; input_obj)
     end
 
     if isone(npatches) || (haskey(included, :clonalgrowth) && !included.clonalgrowth)
-        append!(excl_p, [:clonalgrowth_factor])
+        append!(excl_p, [:β_clo])
     end
 
     if haskey(included, :radiation_red) && !included.radiation_red
@@ -631,11 +631,11 @@ function exlude_parameter(; input_obj)
     end
 
     if  haskey(included, :grazing) && !included.grazing
-        append!(excl_p, [:β_ρ_lnc, :κ, :α_GRZ])
+        append!(excl_p, [:β_PAL_lnc, :κ, :α_GRZ])
     end
 
     if haskey(included, :trampling) && !included.trampling
-        append!(excl_p, [:β_TRM, :α_TRM, :β_TRM_height])
+        append!(excl_p, [:β_TRM, :α_TRM, :β_TRM_H])
     end
 
     if haskey(included, :mowing)  && !included.mowing &&
@@ -658,7 +658,7 @@ function exlude_parameter(; input_obj)
     end
 
     if haskey(included, :height_competition) && !included.height_competition
-        append!(excl_p, [:β_LIG_height])
+        append!(excl_p, [:β_H])
     end
 
     if haskey(included, :lowbiomass_avoidance) && !included.lowbiomass_avoidance
@@ -680,10 +680,10 @@ function calibrated_parameter(; input_obj = nothing)
         SEA_min = (Uniform(0.5, 1.0), as(Real, 0.5, 1.0)),
         SEA_max = (Uniform(1.0, 2.0), as(Real, 1.0, 2.0)),
         ST₂ = (Uniform(1200.0, 3000.0), as(Real, 1200.0, 3000.0)),
-        β_LIG_height = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
-        β_ρ_lnc = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
+        β_H = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
+        β_PAL_lnc = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0)),
         β_TRM = (truncated(Normal(0.0, 2.0); lower = 0.0), asℝ₊),
-        β_TRM_height = (Uniform(0.0, 3.0), as(Real, 0.0, 3.0)),
+        β_TRM_H = (Uniform(0.0, 3.0), as(Real, 0.0, 3.0)),
         α_TRM = (truncated(Normal(10000.0, 1000.0); lower = 0.0), asℝ₊),
         α_GRZ = (truncated(Normal(500.0, 1000.0); lower = 0.0, upper = 2000.0),
                                as(Real, 0.0, 2000.0)),
