@@ -66,7 +66,7 @@ Influence of `α_GRZ`:
 ![](../img/α_GRZ.svg)
 """
 function grazing!(; t, x, y, container, LD, biomass)
-    @unpack lncm = container.traits
+    @unpack lnc = container.traits
     @unpack α_GRZ, β_PAL_lnc, κ, α_lowB, β_lowB = container.p
     @unpack defoliation, grazed_share, relative_lncm, ρ,
             lowbiomass_correction, low_ρ_biomass = container.calc
@@ -80,8 +80,8 @@ function grazing!(; t, x, y, container, LD, biomass)
 
     #################################### share of grazed biomass per species
     ## Palatability ρ
-    relative_lncm .= lncm .* biomass ./ sum(biomass)
-    ρ .= (lncm ./ sum(relative_lncm)) .^ β_PAL_lnc
+    relative_lncm .= lnc .* biomass ./ sum(biomass)
+    ρ .= (lnc ./ sum(relative_lncm)) .^ β_PAL_lnc
 
     ## species with low biomass are less grazed
     if !haskey(included, :lowbiomass_avoidance) || included.lowbiomass_avoidance

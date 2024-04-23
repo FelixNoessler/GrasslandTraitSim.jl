@@ -186,9 +186,9 @@ function dashboard_layout(; variable_p)
     axes[:soilwater] = Axis(topplots_layout[1, 3]; alignmode = Outside())
     axes[:abiotic] = Axis(topplots_layout[1, 4]; alignmode = Outside())
     axes[:sla] = Axis(bottomplots_layout[1, 1]; alignmode = Outside())
-    axes[:rsa_above] = Axis(bottomplots_layout[1, 2]; alignmode = Outside())
+    axes[:rsa] = Axis(bottomplots_layout[1, 2]; alignmode = Outside())
     axes[:height] = Axis(bottomplots_layout[1, 3]; alignmode = Outside())
-    axes[:lncm] = Axis(bottomplots_layout[1, 4]; alignmode = Outside())
+    axes[:lnc] = Axis(bottomplots_layout[1, 4]; alignmode = Outside())
     axes[:amc] = Axis(bottomplots_layout[1, 5]; alignmode = Outside())
 
     ##############################################################################

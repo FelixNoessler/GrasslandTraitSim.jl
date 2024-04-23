@@ -103,11 +103,11 @@ function plot_N_rsa(; δ_nrsa = 0.8, path = nothing)
     end
 
     ##################
-    idx = sortperm(container.traits.rsa_above)
+    idx = sortperm(container.traits.rsa)
     Ks = container.transfer_function.K_nrsa[idx]
     x0s = container.transfer_function.A_nrsa[idx]
     A = 1 - container.p.δ_nrsa
-    rsa_above = container.traits.rsa_above[idx]
+    rsa = container.traits.rsa[idx]
     ymat = ymat[:, idx]
     ##################
 
@@ -140,7 +140,7 @@ function plot_N_rsa(; δ_nrsa = 0.8, path = nothing)
     Axis(fig[1, 2];
         xticklabelsvisible = false,
         ylabel = "Right upper bound\n(K_nrsa)")
-    scatter!(ustrip.(rsa_above), Ks;
+    scatter!(ustrip.(rsa), Ks;
         marker = :ltriangle,
         color = 1:nspecies,
         colorrange = (1, nspecies))
@@ -156,7 +156,7 @@ function plot_N_rsa(; δ_nrsa = 0.8, path = nothing)
     Axis(fig[2, 2];
         xlabel = "Root surface area /\nabove ground biomass [m² g⁻¹]",
         ylabel = "Nutrient index\nat midpoint (A_nrsa)")
-    scatter!(ustrip.(rsa_above), x0s;
+    scatter!(ustrip.(rsa), x0s;
         marker = :x,
         color = 1:nspecies,
         colorrange = (1, nspecies))

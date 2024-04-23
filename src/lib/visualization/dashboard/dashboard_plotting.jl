@@ -121,7 +121,7 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
         "Specific leaf area [m² g⁻¹]", "Leaf nitrogen \nper leaf mass [mg g⁻¹]",
         "Height [m]", "Mycorrhizal colonisation",
         "Root surface area /\nabove ground biomass [m² g⁻¹]"]
-    trait_symbols = [:sla, :lncm, :height, :amc, :rsa_above]
+    trait_symbols = [:sla, :lnc, :height, :amc, :rsa]
     name_index = trait_symbols .== trait
     trait_name = trait_names[name_index][1]
 

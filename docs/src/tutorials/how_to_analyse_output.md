@@ -117,7 +117,7 @@ We can calculate for all traits the community weighted mean over time:
 
 ```@example output
 relative_biomass = species_biomass ./ total_biomass
-traits = [:height, :sla, :lncm, :rsa_above, :amc, :ampm, :lmpm]
+traits = [:height, :sla, :lnc, :rsa, :amc, :abp, :lbp]
 trait_names = [
     "Potential\n height [m]", "Specific leaf\narea [m² g⁻¹]", "Leaf nitrogen \nper leaf mass\n [mg g⁻¹]",
     "Root surface\narea per above\nground biomass\n[m² g⁻¹]", "Arbuscular\n mycorrhizal\n colonisation",

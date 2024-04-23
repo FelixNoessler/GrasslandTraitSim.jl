@@ -536,7 +536,7 @@ $(MYNEWFIELDS)
     """
     8::``\\sigma_{lnc}``::
     """
-    b_lncm = F(0.5)
+    b_lnc = F(0.5)
 
     """
     8::``\\sigma_{amc}``::
@@ -551,7 +551,7 @@ $(MYNEWFIELDS)
     """
     8::``\\sigma_{rsa}``::
     """
-    b_rsa_above = F(0.004)
+    b_rsa = F(0.004)
 end
 
 
@@ -576,7 +576,7 @@ function exlude_parameter(; input_obj)
     end
 
     if haskey(likelihood_included, :trait) && !likelihood_included.trait
-        append!(excl_p, [:b_sla, :b_lncm, :b_amc, :b_height, :b_rsa_above])
+        append!(excl_p, [:b_sla, :b_lnc, :b_amc, :b_height, :b_rsa])
     end
 
     if haskey(included, :potential_growth) && !included.potential_growth
@@ -724,10 +724,10 @@ function calibrated_parameter(; input_obj = nothing)
         β_nrsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0)),
         b_biomass = (truncated(Cauchy(0, 300); lower = 0.0), asℝ₊),
         b_sla = (truncated(Cauchy(0, 0.05); lower = 0.0), asℝ₊),
-        b_lncm = (truncated(Cauchy(0, 0.5); lower = 0.0), asℝ₊),
+        b_lnc = (truncated(Cauchy(0, 0.5); lower = 0.0), asℝ₊),
         b_amc = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊),
         b_height = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊),
-        b_rsa_above = (truncated(Cauchy(0, 0.01); lower = 0.0), asℝ₊)
+        b_rsa = (truncated(Cauchy(0, 0.01); lower = 0.0), asℝ₊)
     )
 
     # if !isnothing(input_obj)

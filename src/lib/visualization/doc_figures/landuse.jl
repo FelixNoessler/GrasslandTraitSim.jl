@@ -23,9 +23,9 @@ function grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, path = nothing)
     end
 
     idx = sortperm(container.calc.ρ)
-    lncm = ustrip.(container.traits.lncm)[idx]
+    lnc = ustrip.(container.traits.lnc)[idx]
     grazing_mat = grazing_mat[idx, :]
-    colorrange = (minimum(lncm), maximum(lncm))
+    colorrange = (minimum(lnc), maximum(lnc))
 
     fig = Figure(; size = (700, 400))
     Axis(fig[1, 1],
@@ -35,7 +35,7 @@ function grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, path = nothing)
 
     for i in 1:nspecies
         lines!(ustrip.(biomass_vec), grazing_mat[i, :];
-            color = lncm[i],
+            color = lnc[i],
             colorrange,
             linewidth = 3)
     end

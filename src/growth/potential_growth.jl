@@ -74,8 +74,8 @@ LAI_{tot, txy} &= \sum_{s=1}^{S} LAI_{txys}
 Variables:
 - ``B_{txys}`` (`biomass`) dry aboveground biomass of each species  [kg ha⁻¹]
 - ``SLA_s`` (`sla`) specific leaf area [m² g⁻¹]
-- ``LBP_s`` (`lmpm`) leaf biomass per plant biomass [-]
-- ``ABP_s`` (`ampm`) aboveground biomass per plant biomass [-]
+- ``LBP_s`` (`lbp`) leaf biomass per plant biomass [-]
+- ``ABP_s`` (`abp`) aboveground biomass per plant biomass [-]
 
 There is a unit conversion from the ``SLA_s`` and the biomass ``B_{txys}``
 to the unitless ``LAI_{txys}`` involved.
@@ -88,10 +88,10 @@ Output:
 """
 function calculate_LAI!(; container, biomass)
     @unpack LAIs, com = container.calc
-    @unpack sla, lmpm, ampm = container.traits
+    @unpack sla, lbp, abp = container.traits
 
     for s in eachindex(LAIs)
-        LAIs[s] = uconvert(NoUnits, sla[s] * biomass[s] * lmpm[s] / ampm[s])
+        LAIs[s] = uconvert(NoUnits, sla[s] * biomass[s] * lbp[s] / abp[s])
     end
     com.LAItot = sum(LAIs)
 

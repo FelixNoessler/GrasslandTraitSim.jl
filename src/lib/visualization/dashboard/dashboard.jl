@@ -96,7 +96,7 @@ function dashboard(; posterior = nothing, variable_p = (;),
         end
         band_patch(; plot_obj, sol, valid_data)
         [trait_time_plot(; plot_obj, sol, valid_data, trait = t) for t in
-            [:amc, :sla, :height, :rsa_above, :lncm]]
+            [:amc, :sla, :height, :rsa, :lnc]]
     end
 
     display(plot_obj.fig)
@@ -126,7 +126,7 @@ function update_plots(; sol, plot_obj, valid_data = nothing)
 
     ########### Trait changes over time
     [trait_time_plot(; plot_obj, sol, valid_data, trait = t) for t in
-        [:amc, :sla, :height, :rsa_above, :lncm]]
+        [:amc, :sla, :height, :rsa, :lnc]]
 
     return nothing
 end

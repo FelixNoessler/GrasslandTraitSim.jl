@@ -17,8 +17,8 @@ with full covariance matrices. For each species
 either the first or the second Gaussian distribution is used to
 generate the log/logit-transformed traits. The traits are then backtransformed
 to the original scale and the units are added. If the proportion of the leaf mass
-of the total plant mass (`lmpm`) is larger than 0.95 % of the proportion of the
-aboveground mass of the total mass (`ampm`), `lmpm` is set to 0.95 % of `ampm`.
+of the total plant mass (`lbp`) is larger than 0.95 % of the proportion of the
+aboveground mass of the total mass (`abp`), `lbp` is set to 0.95 % of `abp`.
 
 The Gaussian mixture model was fitted to the data with the function
 `BayesianGaussianMixture` of [scikit-learn](@cite).
@@ -29,11 +29,11 @@ Overview of the traits:
 | ----------- | ------ | ----------------------------------------- | -------------- |
 | `sla`       | m² g⁻¹ | specific   leaf area                      | log            |
 | `height`    | m      | plant height                              | log            |
-| `lncm`      | mg g⁻¹ | leaf nitrogen content per leaf dry mass   | log            |
-| `rsa_above` | m² g⁻¹ | root surface area per aboveground biomass | log            |
+| `lnc`      | mg g⁻¹ | leaf nitrogen content per leaf dry mass   | log            |
+| `rsa` | m² g⁻¹ | root surface area per aboveground biomass | log            |
 | `amc`       | -      | arbuscular mycorrhizal colonisation rate  | logit          |
-| `ampm`      | -      | aboveground dry mass per plant dry mass   | logit          |
-| `lmpm`      | -      | leaf dry mass per plant dry mass          | logit          |
+| `abp`      | -      | aboveground dry mass per plant dry mass   | logit          |
+| `lbp`      | -      | leaf dry mass per plant dry mass          | logit          |
 
 """
 function random_traits!(; prealloc, input_obj)
@@ -62,16 +62,16 @@ function random_traits!(; prealloc, input_obj)
     ### backtransformation and add units
     @. traits.sla = exp(@view traitmat[1, :]) * u"m^2/g"
     @. traits.height = exp(@view traitmat[2, :]) * u"m"
-    @. traits.lncm = exp(@view traitmat[3, :]) * u"mg/g"
-    @. traits.rsa_above = exp(@view traitmat[4, :]) * u"m^2/g"
+    @. traits.lnc = exp(@view traitmat[3, :]) * u"mg/g"
+    @. traits.rsa = exp(@view traitmat[4, :]) * u"m^2/g"
     @. traits.amc = inverse_logit(@view traitmat[5, :])
-    @. traits.ampm = inverse_logit(@view traitmat[6, :])
-    @. traits.lmpm = inverse_logit(@view traitmat[7, :])
+    @. traits.abp = inverse_logit(@view traitmat[6, :])
+    @. traits.lbp = inverse_logit(@view traitmat[7, :])
 
     # proportion of leaf biomass cannot be larger than 0.95 % of aboveground biomass
     for i in Base.OneTo(nspecies)
-        if traits.lmpm[i] > 0.95 * traits.ampm[i]
-            traits.lmpm[i] = 0.95 * traits.ampm[i]
+        if traits.lbp[i] > 0.95 * traits.abp[i]
+            traits.lbp[i] = 0.95 * traits.abp[i]
         end
     end
 
@@ -83,7 +83,7 @@ Calculates the similarity between plants concerning their investment
 in fine roots and collaboration with mycorrhiza.
 
 The trait similarity is build with the traits root surface area per
-aboveground biomass (`rsa_above`) and the arbuscular mycorrhizal
+aboveground biomass (`rsa`) and the arbuscular mycorrhizal
 colonisation rate (`amc`).
 
 Standardized residuals are calculated for both traits:
@@ -113,7 +113,7 @@ set to zero or one respectively.
 """
 function similarity_matrix!(; input_obj, prealloc)
     @unpack nspecies = input_obj.simp
-    @unpack amc, rsa_above = prealloc.traits
+    @unpack amc, rsa = prealloc.traits
     @unpack amc_resid, rsa_above_resid, TS = prealloc.calc
 
     if isone(nspecies)
@@ -122,7 +122,7 @@ function similarity_matrix!(; input_obj, prealloc)
     end
 
     amc_resid .= (amc .- mean(amc)) ./ std(amc)
-    rsa_above_resid .= (rsa_above .- mean(rsa_above)) ./ std(rsa_above)
+    rsa_above_resid .= (rsa .- mean(rsa)) ./ std(rsa)
 
     for i in Base.OneTo(nspecies)
         for u in Base.OneTo(nspecies)

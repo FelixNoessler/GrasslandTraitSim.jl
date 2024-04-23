@@ -97,7 +97,7 @@ function lai_traits(; path = nothing)
     sla = ustrip.(container.traits.sla[idx])
 
 
-    leaf_proportion = (container.traits.lmpm ./ container.traits.ampm)[idx]
+    leaf_proportion = (container.traits.lbp ./ container.traits.abp)[idx]
     colorrange = (minimum(leaf_proportion), maximum(leaf_proportion))
     colormap = :viridis
 

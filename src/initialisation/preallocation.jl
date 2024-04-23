@@ -54,11 +54,11 @@ function preallocate_vectors(; input_obj, T = Float64)
     traits = (;
         amc = Array{T}(undef, nspecies),
         height = Array{T}(undef, nspecies)u"m",
-        lmpm = Array{T}(undef, nspecies),
-        lncm = Array{T}(undef, nspecies)u"mg/g",
+        lbp = Array{T}(undef, nspecies),
+        lnc = Array{T}(undef, nspecies)u"mg/g",
         sla = Array{T}(undef, nspecies)u"m^2 / g",
-        rsa_above = Array{T}(undef, nspecies)u"m^2 / g",
-        ampm = Array{T}(undef, nspecies))
+        rsa = Array{T}(undef, nspecies)u"m^2 / g",
+        abp = Array{T}(undef, nspecies))
 
     ############# Transfer function
     transfer_function = (;
