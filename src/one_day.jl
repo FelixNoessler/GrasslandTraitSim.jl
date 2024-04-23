@@ -102,24 +102,24 @@ function one_day!(; t, container)
 
                 # ------------------------------------------ mowing
                 if !haskey(included, :mowing) || included.mowing
-                    mowing_height = if daily_input.mowing isa Vector
-                        daily_input.mowing[t]
+                    mowing_height = if daily_input.CUT_mowing isa Vector
+                        daily_input.CUT_mowing[t]
                     else
-                        daily_input.mowing[t, x, y]
+                        daily_input.CUT_mowing[t, x, y]
                     end
 
                     if !isnan(mowing_height)
                         mowing!(; t, x, y, container, mowing_height,
                             biomass = patch_biomass,
-                            mowing_all = daily_input.mowing)
+                            mowing_all = daily_input.CUT_mowing)
                     end
                 end
 
                 # ------------------------------------------ grazing & trampling
-                LD = if daily_input.grazing isa Vector
-                    daily_input.grazing[t]
+                LD = if daily_input.LD_grazing isa Vector
+                    daily_input.LD_grazing[t]
                 else
-                    daily_input.grazing[t, x, y]
+                    daily_input.LD_grazing[t, x, y]
                 end
 
                 if !isnan(LD)

@@ -33,8 +33,8 @@ Unfortunately, the raw data set is at the moment not publicly available.
 
 | Variable  | Description                                                                     | data source            |
 | --------- | ------------------------------------------------------------------------------- | ---------------------- |
-| `mowing`  | Height of mowing event, `NaN` means no mowing [m]                               | [explo26487v58](@cite) |
-| `grazing` | Grazing intensity measured in livestock units, `NaN` means no grazing [LD ha⁻¹] | [explo26487v58](@cite) |
+| `CUT_mowing`  | Height of mowing event, `NaN` means no mowing [m]                               | [explo26487v58](@cite) |
+| `LD_grazing` | Grazing intensity measured in livestock units, `NaN` means no grazing [LD ha⁻¹] | [explo26487v58](@cite) |
 
 
 ### Raw time invariant site variables

@@ -69,23 +69,23 @@ For an explanation of the variables, see [here](@ref management_input).
 ```@example input_creation
 
 # --------------- mowing height [m], NaN if no mowing
-mowing = fill(NaN * u"m", ntimesteps)
+CUT_mowing = fill(NaN * u"m", ntimesteps)
 mowing_dates = [Dates.Date(2010, 5, 1), Dates.Date(2010, 8, 1), 
                 Dates.Date(2011, 5, 1), Dates.Date(2011, 8, 1)]
-[mowing[d .== date] .= 0.08u"m" for d in mowing_dates]
+[CUT_mowing[d .== date] .= 0.08u"m" for d in mowing_dates]
 
 # --------------- grazing intensity in livestock density [ha⁻¹], NaN if no grazing
-grazing = fill(NaN / u"ha", ntimesteps)
+LD_grazing = fill(NaN / u"ha", ntimesteps)
 grazing_starts = [Dates.Date(2010, 6, 1), Dates.Date(2011, 6, 1)]
 grazing_ends = [Dates.Date(2010, 8, 1), Dates.Date(2011, 8, 1)]
 livestock_density = [1, 3]u"ha^-1"
 
 for i in eachindex(grazing_starts)
     r = grazing_starts[i] .<= date .<= grazing_ends[i]
-    grazing[r] .= livestock_density[i]
+    LD_grazing[r] .= livestock_density[i]
 end
 
-management_tuple = (; mowing, grazing)
+management_tuple = (; CUT_mowing, LD_grazing)
 
 nothing # hide
 ```

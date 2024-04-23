@@ -66,8 +66,8 @@ function validation_input(;
             :precipitation = :precipitation .* u"mm"
             :PET = :PET .* u"mm"
             :PAR = :PAR .* 10000 .* u"MJ / ha"
-            :mowing = prepare_mowing(mow_sub) ./ 100 .* u"m"
-            :grazing = prepare_grazing(graz_sub) ./ u"ha"
+            :CUT_mowing = prepare_mowing(mow_sub) ./ 100 .* u"m"
+            :LD_grazing = prepare_grazing(graz_sub) ./ u"ha"
             :doy = Dates.dayofyear.(:date)
         end
         @orderby :date
@@ -78,7 +78,7 @@ function validation_input(;
         :temperature_sum,
         :precipitation, :PET,
         :PAR,
-        :mowing, :grazing)
+        :CUT_mowing, :LD_grazing)
     daily_input = (; zip(Symbol.(names(daily_input_df)), eachcol(daily_input_df))...)
 
     ### ----------------- initial biomass and soilwater content

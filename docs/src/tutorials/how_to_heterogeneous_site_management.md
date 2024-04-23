@@ -37,16 +37,16 @@ for k in keys(input_obj_prep.daily_input)
     daily_input_prep[k] = input_obj_prep.daily_input[k]
 end
 
-mowing_prep = daily_input_prep[:mowing]
-mowing = fill(NaN * u"m", length(mowing_prep), patch_xdim, patch_ydim)
-mowing[:, 1, 1] .= mowing_prep
+mowing_prep = daily_input_prep[:CUT_mowing]
+CUT_mowing = fill(NaN * u"m", length(mowing_prep), patch_xdim, patch_ydim)
+CUT_mowing[:, 1, 1] .= mowing_prep
 
-grazing_prep = daily_input_prep[:grazing]
-grazing = fill(NaN / u"ha", length(grazing_prep), patch_xdim, patch_ydim)
-grazing[:, 1, 1] .= grazing_prep
+grazing_prep = daily_input_prep[:LD_grazing]
+LD_grazing = fill(NaN / u"ha", length(grazing_prep), patch_xdim, patch_ydim)
+LD_grazing[:, 1, 1] .= grazing_prep
 
-daily_input_prep[:mowing] = mowing
-daily_input_prep[:grazing] = grazing
+daily_input_prep[:CUT_mowing] = CUT_mowing
+daily_input_prep[:LD_grazing] = LD_grazing
 daily_input = NamedTuple(daily_input_prep)
 
 # --------------- add everything together
