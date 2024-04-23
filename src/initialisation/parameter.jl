@@ -123,7 +123,7 @@ $(MYNEWFIELDS)
     η_max_sla = F(0.8)
 
     """
-    2::``\\phi{sla}``::part of the growth reducer based on the water stress and the
+    2::``\\phi_{sla}``::part of the growth reducer based on the water stress and the
     specific leaf area function ``W_{sla, txys}``; is the specific leaf area where
     the species has a value of ``A_{sla, s}`` that is halfway between
     ``\\eta_{\\min, sla}`` and ``\\eta_{\\max, sla}``,
