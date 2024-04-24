@@ -1,6 +1,7 @@
 # Priors
 
 ```@example priors
+using PrettyTables
 using CairoMakie
 using Statistics
 using Distributions
@@ -8,7 +9,9 @@ import GrasslandTraitSim as sim
 
 inference_obj = sim.calibrated_parameter(; )
 p_keys = collect(keys(inference_obj.priordists))
-p_priors = collect(inference_obj.priordists)
+p_priors = string.(collect(inference_obj.priordists))
+p_priors = replace.(p_priors, "\n" => "", "{Float64}" => "")
+
 m = hcat(p_keys, p_priors, inference_obj.prior_text)
 
 pretty_table(m; header = ["Parameter", "Prior Distribution", "Justification"],
