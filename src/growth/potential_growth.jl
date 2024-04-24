@@ -13,8 +13,8 @@ fPARi_{txy} &= \left(1 - \exp\left(-k \cdot LAI_{tot, txy}\right)\right) \cdot
 Parameter, see also [`SimulationParameter`](@ref):
 - ``RUE_{max}`` (`RUE_max`) maximum radiation use efficiency [kg MJ⁻¹]
 - ``k`` (`k`) extinction coefficient [-]
-- ``\alpha_{comH}`` (`α_comH`) is the community weighted mean height, where the community height growth reducer is 0.5 [m]
-- ``\beta_{comH}`` (`β_comH`) is the slope of the logistic function that relates the community weighted mean height to the community height growth reducer [m⁻¹]
+- ``\alpha_{comH}`` (`α_com_height`) is the community weighted mean height, where the community height growth reducer is 0.5 [m]
+- ``\beta_{comH}`` (`β_com_height`) is the slope of the logistic function that relates the community weighted mean height to the community height growth reducer [m⁻¹]
 
 Variables:
 - ``PAR_{txy}`` (`PAR`) photosynthetically active radiation [MJ ha⁻¹]
@@ -49,10 +49,10 @@ function potential_growth!(; container, biomass, PAR)
     else
         @unpack relative_height = container.calc
         @unpack height = container.traits
-        @unpack α_comH, β_comH = container.p
+        @unpack α_com_height, β_com_height = container.p
         relative_height .= height .* biomass ./ sum(biomass)
         height_cwm = sum(relative_height)
-        com.comH_reduction = 1 / (1 + exp(β_comH * (α_comH - height_cwm)))
+        com.comH_reduction = 1 / (1 + exp(β_com_height * (α_com_height - height_cwm)))
     end
 
     @unpack RUE_max, k = container.p

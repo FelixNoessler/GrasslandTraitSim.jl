@@ -6,25 +6,35 @@ using Statistics
 using Distributions
 import GrasslandTraitSim as sim
 
-## the input object specifies which processes are included
-## here we include all processes
-input_obj = sim.validation_input(;
-    plotID = "HEG01", nspecies = 1);
-inference_obj = sim.calibrated_parameter(; input_obj)
+inference_obj = sim.calibrated_parameter(; )
+p_keys = collect(keys(inference_obj.priordists))
+p_priors = collect(inference_obj.priordists)
+m = hcat(p_keys, p_priors, inference_obj.prior_text)
 
+pretty_table(m; header = ["Parameter", "Prior Distribution", "Justification"],
+             alignment = [:r, :l, :l], crop = :none, columns_width = [0, 50, 70], autowrap = true)
+```
 
+## Show the log density of the priors
+
+```@example priors
 begin
-    fig = Figure(; size = (600, 6000))
+    fig = Figure(; size = (600, 8000))
 
     for (i,p) in enumerate(keys(inference_obj.priordists))
-        Axis(fig[i, 1]; title = String(p))
-
         d = inference_obj.priordists[p]
-        ma = quantile(d, 0.995)
-        x = LinRange(0.000001, ma, 200)
-        y = pdf.(d, x)
-        band!(x, zeros(200), y; color = (:red, 0.3))
-        lines!(x, y; color = :black, linewidth = 2)
+        ma = quantile(d, 0.9999)
+        x = collect(LinRange(0.0, ma, 300))
+        y = logpdf.(d, x)
+        f = isinf.(y)
+        y[f] .= NaN
+        x[f] .= NaN
+        
+        Axis(fig[i, 1]; title = String(p), yticklabelsvisible = false)
+        lines!(x, y; color = :steelblue4, linewidth = 3)
+        
+        Axis(fig[i, 2]; yticklabelsvisible = false)
+        lines!(x, pdf.(d, x); color = :steelblue4, linewidth = 3)
     end
 
     fig

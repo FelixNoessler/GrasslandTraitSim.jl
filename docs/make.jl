@@ -33,8 +33,8 @@ f(path; show_img = false) = show_img ? nothing : path
 #### potential growth
 sim.potential_growth_lai_height(; path = f("$docs_img/potential_growth_lai_height.svg"))
 sim.potential_growth_height_lai(; path = f("$docs_img/potential_growth_height_lai.svg"))
-sim.lai_traits(; path = f("$docs_img/lai_traits.svg"))
 sim.potential_growth_height(; path = f("$docs_img/potential_growth_height.svg"))
+sim.lai_traits(; path = f("$docs_img/lai_traits.svg"))
 sim.community_height_influence(; path = f("$docs_img/community_height_influence.svg"))
 
 #### transfer functions
