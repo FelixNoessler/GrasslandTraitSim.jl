@@ -7,91 +7,79 @@ import GrasslandTraitSim as sim
 
 inference_obj = sim.calibrated_parameter(; )
 p_keys = collect(keys(inference_obj.priordists))
-p_priors = string.(collect(inference_obj.priordists))
-p_priors = replace.(p_priors, &quot;\n&quot; =&gt; &quot;&quot;, &quot;{Float64}&quot; =&gt; &quot;&quot;)
+p_priors = collect(inference_obj.priordists)
+p_priors_str = replace.(string.(p_priors), &quot;\n&quot; =&gt; &quot;&quot;, &quot;{Float64}&quot; =&gt; &quot;&quot;,
+                        &quot;Distributions.&quot; =&gt; &quot;&quot;)
 
-m = hcat(p_keys, p_priors, inference_obj.prior_text)
+m = hcat(p_keys, p_priors_str, inference_obj.prior_text)
 
 pretty_table(m; header = [&quot;Parameter&quot;, &quot;Prior Distribution&quot;, &quot;Justification&quot;],
              alignment = [:r, :l, :l], crop = :none, columns_width = [0, 50, 70], autowrap = true)</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">┌──────────────┬────────────────────────────────────────────────────┬────────────────────────────────────────────────────────────────────────┐
 │    Parameter │ Prior Distribution                                 │ Justification                                                          │
 ├──────────────┼────────────────────────────────────────────────────┼────────────────────────────────────────────────────────────────────────┤
-│ α_com_height │ Distributions.Uniform(a=0.0, b=0.5)                │ The community height reduction should only apply to plant communities  │
+│ α_com_height │ Uniform(a=0.0, b=0.5)                              │ The community height reduction should only apply to plant communities  │
 │              │                                                    │ with a low community weighted mean plant height, so it is limited to   │
 │              │                                                    │ 0.5 [m].                                                               │
-│ β_com_height │ Distributions.InverseGamma(invd:                   │ high values of β_com_height lead to a step function, too low values    │
-│              │ Distributions.Gamma(α=4.0, θ=0.05)θ: 20.0)         │ lead to a community height reducer of around 0.5 independently of the  │
+│ β_com_height │ InverseGamma(invd: Gamma(α=4.0, θ=0.05)θ: 20.0)    │ high values of β_com_height lead to a step function, too low values    │
+│              │                                                    │ lead to a community height reducer of around 0.5 independently of the  │
 │              │                                                    │ community weighted mean plant height                                   │
-│        β_sen │ Distributions.Uniform(a=0.8, b=1.0)                │ a value of 1 means that the leaf life span is equal to the senescence  │
+│        β_sen │ Uniform(a=0.8, b=1.0)                              │ a value of 1 means that the leaf life span is equal to the senescence  │
 │              │                                                    │ rate, lower values accound for for a lower senescence rate for the     │
 │              │                                                    │ stem biomass                                                           │
-│           Ψ₁ │ Distributions.Uniform(a=700.0, b=3000.0)           │ cumulative temperature above which the rate of senescence begins to    │
+│           Ψ₁ │ Uniform(a=700.0, b=3000.0)                         │ cumulative temperature above which the rate of senescence begins to    │
 │              │                                                    │ increase                                                               │
-│      SEN_max │ Distributions.Uniform(a=1.0, b=4.0)                │ text                                                                   │
-│      SEA_min │ Distributions.Uniform(a=0.5, b=1.0)                │ text                                                                   │
-│      SEA_max │ Distributions.Uniform(a=1.0, b=2.0)                │ text                                                                   │
-│          ST₂ │ Distributions.Uniform(a=1200.0, b=3000.0)          │ text                                                                   │
-│     β_height │ Distributions.Uniform(a=0.0, b=5.0)                │ text                                                                   │
-│    β_PAL_lnc │ Distributions.Uniform(a=0.0, b=5.0)                │ text                                                                   │
-│        β_TRM │ Truncated(Distributions.Normal(μ=0.0, σ=2.0);      │ text                                                                   │
-│              │ lower=0.0)                                         │                                                                        │
-│      β_TRM_H │ Distributions.Uniform(a=0.0, b=3.0)                │ text                                                                   │
-│        α_TRM │ Truncated(Distributions.Normal(μ=10000.0,          │ text                                                                   │
-│              │ σ=1000.0); lower=0.0)                              │                                                                        │
-│        α_GRZ │ Truncated(Distributions.Normal(μ=500.0,            │ text                                                                   │
-│              │ σ=1000.0); lower=0.0, upper=2000.0)                │                                                                        │
-│            κ │ Distributions.Uniform(a=12.0, b=22.5)              │ text                                                                   │
-│       α_lowB │ Distributions.Uniform(a=0.0, b=500.0)              │ text                                                                   │
-│       β_lowB │ Distributions.Uniform(a=0.0, b=1.0)                │ text                                                                   │
-│        α_TSB │ Truncated(Distributions.Normal(μ=1000.0,           │ text                                                                   │
-│              │ σ=1000.0); lower=0.0)                              │                                                                        │
-│        β_TSB │ Truncated(Distributions.Normal(μ=1.0, σ=0.5);      │ text                                                                   │
-│              │ lower=0.0)                                         │                                                                        │
-│        α_PET │ Distributions.Uniform(a=0.0, b=5.0)                │ text                                                                   │
-│        β_PET │ Truncated(Distributions.Normal(μ=1.0, σ=1.0);      │ text                                                                   │
-│              │ lower=0.0)                                         │                                                                        │
-│     α_TR_sla │ Truncated(Distributions.Normal(μ=0.02, σ=0.01);    │ text                                                                   │
-│              │ lower=0.0)                                         │                                                                        │
-│     β_TR_sla │ Truncated(Distributions.Normal(μ=1.0, σ=5.0);      │ text                                                                   │
-│              │ lower=0.0)                                         │                                                                        │
-│        ϕ_sla │ Distributions.Uniform(a=0.01, b=0.03)              │ text                                                                   │
-│    η_min_sla │ Distributions.Uniform(a=-1.0, b=1.0)               │ text                                                                   │
-│    η_max_sla │ Distributions.Uniform(a=-1.0, b=1.0)               │ text                                                                   │
-│      β_η_sla │ Distributions.Uniform(a=0.0, b=500.0)              │ text                                                                   │
-│        β_sla │ Distributions.Uniform(a=0.0, b=50.0)               │ text                                                                   │
-│       δ_wrsa │ Distributions.Uniform(a=0.0, b=1.0)                │ text                                                                   │
-│        δ_sla │ Distributions.Uniform(a=0.0, b=1.0)                │ text                                                                   │
-│        ϕ_amc │ Distributions.Beta(α=3.0, β=10.0)                  │ text                                                                   │
-│    η_min_amc │ Distributions.Uniform(a=-1.0, b=1.0)               │ text                                                                   │
-│    η_max_amc │ Distributions.Uniform(a=-1.0, b=1.0)               │ text                                                                   │
-│    κ_red_amc │ Distributions.Uniform(a=0.0, b=1.0)                │ text                                                                   │
-│     β_κη_amc │ Distributions.Uniform(a=0.0, b=250.0)              │ text                                                                   │
-│        β_amc │ Distributions.Uniform(a=0.0, b=50.0)               │ text                                                                   │
-│        δ_amc │ Distributions.Uniform(a=0.0, b=1.0)                │ text                                                                   │
-│       δ_nrsa │ Distributions.Uniform(a=0.0, b=1.0)                │ text                                                                   │
-│        ϕ_rsa │ Distributions.Uniform(a=0.1, b=0.25)               │ text                                                                   │
-│   η_min_wrsa │ Distributions.Uniform(a=-1.0, b=1.0)               │ text                                                                   │
-│   η_min_nrsa │ Distributions.Uniform(a=-1.0, b=1.0)               │ text                                                                   │
-│   η_max_wrsa │ Distributions.Uniform(a=-1.0, b=1.0)               │ text                                                                   │
-│   η_max_nrsa │ Distributions.Uniform(a=-1.0, b=1.0)               │ text                                                                   │
-│   κ_red_wrsa │ Distributions.Uniform(a=0.0, b=1.0)                │ text                                                                   │
-│   κ_red_nrsa │ Distributions.Uniform(a=0.0, b=1.0)                │ text                                                                   │
-│    β_κη_wrsa │ Distributions.Uniform(a=0.0, b=250.0)              │ text                                                                   │
-│    β_κη_nrsa │ Distributions.Uniform(a=0.0, b=250.0)              │ text                                                                   │
-│       β_wrsa │ Distributions.Uniform(a=0.0, b=50.0)               │ text                                                                   │
-│       β_nrsa │ Distributions.Uniform(a=0.0, b=50.0)               │ text                                                                   │
-│    b_biomass │ Truncated(Distributions.Cauchy(μ=0.0, σ=300.0);    │ text                                                                   │
-│              │ lower=0.0)                                         │                                                                        │
-│        b_sla │ Truncated(Distributions.Cauchy(μ=0.0, σ=0.05);     │ text                                                                   │
-│              │ lower=0.0)                                         │                                                                        │
-│        b_lnc │ Truncated(Distributions.Cauchy(μ=0.0, σ=0.5);      │ text                                                                   │
-│              │ lower=0.0)                                         │                                                                        │
-│        b_amc │ Truncated(Distributions.Cauchy(μ=0.0, σ=30.0);     │ text                                                                   │
-│              │ lower=0.0)                                         │                                                                        │
-│     b_height │ Truncated(Distributions.Cauchy(μ=0.0, σ=1.0);      │ text                                                                   │
-│              │ lower=0.0)                                         │                                                                        │
-│        b_rsa │ Truncated(Distributions.Cauchy(μ=0.0, σ=0.01);     │ text                                                                   │
-│              │ lower=0.0)                                         │                                                                        │
+│      SEN_max │ Uniform(a=1.0, b=4.0)                              │ text                                                                   │
+│      SEA_min │ Uniform(a=0.5, b=1.0)                              │ text                                                                   │
+│      SEA_max │ Uniform(a=1.0, b=2.0)                              │ text                                                                   │
+│          ST₂ │ Uniform(a=1200.0, b=3000.0)                        │ text                                                                   │
+│     β_height │ Uniform(a=0.0, b=5.0)                              │ text                                                                   │
+│    β_PAL_lnc │ Uniform(a=0.0, b=5.0)                              │ text                                                                   │
+│        β_TRM │ Truncated(Normal(μ=0.0, σ=2.0); lower=0.0)         │ text                                                                   │
+│      β_TRM_H │ Uniform(a=0.0, b=3.0)                              │ text                                                                   │
+│        α_TRM │ Truncated(Normal(μ=10000.0, σ=1000.0); lower=0.0)  │ text                                                                   │
+│        α_GRZ │ Truncated(Normal(μ=500.0, σ=1000.0); lower=0.0,    │ text                                                                   │
+│              │ upper=2000.0)                                      │                                                                        │
+│            κ │ Uniform(a=12.0, b=22.5)                            │ text                                                                   │
+│       α_lowB │ Uniform(a=0.0, b=500.0)                            │ text                                                                   │
+│       β_lowB │ Uniform(a=0.0, b=1.0)                              │ text                                                                   │
+│        α_TSB │ Truncated(Normal(μ=1000.0, σ=1000.0); lower=0.0)   │ text                                                                   │
+│        β_TSB │ Truncated(Normal(μ=1.0, σ=0.5); lower=0.0)         │ text                                                                   │
+│        α_PET │ Uniform(a=0.0, b=5.0)                              │ text                                                                   │
+│        β_PET │ Truncated(Normal(μ=1.0, σ=1.0); lower=0.0)         │ text                                                                   │
+│     α_TR_sla │ Truncated(Normal(μ=0.02, σ=0.01); lower=0.0)       │ text                                                                   │
+│     β_TR_sla │ Truncated(Normal(μ=1.0, σ=5.0); lower=0.0)         │ text                                                                   │
+│        ϕ_sla │ Uniform(a=0.01, b=0.03)                            │ text                                                                   │
+│    η_min_sla │ Uniform(a=-1.0, b=1.0)                             │ text                                                                   │
+│    η_max_sla │ Uniform(a=-1.0, b=1.0)                             │ text                                                                   │
+│      β_η_sla │ Uniform(a=0.0, b=500.0)                            │ text                                                                   │
+│        β_sla │ Uniform(a=0.0, b=50.0)                             │ text                                                                   │
+│       δ_wrsa │ Uniform(a=0.0, b=1.0)                              │ text                                                                   │
+│        δ_sla │ Uniform(a=0.0, b=1.0)                              │ text                                                                   │
+│        ϕ_amc │ Beta(α=3.0, β=10.0)                                │ text                                                                   │
+│    η_min_amc │ Uniform(a=-1.0, b=1.0)                             │ text                                                                   │
+│    η_max_amc │ Uniform(a=-1.0, b=1.0)                             │ text                                                                   │
+│    κ_red_amc │ Uniform(a=0.0, b=1.0)                              │ text                                                                   │
+│     β_κη_amc │ Uniform(a=0.0, b=250.0)                            │ text                                                                   │
+│        β_amc │ Uniform(a=0.0, b=50.0)                             │ text                                                                   │
+│        δ_amc │ Uniform(a=0.0, b=1.0)                              │ text                                                                   │
+│       δ_nrsa │ Uniform(a=0.0, b=1.0)                              │ text                                                                   │
+│        ϕ_rsa │ Uniform(a=0.1, b=0.25)                             │ text                                                                   │
+│   η_min_wrsa │ Uniform(a=-1.0, b=1.0)                             │ text                                                                   │
+│   η_min_nrsa │ Uniform(a=-1.0, b=1.0)                             │ text                                                                   │
+│   η_max_wrsa │ Uniform(a=-1.0, b=1.0)                             │ text                                                                   │
+│   η_max_nrsa │ Uniform(a=-1.0, b=1.0)                             │ text                                                                   │
+│   κ_red_wrsa │ Uniform(a=0.0, b=1.0)                              │ text                                                                   │
+│   κ_red_nrsa │ Uniform(a=0.0, b=1.0)                              │ text                                                                   │
+│    β_κη_wrsa │ Uniform(a=0.0, b=250.0)                            │ text                                                                   │
+│    β_κη_nrsa │ Uniform(a=0.0, b=250.0)                            │ text                                                                   │
+│       β_wrsa │ Uniform(a=0.0, b=50.0)                             │ text                                                                   │
+│       β_nrsa │ Uniform(a=0.0, b=50.0)                             │ text                                                                   │
+│    b_biomass │ Truncated(Cauchy(μ=0.0, σ=300.0); lower=0.0)       │ text                                                                   │
+│        b_sla │ Truncated(Cauchy(μ=0.0, σ=0.05); lower=0.0)        │ text                                                                   │
+│        b_lnc │ Truncated(Cauchy(μ=0.0, σ=0.5); lower=0.0)         │ text                                                                   │
+│        b_amc │ Truncated(Cauchy(μ=0.0, σ=30.0); lower=0.0)        │ text                                                                   │
+│     b_height │ Truncated(Cauchy(μ=0.0, σ=1.0); lower=0.0)         │ text                                                                   │
+│        b_rsa │ Truncated(Cauchy(μ=0.0, σ=0.01); lower=0.0)        │ text                                                                   │
 └──────────────┴────────────────────────────────────────────────────┴────────────────────────────────────────────────────────────────────────┘</code></pre><h2 id="Show-the-log-density-of-the-priors"><a class="docs-heading-anchor" href="#Show-the-log-density-of-the-priors">Show the log density of the priors</a><a id="Show-the-log-density-of-the-priors-1"></a><a class="docs-heading-anchor-permalink" href="#Show-the-log-density-of-the-priors" title="Permalink"></a></h2><pre><code class="language-julia hljs">begin
     fig = Figure(; size = (600, 8000))
 
@@ -112,4 +100,4 @@ pretty_table(m; header = [&quot;Parameter&quot;, &quot;Prior Distribution&quot;,
     end
 
     fig
-end</code></pre><p><img src="../priors.svg" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../likelihood/">« Likelihood</a><a class="docs-footer-nextpage" href="../../all_functions/">TOC all functions »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Wednesday 24 April 2024 16:42">Wednesday 24 April 2024</span>. Using Julia version 1.10.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+end</code></pre><p><img src="../priors.svg" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../likelihood/">« Likelihood</a><a class="docs-footer-nextpage" href="../../all_functions/">TOC all functions »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Wednesday 24 April 2024 16:48">Wednesday 24 April 2024</span>. Using Julia version 1.10.2.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
