@@ -247,7 +247,7 @@ function water_reduction!(; container, W, PET, PWP, WHC)
     @unpack δ_sla, δ_wrsa, β_sla, β_wrsa = container.p
     @unpack K_wrsa, A_wrsa, A_sla = container.transfer_function
 
-    @. W_p = biomass_density_factor * Wsc * pet_adjustment
+    W_p .= biomass_density_factor .* (Wsc * pet_adjustment)
     @. W_sla = 1 - δ_sla + δ_sla / (1 + exp(-β_sla * (W_p - A_sla)))
     @. W_rsa = 1 - δ_wrsa + (K_wrsa + δ_wrsa - 1) / (1 + exp(-β_wrsa * (W_p - A_wrsa)))
     @. Waterred = W_sla * W_rsa

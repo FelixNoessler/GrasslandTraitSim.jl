@@ -130,7 +130,7 @@ function trampling!(; container, LD, biomass)
     @unpack height = container.traits
     @unpack β_TRM_H, β_TRM, α_TRM, α_lowB, β_lowB = container.p
     @unpack lowbiomass_correction, trampled_share, trampled_biomass,
-            defoliation = container.calc
+            defoliation, height_scaled = container.calc
     @unpack included = container.simp
 
     #################################### Total trampled biomass
@@ -144,7 +144,9 @@ function trampling!(; container, LD, biomass)
     else
         lowbiomass_correction .= 1.0
     end
-    @. trampled_share = (height / 0.5u"m") ^ β_TRM_H *
+
+    @. height_scaled = height / 0.5u"m"
+    @. trampled_share = height_scaled ^ β_TRM_H *
                         lowbiomass_correction * biomass / sum_biomass
 
     #################################### Add trampled biomass to defoliation
