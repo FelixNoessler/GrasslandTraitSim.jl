@@ -87,7 +87,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         lowbiomass_correction = Array{T}(undef, nspecies),
 
         ## cutted biomass
-        mean_biomass = Array{T}(undef, nspecies)u"kg / ha",
+        species_mean_biomass = Array{T}(undef, nspecies)u"kg / ha",
         species_cut_biomass = Array{T}(undef, nspecies)u"kg / ha",
 
         ## functional response helper variables
