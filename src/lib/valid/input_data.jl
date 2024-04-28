@@ -11,6 +11,7 @@ end
 function validation_input(;
         plotID,
         nspecies,
+        time_step_days = 1,
         nutheterog = 0.0,
         patch_xdim = 1,
         patch_ydim = 1,
@@ -37,9 +38,13 @@ function validation_input(;
         likelihood_included = (; biomass = true, trait = true),
         trait_seed = missing)
 
+    time_step_days = Dates.Day(time_step_days)
     start_date = Dates.Date(2006, 1, 1)
     end_date = Dates.Date(2021, 12, 31)
     yearrange = Ref(2006:2021)
+    date_range_all_days = start_date:end_date
+    date_range = start_date:time_step_days:end_date
+    ntimesteps = length(date_range) - 1
 
     ###### daily data
     clim_init = @chain data.input.dwd_clim begin
@@ -48,7 +53,7 @@ function validation_input(;
     end
 
     clim_sub = @chain data.input.clim begin
-        @subset :plotID .== plotID .&&:year .∈ yearrange
+        @subset :plotID .== plotID .&& :year .∈ yearrange
         @select(:date, :temperature, :precipitation)
     end
 
@@ -66,6 +71,7 @@ function validation_input(;
             :precipitation = :precipitation .* u"mm"
             :PET = :PET .* u"mm"
             :PAR = :PAR .* 10000 .* u"MJ / ha"
+            :PAR_sum = :PAR .* 10000 .* u"MJ / ha"
             :CUT_mowing = prepare_mowing(mow_sub) ./ 100 .* u"m"
             :LD_grazing = prepare_grazing(graz_sub) ./ u"ha"
             :doy = Dates.dayofyear.(:date)
@@ -77,9 +83,56 @@ function validation_input(;
         :temperature,
         :temperature_sum,
         :precipitation, :PET,
-        :PAR,
+        :PAR, :PAR_sum,
         :CUT_mowing, :LD_grazing)
-    daily_input = (; zip(Symbol.(names(daily_input_df)), eachcol(daily_input_df))...)
+
+    ## convert to dimension of the time step
+    daily_input = nothing
+
+    if isone(time_step_days.value)
+        daily_input = (; zip(Symbol.(names(daily_input_df)), eachcol(daily_input_df))...)
+    else
+        temperature = Array{eltype(daily_input_df.temperature)}(undef, ntimesteps)
+        temperature_sum = Array{eltype(daily_input_df.temperature_sum)}(undef, ntimesteps)
+        precipitation = Array{eltype(daily_input_df.precipitation)}(undef, ntimesteps)
+        PET = Array{eltype(daily_input_df.PET)}(undef, ntimesteps)
+        PAR = Array{eltype(daily_input_df.PAR)}(undef, ntimesteps)
+        PAR_sum = Array{eltype(daily_input_df.PAR_sum)}(undef, ntimesteps)
+        CUT_mowing = Array{eltype(daily_input_df.CUT_mowing)}(undef, ntimesteps)
+        LD_grazing = Array{eltype(daily_input_df.LD_grazing)}(undef, ntimesteps)
+
+        old_T_kelvin = uconvert.(u"K", daily_input_df.temperature)
+
+        for i in Base.OneTo(ntimesteps)
+            sub_date = date_range[i]:date_range[i+1]
+            f = date_range_all_days .∈ Ref(sub_date)
+
+            temperature[i] = uconvert(u"°C", mean(old_T_kelvin[f]))
+            temperature_sum[i] = mean(daily_input_df.temperature_sum[f])
+            precipitation[i] = sum(daily_input_df.precipitation[f])
+            PET[i] = sum(daily_input_df.PET[f])
+            PAR[i] = mean(daily_input_df.PAR[f])
+            PAR_sum[i] = sum(daily_input_df.PAR_sum[f])
+
+            new_mowing_prep = daily_input_df.CUT_mowing[f]
+            if all(isnan.(new_mowing_prep))
+                CUT_mowing[i] = NaN * u"m"
+            else
+                mow_index = findfirst(.!isnan.(new_mowing_prep))
+                CUT_mowing[i] = new_mowing_prep[mow_index]
+            end
+
+            new_grazing_prep = daily_input_df.LD_grazing[f]
+            if all(isnan.(new_grazing_prep))
+                LD_grazing[i] = NaN / u"ha"
+            else
+                LD_grazing[i] = sum(new_grazing_prep[.!isnan.(new_grazing_prep)])
+            end
+        end
+
+        daily_input = (; temperature, temperature_sum, precipitation, PET, PAR, PAR_sum,
+                         CUT_mowing, LD_grazing)
+    end
 
     ### ----------------- initial biomass and soilwater content
     initbiomass = 1500u"kg / ha"
@@ -99,10 +152,19 @@ function validation_input(;
 
     ##### what to calculate
     unique_calc = unique(df_cutting_day, [:date, :cutting_height])
-    biomass_cutting_t = unique_calc.biomass_cutting_day
     cutting_height = unique_calc.cutting_height
     biomass_cutting_date = unique_calc.date
     biomass_cutting_numeric_date = to_numeric.(biomass_cutting_date)
+
+    biomass_cutting_t = unique_calc.biomass_cutting_day
+    if !isone(time_step_days.value)
+        biomass_cutting_t = unique_calc.biomass_cutting_day
+    else
+        biomass_cutting_t = Array{Int64}(undef, length(biomass_cutting_date))
+        for i in eachindex(biomass_cutting_date)
+            biomass_cutting_t[i] = findfirst(date_range .> biomass_cutting_date[i]) - 2
+        end
+    end
 
     ###### how to index to get final result
     cutting_t_prep = df_cutting_day.biomass_cutting_day
@@ -137,13 +199,14 @@ function validation_input(;
     rootdepth = soil_sub.rootdepth[1] * u"mm"
 
     return (
-        doy = daily_data_prep.doy,
-        date = daily_data_prep.date[1]:daily_data_prep.date[end],
-        numeric_date = to_numeric.(daily_data_prep.date),
-        ts = Base.OneTo(nrow(daily_data_prep)),
+        doy = Dates.dayofyear.(date_range[1:end-1] .+ time_step_days ÷ 2),
+        date = date_range[1:end-1] .+ .+ time_step_days ÷ 2,
+        numeric_date = to_numeric.(date_range[1:end-1] .+ time_step_days ÷ 2),
+        ts = Base.OneTo(ntimesteps),
         simp = (;
+            ntimesteps = ntimesteps,
             nspecies,
-            ntimesteps = nrow(daily_data_prep),
+            time_step_days,
             plotID,
             npatches = patch_xdim * patch_ydim,
             patch_xdim,

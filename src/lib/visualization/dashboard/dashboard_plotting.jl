@@ -42,7 +42,7 @@ function band_patch(;
         end
     end
 
-    if !isnothing(valid_data)
+    if false # TODO !isnothing(valid_data)
         cutbiomass_μ = vec(ustrip.(sol.valid.cut_biomass))
         t = sol.numeric_date[sol.valid.biomass_cutting_t]
 
@@ -77,7 +77,7 @@ function soilwater_plot(; sol, plot_obj)
     ax = plot_obj.axes[:soilwater]
     empty!(ax)
 
-    thin = 7
+    thin = 1
     t = sol.numeric_date[1:thin:end]
 
     water_μ = mean(ustrip.(sol.output.water); dims = (:x, :y))[1:thin:end]
@@ -95,7 +95,7 @@ function soilwater_plot(; sol, plot_obj)
 end
 
 function abiotic_plot(; sol, plot_obj)
-    thin = 7
+    thin = 1
 
     ax = plot_obj.axes[:abiotic]
     empty!(ax)
@@ -168,7 +168,7 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
         color = (:blue, 0.3))
     ax.ylabel = "CWM: $trait_name"
 
-    if !isnothing(valid_data)
+    if false # TODO !isnothing(valid_data)
         cwm_trait_dist_sub = cwm_trait_dist[LookupArrays.index(valid_data.traits, :time)]
         tsub = t[LookupArrays.index(valid_data.traits, :time)]
         lower_trait = quantile.(cwm_trait_dist_sub, 0.025)

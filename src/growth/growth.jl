@@ -21,7 +21,7 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
             Nutred = container.calc
 
     ########### Potential growth
-    potential_growth!(; container, biomass, PAR = daily_input.PAR[t])
+    potential_growth!(; container, biomass, PAR = daily_input.PAR_sum[t])
 
     ########### Community growth adjustment by environmental and seasonal factors
     radiation_reduction!(; container, PAR = daily_input.PAR[t])
