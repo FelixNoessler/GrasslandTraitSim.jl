@@ -23,7 +23,7 @@ function loglikelihood_model(;
             input_obj = input_objs[Symbol(plotID)]
         end
         sol = solve_prob(; input_obj, p, prealloc, prealloc_specific, trait_input,
-                             θ_type)
+                           θ_type)
     end
 
     #######################################################################
@@ -50,10 +50,28 @@ function loglikelihood_model(;
     ########################################################################
     ll_trait = 0.0
     if sol.simp.likelihood_included.trait
+        @unpack npatches, patch_xdim, patch_ydim, nspecies = sol.simp
+        @unpack biomass = sol.output
+
         data_trait_t = LookupArrays.index(data.traits, :time)
-        species_biomass = dropdims(mean(sol.output.biomass[data_trait_t, :, :, :];
+        species_biomass = dropdims(mean(@view sol.output.biomass[data_trait_t, :, :, :];
                                         dims = (:x, :y));
                                    dims = (:x, :y))
+
+
+        # val = 0.0
+        # for t in data_trait_t
+        #     for x in 1:patch_xdim
+        #         for y in 1:patch_ydim
+        #             for s in 1:nspecies
+        #                 val = ustrip(biomass[t, x, y, s])
+
+        #             end
+        #         end
+        #     end
+        # end
+
+
         species_biomass = ustrip.(species_biomass)
         site_biomass = vec(sum(species_biomass; dims = (:species)))
 

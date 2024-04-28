@@ -16,7 +16,7 @@ p_priors_str = replace.(string.(p_priors), "\n" => "", "{Float64}" => "",
 m = hcat(p_keys, p_priors_str, inference_obj.prior_text)
 
 pretty_table(m; header = ["Parameter", "Prior Distribution", "Justification"],
-             alignment = [:r, :l, :l], crop = :none, columns_width = [0, 50, 70], autowrap = true)
+             alignment = [:r, :l, :l], crop = :none, columns_width = [0, 40, 70], autowrap = true)
 ```
 
 ## Show the log density of the priors

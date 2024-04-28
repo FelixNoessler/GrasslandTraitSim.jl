@@ -14,7 +14,6 @@ using Distributions
 using DocStringExtensions
 using ForwardDiff
 using JLD2
-using LinearAlgebra
 using Parameters
 using Printf
 using Statistics
