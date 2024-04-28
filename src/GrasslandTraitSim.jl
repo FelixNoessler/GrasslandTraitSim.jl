@@ -13,6 +13,7 @@ using DimensionalData
 using Distributions
 using DocStringExtensions
 using ForwardDiff
+using LinearAlgebra
 using JLD2
 using Parameters
 using Printf
