@@ -14,7 +14,7 @@ function potential_growth_lai_height(; path = nothing)
         container.traits.height .= h
         for (i,b) in enumerate(biomass_vals)
             biomass .= b
-            potential_growth!(; container, biomass, PAR = container.daily_input.PAR[150])
+            potential_growth!(; container, biomass, PAR = container.input.PAR[150])
 
             ymat[hi, i] = ustrip(container.calc.com.potgrowth_total)
             lai_tot[i] = sum(container.calc.LAIs)
@@ -56,7 +56,7 @@ function potential_growth_height_lai(; path = nothing)
         for (hi, h) in enumerate(heights)
             biomass .= biomass_val[li]
             @reset container.traits.height = [h * u"m"]
-            potential_growth!(; container, biomass, PAR = container.daily_input.PAR[150])
+            potential_growth!(; container, biomass, PAR = container.input.PAR[150])
             pot_gr = ustrip(container.calc.com.potgrowth_total)
 
             lais[li] = round(container.calc.com.LAItot; digits = 1)
@@ -89,7 +89,7 @@ function lai_traits(; path = nothing)
     nspecies, container = create_container()
     biomass = container.u.u_biomass[1, 1, :]
 
-    potential_growth!(; container, biomass, PAR = container.daily_input.PAR[150])
+    potential_growth!(; container, biomass, PAR = container.input.PAR[150])
     val = container.calc.LAIs
 
     idx = sortperm(container.traits.sla)
@@ -128,7 +128,7 @@ function potential_growth_height(; path = nothing)
 
     for (hi, h) in enumerate(heights)
         @reset container.traits.height = [h * u"m"]
-        potential_growth!(; container, biomass, PAR = container.daily_input.PAR[150])
+        potential_growth!(; container, biomass, PAR = container.input.PAR[150])
         red[hi] = container.calc.com.comH_reduction
     end
 
@@ -153,8 +153,8 @@ function community_height_influence(; path = nothing)
     end
     input_obj = validation_input(;
         plotID = "HEG01", nspecies = 1);
-    input_obj.daily_input.LD_grazing .= NaN * u"ha^-1"
-    input_obj.daily_input.CUT_mowing .= NaN * u"m"
+    input_obj.input.LD_grazing .= NaN * u"ha^-1"
+    input_obj.input.CUT_mowing .= NaN * u"m"
     p = SimulationParameter()
 
     function sim_community_height(; community_height_red)

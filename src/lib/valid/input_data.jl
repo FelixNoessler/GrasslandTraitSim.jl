@@ -87,10 +87,10 @@ function validation_input(;
         :CUT_mowing, :LD_grazing)
 
     ## convert to dimension of the time step
-    daily_input = nothing
+    input = nothing
 
     if isone(time_step_days.value)
-        daily_input = (; zip(Symbol.(names(daily_input_df)), eachcol(daily_input_df))...)
+        input = (; zip(Symbol.(names(daily_input_df)), eachcol(daily_input_df))...)
     else
         temperature = Array{eltype(daily_input_df.temperature)}(undef, ntimesteps)
         temperature_sum = Array{eltype(daily_input_df.temperature_sum)}(undef, ntimesteps)
@@ -130,7 +130,7 @@ function validation_input(;
             end
         end
 
-        daily_input = (; temperature, temperature_sum, precipitation, PET, PAR, PAR_sum,
+        input = (; temperature, temperature_sum, precipitation, PET, PAR, PAR_sum,
                          CUT_mowing, LD_grazing)
     end
 
@@ -231,7 +231,7 @@ function validation_input(;
             biomass_cutting_date,
             biomass_cutting_numeric_date,
             cutting_height),
-        daily_input)
+            input)
 end
 
 function to_numeric(d)

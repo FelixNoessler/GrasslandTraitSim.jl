@@ -30,7 +30,7 @@ W_{t+1xy} = W_{txy} + P_{txy} - AET_{txy} - R_{txy}
     - output is stored in `output.water```_{txy}``, current state in `u.u_water```_{xy}``,
         change of water in `u.du_water```_{xy}``
 - ``P_{txy}``: precipitation at time ``t`` at patch ``xy`` [mm]
-    - `daily_input.precipitation```_{txy}``
+    - `input.precipitation```_{txy}``
 - ``AET_{txy}``: actual evapotranspiration at time ``t`` at patch ``xy`` [mm]
     - `AET` in [`change_water_reserve`](@ref)
 - ``R_{txy}``: surface run-off and drainage of water from the soil at time ``t``
@@ -56,7 +56,7 @@ loop over patches:
 - [soil water dynamics](@ref change_water_reserve)
 """
 function one_day!(; t, container)
-    @unpack doy, daily_input, traits = container
+    @unpack doy, input, traits = container
     @unpack npatches, patch_xdim, patch_ydim, included = container.simp
     @unpack u_biomass, u_water, du_biomass, du_water = container.u
     @unpack WHC, PWP, nutrients = container.patch_variables
@@ -96,30 +96,30 @@ function one_day!(; t, container)
                 # ------------------------------------------ senescence
                 if !haskey(included, :senescence) || included.senescence
                     senescence!(; container,
-                        ST = daily_input.temperature_sum[t],
+                        ST = input.temperature_sum[t],
                         biomass = patch_biomass)
                 end
 
                 # ------------------------------------------ mowing
                 if !haskey(included, :mowing) || included.mowing
-                    mowing_height = if daily_input.CUT_mowing isa Vector
-                        daily_input.CUT_mowing[t]
+                    mowing_height = if input.CUT_mowing isa Vector
+                        input.CUT_mowing[t]
                     else
-                        daily_input.CUT_mowing[t, x, y]
+                        input.CUT_mowing[t, x, y]
                     end
 
                     if !isnan(mowing_height)
                         mowing!(; t, x, y, container, mowing_height,
                             biomass = patch_biomass,
-                            mowing_all = daily_input.CUT_mowing)
+                            mowing_all = input.CUT_mowing)
                     end
                 end
 
                 # ------------------------------------------ grazing & trampling
-                LD = if daily_input.LD_grazing isa Vector
-                    daily_input.LD_grazing[t]
+                LD = if input.LD_grazing isa Vector
+                    input.LD_grazing[t]
                 else
-                    daily_input.LD_grazing[t, x, y]
+                    input.LD_grazing[t, x, y]
                 end
 
                 if !isnan(LD)
@@ -141,8 +141,8 @@ function one_day!(; t, container)
             # --------------------- water dynamics
             du_water[x, y] = change_water_reserve(; container, patch_biomass,
                 water = u_water[x, y],
-                precipitation = daily_input.precipitation[t],
-                PET = daily_input.PET[t],
+                precipitation = input.precipitation[t],
+                PET = input.PET[t],
                 WHC = WHC[x, y],
                 PWP = PWP[x, y])
         end

@@ -28,13 +28,13 @@ function band_patch(;
     show_grazmow = plot_obj.obs.toggle_grazmow.active.val
     if show_grazmow
         # -------------- grazing
-    	yupper = (.! isnan.(sol.daily_input.grazing)) .* 5500.0
+    	yupper = (.! isnan.(sol.input.grazing)) .* 5500.0
         ylower = fill(0.0, length(yupper))
         band!(ax, sol.numeric_date, ylower, yupper;
             color = (:steelblue4, 0.6))
 
         # -------------- mowing
-        mowing_f = .! isnan.(sol.daily_input.mowing)
+        mowing_f = .! isnan.(sol.input.mowing)
         xs = sol.numeric_date[mowing_f]
 
         for x in xs
@@ -106,7 +106,7 @@ function abiotic_plot(; sol, plot_obj)
     abiotic_color = abiotic_colors[name_index][1]
 
     scatterlines!(ax, sol.numeric_date[1:thin:end],
-        ustrip.(sol.daily_input[abiotic])[1:thin:end];
+        ustrip.(sol.input[abiotic])[1:thin:end];
         color = abiotic_color, markersize = 4, linewidth = 0.1)
     ax.ylabel = abiotic_name
     ax.xlabel = "Time [years]"
