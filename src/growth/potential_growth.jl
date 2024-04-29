@@ -32,7 +32,7 @@ The community height growth reduction factor is the second part of the ``fPARi_{
 ![](../img/community_height_influence.svg)
 """
 function potential_growth!(; container, biomass, PAR)
-    @unpack included = container.simp
+    @unpack included, time_step_days = container.simp
     @unpack com = container.calc
 
     calculate_LAI!(; container, biomass)
@@ -56,7 +56,8 @@ function potential_growth!(; container, biomass, PAR)
     end
 
     @unpack RUE_max, k = container.p
-    com.potgrowth_total = PAR * RUE_max * (1 - exp(-k * com.LAItot)) * com.comH_reduction
+    com.potgrowth_total = PAR * time_step_days.value  * RUE_max *
+                          (1 - exp(-k * com.LAItot)) * com.comH_reduction
 
     return nothing
 end

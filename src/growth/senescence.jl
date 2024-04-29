@@ -40,7 +40,7 @@ seasonal component of the senescence.
 """
 function senescence!(; container, ST, biomass)
     @unpack senescence, μ = container.calc
-    @unpack included = container.simp
+    @unpack included, time_step_days = container.simp
 
     SEN = if !haskey(included, :senescence_season) || included.senescence_season
         seasonal_component_senescence(; container, ST)
@@ -48,7 +48,7 @@ function senescence!(; container, ST, biomass)
         1.0
     end
 
-    @. senescence = μ * SEN * biomass
+    @. senescence = (1 - (1 - μ * SEN) ^ time_step_days.value) * biomass
 
     return nothing
 end

@@ -27,10 +27,9 @@ import GrasslandTraitSim as sim
 import Dates
 using Unitful
 
-date = Dates.Date(2010):Dates.lastdayofyear(Dates.Date(2012))
-doy = Dates.dayofyear.(date)
-year = Dates.year.(date)
-ntimesteps = length(date)
+output_date = Dates.Date(2010):Dates.lastdayofyear(Dates.Date(2012))
+year = Dates.year.(output_date[1:end-1])
+ntimesteps = length(output_date) - 1
 ts = Base.OneTo(ntimesteps) 
 
 # --------------- PAR [MJ ha⁻¹]
@@ -49,7 +48,7 @@ temperature = ones(ntimesteps)u"°C"
 temperature_sum = sim.cumulative_temperature(temperature, year) 
 
 # --------------- final tuple of climatic inputs
-climatic_inputs = (; temperature, temperature_sum, PAR, PET, precipitation)
+climatic_inputs = (; temperature, temperature_sum, PAR, PAR_sum = PAR, PET, PET_sum = PET, precipitation)
 
 nothing # hide
 ```
@@ -67,12 +66,11 @@ variable to `NaN`.
 For an explanation of the variables, see [here](@ref management_input).
 
 ```@example input_creation
-
 # --------------- mowing height [m], NaN if no mowing
 CUT_mowing = fill(NaN * u"m", ntimesteps)
 mowing_dates = [Dates.Date(2010, 5, 1), Dates.Date(2010, 8, 1), 
                 Dates.Date(2011, 5, 1), Dates.Date(2011, 8, 1)]
-[CUT_mowing[d .== date] .= 0.08u"m" for d in mowing_dates]
+[CUT_mowing[d .== output_date[1:end-1]] .= 0.08u"m" for d in mowing_dates]
 
 # --------------- grazing intensity in livestock density [ha⁻¹], NaN if no grazing
 LD_grazing = fill(NaN / u"ha", ntimesteps)
@@ -81,7 +79,7 @@ grazing_ends = [Dates.Date(2010, 8, 1), Dates.Date(2011, 8, 1)]
 livestock_density = [1, 3]u"ha^-1"
 
 for i in eachindex(grazing_starts)
-    r = grazing_starts[i] .<= date .<= grazing_ends[i]
+    r = grazing_starts[i] .<= output_date[1:end-1] .<= grazing_ends[i]
     LD_grazing[r] .= livestock_density[i]
 end
 
@@ -113,7 +111,10 @@ nothing # hide
 ## Simulation settings
 ```@example input_creation
 simp = (
+    output_date,
+    ts,
     ntimesteps, 
+    time_step_days = Dates.Day(1),
     nspecies = 5,  
     patch_xdim = 1, 
     patch_ydim = 1, 
@@ -139,11 +140,11 @@ nothing # hide
 Then we can add all the tuples to one bigger named tuple.
 
 ```@example input_creation
-input_obj = (; daily_input = (;
+input_obj = (; input = (;
                    climatic_inputs..., 
                    management_tuple...,),
                site = site_tuple, 
-               simp, doy, date, ts)
+               simp)
 ```
 
 **For the plots from the Biodiversity Exploratories, we used the following convenience function

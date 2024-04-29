@@ -56,17 +56,18 @@ loop over patches:
 - [soil water dynamics](@ref change_water_reserve)
 """
 function one_day!(; t, container)
-    @unpack doy, input, traits = container
+    @unpack input, traits = container
     @unpack npatches, patch_xdim, patch_ydim, included = container.simp
     @unpack u_biomass, u_water, du_biomass, du_water = container.u
     @unpack WHC, PWP, nutrients = container.patch_variables
     @unpack act_growth, senescence, defoliation = container.calc
 
     ## -------- clonal growth
-    if doy[t] == 250 && npatches > 1 &&
-       (!haskey(included, :clonalgrowth) || included.clonalgrowth)
-        clonalgrowth!(; container)
-    end
+    # TODO
+    # if doy[t] == 250 && npatches > 1 &&
+    #    (!haskey(included, :clonalgrowth) || included.clonalgrowth)
+    #     clonalgrowth!(; container)
+    # end
 
     ## -------- loop over patches
     for x in Base.OneTo(patch_xdim)
@@ -142,7 +143,7 @@ function one_day!(; t, container)
             du_water[x, y] = change_water_reserve(; container, patch_biomass,
                 water = u_water[x, y],
                 precipitation = input.precipitation[t],
-                PET = input.PET[t],
+                PET = input.PET_sum[t],
                 WHC = WHC[x, y],
                 PWP = PWP[x, y])
         end

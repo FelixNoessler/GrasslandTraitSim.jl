@@ -70,6 +70,7 @@ function validation_input(;
             :temperature_sum = cumulative_temperature(:temperature .* u"°C", Dates.year.(:date))
             :precipitation = :precipitation .* u"mm"
             :PET = :PET .* u"mm"
+            :PET_sum = :PET .* u"mm"
             :PAR = :PAR .* 10000 .* u"MJ / ha"
             :PAR_sum = :PAR .* 10000 .* u"MJ / ha"
             :CUT_mowing = prepare_mowing(mow_sub) ./ 100 .* u"m"
@@ -80,9 +81,10 @@ function validation_input(;
     end
 
     daily_input_df = @select(daily_data_prep,
+        :date,
         :temperature,
         :temperature_sum,
-        :precipitation, :PET,
+        :precipitation, :PET, :PET_sum,
         :PAR, :PAR_sum,
         :CUT_mowing, :LD_grazing)
 
@@ -90,12 +92,17 @@ function validation_input(;
     input = nothing
 
     if isone(time_step_days.value)
-        input = (; zip(Symbol.(names(daily_input_df)), eachcol(daily_input_df))...)
+        daily_input_df_sub = @chain daily_input_df begin
+            @subset :date .< end_date
+            @select Not(:date)
+        end
+        input = (; zip(Symbol.(names(daily_input_df_sub)), eachcol(daily_input_df_sub))...)
     else
         temperature = Array{eltype(daily_input_df.temperature)}(undef, ntimesteps)
         temperature_sum = Array{eltype(daily_input_df.temperature_sum)}(undef, ntimesteps)
         precipitation = Array{eltype(daily_input_df.precipitation)}(undef, ntimesteps)
         PET = Array{eltype(daily_input_df.PET)}(undef, ntimesteps)
+        PET_sum = Array{eltype(daily_input_df.PET)}(undef, ntimesteps)
         PAR = Array{eltype(daily_input_df.PAR)}(undef, ntimesteps)
         PAR_sum = Array{eltype(daily_input_df.PAR_sum)}(undef, ntimesteps)
         CUT_mowing = Array{eltype(daily_input_df.CUT_mowing)}(undef, ntimesteps)
@@ -110,9 +117,10 @@ function validation_input(;
             temperature[i] = uconvert(u"°C", mean(old_T_kelvin[f]))
             temperature_sum[i] = mean(daily_input_df.temperature_sum[f])
             precipitation[i] = sum(daily_input_df.precipitation[f])
-            PET[i] = sum(daily_input_df.PET[f])
+            PET[i] = mean(daily_input_df.PET[f])
+            PET_sum[i] = sum(daily_input_df.PET[f])
             PAR[i] = mean(daily_input_df.PAR[f])
-            PAR_sum[i] = sum(daily_input_df.PAR_sum[f])
+            PAR_sum[i] = sum(daily_input_df.PAR[f])
 
             new_mowing_prep = daily_input_df.CUT_mowing[f]
             if all(isnan.(new_mowing_prep))
@@ -130,8 +138,8 @@ function validation_input(;
             end
         end
 
-        input = (; temperature, temperature_sum, precipitation, PET, PAR, PAR_sum,
-                         CUT_mowing, LD_grazing)
+        input = (; temperature, temperature_sum, precipitation, PET, PET_sum,
+                 PAR, PAR_sum, CUT_mowing, LD_grazing)
     end
 
     ### ----------------- initial biomass and soilwater content
@@ -157,7 +165,7 @@ function validation_input(;
     biomass_cutting_numeric_date = to_numeric.(biomass_cutting_date)
 
     biomass_cutting_t = unique_calc.biomass_cutting_day
-    if !isone(time_step_days.value)
+    if isone(time_step_days.value)
         biomass_cutting_t = unique_calc.biomass_cutting_day
     else
         biomass_cutting_t = Array{Int64}(undef, length(biomass_cutting_date))
@@ -199,11 +207,13 @@ function validation_input(;
     rootdepth = soil_sub.rootdepth[1] * u"mm"
 
     return (
-        doy = Dates.dayofyear.(date_range[1:end-1] .+ time_step_days ÷ 2),
-        date = date_range[1:end-1] .+ .+ time_step_days ÷ 2,
-        numeric_date = to_numeric.(date_range[1:end-1] .+ time_step_days ÷ 2),
-        ts = Base.OneTo(ntimesteps),
         simp = (;
+            # doy = Dates.dayofyear.(date_range[1:end-1] .+ time_step_days ÷ 2),
+            output_date = date_range,
+            output_date_num = to_numeric.(date_range),
+            mean_input_date = date_range[1:end-1] .+ .+ time_step_days ÷ 2,
+            mean_input_date_num = to_numeric.(date_range[1:end-1] .+ time_step_days ÷ 2),
+            ts = Base.OneTo(ntimesteps),
             ntimesteps = ntimesteps,
             nspecies,
             time_step_days,

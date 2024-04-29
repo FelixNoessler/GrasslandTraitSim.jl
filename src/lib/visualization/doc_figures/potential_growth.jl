@@ -167,7 +167,7 @@ function community_height_influence(; path = nothing)
         sol_large = solve_prob(; input_obj, p, trait_input);
         l = vec(ustrip.(sol_large.output.biomass[:, 1, 1, 1]))
 
-        return sol_small.numeric_date, s, l
+        return sol_small.simp.output_date_num, s, l
     end
     tstep = 30
 

@@ -1,22 +1,22 @@
 function preallocate_vectors(; input_obj, T = Float64)
-    @unpack included, nspecies, patch_xdim, patch_ydim, ntimesteps = input_obj.simp
+    @unpack output_date, included, nspecies, patch_xdim, patch_ydim, ntimesteps = input_obj.simp
     @unpack initbiomass = input_obj.site
 
     ############# output variables
     biomass = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
-        (time = input_obj.date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :biomass)
     mown = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
-        (time = input_obj.date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :mown)
     grazed = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
-        (time = input_obj.date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :grazed)
-    water = DimArray(Array{T}(undef, ntimesteps, patch_xdim, patch_ydim)u"mm",
-                     (time = input_obj.date, x = 1:patch_xdim, y = 1:patch_ydim),
+    water = DimArray(Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim)u"mm",
+                     (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim),
                      name = :water)
     output = (; biomass, mown, grazed, water)
 
@@ -75,7 +75,7 @@ function preallocate_vectors(; input_obj, T = Float64)
     calc = (;
         com = CommunityLevel(),
 
-        negbiomass = fill(false, ntimesteps, patch_xdim, patch_ydim, nspecies),
+        negbiomass = fill(false, ntimesteps + 1, patch_xdim, patch_ydim, nspecies),
 
         ############ preallaocated vectors that are used in the calculations
         light_competition = Array{T}(undef, nspecies),

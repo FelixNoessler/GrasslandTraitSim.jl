@@ -75,7 +75,7 @@ sol = sim.solve_prob(; input_obj, p, trait_input);
 species_biomass = dropdims(mean(sol.output.biomass; dims = (:x, :y)); dims = (:x, :y))
 total_biomass = vec(sum(species_biomass; dims = :species))
 
-fig, _ = lines(sol.numeric_date, ustrip.(total_biomass), color = :darkgreen, linewidth = 2;
+fig, _ = lines(sol.simp.output_date_num, ustrip.(total_biomass), color = :darkgreen, linewidth = 2;
       axis = (; ylabel = "Aboveground dry biomass [kg ha⁻¹]", 
                 xlabel = "Date [year]"))
 fig

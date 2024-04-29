@@ -29,12 +29,13 @@ end
 simp_prep[:patch_xdim] = patch_xdim
 simp_prep[:patch_ydim] = patch_ydim
 simp_prep[:npatches] = patch_xdim * patch_ydim
+simp_prep[:ts] = input_obj_prep.simp.ts
 simp = NamedTuple(simp_prep)
 
 # --------------- change the management
 daily_input_prep = Dict()
-for k in keys(input_obj_prep.daily_input)
-    daily_input_prep[k] = input_obj_prep.daily_input[k]
+for k in keys(input_obj_prep.input)
+    daily_input_prep[k] = input_obj_prep.input[k]
 end
 
 mowing_prep = daily_input_prep[:CUT_mowing]
@@ -47,14 +48,10 @@ LD_grazing[:, 1, 1] .= grazing_prep
 
 daily_input_prep[:CUT_mowing] = CUT_mowing
 daily_input_prep[:LD_grazing] = LD_grazing
-daily_input = NamedTuple(daily_input_prep)
+input = NamedTuple(daily_input_prep)
 
 # --------------- add everything together
-input_obj = (; daily_input, simp,
-               site = input_obj_prep.site,  
-               doy = input_obj_prep.doy, 
-               date = input_obj_prep.date, 
-               ts = input_obj_prep.ts)
+input_obj = (; input, simp, site = input_obj_prep.site)
 ```
 
 ```@example heterog_input
@@ -63,7 +60,6 @@ p = sim.SimulationParameter()
 sol = sim.solve_prob(; input_obj, p);
 
 patch_biomass = dropdims(sum(sol.output.biomass; dims = :species); dims = :species)
-numeric_date = sim.to_numeric.(sol.date)
 
 begin
     fig = Figure()
@@ -73,7 +69,7 @@ begin
 
     for x in Base.OneTo(patch_xdim)
         for y in Base.OneTo(patch_ydim)
-            lines!(numeric_date, vec(ustrip.(patch_biomass[:, x, y]));)  
+            lines!(sol.simp.output_date_num, vec(ustrip.(patch_biomass[:, x, y]));)  
         end
     end
     

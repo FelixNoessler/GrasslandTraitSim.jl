@@ -152,7 +152,8 @@ function below_influence(; path = nothing)
             calc = (; TS_biomass = zeros(3)u"kg / ha",
                     TS = mat,
                     biomass_density_factor = zeros(3)),
-            simp = (; included = (; belowground_competition = true)),
+            simp = (; included = (; belowground_competition = true),
+                    nspecies = 3),
             p = (; β_TSB = artificial_below[i],
                 α_TSB = 80u"kg / ha"))
         below_ground_competition!(; container = c, biomass)

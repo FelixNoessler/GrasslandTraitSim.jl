@@ -26,7 +26,7 @@ function load_data(datapath)
         cwv = [mtraits.cwv_sla mtraits.cwv_lncm mtraits.cwv_amc mtraits.cwv_rsa_above mtraits.cwv_height],
         dim = [:sla, :lnc, :amc, :rsa, :height],
         t = mtraits.date,
-        num_t = mtraits.numeric_date,
+        num_t = mtraits.simp.output_date_num,
         plotID = mtraits.plotID)
 
     valid = (;

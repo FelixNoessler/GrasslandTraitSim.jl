@@ -10,7 +10,7 @@ function band_patch(;
 
     thin = 1
 
-    t = sol.numeric_date
+    t = sol.simp.output_date_num
 
     show_standingbiomass = plot_obj.obs.toggle_standingbiomass.active.val
     if show_standingbiomass
@@ -28,14 +28,14 @@ function band_patch(;
     show_grazmow = plot_obj.obs.toggle_grazmow.active.val
     if show_grazmow
         # -------------- grazing
-    	yupper = (.! isnan.(sol.input.grazing)) .* 5500.0
+    	yupper = (.! isnan.(sol.input.LD_grazing)) .* 5500.0
         ylower = fill(0.0, length(yupper))
-        band!(ax, sol.numeric_date, ylower, yupper;
+        band!(ax, sol.simp.mean_input_date_num, ylower, yupper;
             color = (:steelblue4, 0.6))
 
         # -------------- mowing
-        mowing_f = .! isnan.(sol.input.mowing)
-        xs = sol.numeric_date[mowing_f]
+        mowing_f = .! isnan.(sol.input.CUT_mowing)
+        xs = sol.simp.mean_input_date_num[mowing_f]
 
         for x in xs
             lines!(ax, [x, x], [0.0, 5500.0]; color = :magenta3)
@@ -44,7 +44,7 @@ function band_patch(;
 
     if false # TODO !isnothing(valid_data)
         cutbiomass_μ = vec(ustrip.(sol.valid.cut_biomass))
-        t = sol.numeric_date[sol.valid.biomass_cutting_t]
+        t = sol.simp.output_date_num[sol.valid.biomass_cutting_t]
 
         biomass_dist = Normal.(cutbiomass_μ, sol.p.b_biomass)
         biomass_median = median.(biomass_dist)
@@ -62,7 +62,7 @@ function band_patch(;
             biomass_upper5[1:thin:end]; color = (:black, 0.3), linewidth = 2)
 
         biomass = ustrip.(valid_data.biomass)
-        num_t = sol.numeric_date[LookupArrays.index(valid_data.biomass, :time)]
+        num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.biomass, :time)]
 
         unique_type = unique(valid_data.biomass_type)
         color_types = [findfirst(t .== unique_type) for t in valid_data.biomass_type]
@@ -78,16 +78,16 @@ function soilwater_plot(; sol, plot_obj)
     empty!(ax)
 
     thin = 1
-    t = sol.numeric_date[1:thin:end]
+    t = sol.simp.output_date_num[1:thin:end]
 
     water_μ = mean(ustrip.(sol.output.water); dims = (:x, :y))[1:thin:end]
     lines!(ax, t, water_μ; color = :turquoise3, markersize = 6, linewidth = 2)
 
     PWP = mean(ustrip(sol.patch_variables.PWP))
     WHC = mean(ustrip(sol.patch_variables.WHC))
-    lines!(ax, [sol.numeric_date[1], sol.numeric_date[end]], [PWP, PWP];
+    lines!(ax, [sol.simp.output_date_num[1], sol.simp.output_date_num[end]], [PWP, PWP];
         color = :blue)
-    lines!(ax, [sol.numeric_date[1], sol.numeric_date[end]], [WHC, WHC];
+    lines!(ax, [sol.simp.output_date_num[1], sol.simp.output_date_num[end]], [WHC, WHC];
         color = :blue)
     ax.ylabel = "Soil water [mm]"
     ax.xlabel = "Time [years]"
@@ -105,7 +105,7 @@ function abiotic_plot(; sol, plot_obj)
     abiotic_name = first.([plot_obj.obs.menu_abiotic.options.val...])[name_index][1]
     abiotic_color = abiotic_colors[name_index][1]
 
-    scatterlines!(ax, sol.numeric_date[1:thin:end],
+    scatterlines!(ax, sol.simp.mean_input_date_num[1:thin:end],
         ustrip.(sol.input[abiotic])[1:thin:end];
         color = abiotic_color, markersize = 4, linewidth = 0.1)
     ax.ylabel = abiotic_name
@@ -115,7 +115,7 @@ end
 function trait_time_plot(; sol, valid_data, plot_obj, trait)
     ax = plot_obj.axes[trait]
     empty!(ax)
-    t = sol.numeric_date
+    t = sol.simp.output_date_num
 
     trait_names = [
         "Specific leaf area [m² g⁻¹]", "Leaf nitrogen \nper leaf mass [mg g⁻¹]",
@@ -168,7 +168,7 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
         color = (:blue, 0.3))
     ax.ylabel = "CWM: $trait_name"
 
-    if false # TODO !isnothing(valid_data)
+    if false #TODO !isnothing(valid_data)
         cwm_trait_dist_sub = cwm_trait_dist[LookupArrays.index(valid_data.traits, :time)]
         tsub = t[LookupArrays.index(valid_data.traits, :time)]
         lower_trait = quantile.(cwm_trait_dist_sub, 0.025)
@@ -177,7 +177,7 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
         upper5_trait = quantile.(cwm_trait_dist_sub, 0.75)
         rangebars!(ax, tsub, lower_trait, upper_trait; color = (:black, 0.3))
         rangebars!(ax, tsub, lower5_trait, upper5_trait; color = (:black, 0.3), linewidth = 2)
-        num_t = sol.numeric_date[LookupArrays.index(valid_data.traits, :time)]
+        num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.traits, :time)]
         y = vec(valid_data.traits[trait = At(trait)])
         scatter!(ax, num_t, y, color = :black, markersize = 8)
     end

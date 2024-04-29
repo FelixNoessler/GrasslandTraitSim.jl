@@ -36,7 +36,7 @@ For plotting the values with `Makie.jl`, we have to remove the units with `ustri
 species_biomass = dropdims(mean(sol.output.biomass; dims = (:x, :y)); dims = (:x, :y))
 total_biomass = vec(sum(species_biomass; dims = :species))
 
-fig, _ = lines(sol.numeric_date, ustrip.(total_biomass), color = :darkgreen, linewidth = 2;
+fig, _ = lines(sol.simp.output_date_num, ustrip.(total_biomass), color = :darkgreen, linewidth = 2;
       axis = (; ylabel = "Aboveground dry biomass [kg ha⁻¹]", 
                 xlabel = "Date [year]"))
 fig
@@ -69,7 +69,7 @@ begin
     fig = Figure()
     Axis(fig[1,1]; ylabel = "Relative proportion of biomass of the species", 
          xlabel = "Date [year]",
-         limits = (sol.numeric_date[1], sol.numeric_date[end], 0, 1))
+         limits = (sol.simp.output_date_num[1], sol.simp.output_date_num[end], 0, 1))
 
     for i in 1:sol.simp.nspecies
         ylower = nothing
@@ -80,7 +80,7 @@ begin
         end
         yupper = biomass_cumfraction[:, i]
 
-        band!(sol.numeric_date, vec(ylower), vec(yupper);
+        band!(sol.simp.output_date_num, vec(ylower), vec(yupper);
               color = colors[i])
     end
 
@@ -103,7 +103,7 @@ Similarly, we plot the soil water content over time:
 # we have to first calculate the mean soil water content per site
 soil_water_per_site = dropdims(mean(sol.output.water; dims = (:x, :y)); dims = (:x, :y))
 
-fig, _ = lines(sol.numeric_date, ustrip.(soil_water_per_site), color = :blue, linewidth = 2;
+fig, _ = lines(sol.simp.output_date_num, ustrip.(soil_water_per_site), color = :blue, linewidth = 2;
       axis = (; ylabel = "Soil water content [mm]", xlabel = "Date [year]"))
 fig
 save("soil_water_content.svg", fig); nothing # hide
@@ -135,7 +135,7 @@ begin
                 xlabel = i == length(traits) ? "Date [year]" : "",
                 xticklabelsvisible = i == length(traits) ? true : false,
                 ylabel = trait_names[i])
-        lines!(sol.numeric_date, ustrip.(cwm_trait);
+        lines!(sol.simp.output_date_num, ustrip.(cwm_trait);
                 color = :black, linewidth = 2)
         
     end
@@ -167,9 +167,9 @@ cum_mown = cumsum(mown_site)
 begin
       fig = Figure()
       Axis(fig[1,1]; ylabel = "Cummulative grazed\nbiomass [kg ha⁻¹]")
-      lines!(sol.numeric_date, ustrip.(vec(cum_grazed)), color = :black, linewidth = 2;)
+      lines!(sol.simp.output_date_num, ustrip.(vec(cum_grazed)), color = :black, linewidth = 2;)
       Axis(fig[2,1]; ylabel = "Cummulative mown\nbiomass [kg ha⁻¹]", xlabel = "Date [year]")
-      lines!(sol.numeric_date, ustrip.(vec(cum_mown)), color = :black, linewidth = 2;)
+      lines!(sol.simp.output_date_num, ustrip.(vec(cum_mown)), color = :black, linewidth = 2;)
       fig
 end
 save("grazed_mown.svg", fig); nothing # hide
@@ -197,9 +197,9 @@ end
 begin
     fig = Figure()
     Axis(fig[1,1]; ylabel = "Shannon index")
-    lines!(sol.numeric_date, shannon, color = :black, linewidth = 2;)
+    lines!(sol.simp.output_date_num, shannon, color = :black, linewidth = 2;)
     Axis(fig[2,1]; ylabel = "Simpson index", xlabel = "Date [year]")
-    lines!(sol.numeric_date, simpson, color = :black, linewidth = 2;)
+    lines!(sol.simp.output_date_num, simpson, color = :black, linewidth = 2;)
     fig
 end
 save("shannon_simpson.svg", fig); nothing # hide
