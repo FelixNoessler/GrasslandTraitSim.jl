@@ -114,6 +114,7 @@ makedocs(;
         "Calibration to grasslands of the Biodiversity Exploratories" => [
             "Calibration data" => "biodiversity_exploratories/calibration_data.md",
             "Time step" => "biodiversity_exploratories/time_step.md",
+            "Trait data" => "biodiversity_exploratories/traits.md",
             "Likelihood" => "biodiversity_exploratories/likelihood.md",
             "Priors" => "biodiversity_exploratories/priors.md"],
         "TOC all functions" => "all_functions.md",
