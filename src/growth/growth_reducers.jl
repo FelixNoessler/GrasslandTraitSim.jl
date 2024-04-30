@@ -32,7 +32,7 @@ function radiation_reduction!(; container, PAR)
     end
 
     @unpack γ₁, γ₂ = container.p
-    com.RAD = min(1.0, 1.0 − γ₁ * (PAR / container.simp.time_step_days.value − γ₂))
+    com.RAD = min(1.0, 1.0 − γ₁ * (PAR − γ₂))
 
     return nothing
 end

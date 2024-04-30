@@ -32,7 +32,7 @@ function plot_input_time_steps(input_obj1, input_obj2)
     Axis(fig[4, 1]; ylabel = "Potential\nevapotranspiration\n[mm d⁻¹]",
          xticklabelsvisible = false)
     lines!(idate_1, ustrip.(input_obj1.input.PET), color = :red, alpha = 0.3)
-    lines!(idate_long, ustrip.(input_obj2.input.PET) ./ input_obj2.simp.time_step_days.value)
+    lines!(idate_long, ustrip.(input_obj2.input.PET))
 
 
     Axis(fig[5, 1]; ylabel = "Precipitation [mm d⁻¹]", xticklabelsvisible = false)

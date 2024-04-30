@@ -111,7 +111,7 @@ function validation_input(;
         old_T_kelvin = uconvert.(u"K", daily_input_df.temperature)
 
         for i in Base.OneTo(ntimesteps)
-            sub_date = date_range[i]:date_range[i+1]
+            sub_date = date_range[i]:(date_range[i+1] - Dates.Day(1))
             f = date_range_all_days .∈ Ref(sub_date)
 
             temperature[i] = uconvert(u"°C", mean(old_T_kelvin[f]))
@@ -333,11 +333,10 @@ function prepare_grazing(d::DataFrame)
                 grazing_startdate = row["start_graz$i"]
                 grazing_enddate = row["end_graz$i"]
                 grazing_intensity = row["inten_graz$i"]
+                if grazing_enddate > days[end]
+                    grazing_enddate = days[end]
+                end
 
-                # if isnan(grazing_intensity)
-                #     @warn "Grazing intensity NaN"
-                #     @show grazing_startdate, grazing_enddate, d.plotID[1]
-                # end
                 start_index = values(t[grazing_startdate].index)[1]
                 end_index = values(t[grazing_enddate].index)[1]
                 grazing_vec[start_index:end_index] .= grazing_intensity
