@@ -1,3 +1,20 @@
+function load_input(path; included = (;), likelihood_included = (;), plotIDs = nothing)
+    inputs = load(path)
+
+    for k in keys(inputs)
+        @reset inputs[k].simp.included = included
+        @reset inputs[k].simp.likelihood_included = likelihood_included
+    end
+
+    if isnothing(plotIDs)
+        plotIDs = keys(inputs)
+    end
+
+    inputs = NamedTuple((Symbol(k) => inputs[k] for k in plotIDs))
+
+    return inputs
+end
+
 function validation_input_plots(; plotIDs, kwargs...)
     static_inputs = Dict()
 
