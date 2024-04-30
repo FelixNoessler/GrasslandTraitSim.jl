@@ -39,7 +39,7 @@ function date_to_solt(calibration_dates; mean_input_date)
 
     output_index = Array{Int64}(undef, length(calibration_dates))
     for i in eachindex(calibration_dates)
-        output_index[i] = findfirst(calibratation_dates[i] .> mean_input_date) + 1
+        output_index[i] = findfirst(calibration_dates[i] .> mean_input_date) + 1
     end
     return output_index
 end
