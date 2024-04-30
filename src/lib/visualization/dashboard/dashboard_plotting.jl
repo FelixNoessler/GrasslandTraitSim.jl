@@ -42,7 +42,7 @@ function band_patch(;
         end
     end
 
-    if false # TODO !isnothing(valid_data)
+    if !isnothing(valid_data)
         cutbiomass_μ = vec(ustrip.(sol.valid.cut_biomass))
         t = sol.simp.output_date_num[sol.valid.biomass_cutting_t]
 
@@ -168,7 +168,7 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
         color = (:blue, 0.3))
     ax.ylabel = "CWM: $trait_name"
 
-    if false #TODO !isnothing(valid_data)
+    if !isnothing(valid_data)
         cwm_trait_dist_sub = cwm_trait_dist[LookupArrays.index(valid_data.traits, :time)]
         tsub = t[LookupArrays.index(valid_data.traits, :time)]
         lower_trait = quantile.(cwm_trait_dist_sub, 0.025)

@@ -34,16 +34,15 @@ function dashboard(; posterior = nothing, variable_p = (;),
                 update_plots(; sol, plot_obj)
             end
 
-            # TODO
-            # ll_obj = loglikelihood_model(;
-            #     p,
-            #     plotID = plot_obj.obs.menu_plotID.selection.val,
-            #     data = valid_data,
-            #     sol = sol,
-            #     return_seperate = true)
+            ll_obj = loglikelihood_model(;
+                p,
+                plotID = plot_obj.obs.menu_plotID.selection.val,
+                data = valid_data,
+                sol = sol,
+                return_seperate = true)
 
-            # plot_obj.obs.lls.biomass[] = ll_obj.biomass
-            # plot_obj.obs.lls.traits[] = ll_obj.trait
+            plot_obj.obs.lls.biomass[] = ll_obj.biomass
+            plot_obj.obs.lls.traits[] = ll_obj.trait
 
             calculate_gradient = plot_obj.obs.gradient_toggle.active.val
             if calculate_gradient

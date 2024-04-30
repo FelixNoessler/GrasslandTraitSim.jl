@@ -1,18 +1,13 @@
-function get_validation_data_plots(; plotIDs, biomass_stats = nothing)
+function get_validation_data_plots(; plotIDs, kwargs...)
     valid_data = Dict()
-
     for plotID in plotIDs
-        valid_data[Symbol(plotID)] = get_validation_data(; plotID, biomass_stats)
+        valid_data[Symbol(plotID)] = get_validation_data(; plotID, kwargs...)
     end
 
     return NamedTuple(valid_data)
 end
 
-function date_to_solt(d; )
-    Dates.value(d - Dates.Date(2006)) + 1
-end
-
-function get_validation_data(; plotID, biomass_stats = nothing)
+function get_validation_data(; plotID, biomass_stats = nothing, mean_input_date = nothing)
     # ---------------------------- biomass
     biomass_sub =
         @subset data.valid.measuredbiomass :plotID .== plotID.&&
@@ -23,28 +18,28 @@ function get_validation_data(; plotID, biomass_stats = nothing)
     end
 
     biomass = DimArray(biomass_sub.biomass,
-        (; time = date_to_solt.(biomass_sub.date; )))
+        (; time = date_to_solt(biomass_sub.date; mean_input_date)))
     biomass_type = biomass_sub.stat
-
-    # ---------------------------- soil moisture
-    soilmoisture_sub = @subset data.valid.soilmoisture :plotID .==
-                                                       plotID.&&
-    Dates.year.(:date) .<= 2021
-
-    soilmoisture = DimArray(soilmoisture_sub.soilmoisture,
-        (; time = date_to_solt.(soilmoisture_sub.date;)))
 
     # ---------------------------- traits
     f = plotID .== data.valid.traits.plotID
     cwm = data.valid.traits.cwm[f, :]
-    # cwv = data.valid.traits.cwv[f, :]
-    # mat = Array{Float64, 3}(undef, 2, size(cwm)...)
-    # mat[1, :, :] = cwm
-    # mat[2, :, :] = cwv
 
     traits = DimArray(cwm,
-            (time = date_to_solt.(data.valid.traits.t[f]; ),
+            (time = date_to_solt(data.valid.traits.t[f]; mean_input_date),
             trait = data.valid.traits.dim))
 
-    return (; soilmoisture, traits, biomass, biomass_type)
+    return (; traits, biomass, biomass_type)
+end
+
+function date_to_solt(calibration_dates; mean_input_date)
+    if isnothing(mean_input_date)
+        return Dates.value.(calibration_dates .- Dates.Date(2006)) .+ 1
+    end
+
+    output_index = Array{Int64}(undef, length(calibration_dates))
+    for i in eachindex(calibration_dates)
+        output_index[i] = findfirst(calibratation_dates[i] .> mean_input_date) + 1
+    end
+    return output_index
 end
