@@ -101,7 +101,7 @@ function loglikelihood_model(;
 
             ### CWM Likelihood
             cwm_traitscale = Symbol(:b_, trait_symbol)
-            cwmtrait_d = Product(Laplace.(sim_cwm_trait, sol.p[cwm_traitscale]);)
+            cwmtrait_d = Product(Normal.(sim_cwm_trait, sol.p[cwm_traitscale]);)
 
             if trait_symbol == :amc
                 μ = sim_cwm_trait

@@ -1,9 +1,9 @@
-function prepare_input(; plot_obj, posterior, biomass_stats = nothing)
+function prepare_input(; plot_obj, posterior, biomass_stats = nothing, time_step_days)
     # ------------- whether parts of the simulation are included
     included = NamedTuple(
         [first(s) => last(s).active.val for s in plot_obj.obs.toggles_included])
     plotID = plot_obj.obs.menu_plotID.selection.val
-    input_obj = validation_input(; plotID, nspecies = 43, included, biomass_stats)
+    input_obj = validation_input(; plotID, nspecies = 43, included, biomass_stats, time_step_days)
 
     # ------------- parameter values
     p = nothing

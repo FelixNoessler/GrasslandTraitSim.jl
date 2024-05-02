@@ -1,5 +1,5 @@
 function dashboard(; posterior = nothing, variable_p = (;),
-                   biomass_stats = nothing)
+                   biomass_stats = nothing, time_step_days = 1)
     set_theme!(
         Theme(
             colgap = 5,
@@ -23,9 +23,10 @@ function dashboard(; posterior = nothing, variable_p = (;),
         if !still_running
             still_running = true
 
-            p, input_obj = prepare_input(; plot_obj, posterior, biomass_stats)
+            p, input_obj = prepare_input(; plot_obj, posterior, biomass_stats, time_step_days)
             sol = solve_prob(; input_obj, p, trait_input)
-            valid_data = get_valid_data(; plot_obj, biomass_stats)
+            valid_data = get_valid_data(; plot_obj, biomass_stats,
+                mean_input_date = input_obj.simp.mean_input_date)
 
             show_validdata = plot_obj.obs.toggle_validdata.active.val
             if show_validdata
@@ -103,10 +104,10 @@ function dashboard(; posterior = nothing, variable_p = (;),
     return nothing
 end
 
-function get_valid_data(; plot_obj, biomass_stats = nothing)
+function get_valid_data(; plot_obj, biomass_stats = nothing, mean_input_date)
     plotID = plot_obj.obs.menu_plotID.selection.val
 
-    data = get_validation_data(; plotID, biomass_stats)
+    data = get_validation_data(; plotID, biomass_stats, mean_input_date)
 
     return data
 end
