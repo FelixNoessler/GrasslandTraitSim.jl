@@ -251,11 +251,11 @@ function water_reduction!(; container, W, PET, PWP, WHC)
 
     @unpack W_sla, W_rsa, W_p, biomass_density_factor = container.calc
     @unpack δ_sla, δ_wrsa, β_sla, β_wrsa = container.p
-    @unpack K_wrsa, A_wrsa, A_sla = container.transfer_function
+    @unpack A_wrsa, A_sla = container.transfer_function
 
     W_p .= biomass_density_factor .* (Wsc * pet_adjustment)
     @. W_sla = 1 - δ_sla + δ_sla / (1 + exp(-β_sla * (W_p - A_sla)))
-    @. W_rsa = 1 - δ_wrsa + (K_wrsa + δ_wrsa - 1) / (1 + exp(-β_wrsa * (W_p - A_wrsa)))
+    @. W_rsa = 1 - δ_wrsa + δ_wrsa / (1 + exp(-β_wrsa * (W_p - A_wrsa)))
     @. Waterred = W_sla * W_rsa
 
     return nothing
@@ -300,7 +300,7 @@ function nutrient_reduction!(; container, nutrients)
         return nothing
     end
 
-    @unpack K_amc, A_amc, K_nrsa, A_nrsa = container.transfer_function
+    @unpack K_amc, A_amc, A_nrsa = container.transfer_function
     @unpack δ_amc, δ_nrsa, β_amc, β_nrsa = container.p
     @unpack nutrients_splitted, biomass_density_factor,
             N_amc, nutrients_splitted, N_rsa,
@@ -309,7 +309,7 @@ function nutrient_reduction!(; container, nutrients)
     @. nutrients_splitted = nutrients * biomass_density_factor
     @. N_amc = 1 - δ_amc + (K_amc + δ_amc - 1) /
                (1 + exp(-β_amc * (nutrients_splitted - A_amc)))
-    @. N_rsa = 1 - δ_nrsa + (K_nrsa + δ_nrsa - 1) /
+    @. N_rsa = 1 - δ_nrsa + δ_nrsa /
                (1 + exp(-β_nrsa * (nutrients_splitted - A_nrsa)))
     @. Nutred = max(N_amc, N_rsa)
 

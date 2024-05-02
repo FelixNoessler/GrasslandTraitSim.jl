@@ -104,7 +104,6 @@ function plot_N_rsa(; δ_nrsa = 0.8, path = nothing)
 
     ##################
     idx = sortperm(container.traits.rsa)
-    Ks = container.transfer_function.K_nrsa[idx]
     x0s = container.transfer_function.A_nrsa[idx]
     A = 1 - container.p.δ_nrsa
     rsa = container.traits.rsa[idx]
@@ -112,46 +111,29 @@ function plot_N_rsa(; δ_nrsa = 0.8, path = nothing)
     ##################
 
     fig = Figure(size = (900, 500))
-    Axis(fig[1:2, 1],
+
+    Label(fig[1, 1:2], "Influence of the root surface area / above ground biomass";
+        halign = :left,
+        font = :bold)
+
+    Axis(fig[2, 1],
         xlabel = "Nutrient index",
         ylabel = "Growth reduction factor (N_rsa)\n← stronger reduction, less reduction →")
     hlines!([1-δ_nrsa]; color = :black)
     text!(1.2, 1-δ_nrsa + 0.02; text = "1 - δ_nrsa")
-    for (i, (K, x0)) in enumerate(zip(Ks, x0s))
+    for (i, x0) in enumerate(x0s)
         lines!(xs, ymat[:, i];
             color = i,
             colorrange = (1, nspecies))
 
-        ##### right upper bound
-        scatter!([1.5], [K];
-            marker = :ltriangle,
-            color = i,
-            colorrange = (1, nspecies))
-
         ##### midpoint
-        x0_y = (K - A) / 2 + A
+        x0_y = (1 - A) / 2 + A
         scatter!([x0], [x0_y];
             marker = :x,
             color = i,
             colorrange = (1, nspecies))
     end
     ylims!(-0.1, 1.1)
-
-    Axis(fig[1, 2];
-        xticklabelsvisible = false,
-        ylabel = "Right upper bound\n(K_nrsa)")
-    scatter!(ustrip.(rsa), Ks;
-        marker = :ltriangle,
-        color = 1:nspecies,
-        colorrange = (1, nspecies))
-    ymin, ymax = 1-container.p.δ_nrsa*container.p.κ_red_nrsa, 1
-    hlines!([ymin, ymax]; color = :black)
-    text!([0.0, 0.0], [1 - container.p.δ_nrsa * container.p.κ_red_nrsa, 1] .+ 0.02;
-          text = ["1 - δ_nrsa ⋅ κ_red_nrsa", "1"])
-    vlines!(ustrip(container.p.ϕ_rsa); color = :black, linestyle = :dash)
-    text!(ustrip(container.p.ϕ_rsa) + 0.01, 1-(ymax-ymin)/ 2; text = "ϕ_rsa")
-    ylims!(0.0, 1.15)
-
 
     Axis(fig[2, 2];
         xlabel = "Root surface area /\nabove ground biomass [m² g⁻¹]",
@@ -168,10 +150,6 @@ function plot_N_rsa(; δ_nrsa = 0.8, path = nothing)
             (container.p.η_max_nrsa - container.p.η_min_nrsa) / 2;
             text = "ϕ_rsa")
     ylims!(nothing, container.p.η_max_nrsa + 0.1)
-
-    Label(fig[0, 1:2], "Influence of the root surface area / above ground biomass";
-        halign = :left,
-        font = :bold)
 
     if !isnothing(path)
         save(path, fig;)

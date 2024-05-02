@@ -15,31 +15,24 @@ function plot_W_rsa(; δ_wrsa = 0.5, path = nothing)
     end
 
     idx = sortperm(container.traits.rsa)
-    Ks = container.transfer_function.K_wrsa[idx]
     x0s = container.transfer_function.A_wrsa[idx]
     A = 1 - container.p.δ_wrsa
     rsa = container.traits.rsa[idx]
     ymat = ymat[:, idx]
 
-    fig = Figure(size = (1000, 600))
-    Axis(fig[1:2, 1],
+    fig = Figure(size = (1000, 500))
+    Axis(fig[1, 1],
         xlabel = "Plant available water (W_p)",
         ylabel = "Growth reduction factor (W_rsa)\n← stronger reduction, less reduction →")
     hlines!([1-δ_wrsa]; color = :black)
     text!(1.2, 1-δ_wrsa + 0.02; text = "1 - δ_wrsa")
-    for (i, (K, x0)) in enumerate(zip(Ks, x0s))
+    for (i, x0) in enumerate(x0s)
         lines!(xs, ymat[:, i];
             color = i,
             colorrange = (1, nspecies))
 
-        ##### right upper bound
-        scatter!([1.5], [K];
-            marker = :ltriangle,
-            color = i,
-            colorrange = (1, nspecies))
-
         ##### midpoint
-        x0_y = (K - A) / 2 + A
+        x0_y = (1 - A) / 2 + A
         scatter!([x0], [x0_y];
             marker = :x,
             color = i,
@@ -48,21 +41,6 @@ function plot_W_rsa(; δ_wrsa = 0.5, path = nothing)
     ylims!(-0.1, 1.1)
 
     Axis(fig[1, 2];
-        xticklabelsvisible = false,
-        ylabel = "Right upper bound\n(K_wrsa)")
-    scatter!(ustrip.(rsa), Ks;
-        marker = :ltriangle,
-        color = 1:nspecies,
-        colorrange = (1, nspecies))
-    ymin, ymax = 1-container.p.δ_wrsa*container.p.κ_red_wrsa, 1
-    hlines!([ymin, ymax]; color = :black)
-    text!([0.0, 0.0], [1 - container.p.δ_wrsa * container.p.κ_red_wrsa, 1] .+ 0.02;
-          text = ["1 - δ_wrsa ⋅ κ_red_rsa", "1"])
-    vlines!(ustrip(container.p.ϕ_rsa); color = :black, linestyle = :dash)
-    text!(ustrip(container.p.ϕ_rsa) + 0.01, 1-(ymax-ymin)/ 2; text = "ϕ_rsa")
-    ylims!(0.0, 1.15)
-
-    Axis(fig[2, 2];
         xlabel = "Root surface area /\nabove ground biomass [m² g⁻¹]",
         ylabel = "Scaled water availability\nat midpoint (A_wrsa)")
     scatter!(ustrip.(rsa), x0s;
