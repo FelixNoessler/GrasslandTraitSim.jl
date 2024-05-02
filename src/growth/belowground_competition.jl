@@ -300,14 +300,14 @@ function nutrient_reduction!(; container, nutrients)
         return nothing
     end
 
-    @unpack K_amc, A_amc, A_nrsa = container.transfer_function
+    @unpack A_amc, A_nrsa = container.transfer_function
     @unpack δ_amc, δ_nrsa, β_amc, β_nrsa = container.p
     @unpack nutrients_splitted, biomass_density_factor,
             N_amc, nutrients_splitted, N_rsa,
             nutrients_splitted = container.calc
 
     @. nutrients_splitted = nutrients * biomass_density_factor
-    @. N_amc = 1 - δ_amc + (K_amc + δ_amc - 1) /
+    @. N_amc = 1 - δ_amc + δ_amc /
                (1 + exp(-β_amc * (nutrients_splitted - A_amc)))
     @. N_rsa = 1 - δ_nrsa + δ_nrsa /
                (1 + exp(-β_nrsa * (nutrients_splitted - A_nrsa)))

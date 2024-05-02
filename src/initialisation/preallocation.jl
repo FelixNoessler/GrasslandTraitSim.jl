@@ -110,6 +110,9 @@ function preallocate_vectors(; input_obj, T = Float64)
         ρ = Array{T}(undef, nspecies),
         low_ρ_biomass = Array{T}(undef, nspecies)u"kg / ha",
 
+        ## investment to roots
+        root_invest = Array{T}(undef, nspecies),
+
         ## nutrient reducer function
         nutrients_splitted = Array{T}(undef, nspecies),
         Nutred = Array{T}(undef, nspecies),

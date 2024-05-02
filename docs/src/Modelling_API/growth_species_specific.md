@@ -16,6 +16,12 @@ flowchart LR
 ```
 
 
+## Cost for investment into roots and mycorrhiza
+
+```@docs	
+root_investment!
+```
+
 ## Light competition
 
 ```@raw html

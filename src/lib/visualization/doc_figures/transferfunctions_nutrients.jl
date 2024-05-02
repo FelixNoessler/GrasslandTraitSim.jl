@@ -11,14 +11,13 @@ function plot_N_amc(; δ_amc = 0.5, path = nothing)
     end
 
     idx = sortperm(container.traits.amc)
-    Ks = container.transfer_function.K_amc[idx]
     x0s = container.transfer_function.A_amc[idx]
     A = 1 - container.p.δ_amc
     amc = container.traits.amc[idx]
     ymat = ymat[:, idx]
 
-    fig = Figure(size = (1000, 600))
-    Axis(fig[1:2, 1];
+    fig = Figure(size = (1000, 500))
+    Axis(fig[1, 1];
         xlabel = "Nutrient index",
         ylabel = "Growth reduction factor (N_amc)\n← stronger reduction, less reduction →",
         title = "Influence of the mycorrhizal colonisation")
@@ -29,15 +28,9 @@ function plot_N_amc(; δ_amc = 0.5, path = nothing)
             color = i,
             colorrange = (1, nspecies))
 
-        ##### right upper bound
-        scatter!([1.5], [Ks[i]];
-            marker = :ltriangle,
-            color = i,
-            colorrange = (1, nspecies))
-
         ##### midpoint
-        x0_y = (Ks[i] - A) / 2 + A
-        scatter!([x0s[i]], [x0_y];
+        x0_y = (1 - A) / 2 + A
+        scatter!(x0s[i], x0_y;
             marker = :x,
             color = i,
             colorrange = (1, nspecies))
@@ -45,23 +38,6 @@ function plot_N_amc(; δ_amc = 0.5, path = nothing)
     ylims!(-0.05, 1.05)
 
     Axis(fig[1, 2];
-        ylabel = "Right upper bound\n(K_amc)",
-        xticklabelsvisible = false)
-    for i in Base.OneTo(nspecies)
-        scatter!(amc[i], Ks[i];
-            marker = :ltriangle,
-            color = i,
-            colorrange = (1, nspecies))
-    end
-    ymin, ymax = 1-container.p.δ_amc*container.p.κ_red_amc, 1
-    hlines!([ymin, ymax]; color = :black)
-    text!([0.0, 0.0], [1 - container.p.δ_amc * container.p.κ_red_amc, 1] .+ 0.02;
-          text = ["1 - δ_amc ⋅ κ_red_amc", "1"])
-    vlines!(container.p.ϕ_amc; color = :black, linestyle = :dash)
-    text!(container.p.ϕ_amc + 0.01, 1-(ymax-ymin)/ 2; text = "ϕ_amc")
-    ylims!(0.0, 1.15)
-
-    Axis(fig[2, 2];
         xlabel = "Mycorrhizal colonization (AMC)",
         ylabel = "Nutrient index\nat midpoint (A_amc)")
     for i in Base.OneTo(nspecies)

@@ -157,15 +157,6 @@ $(MYNEWFIELDS)
     β_wrsa = F(7.0)
 
     """
-    2::``\\kappa_{\\text{red}, wrsa}``::part of the growth reducer based
-    on the root surface area per aboveground biomass and the water stress function
-    ``W_{rsa, txys}``; influences the lower bound for ``K_{wrsa, s}``,
-    that is given by ``1 - \\delta_{wrsa}\\cdot\\kappa_{\\text{red}, wrsa}``,
-    see [`water_reduction!`](@ref)
-    """
-    κ_red_wrsa = F(0.6)
-
-    """
     2::``\\phi_{rsa}``::part of the growth reducer based on the
     root surface area per aboveground biomass and the water stress
     function ``W_{rsa, txys}`` and the nutrient stress function ``N_{rsa, txys}``;
@@ -178,13 +169,13 @@ $(MYNEWFIELDS)
     ϕ_rsa::Q15 = F(0.12)u"m^2 / g"
 
     """
-    2::``\\beta_{\\kappa\\eta, wrsa}``::part of the growth reducer based on the root
+    2::``\\beta_{\\eta, wrsa}``::part of the growth reducer based on the root
     surface area per aboveground biomass and the water stress function ``W_{rsa, txys}``;
     is the slope of the two logistic functions that relate the root surface area per
     aboveground biomass to ``K_{wrsa, s}`` and ``A_{nrsa, s}``,
     see [`water_reduction!`](@ref)
     """
-    β_κη_wrsa::Q16 = F(40.0)u"g / m^2"
+    β_η_wrsa::Q16 = F(40.0)u"g / m^2"
 
     """
     2::``\\eta_{\\min, wrsa}``::part of the growth reducer based on the
@@ -227,22 +218,18 @@ $(MYNEWFIELDS)
     β_amc = F(7.0)
 
     """
-    2::``\\kappa_{\\text{red}, amc}``::part of the growth reducer based on the
-    arbuscular mycorrhizal colonization rate and the nutrient stress function
-    ``N_{amc, txys}``; influences the lower bound for ``K_{amc, s}``,
-    that is given by ``1 - \\delta_{amc}\\cdot\\kappa_{\\text{red}, amc}``,
-    see [`nutrient_reduction!`](@ref)
+    2::``\\kappa_{\\text{red}, amc}``::TODO
     """
     κ_red_amc = F(0.5)
 
     """
-    2::``\\beta_{\\kappa\\eta, amc}``::part of the growth reducer based on the
+    2::``\\beta_{\\eta, amc}``::part of the growth reducer based on the
     arbuscular mycorrhizal colonization rate and the nutrient stress function
     ``N_{amc, txys}``; is the slope of the two logistic functions that relate
     the arbuscular mycorrhizal colonization rate to ``K_{amc, s}`` and ``A_{amc, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    β_κη_amc = F(10.0)
+    β_η_amc = F(10.0)
 
     """
     2::``\\eta_{\\min, amc}``::part of the growth reducer based on the
@@ -289,24 +276,14 @@ $(MYNEWFIELDS)
     β_nrsa = F(7.0)
 
     """
-    2::``\\kappa_{\\text{red}, nrsa}``::part of the growth reducer based on
-    the root surface area per aboveground biomass and the nutrient stress
-    function ``N_{rsa, txys}``; is the slope of the two logistic functions
-    that relate the root surface area per aboveground biomass
-    to ``K_{nrsa, s}`` and ``A_{nrsa, s}``,
-    see [`nutrient_reduction!`](@ref)
-    """
-    κ_red_nrsa = F(0.6)
-
-    """
-    2::``\\beta_{\\kappa\\eta, nrsa}``::part of the growth reducer based on
+    2::``\\beta_{\\eta, nrsa}``::part of the growth reducer based on
     the root surface area per aboveground biomass and the nutrient stress
     function ``N_{rsa, txys}``; is the slope of the two logistic functions
     that relate the root surface area per
     aboveground biomass to ``K_{nrsa, s}`` and ``A_{nrsa, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    β_κη_nrsa::Q16 = F(40.0)u"g / m^2"
+    β_η_nrsa::Q16 = F(40.0)u"g / m^2"
 
     """
     2::``\\eta_{\\min, nrsa}``::part of the growth reducer based on the
@@ -610,14 +587,14 @@ function exlude_parameter(; input_obj)
 
     if haskey(included, :water_growth_reduction) && !included.water_growth_reduction
         water_names = [:ϕ_sla, :η_min_sla, :η_max_sla, :β_η_sla, :β_sla, :δ_wrsa, :δ_sla,
-                       :β_wrsa, :η_min_wrsa, :η_max_wrsa, :κ_red_wrsa, :β_κη_wrsa]
+                       :β_wrsa, :η_min_wrsa, :η_max_wrsa, :β_η_wrsa]
         append!(excl_p, water_names)
     end
 
     if haskey(included, :nutrient_growth_reduction) && !included.nutrient_growth_reduction
-        nutrient_names = [:N_max, :ϕ_amc, :η_min_amc, :η_max_amc, :κ_red_amc, :β_κη_amc,
+        nutrient_names = [:N_max, :ϕ_amc, :η_min_amc, :η_max_amc, :κ_red_amc, :β_η_amc,
                           :β_amc, :δ_amc, :δ_nrsa, :β_nrsa,
-                          :η_min_nrsa, :η_max_nrsa, :κ_red_nrsa, :β_κη_nrsa]
+                          :η_min_nrsa, :η_max_nrsa, :β_η_nrsa]
         append!(excl_p, nutrient_names)
     end
 
@@ -732,7 +709,7 @@ function calibrated_parameter(; input_obj = nothing)
         η_min_amc = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), "text"),
         η_max_amc = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), "text"),
         κ_red_amc = (Uniform(0.0, 1.0), as𝕀, "text"),
-        β_κη_amc = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), "text"),
+        β_η_amc = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), "text"),
         β_amc = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), "text"),
         δ_amc = (Uniform(0.0, 1.0), as𝕀, "text"),
         δ_nrsa = (Uniform(0.0, 1.0), as𝕀, "text"),
@@ -741,10 +718,8 @@ function calibrated_parameter(; input_obj = nothing)
         η_min_nrsa = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), "text"),
         η_max_wrsa =(Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), "text"),
         η_max_nrsa =(Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), "text"),
-        κ_red_wrsa = (Uniform(0.0, 1.0), as𝕀, "text"),
-        κ_red_nrsa = (Uniform(0.0, 1.0), as𝕀, "text"),
-        β_κη_wrsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), "text"),
-        β_κη_nrsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), "text"),
+        β_η_wrsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), "text"),
+        β_η_nrsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), "text"),
         β_wrsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), "text"),
         β_nrsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), "text"),
         b_biomass = (truncated(Cauchy(0, 300); lower = 0.0), asℝ₊, "text"),

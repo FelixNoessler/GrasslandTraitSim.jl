@@ -38,7 +38,7 @@ function light_competition!(; container, biomass)
     @unpack heightinfluence, light_competition, LAIs = container.calc
     @unpack LAItot = container.calc.com
     @unpack included = container.simp
-    @unpack height, abp = container.traits
+    @unpack height = container.traits
 
     if haskey(included, :height_competition) && !included.height_competition
         @info "Height influence turned off!" maxlog=1
@@ -52,7 +52,7 @@ function light_competition!(; container, biomass)
         @. heightinfluence = (height / height_cwm) ^ β_height
     end
 
-    @. light_competition = LAIs / LAItot * heightinfluence * abp
+    @. light_competition = LAIs / LAItot * heightinfluence
 
     return nothing
 end

@@ -36,6 +36,9 @@ function initialization(; input_obj, p, prealloc, prealloc_specific,
     # linking traits to water and nutrient stress
     init_transfer_functions!(; input_obj, prealloc, p)
 
+    # investment to roots
+    root_investment!(; input_obj, prealloc, p)
+
     # WHC, PWP and nutrient index
     input_WHC_PWP!(; prealloc, input_obj)
     input_nutrients!(; prealloc, input_obj, p)

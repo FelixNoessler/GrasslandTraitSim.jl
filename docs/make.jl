@@ -49,6 +49,7 @@ sim.plot_N_amc(; path = f("$docs_img/amc_nut_response_0_5.svg"), δ_amc = 0.5)
 sim.plot_W_sla(; path = f("$docs_img/plot_W_sla.svg"), δ_sla = 1.0)
 sim.plot_W_sla(; path = f("$docs_img/W_sla_response_0_5.svg"), δ_sla = 0.5)
 sim.plant_available_water(; path = f("$docs_img/pet.svg"))
+sim.plot_root_investment(; path = f("$docs_img/root_investment.svg"))
 
 #### leaf lifespan
 sim.leaflifespan(; path = f("$docs_img/leaflifespan.svg"))

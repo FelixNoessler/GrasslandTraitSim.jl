@@ -18,7 +18,7 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     @unpack input = container
     @unpack included = container.simp
     @unpack act_growth, com, species_specific_red, light_competition, Waterred,
-            Nutred = container.calc
+            Nutred, root_invest = container.calc
 
     ########### Potential growth
     potential_growth!(; container, biomass, PAR = input.PAR_sum[t])
@@ -34,7 +34,7 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     below_ground_competition!(; container, biomass)
     water_reduction!(; container, W, PWP, WHC, PET = input.PET[t])
     nutrient_reduction!(; container, nutrients)
-    @. species_specific_red = light_competition * Waterred * Nutred
+    @. species_specific_red = light_competition * Waterred * Nutred * root_invest
 
     ########### Final growth
     @. act_growth = com.potgrowth_total * community_red * species_specific_red
