@@ -56,8 +56,9 @@ calculated density differences to the output variables.
 """
 function main_loop!(; container)
     @unpack u_biomass, u_water, du_biomass, du_water = container.u
-    @unpack biomass, water = container.output
+    @unpack output = container
     @unpack ts, patch_xdim, patch_ydim, nspecies = container.simp
+    @unpack senescence = container.calc
 
     for t in ts
         one_day!(; t, container)
@@ -66,11 +67,11 @@ function main_loop!(; container)
             for y in Base.OneTo(patch_ydim)
                 for s in Base.OneTo(nspecies)
                     u_biomass[x, y, s] += du_biomass[x, y, s]
-                    biomass[t+1, x, y, s] = u_biomass[x, y, s]
+                    output.biomass[t+1, x, y, s] = u_biomass[x, y, s]
                 end
 
                 u_water[x, y] += du_water[x, y]
-                water[t+1, x, y] = u_water[x, y]
+                output.water[t+1, x, y] = u_water[x, y]
             end
         end
     end

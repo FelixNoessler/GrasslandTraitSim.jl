@@ -1,24 +1,82 @@
 function preallocate_vectors(; input_obj, T = Float64)
-    @unpack output_date, included, nspecies, patch_xdim, patch_ydim, ntimesteps = input_obj.simp
+    @unpack output_date, mean_input_date, included, nspecies,
+            patch_xdim, patch_ydim, ntimesteps = input_obj.simp
     @unpack initbiomass = input_obj.site
 
     ############# output variables
+    #### State variables
     biomass = DimArray(
         Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim, nspecies)u"kg/ha",
         (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
-        name = :biomass)
+        name = :state_biomass)
+    water = DimArray(Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim)u"mm",
+        (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        name = :state_water)
+
+    #### Species-specfic output variables
     mown = DimArray(
-        Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim, nspecies)u"kg/ha",
-        (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :mown)
     grazed = DimArray(
-        Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim, nspecies)u"kg/ha",
-        (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :grazed)
-    water = DimArray(Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim)u"mm",
-                     (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim),
-                     name = :water)
-    output = (; biomass, mown, grazed, water)
+    trampled = DimArray(
+        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :trampled)
+    senescence = DimArray(
+        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :senescence)
+    act_growth = DimArray(
+        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :act_growth)
+    light_growth = DimArray(
+        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim, nspecies),
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :light_growth)
+    nutrient_growth = DimArray(
+        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim, nspecies),
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :nutrient_growth)
+    water_growth = DimArray(
+        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim, nspecies),
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :water_growth)
+    root_invest = DimArray(
+        Array{T}(undef, nspecies),
+        (; species = 1:nspecies),
+        name = :root_invest)
+
+    #### Community-level output variables
+    community_pot_growth = DimArray(
+        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim)u"kg/ha",
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        name = :community_pot_growth)
+    radiation_reducer = DimArray(
+        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim),
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        name = :radiation_reducer)
+    temperature_reducer = DimArray(
+        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim),
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        name = :temperature_reducer)
+    seasonal_growth = DimArray(
+        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim),
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        name = :seasonal_growth)
+    seasonal_senescence = DimArray(
+        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim),
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        name = :seasonal_senescence)
+
+    output = (; biomass, water, mown, grazed, trampled, senescence, community_pot_growth,
+              act_growth, radiation_reducer, seasonal_growth, temperature_reducer,
+              seasonal_senescence, light_growth, water_growth, nutrient_growth,
+              root_invest)
 
     ############# change and state variables
     du_biomass = DimArray(
@@ -71,7 +129,7 @@ function preallocate_vectors(; input_obj, T = Float64)
     global F = T
 
     calc = (;
-        com = CommunityLevel(),
+        com = CommunityLevel1(),
 
         negbiomass = fill(false, ntimesteps + 1, patch_xdim, patch_ydim, nspecies),
 
@@ -130,8 +188,10 @@ function preallocate_vectors(; input_obj, T = Float64)
         proportion_mown = Array{T}(undef, nspecies),
         grazed_share = Array{T}(undef, nspecies),
         height_scaled = Array{T}(undef, nspecies),
-        trampled_biomass = Array{T}(undef, nspecies)u"kg / ha",
         trampled_share = Array{T}(undef, nspecies),
+        mown = Array{T}(undef, nspecies)u"kg / ha",
+        grazed = Array{T}(undef, nspecies)u"kg / ha",
+        trampled = Array{T}(undef, nspecies)u"kg / ha",
 
         ## clonal growth
         clonalgrowth = Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
@@ -149,13 +209,14 @@ function preallocate_vectors(; input_obj, T = Float64)
     return (; u, patch_variables, calc, traits, transfer_function, output)
 end
 
-@with_kw mutable struct CommunityLevel{T, Q} @deftype T
+@with_kw mutable struct CommunityLevel1{T, Q} @deftype T
     LAItot = F(0.0)
     potgrowth_total::Q = F(0.0) * u"kg/ha"
     comH_reduction = F(1.0)
     RAD = F(1.0)
     SEA = F(1.0)
     TEMP = F(1.0)
+    SEN_season = F(1.0)
 end
 
 function preallocate_specific_vectors(; input_obj, T = Float64)

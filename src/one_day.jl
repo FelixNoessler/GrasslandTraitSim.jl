@@ -56,11 +56,12 @@ loop over patches:
 - [soil water dynamics](@ref change_water_reserve)
 """
 function one_day!(; t, container)
-    @unpack input, traits = container
-    @unpack npatches, patch_xdim, patch_ydim, included = container.simp
+    @unpack input, output, traits = container
+    @unpack npatches, patch_xdim, patch_ydim, nspecies, included = container.simp
     @unpack u_biomass, u_water, du_biomass, du_water = container.u
     @unpack WHC, PWP, nutrients = container.patch_variables
-    @unpack act_growth, senescence, defoliation = container.calc
+    @unpack com, act_growth, senescence, mown, grazed, trampled, defoliation,
+        light_competition, Nutred, Waterred, root_invest = container.calc
 
     ## -------- clonal growth
     # TODO
@@ -68,6 +69,7 @@ function one_day!(; t, container)
     #    (!haskey(included, :clonalgrowth) || included.clonalgrowth)
     #     clonalgrowth!(; container)
     # end
+
 
     ## -------- loop over patches
     for x in Base.OneTo(patch_xdim)
@@ -84,6 +86,9 @@ function one_day!(; t, container)
             defoliation .= 0.0u"kg / ha"
             act_growth .= 0.0u"kg / ha"
             senescence .= 0.0u"kg / ha"
+            grazed .= 0.0u"kg / ha"
+            mown .= 0.0u"kg / ha"
+            trampled .= 0.0u"kg / ha"
 
             if !iszero(sum(patch_biomass))
                 # ------------------------------------------ growth
@@ -146,6 +151,26 @@ function one_day!(; t, container)
                 PET = input.PET_sum[t],
                 WHC = WHC[x, y],
                 PWP = PWP[x, y])
+
+            ######################### write outputs
+            output.community_pot_growth[t, x, y] = com.potgrowth_total
+            output.radiation_reducer[t, x, y] = com.RAD
+            output.seasonal_growth[t, x, y] = com.SEA
+            output.temperature_reducer[t, x, y] = com.TEMP
+            output.seasonal_senescence[t, x, y] = com.SEN_season
+
+
+            for s in 1:nspecies
+                output.act_growth[t, x, y, s] = act_growth[s]
+                output.mown[t, x, y, s] = mown[s]
+                output.grazed[t, x, y, s] = grazed[s]
+                output.trampled[t, x, y, s] = trampled[s]
+                output.senescence[t, x, y, s] = senescence[s]
+                output.light_growth[t, x, y, s] = light_competition[s]
+                output.water_growth[t, x, y, s] = Waterred[s]
+                output.nutrient_growth[t, x, y, s] = Nutred[s]
+            end
+
         end
     end
 

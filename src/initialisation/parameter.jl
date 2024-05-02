@@ -444,7 +444,7 @@ $(MYNEWFIELDS)
     """
     5::``\\alpha_{TRM}``::
     """
-    α_TRM::Q11 = F(10000.0)u"kg / ha"
+    α_TRM::Q11 = F(1000.0)u"kg / ha"
 
     """
     5::``\\beta_{TRM}``::defines together with the height of

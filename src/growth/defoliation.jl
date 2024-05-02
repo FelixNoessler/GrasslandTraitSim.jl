@@ -4,8 +4,8 @@ Influence of mowing for plant species with different heights ($height$):
 """
 function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
     @unpack height = container.traits
-    @unpack defoliation, proportion_mown, lowbiomass_correction = container.calc
-    @unpack mown = container.output
+    @unpack defoliation, mown, proportion_mown, lowbiomass_correction = container.calc
+    # @unpack mown = container.output
     @unpack α_lowB, β_lowB = container.p
     @unpack nspecies = container.simp
     @unpack included = container.simp
@@ -21,10 +21,10 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
     end
 
     # --------- add the removed biomass to the defoliation vector
-    for s in 1:nspecies
-        mown[t, x, y, s] = lowbiomass_correction[s] * proportion_mown[s] * biomass[s]
-        defoliation[s] += mown[t, x, y, s]
-    end
+    @. mown = lowbiomass_correction * proportion_mown * biomass
+    defoliation .+= mown
+
+
 
     return nothing
 end
@@ -68,9 +68,8 @@ Influence of `α_GRZ`:
 function grazing!(; t, x, y, container, LD, biomass)
     @unpack lnc = container.traits
     @unpack α_GRZ, β_PAL_lnc, κ, α_lowB, β_lowB = container.p
-    @unpack defoliation, grazed_share, relative_lncm, ρ,
+    @unpack defoliation, grazed_share, relative_lncm, ρ, grazed,
             lowbiomass_correction, low_ρ_biomass = container.calc
-    @unpack grazed = container.output
     @unpack included = container.simp
 
     #################################### total grazed biomass
@@ -94,8 +93,8 @@ function grazing!(; t, x, y, container, LD, biomass)
     grazed_share .= low_ρ_biomass ./ sum(low_ρ_biomass)
 
     #################################### add grazed biomass to defoliation
-    @. grazed[t, x, y, :] = grazed_share * total_grazed
-    @. defoliation += grazed_share * total_grazed
+    @. grazed = grazed_share * total_grazed
+    defoliation .+= grazed
 
     return nothing
 end
@@ -129,8 +128,8 @@ Maximal the whole biomass of a plant species is removed by trampling.
 function trampling!(; container, LD, biomass)
     @unpack height = container.traits
     @unpack β_TRM_H, β_TRM, α_TRM, α_lowB, β_lowB = container.p
-    @unpack lowbiomass_correction, trampled_share, trampled_biomass,
-            defoliation, height_scaled = container.calc
+    @unpack lowbiomass_correction, trampled_share,
+            defoliation, height_scaled, trampled = container.calc
     @unpack included = container.simp
 
     #################################### Total trampled biomass
@@ -150,8 +149,8 @@ function trampling!(; container, LD, biomass)
                         lowbiomass_correction * biomass / sum_biomass
 
     #################################### Add trampled biomass to defoliation
-    @. trampled_biomass = trampled_share * total_trampled
-    defoliation .+= trampled_biomass
+    @. trampled = trampled_share * total_trampled
+    defoliation .+= trampled
 
     return nothing
 end

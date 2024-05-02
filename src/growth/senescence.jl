@@ -39,16 +39,16 @@ seasonal component of the senescence.
 - `B` biomass dry weight [kg ha⁻¹]
 """
 function senescence!(; container, ST, biomass)
-    @unpack senescence, μ = container.calc
+    @unpack senescence, μ, com = container.calc
     @unpack included, time_step_days = container.simp
 
-    SEN = if !haskey(included, :senescence_season) || included.senescence_season
+    com.SEN_season = if !haskey(included, :senescence_season) || included.senescence_season
         seasonal_component_senescence(; container, ST)
     else
         1.0
     end
 
-    @. senescence = (1 - (1 - μ * SEN) ^ time_step_days.value) * biomass
+    @. senescence = (1 - (1 - μ * com.SEN_season) ^ time_step_days.value) * biomass
 
     return nothing
 end
