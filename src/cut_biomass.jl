@@ -18,7 +18,7 @@ function calc_cut_biomass!(; container)
         proportion_mown .= max.(height .- cutting_height[i] * u"m", 0.0u"m") ./ height
 
         # --------- if low species biomass, the plant height is low -> less biomass is mown
-        if !haskey(included, :lowbiomass_avoidance) || included.lowbiomass_avoidance
+        if included.lowbiomass_avoidance
             @. lowbiomass_correction =  1.0 / (1.0 + exp(β_lowB * (α_lowB - species_mean_biomass)))
         else
             lowbiomass_correction .= 1.0

@@ -14,7 +14,7 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
     proportion_mown .= max.(height .- mowing_height, 0.0u"m") ./ height
 
     # --------- if low species biomass, the plant height is low -> less biomass is mown
-    if !haskey(included, :lowbiomass_avoidance) || included.lowbiomass_avoidance
+    if included.lowbiomass_avoidance
         @. lowbiomass_correction =  1.0 / (1.0 + exp(β_lowB * (α_lowB - biomass)))
     else
         lowbiomass_correction .= 1.0
@@ -83,7 +83,7 @@ function grazing!(; t, x, y, container, LD, biomass)
     ρ .= (lnc ./ sum(relative_lncm)) .^ β_PAL_lnc
 
     ## species with low biomass are less grazed
-    if !haskey(included, :lowbiomass_avoidance) || included.lowbiomass_avoidance
+    if included.lowbiomass_avoidance
         @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (biomass - α_lowB)))
     else
         lowbiomass_correction .= 1.0
@@ -138,7 +138,7 @@ function trampling!(; container, LD, biomass)
     total_trampled = LD * β_TRM * biomass_exp / (α_TRM * α_TRM + biomass_exp)
 
     #################################### Share of trampled biomass per species
-    if !haskey(included, :lowbiomass_avoidance) || included.lowbiomass_avoidance
+    if included.lowbiomass_avoidance
         @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (biomass - α_lowB)))
     else
         lowbiomass_correction .= 1.0

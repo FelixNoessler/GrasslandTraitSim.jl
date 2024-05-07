@@ -42,7 +42,7 @@ function input_nutrients!(; prealloc, input_obj, p)
     # mintotalN = 1.2525
     # N_max = 30.63
 
-    if !haskey(included, :nutrient_growth_reduction) || included.nutrient_growth_reduction
+    if included.nutrient_growth_reduction
         @. nutrients = totalN / p.N_max
     end
 

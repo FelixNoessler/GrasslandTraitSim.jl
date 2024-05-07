@@ -65,8 +65,7 @@ function one_day!(; t, container)
 
     ## -------- clonal growth
     # TODO
-    # if doy[t] == 250 && npatches > 1 &&
-    #    (!haskey(included, :clonalgrowth) || included.clonalgrowth)
+    # if doy[t] == 250 && npatches > 1 && included.clonalgrowth
     #     clonalgrowth!(; container)
     # end
 
@@ -100,14 +99,14 @@ function one_day!(; t, container)
                     PWP = PWP[x, y])
 
                 # ------------------------------------------ senescence
-                if !haskey(included, :senescence) || included.senescence
+                if included.senescence
                     senescence!(; container,
                         ST = input.temperature_sum[t],
                         biomass = patch_biomass)
                 end
 
                 # ------------------------------------------ mowing
-                if !haskey(included, :mowing) || included.mowing
+                if included.mowing
                     mowing_height = if input.CUT_mowing isa Vector
                         input.CUT_mowing[t]
                     else
@@ -129,12 +128,12 @@ function one_day!(; t, container)
                 end
 
                 if !isnan(LD)
-                    if !haskey(included, :grazing) || included.grazing
+                    if included.grazing
                         grazing!(; t, x, y, container, LD,
                             biomass = patch_biomass)
                     end
 
-                    if !haskey(included, :trampling) || included.trampling
+                    if included.trampling
                         trampling!(; container, LD,
                             biomass = patch_biomass)
                     end

@@ -6,7 +6,7 @@ function senescence_rate!(; input_obj, prealloc, p)
     @unpack sla = prealloc.traits
     @unpack μ, leaflifespan =  prealloc.calc
 
-    if haskey(included, :senescence) && !included.senescence
+    if !included.senescence
         @. μ = 0.0
         @. leaflifespan = 0.0u"d"
         return nothing

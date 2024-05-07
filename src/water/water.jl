@@ -109,7 +109,7 @@ function transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
 
     ###### SLA effect
     sla_effect = 1.0
-    if !haskey(included, :sla_transpiration) || included.sla_transpiration
+    if included.sla_transpiration
         @unpack sla = container.traits
         @unpack α_TR_sla, β_TR_sla = container.p
         @unpack relative_sla = container.calc

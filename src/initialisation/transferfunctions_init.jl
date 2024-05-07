@@ -5,7 +5,7 @@ the response to water and nutrient stress.
 function init_transfer_functions!(; input_obj, prealloc, p)
     @unpack included = input_obj.simp
 
-    if !haskey(included, :water_growth_reduction) || included.water_growth_reduction
+    if included.water_growth_reduction
         @unpack δ_sla, δ_wrsa, ϕ_rsa, ϕ_sla, η_min_sla, η_max_sla,
                 β_η_wrsa, β_η_sla, η_max_wrsa, η_min_wrsa = p
         @unpack rsa, sla = prealloc.traits
@@ -19,7 +19,7 @@ function init_transfer_functions!(; input_obj, prealloc, p)
             (1 + exp(-β_η_wrsa * (rsa - ϕ_rsa)))
     end
 
-    if !haskey(included, :nutrient_growth_reduction) || included.nutrient_growth_reduction
+    if included.nutrient_growth_reduction
         @unpack δ_amc, δ_nrsa, ϕ_amc, ϕ_rsa, η_min_amc, η_max_amc,
                 β_η_amc, β_η_nrsa,
                 η_min_nrsa, η_max_nrsa = p

@@ -561,97 +561,92 @@ function exlude_parameter(; input_obj)
     @unpack likelihood_included, included, npatches = input_obj.simp
 
     excl_p = Symbol[]
-    if haskey(likelihood_included, :biomass) && !likelihood_included.biomass
+    if !likelihood_included.biomass
         append!(excl_p, [:b_biomass])
     end
 
-    if haskey(likelihood_included, :trait) && !likelihood_included.trait
+    if !likelihood_included.trait
         append!(excl_p, [:b_sla, :b_lnc, :b_amc, :b_height, :b_rsa])
     end
 
-    if haskey(included, :potential_growth) && !included.potential_growth
+    if !included.potential_growth
         append!(excl_p, [:RUE_max, :k])
     end
 
-    if isone(npatches) || (haskey(included, :clonalgrowth) && !included.clonalgrowth)
+    if isone(npatches) || !included.clonalgrowth
         append!(excl_p, [:β_clo])
     end
 
-    if haskey(included, :radiation_red) && !included.radiation_red
+    if !included.radiation_red
         append!(excl_p, [:γ₁, :γ₂])
     end
 
-    if haskey(included, :temperature_growth_reduction) &&
-       !included.temperature_growth_reduction
+    if !included.temperature_growth_reduction
         append!(excl_p, [:T₀, :T₁, :T₂, :T₃])
     end
 
-    if haskey(included, :season_red) && !included.season_red
+    if h!included.season_red
         append!(excl_p, [:SEA_min, :SEA_max, :ST₁, :ST₂])
     end
 
-    if haskey(included, :water_growth_reduction) && !included.water_growth_reduction
+    if !included.water_growth_reduction
         water_names = [:ϕ_sla, :η_min_sla, :η_max_sla, :β_η_sla, :β_sla, :δ_wrsa, :δ_sla,
                        :β_wrsa, :η_min_wrsa, :η_max_wrsa, :β_η_wrsa]
         append!(excl_p, water_names)
     end
 
-    if haskey(included, :nutrient_growth_reduction) && !included.nutrient_growth_reduction
+    if !included.nutrient_growth_reduction
         nutrient_names = [:N_max, :ϕ_amc, :η_min_amc, :η_max_amc, :κ_red_amc, :β_η_amc,
                           :β_amc, :δ_amc, :δ_nrsa, :β_nrsa,
                           :η_min_nrsa, :η_max_nrsa, :β_η_nrsa]
         append!(excl_p, nutrient_names)
     end
 
-    if haskey(included, :nutrient_growth_reduction) && !included.nutrient_growth_reduction &&
-       haskey(included, :water_growth_reduction) && !included.water_growth_reduction
+    if !included.nutrient_growth_reduction && !included.water_growth_reduction
         append!(excl_p, [:ϕ_rsa])
     end
 
-    if haskey(included, :pet_growth_reduction) && !included.pet_growth_reduction
+    if !included.pet_growth_reduction
         append!(excl_p, [:α_PET, :β_PET])
     end
 
-    if haskey(included, :sla_transpiration) && !included.sla_transpiration
+    if !included.sla_transpiration
         append!(excl_p, [:α_TR_sla, :β_TR_sla])
     end
 
-    if haskey(included, :belowground_competition) && !included.belowground_competition
+    if !included.belowground_competition
         append!(excl_p, [:α_TSB, :β_TSB])
     end
 
-    if  haskey(included, :grazing) && !included.grazing
+    if !included.grazing
         append!(excl_p, [:β_PAL_lnc, :κ, :α_GRZ])
     end
 
-    if haskey(included, :trampling) && !included.trampling
+    if !included.trampling
         append!(excl_p, [:β_TRM, :α_TRM, :β_TRM_H])
     end
 
-    if haskey(included, :mowing)  && !included.mowing &&
-       haskey(included, :grazing)  && !included.grazing
-       haskey(included, :trampling)  && !included.trampling
+    if !included.mowing && !included.grazing && !included.trampling
         append!(excl_p, [:α_lowB, :β_lowB])
     end
 
-    if  haskey(included, :senescence) && !included.senescence
+    if  !included.senescence
         append!(excl_p, [:α_sen, :β_sen, :α_ll, :β_ll])
     end
 
-    if (haskey(included, :senescence) && !included.senescence) ||
-       (haskey(included, :senescence_season) && !included.senescence_season)
+    if !included.senescence || !included.senescence_season
         append!(excl_p, [:Ψ₁, :Ψ₂, :SEN_max])
     end
 
-    if haskey(included, :community_height_red) && !included.community_height_red
+    if !included.community_height_red
         append!(excl_p, [:α_com_height, :β_com_height])
     end
 
-    if haskey(included, :height_competition) && !included.height_competition
+    if !included.height_competition
         append!(excl_p, [:β_height])
     end
 
-    if haskey(included, :lowbiomass_avoidance) && !included.lowbiomass_avoidance
+    if !included.lowbiomass_avoidance
         append!(excl_p, [:α_lowB, :β_lowB])
 
     end

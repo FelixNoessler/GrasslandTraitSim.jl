@@ -40,7 +40,7 @@ function light_competition!(; container, biomass)
     @unpack included = container.simp
     @unpack height = container.traits
 
-    if haskey(included, :height_competition) && !included.height_competition
+    if !included.height_competition
         @info "Height influence turned off!" maxlog=1
         @. heightinfluence = 1.0
     else

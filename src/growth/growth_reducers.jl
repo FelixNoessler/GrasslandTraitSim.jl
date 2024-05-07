@@ -25,7 +25,7 @@ function radiation_reduction!(; container, PAR)
     @unpack included = container.simp
     @unpack com = container.calc
 
-    if haskey(included, :radiation_red) && !included.radiation_red
+    if !included.radiation_red
         @info "No radiation reduction!" maxlog=1
         com.RAD = 1.0
         return nothing
@@ -72,8 +72,7 @@ function temperature_reduction!(; container, T)
     @unpack included = container.simp
     @unpack com = container.calc
 
-    if haskey(included, :temperature_growth_reduction) &&
-       !included.temperature_growth_reduction
+    if !included.temperature_growth_reduction
         @info "No temperature reduction!" maxlog=1
         com.TEMP = 1.0
         return nothing
@@ -143,7 +142,7 @@ function seasonal_reduction!(; container, ST)
     @unpack included = container.simp
     @unpack com = container.calc
 
-    if haskey(included, :season_red) && !included.season_red
+    if !included.season_red
         @info "No seasonal reduction!" maxlog=1
         com.SEA = 1.0
         return nothing
