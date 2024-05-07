@@ -3,7 +3,8 @@ include("preallocation.jl")
 include("nutrients_whc_pwp_init.jl")
 include("senescence_init.jl")
 include("transferfunctions_init.jl")
-
+include("root_investment.jl")
+include("parameter_calibration.jl")
 
 """
 Initialize the simulation object.

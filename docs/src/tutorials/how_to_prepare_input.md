@@ -16,6 +16,47 @@ If you want to use the model with data from your own site, you can
 prepare the input similarly. Convert the data to the units that
 are used here and then, add the `Unitful.jl` unit to the data.
 
+
+## Simulation settings
+```@example input_creation
+import GrasslandTraitSim as sim
+import Dates
+using Unitful
+
+time_step_days = Dates.Day(1)
+output_date = Dates.Date(2010):Dates.lastdayofyear(Dates.Date(2012))
+mean_input_date = output_date[1:end-1] .+ (time_step_days ÷ 2)
+year = Dates.year.(output_date[1:end-1])
+ntimesteps = length(output_date) - 1
+ts = Base.OneTo(ntimesteps) 
+
+simp = (
+    output_date,
+    ts,
+    ntimesteps, 
+    time_step_days,
+    mean_input_date,
+    nspecies = 5,  
+    patch_xdim = 1, 
+    patch_ydim = 1, 
+    npatches = 1,
+    nutheterog = 0.0, 
+    trait_seed = missing,  
+    
+    ## which processes to include, see extra tutorial
+    ## empty tuple means, that everything is included
+    included = sim.create_included(),
+    
+    ## include parameter for likelihood calculation?
+    ## again empty tuple means that everything is included
+    ## here we say that don't need the parameters for the likelihood
+    likelihood_included = (; biomass = false, trait = false)
+)
+
+nothing # hide
+```
+
+
 ## Climatic data
 
 All climatic variables are here set to one to avoid complex data wrangling.
@@ -23,15 +64,6 @@ All climatic variables are here set to one to avoid complex data wrangling.
 For an explanation of the variables, see [here](@ref climate_input).
 
 ```@example input_creation
-import GrasslandTraitSim as sim
-import Dates
-using Unitful
-
-output_date = Dates.Date(2010):Dates.lastdayofyear(Dates.Date(2012))
-year = Dates.year.(output_date[1:end-1])
-ntimesteps = length(output_date) - 1
-ts = Base.OneTo(ntimesteps) 
-
 # --------------- PAR [MJ ha⁻¹]
 PAR = ones(ntimesteps)u"MJ / ha"
 
@@ -108,32 +140,7 @@ site_tuple = (;
 nothing # hide       
 ```
 
-## Simulation settings
-```@example input_creation
-simp = (
-    output_date,
-    ts,
-    ntimesteps, 
-    time_step_days = Dates.Day(1),
-    nspecies = 5,  
-    patch_xdim = 1, 
-    patch_ydim = 1, 
-    npatches = 1,
-    nutheterog = 0.0, 
-    trait_seed = missing,  
-    
-    ## which processes to include, see extra tutorial
-    ## empty tuple means, that everything is included
-    included = (;),
-    
-    ## include parameter for likelihood calculation?
-    ## again empty tuple means that everything is included
-    ## here we say that don't need the parameters for the likelihood
-    likelihood_included = (; biomass = false, trait = false)
-)
 
-nothing # hide
-```
 
 ## Putting everything together
 

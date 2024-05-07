@@ -87,6 +87,8 @@ and the root surface area devided by the above ground biomass (`rsa`).
 function below_ground_competition!(; container, biomass)
     @unpack biomass_density_factor, TS_biomass, TS = container.calc
     @unpack included, nspecies = container.simp
+    @unpack abp = container.traits
+
 
     if haskey(included, :belowground_competition) && !included.belowground_competition
         @info "No below ground competition for resources!" maxlog=1
@@ -99,7 +101,7 @@ function below_ground_competition!(; container, biomass)
     TS_biomass .= 0.0u"kg/ha"
     for s in 1:nspecies
         for i in 1:nspecies
-            TS_biomass[s] += TS[s, i] * biomass[i]
+            TS_biomass[s] += TS[s, i] * (1 - abp[i]) * biomass[i]
         end
     end
 

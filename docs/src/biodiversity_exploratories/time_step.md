@@ -69,8 +69,14 @@ plot_input_time_steps(input_obj_1, input_obj_7)
 
 
 ```@example time_step
-input_obj_14 = sim.validation_input(; plotID = "HEG01", nspecies = 43, time_step_days = 14);
-plot_input_time_steps(input_obj_1, input_obj_14)
+## load data
+path = joinpath(dirname(pathof(sim)), "../assets/data/input/inputs_14_days.jld2")
+input_objs_14 = sim.load_input(path; plotIDs = ["HEG01"]);
+
+## faster than preprocessing:
+# input_obj_14 = sim.validation_input(; plotID = "HEG01", nspecies = 43, time_step_days = 14);
+
+plot_input_time_steps(input_obj_1, input_objs_14.HEG01)
 ```
 
 ## Test processes for different time steps
@@ -80,7 +86,12 @@ function calc_total_biomass(included; plotID = "HEG01")
      trait_input = sim.input_traits();
      p = sim.SimulationParameter()
      input_obj_1 = sim.validation_input(; plotID, nspecies = 43, time_step_days = 1, included);
-     input_obj_14 = sim.validation_input(; plotID, nspecies = 43, time_step_days = 14, included);
+     
+     path = joinpath(dirname(pathof(sim)), "../assets/data/input/inputs_14_days.jld2")
+     input_obj_14 = sim.load_input(path; plotIDs = [plotID])[Symbol(plotID)];
+     
+     ## faster than preprocessing:
+     # input_obj_14 = sim.validation_input(; plotID, nspecies = 43, time_step_days = 14, included);
 
      sol_1 = sim.solve_prob(; input_obj=input_obj_1, p, trait_input);
      sol_14 = sim.solve_prob(; input_obj=input_obj_14, p, trait_input);

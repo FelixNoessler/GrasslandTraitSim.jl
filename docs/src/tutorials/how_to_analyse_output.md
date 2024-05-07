@@ -167,9 +167,9 @@ cum_mown = cumsum(mown_site)
 begin
       fig = Figure()
       Axis(fig[1,1]; ylabel = "Cummulative grazed\nbiomass [kg ha⁻¹]")
-      lines!(sol.simp.output_date_num, ustrip.(vec(cum_grazed)), color = :black, linewidth = 2;)
+      lines!(sol.simp.mean_input_date_num, ustrip.(vec(cum_grazed)), color = :black, linewidth = 2;)
       Axis(fig[2,1]; ylabel = "Cummulative mown\nbiomass [kg ha⁻¹]", xlabel = "Date [year]")
-      lines!(sol.simp.output_date_num, ustrip.(vec(cum_mown)), color = :black, linewidth = 2;)
+      lines!(sol.simp.mean_input_date_num, ustrip.(vec(cum_mown)), color = :black, linewidth = 2;)
       fig
 end
 save("grazed_mown.svg", fig); nothing # hide

@@ -2,13 +2,15 @@ function plot_root_investment(; path = nothing)
     nspecies = 43
     p = SimulationParameter()
     input_obj = validation_input(; plotID = "HEG01", nspecies)
+    real_traits = input_traits()
+
 
     prealloc = preallocate_vectors(; input_obj)
-    artificial_traits = (; abp = ones(nspecies), amc = LinRange(0, 1, nspecies))
+    artificial_traits = (; abp = ones(nspecies), amc = LinRange(0, 1, nspecies),
+                         rsa = fill(mean(real_traits.rsa), nspecies))
     prealloc = @set prealloc.traits = artificial_traits
 
     prealloc_real = deepcopy(prealloc)
-    real_traits = input_traits()
     real_traits.amc .= sort(real_traits.amc)
     real_traits.abp .= real_traits.abp[sortperm(real_traits.amc)]
     prealloc_real = @set prealloc.traits = real_traits

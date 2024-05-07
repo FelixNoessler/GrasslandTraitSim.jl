@@ -94,6 +94,7 @@ makedocs(;
         "Home" => "index.md",
         "Model input and output" => "model_io.md",
         "Parameter" => "parameter.md",
+        "Visualize model components" => "variables.md",
         "Tutorials" => [
             "Prepare input and run simulation" => "tutorials/how_to_prepare_input.md",
             "Analyse model output" => "tutorials/how_to_analyse_output.md",

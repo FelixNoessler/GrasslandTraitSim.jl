@@ -2,7 +2,7 @@ function load_input(path; included = (;), likelihood_included = (;), plotIDs = n
     inputs = load(path)
 
     for k in keys(inputs)
-        @reset inputs[k].simp.included = included
+        @reset inputs[k].simp.included = create_included(included)
         @reset inputs[k].simp.likelihood_included = likelihood_included
     end
 
@@ -33,27 +33,12 @@ function validation_input(;
         patch_xdim = 1,
         patch_ydim = 1,
         biomass_stats = nothing,
-        included = (;
-            senescence = true,
-            senescence_season = true,
-            potential_growth = true,
-            clonalgrowth = true,
-            mowing = true,
-            trampling = true,
-            grazing = true,
-            lowbiomass_avoidance = true,
-            belowground_competition = true,
-            community_height_red = true,
-            height_competition = true,
-            pet_growth_reduction = true,
-            sla_transpiration = true,
-            water_growth_reduction = true,
-            nutrient_growth_reduction = true,
-            temperature_growth_reduction = true,
-            season_red = true,
-            radiation_red = true),
+        included = (;),
         likelihood_included = (; biomass = true, trait = true),
         trait_seed = missing)
+
+
+    included = create_included(included)
 
     time_step_days = Dates.Day(time_step_days)
     start_date = Dates.Date(2006, 1, 1)
@@ -374,4 +359,33 @@ function input_traits()
         abp = trait_df.abp,
         lbp = trait_df.lbp,
         lnc = trait_df.lnc * u"mg/g");
+end
+
+
+function create_included(included_prep = (;);)
+    included = (;
+        senescence = true,
+        senescence_season = true,
+        potential_growth = true,
+        clonalgrowth = true,
+        mowing = true,
+        trampling = true,
+        grazing = true,
+        lowbiomass_avoidance = true,
+        belowground_competition = true,
+        community_height_red = true,
+        height_competition = true,
+        pet_growth_reduction = true,
+        sla_transpiration = true,
+        water_growth_reduction = true,
+        nutrient_growth_reduction = true,
+        temperature_growth_reduction = true,
+        season_red = true,
+        radiation_red = true)
+
+    for k in keys(included_prep)
+        @reset included[k] = included_prep[k]
+    end
+
+    return included
 end
