@@ -220,12 +220,12 @@ $(MYNEWFIELDS)
     """
     2::``\\kappa_{\\text{red}, amc}``::TODO
     """
-    κ_red_amc = F(0.5)
+    κ_red_amc = F(0.2)
 
     """
     2::``\\kappa_{\\text{red}, rsa}``::TODO
     """
-    κ_red_rsa::Q16 = F(0.5)u"g/m^2"
+    κ_red_rsa::Q16 = F(1.0)u"g/m^2"
 
     """
     2::``\\beta_{\\eta, amc}``::part of the growth reducer based on the

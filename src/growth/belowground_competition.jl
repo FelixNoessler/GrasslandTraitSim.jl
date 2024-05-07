@@ -100,7 +100,7 @@ function below_ground_competition!(; container, biomass)
     TS_biomass .= 0.0u"kg/ha"
     for s in 1:nspecies
         for i in 1:nspecies
-            TS_biomass[s] += TS[s, i] * (1 - abp[i]) * biomass[i]
+            TS_biomass[s] += TS[s, i] * 1 / abp[i] * biomass[i]
         end
     end
 
@@ -255,8 +255,19 @@ function water_reduction!(; container, W, PET, PWP, WHC)
     @unpack A_wrsa, A_sla = container.transfer_function
 
     W_p .= biomass_density_factor .* (Wsc * pet_adjustment)
-    @. W_sla = 1 - δ_sla + δ_sla / (1 + exp(-β_sla * (W_p - A_sla)))
-    @. W_rsa = 1 - δ_wrsa + δ_wrsa / (1 + exp(-β_wrsa * (W_p - A_wrsa)))
+
+    if included.sla_water_growth_reducer
+        @. W_sla = 1 - δ_sla + δ_sla / (1 + exp(-β_sla * (W_p - A_sla)))
+    else
+        W_sla .= 1.0
+    end
+
+    if included.rsa_water_growth_reducer
+        @. W_rsa = 1 - δ_wrsa + δ_wrsa / (1 + exp(-β_wrsa * (W_p - A_wrsa)))
+    else
+        W_rsa .= 1.0
+    end
+
     @. Waterred = W_sla * W_rsa
 
     return nothing
