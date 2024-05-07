@@ -10,7 +10,7 @@ end
 function get_validation_data(; plotID, biomass_stats = nothing, mean_input_date = nothing)
     # ---------------------------- biomass
     biomass_sub =
-        @subset data.valid.measuredbiomass :plotID .== plotID.&&
+        @subset data.valid.measuredbiomass :plotID .== plotID .&&
             Dates.year.(:date) .<= 2021
 
     if !isnothing(biomass_stats)
@@ -39,7 +39,7 @@ function date_to_solt(calibration_dates; mean_input_date)
 
     output_index = Array{Int64}(undef, length(calibration_dates))
     for i in eachindex(calibration_dates)
-        output_index[i] = findfirst(calibration_dates[i] .> mean_input_date) + 1
+        output_index[i] = findfirst(mean_input_date .>= calibration_dates[i]) + 1
     end
     return output_index
 end

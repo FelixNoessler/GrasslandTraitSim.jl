@@ -1,5 +1,5 @@
 function dashboard(; posterior = nothing, variable_p = (;),
-                   biomass_stats = nothing, time_step_days = 1)
+                   biomass_stats = nothing)
     set_theme!(
         Theme(
             colgap = 5,
@@ -16,6 +16,7 @@ function dashboard(; posterior = nothing, variable_p = (;),
 
     still_running = false
     sol = nothing
+    mean_input_date = nothing
     valid_data = nothing
     trait_input = input_traits()
 
@@ -23,10 +24,11 @@ function dashboard(; posterior = nothing, variable_p = (;),
         if !still_running
             still_running = true
 
-            p, input_obj = prepare_input(; plot_obj, posterior, biomass_stats, time_step_days)
+            p, input_obj = prepare_input(; plot_obj, posterior, biomass_stats)
             sol = solve_prob(; input_obj, p, trait_input)
-            valid_data = get_valid_data(; plot_obj, biomass_stats,
-                mean_input_date = input_obj.simp.mean_input_date)
+
+            mean_input_date = input_obj.simp.mean_input_date
+            valid_data = get_valid_data(; plot_obj, biomass_stats, mean_input_date)
 
             show_validdata = plot_obj.obs.toggle_validdata.active.val
             if show_validdata
@@ -68,6 +70,10 @@ function dashboard(; posterior = nothing, variable_p = (;),
         plot_obj.obs.run_button.clicks[] = 1
     end
 
+    on(plot_obj.obs.menu_timestep.selection) do n
+        plot_obj.obs.run_button.clicks[] = 1
+    end
+
     on(plot_obj.obs.preset_button.clicks) do n
         @info "Parameter reset"
         p = SimulationParameter()
@@ -93,7 +99,7 @@ function dashboard(; posterior = nothing, variable_p = (;),
     on(plot_obj.obs.toggle_validdata.active) do n
         valid_data = nothing
         if n
-            valid_data = get_valid_data(; plot_obj, biomass_stats)
+            valid_data = get_valid_data(; plot_obj, biomass_stats, mean_input_date)
         end
         band_patch(; plot_obj, sol, valid_data)
         [trait_time_plot(; plot_obj, sol, valid_data, trait = t) for t in

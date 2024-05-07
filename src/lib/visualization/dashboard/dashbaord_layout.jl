@@ -85,6 +85,9 @@ function dashboard_layout(; variable_p)
                    for i in 1:50],
         width = 100,
         halign = :left)
+    Label(validation_layout[6, 1], "Time step:"; halign = :left, fontsize = 16)
+    menu_timestep = Menu(validation_layout[7, 1];
+        options = [1, 14])
 
     ##############################################################################
     # Right box: abiotic and grazing/mowing
@@ -199,6 +202,7 @@ function dashboard_layout(; variable_p)
         preset_button,
         menu_samplingtype,
         menu_plotID,
+        menu_timestep,
         menu_abiotic,
         parameter_keys,
         tb_p,

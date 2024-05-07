@@ -1,10 +1,18 @@
-function prepare_input(; plot_obj, posterior, biomass_stats = nothing, time_step_days)
+function prepare_input(; plot_obj, posterior, biomass_stats = nothing)
     # ------------- whether parts of the simulation are included
     included = NamedTuple(
         [first(s) => last(s).active.val for s in plot_obj.obs.toggles_included])
     plotID = plot_obj.obs.menu_plotID.selection.val
-    input_obj = validation_input(; plotID, nspecies = 43, included, biomass_stats, time_step_days)
+    time_step_days = plot_obj.obs.menu_timestep.selection.val
 
+    input_obj = if time_step_days == 14
+        path = joinpath(@__DIR__, "../../../../assets/data/input/inputs_14_days.jld2")
+        load_input(path; included, likelihood_included = (; biomass = true, trait = true),
+                   plotIDs = [plotID])[Symbol(plotID)]
+    else
+        validation_input(; plotID, nspecies = 43, included, biomass_stats,
+                                    time_step_days)
+    end
     # ------------- parameter values
     p = nothing
     samplingtype = plot_obj.obs.menu_samplingtype.selection.val

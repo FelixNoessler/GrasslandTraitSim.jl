@@ -135,7 +135,7 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
     ##  mean
     weighted_trait = Matrix(trait_vals .* relative_biomass')
     cwm_trait = vec(sum(weighted_trait; dims = 1))
-    cwv_trait = vec(sum(relative_biomass .* (cwm_trait .- trait_vals') .^ 2; dims = 2)) ./ cwm_trait
+    cwv_trait = sqrt.(vec(sum(relative_biomass .* (cwm_trait .- trait_vals') .^ 2; dims = 2)))
     ax.xlabel = "Time [years]"
 
     ### trait values of all species
