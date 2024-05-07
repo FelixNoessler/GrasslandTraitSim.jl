@@ -37,11 +37,12 @@ included_keys = (
 p_all = sim.SimulationParameter()
 p_dict = Dict()
 for k in included_keys
-    input_obj = (; simp = (; included = (; zip([k], [false])...),
-                             likelihood_included = (;),
+    included_prep = (; zip([k], [false])...)
+
+    input_obj = (; simp = (; included = sim.create_included(included_prep),
+                             likelihood_included = (; biomass = false, trait = false),
                              npatches = 5))
-    p = sim.SimulationParameter(input_obj; exclude_not_used = true)
-    
+    p = sim.SimulationParameter(input_obj;)    
     p_notin = keys(p_all)[.!(collect(keys(p_all)) .∈ Ref(keys(p)))]   
     p_dict[k] = p_notin    
 end

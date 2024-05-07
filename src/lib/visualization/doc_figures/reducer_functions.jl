@@ -121,8 +121,8 @@ function below_influence(; path = nothing)
     nspecies, container = create_container(; )
 
     #################### varying β_TSB, equal biomass, random traits
-    below_effects = LinRange(0, 2.0, 30)
-    biomass = fill(50.0, nspecies)u"kg / ha"
+    below_effects = LinRange(0, 0.5, 30)
+    biomass = fill(90.0, nspecies)u"kg / ha"
     ymat = Array{Float64}(undef, nspecies, length(below_effects))
 
     for (i, below_effect) in enumerate(below_effects)
@@ -144,7 +144,7 @@ function below_influence(; path = nothing)
     mat = [1 0.8 0.2; 0.8 1 0.5; 0.2 0.5 1]
     biomass = [100.0, 10.0, 10.0]u"kg / ha"
 
-    artificial_below = 0.0:0.01:2
+    artificial_below = 0.0:0.01:0.5
     artificial_mat = Array{Float64}(undef, 3, length(artificial_below))
 
     for i in eachindex(artificial_below)
@@ -155,7 +155,8 @@ function below_influence(; path = nothing)
             simp = (; included = (; belowground_competition = true),
                     nspecies = 3),
             p = (; β_TSB = artificial_below[i],
-                α_TSB = 80u"kg / ha"))
+                α_TSB = 0.4 * 80u"kg / ha"),
+            traits = (; abp = fill(0.6, 3)))
         below_ground_competition!(; container = c, biomass)
 
         artificial_mat[:, i] = c.calc.biomass_density_factor
@@ -170,10 +171,8 @@ function below_influence(; path = nothing)
 
     fig = Figure(; size = (900, 800))
     Axis(fig[1, 1];
-        # xlabel = "Strength of resource partitioning\n(β_TSB)",
         xticklabelsvisible = false,
         title = "Real community with equal biomass")
-    ylims!(-0.1, nothing)
     for i in Base.OneTo(nspecies)
         lines!(below_effects, ymat[i, :];
             colorrange, colormap, color = traitsim[i])

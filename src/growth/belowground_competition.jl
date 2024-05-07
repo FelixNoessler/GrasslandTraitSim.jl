@@ -89,7 +89,6 @@ function below_ground_competition!(; container, biomass)
     @unpack included, nspecies = container.simp
     @unpack abp = container.traits
 
-
     if !included.belowground_competition
         @info "No below ground competition for resources!" maxlog=1
         @. biomass_density_factor = 1.0

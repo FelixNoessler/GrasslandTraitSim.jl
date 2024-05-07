@@ -537,7 +537,7 @@ $(MYNEWFIELDS)
 end
 
 
-function SimulationParameter(input_obj::NamedTuple; exclude_not_used)
+function SimulationParameter(input_obj::NamedTuple; exclude_not_used = true)
     p = SimulationParameter()
 
     if exclude_not_used
@@ -585,7 +585,7 @@ function exlude_parameter(; input_obj)
         append!(excl_p, [:T₀, :T₁, :T₂, :T₃])
     end
 
-    if h!included.season_red
+    if !included.season_red
         append!(excl_p, [:SEA_min, :SEA_max, :ST₁, :ST₂])
     end
 
