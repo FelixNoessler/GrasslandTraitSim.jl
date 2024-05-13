@@ -1,80 +1,141 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Visualize model components · GrasslandTraitSim.jl</title><meta name="title" content="Visualize model components · GrasslandTraitSim.jl"/><meta property="og:title" content="Visualize model components · GrasslandTraitSim.jl"/><meta property="twitter:title" content="Visualize model components · GrasslandTraitSim.jl"/><meta name="description" content="Documentation for GrasslandTraitSim.jl."/><meta property="og:description" content="Documentation for GrasslandTraitSim.jl."/><meta property="twitter:description" content="Documentation for GrasslandTraitSim.jl."/><meta property="og:url" content="https://FelixNoessler.github.io/GrasslandTraitSim.jl/variables/"/><meta property="twitter:url" content="https://FelixNoessler.github.io/GrasslandTraitSim.jl/variables/"/><link rel="canonical" href="https://FelixNoessler.github.io/GrasslandTraitSim.jl/variables/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">GrasslandTraitSim.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../model_io/">Model input and output</a></li><li><a class="tocitem" href="../parameter/">Parameter</a></li><li class="is-active"><a class="tocitem" href>Visualize model components</a><ul class="internal"><li><a class="tocitem" href="#Trade-off-between-investing-in-roots-and-experiencing-nutrient-stress"><span>Trade-off between investing in roots and experiencing nutrient stress</span></a></li><li><a class="tocitem" href="#Trade-off-between-investing-in-roots-and-experiencing-water-stress"><span>Trade-off between investing in roots and experiencing water stress</span></a></li></ul></li><li><span class="tocitem">Tutorials</span><ul><li><a class="tocitem" href="../tutorials/how_to_prepare_input/">Prepare input and run simulation</a></li><li><a class="tocitem" href="../tutorials/how_to_analyse_output/">Analyse model output</a></li><li><a class="tocitem" href="../tutorials/how_to_heterogeneous_site_management/">Heterogenous site or management conditions</a></li><li><a class="tocitem" href="../tutorials/how_to_turnoff_subprocesses/">Turn-off subprocesses</a></li></ul></li><li><span class="tocitem">Model description</span><ul><li><a class="tocitem" href="../Modelling_API/main_equations/">Difference equation</a></li><li><a class="tocitem" href="../Modelling_API/initialization/">Initialization</a></li><li><input class="collapse-toggle" id="menuitem-6-3" type="checkbox"/><label class="tocitem" for="menuitem-6-3"><span class="docs-label">Biomass dynamic</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../Modelling_API/biomass_dynamic/">Overview</a></li><li><a class="tocitem" href="../Modelling_API/growth/">Growth: overview</a></li><li><a class="tocitem" href="../Modelling_API/growth_potential_growth/">Growth: potential growth</a></li><li><a class="tocitem" href="../Modelling_API/growth_env_factors/">Growth: community adjustment</a></li><li><a class="tocitem" href="../Modelling_API/growth_species_specific/">Growth: species-specific adjustment</a></li><li><a class="tocitem" href="../Modelling_API/senescence/">Senescence</a></li><li><a class="tocitem" href="../Modelling_API/defoliation/">Mowing, grazing, and trampling</a></li><li><a class="tocitem" href="../Modelling_API/clonalgrowth/">Clonal growth</a></li></ul></li><li><a class="tocitem" href="../Modelling_API/water/">Water dynamics</a></li></ul></li><li><span class="tocitem">Calibration to grasslands of the Biodiversity Exploratories</span><ul><li><a class="tocitem" href="../biodiversity_exploratories/calibration_data/">Calibration data</a></li><li><a class="tocitem" href="../biodiversity_exploratories/time_step/">Time step</a></li><li><a class="tocitem" href="../biodiversity_exploratories/traits/">Trait data</a></li><li><a class="tocitem" href="../biodiversity_exploratories/likelihood/">Likelihood</a></li><li><a class="tocitem" href="../biodiversity_exploratories/priors/">Priors</a></li></ul></li><li><a class="tocitem" href="../all_functions/">TOC all functions</a></li><li><a class="tocitem" href="../References/">References &amp; Acknowledgements</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Visualize model components</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Visualize model components</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/FelixNoessler/GrasslandTraitSim.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/FelixNoessler/GrasslandTraitSim.jl/blob/master/docs/src/variables.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Influence-of-intermediate-variables"><a class="docs-heading-anchor" href="#Influence-of-intermediate-variables">Influence of intermediate variables</a><a id="Influence-of-intermediate-variables-1"></a><a class="docs-heading-anchor-permalink" href="#Influence-of-intermediate-variables" title="Permalink"></a></h1><h2 id="Trade-off-between-investing-in-roots-and-experiencing-nutrient-stress"><a class="docs-heading-anchor" href="#Trade-off-between-investing-in-roots-and-experiencing-nutrient-stress">Trade-off between investing in roots and experiencing nutrient stress</a><a id="Trade-off-between-investing-in-roots-and-experiencing-nutrient-stress-1"></a><a class="docs-heading-anchor-permalink" href="#Trade-off-between-investing-in-roots-and-experiencing-nutrient-stress" title="Permalink"></a></h2><ul><li>plants with a high investment into roots have a low aboveground biomass per total biomass, a high arbuscular mycorrhizal colonisation rate, and a high root surface area per belowground biomass  <ul><li><span>$\rightarrow$</span> low growth reduction due to nutrient stress  </li><li><span>$\rightarrow$</span> investment costs energy, this is implemented by a growth reducer that is independent of the nutrient level  </li></ul></li><li>nutrient stress is stronger if the total biomass is high</li></ul><details><summary>show code</summary><pre><code class="language-julia hljs">using CairoMakie
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Visualize model components · GrasslandTraitSim.jl</title><meta name="title" content="Visualize model components · GrasslandTraitSim.jl"/><meta property="og:title" content="Visualize model components · GrasslandTraitSim.jl"/><meta property="twitter:title" content="Visualize model components · GrasslandTraitSim.jl"/><meta name="description" content="Documentation for GrasslandTraitSim.jl."/><meta property="og:description" content="Documentation for GrasslandTraitSim.jl."/><meta property="twitter:description" content="Documentation for GrasslandTraitSim.jl."/><meta property="og:url" content="https://FelixNoessler.github.io/GrasslandTraitSim.jl/variables/"/><meta property="twitter:url" content="https://FelixNoessler.github.io/GrasslandTraitSim.jl/variables/"/><link rel="canonical" href="https://FelixNoessler.github.io/GrasslandTraitSim.jl/variables/"/><script data-outdated-warner src="../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../assets/documenter.js"></script><script src="../search_index.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../">GrasslandTraitSim.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../">Home</a></li><li><a class="tocitem" href="../model_io/">Model input and output</a></li><li><a class="tocitem" href="../parameter/">Parameter</a></li><li class="is-active"><a class="tocitem" href>Visualize model components</a><ul class="internal"><li><a class="tocitem" href="#Trade-off-between-investing-in-roots-and-experiencing-nutrient-stress"><span>Trade-off between investing in roots and experiencing nutrient stress</span></a></li><li><a class="tocitem" href="#Trade-off-between-investing-in-roots-and-experiencing-water-stress"><span>Trade-off between investing in roots and experiencing water stress</span></a></li></ul></li><li><span class="tocitem">Tutorials</span><ul><li><a class="tocitem" href="../tutorials/how_to_prepare_input/">Prepare input and run simulation</a></li><li><a class="tocitem" href="../tutorials/how_to_analyse_output/">Analyse model output</a></li><li><a class="tocitem" href="../tutorials/how_to_heterogeneous_site_management/">Heterogenous site or management conditions</a></li><li><a class="tocitem" href="../tutorials/how_to_turnoff_subprocesses/">Turn-off subprocesses</a></li></ul></li><li><span class="tocitem">Model description</span><ul><li><a class="tocitem" href="../Modelling_API/main_equations/">Difference equation</a></li><li><a class="tocitem" href="../Modelling_API/initialization/">Initialization</a></li><li><input class="collapse-toggle" id="menuitem-6-3" type="checkbox"/><label class="tocitem" for="menuitem-6-3"><span class="docs-label">Biomass dynamic</span><i class="docs-chevron"></i></label><ul class="collapsed"><li><a class="tocitem" href="../Modelling_API/biomass_dynamic/">Overview</a></li><li><a class="tocitem" href="../Modelling_API/growth/">Growth: overview</a></li><li><a class="tocitem" href="../Modelling_API/growth_potential_growth/">Growth: potential growth</a></li><li><a class="tocitem" href="../Modelling_API/growth_env_factors/">Growth: community adjustment</a></li><li><a class="tocitem" href="../Modelling_API/growth_species_specific/">Growth: species-specific adjustment</a></li><li><a class="tocitem" href="../Modelling_API/senescence/">Senescence</a></li><li><a class="tocitem" href="../Modelling_API/defoliation/">Mowing, grazing, and trampling</a></li><li><a class="tocitem" href="../Modelling_API/clonalgrowth/">Clonal growth</a></li></ul></li><li><a class="tocitem" href="../Modelling_API/water/">Water dynamics</a></li></ul></li><li><span class="tocitem">Calibration to grasslands of the Biodiversity Exploratories</span><ul><li><a class="tocitem" href="../biodiversity_exploratories/calibration_data/">Calibration data</a></li><li><a class="tocitem" href="../biodiversity_exploratories/time_step/">Time step</a></li><li><a class="tocitem" href="../biodiversity_exploratories/traits/">Trait data</a></li><li><a class="tocitem" href="../biodiversity_exploratories/likelihood/">Likelihood</a></li><li><a class="tocitem" href="../biodiversity_exploratories/priors/">Priors</a></li></ul></li><li><a class="tocitem" href="../all_functions/">TOC all functions</a></li><li><a class="tocitem" href="../References/">References &amp; Acknowledgements</a></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Visualize model components</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Visualize model components</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/FelixNoessler/GrasslandTraitSim.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/FelixNoessler/GrasslandTraitSim.jl/blob/master/docs/src/variables.md" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Influence-of-intermediate-variables"><a class="docs-heading-anchor" href="#Influence-of-intermediate-variables">Influence of intermediate variables</a><a id="Influence-of-intermediate-variables-1"></a><a class="docs-heading-anchor-permalink" href="#Influence-of-intermediate-variables" title="Permalink"></a></h1><h2 id="Trade-off-between-investing-in-roots-and-experiencing-nutrient-stress"><a class="docs-heading-anchor" href="#Trade-off-between-investing-in-roots-and-experiencing-nutrient-stress">Trade-off between investing in roots and experiencing nutrient stress</a><a id="Trade-off-between-investing-in-roots-and-experiencing-nutrient-stress-1"></a><a class="docs-heading-anchor-permalink" href="#Trade-off-between-investing-in-roots-and-experiencing-nutrient-stress" title="Permalink"></a></h2><ul><li>plants with a high investment into roots have a high arbuscular mycorrhizal colonisation rate and a high root surface area per belowground biomass     <span>$\rightarrow$</span> low growth reduction due to nutrient stress     <span>$\rightarrow$</span> investment costs energy, this is implemented by a growth reducer that is independent of the nutrient level  </li><li>nutrient stress is stronger if the total biomass is high</li></ul><details><summary>show code</summary><pre><code class="language-julia hljs">using CairoMakie
 using Unitful
 import GrasslandTraitSim as sim
 
 let
+    lastn_points = 1500
+
     trait_input = sim.input_traits();
     input_obj = sim.validation_input(; plotID = &quot;HEG01&quot;, nspecies = 43, time_step_days = 1);
     p = sim.SimulationParameter()
     sol = sim.solve_prob(; input_obj, p, trait_input);
-    t = sol.simp.mean_input_date_num
-    t_out = sol.simp.output_date_num
-    total_biomass = ustrip.(vec(sol.output.biomass[:, 1, 1, :] * (1 ./ sol.traits.abp)))
+    t = sol.simp.mean_input_date_num[end-lastn_points:end]
+    t_out = sol.simp.output_date_num[end-lastn_points:end]
+    total_biomass = ustrip.(vec(sol.output.biomass[end-lastn_points:end, 1, 1, :] * (1 ./ sol.traits.abp)))
 
-    axis = (width = 900, height = 300)
 
-    fig = Figure()
+    fig = Figure(size = (900, 1000))
 
-    Axis(fig[1, 1:2]; axis..., xticklabelsvisible = false, xticksvisible = true,
-         xticks = 2006:2:2022, ylabel = &quot;Total biomass [kg ha⁻¹]&quot;)
+    Axis(fig[1, 1:2];
+         xticklabelsvisible = false, xticksvisible = true,
+         xticks = 2018:1:2022, ylabel = &quot;Total biomass\n[kg ha⁻¹]&quot;)
     lines!(t_out, total_biomass;
-           linewidth = 3, color = :black)
+            linewidth = 2, color = :black)
 
-    colorrange = (minimum(sol.output.root_invest), maximum(sol.output.root_invest))
-    color_vals = vec(sol.output.root_invest)
-    colormap = :viridis
 
-    Axis(fig[2, 1:2]; axis..., xticks = 2006:2:2022,
-         ylabel = &quot;Growth reduction factor\ndue to nutrient stress [-]\n← stronger reduction, less reduction →&quot;)
-    for s in 1:sol.simp.nspecies
-        lines!(t, vec(sol.output.nutrient_growth[:, 1, 1, s]); colorrange,
-               colormap, color = color_vals[s], linewidth = 0.5)
+    c = vec(sol.calc.root_invest_amc .* sol.calc.root_invest_rsa)
+    colorrange = (minimum(c), maximum(c))
+    species_order = sortperm(c)
+    colormap = :redsblues
+
+    Axis(fig[2, 1:2];
+         xticks = 2018:1:2022,
+         ylabel = &quot;Growth reduction factor\ndue to nutrient stress [-]\n← stronger reduction, less reduction →&quot;,
+         xlabel = &quot;Time [year]&quot;)
+    for s in sortperm(c)[[1, 2, 3, 4, 5, 39, 40, 41, 42, 43]]
+        lines!(t, vec(sol.output.nutrient_growth[end-lastn_points:end, 1, 1, s]);
+               colorrange, colormap, color = c[s], linewidth = 1)
     end
 
+    ax1 = Axis(fig[3, 1];
+        xlabel = &quot;Root suface area per\nbelowground biomass [m² g⁻¹]&quot;,
+        ylabel = &quot;Growth reducer due to investment\ninto roots, single effects [-]\n← stronger reduction, less reduction →&quot;)
+    scatter!(ustrip.(sol.traits.rsa), sol.calc.root_invest_rsa;
+            color = c, colormap,
+            markersize = 10)
 
-    Axis(fig[3, 1];  height = 300, width = 450,
-         xlabel = &quot;Aboveground biomass per total biomass [-]&quot;,
-         ylabel = &quot;Arbuscular mycorrhizal colonisation rate [-]&quot;)
-    scatter!(sol.traits.abp, sol.traits.amc,
-             color = color_vals,
-             markersize = 30)
-
-    Axis(fig[3, 2]; height = 300, width = 450,
-         xlabel = &quot;Aboveground biomass per total biomass [-]&quot;,
-         ylabel = &quot;Root suface area [m² g⁻¹]&quot;)
-    scatter!(sol.traits.abp, ustrip.(sol.traits.rsa),
-            color = color_vals,
-            markersize = 30)
+    ax2 = Axis(fig[3, 2];
+        xlabel = &quot;Arbuscular mycorrhiza\ncolonisation rate [-]&quot;,
+        yticklabelsvisible = false)
+    scatter!(sol.traits.amc, sol.calc.root_invest_amc;
+            color = c, colormap,
+            markersize = 10)
+    linkyaxes!(ax1, ax2)
 
     Colorbar(fig[2:3, 3]; colorrange, colormap,
-        label = &quot;Growth reduction due to investment into roots [-]&quot;)
+        label = &quot;Growth reduction due to investment into roots, multiplicative effect of both factors [-]\n← stronger reduction, less reduction →&quot;)
 
-    rowgap!(fig.layout, 1, 10)
+    rowsize!(fig.layout, 1, Relative(0.1))
+    rowsize!(fig.layout, 2, Relative(0.5))
+    rowgap!(fig.layout, 1, 5)
     rowgap!(fig.layout, 2, 10)
+    colgap!(fig.layout, 1, 5)
 
-    resize_to_layout!(fig)
     fig
-end</code></pre></details><p><img src="../nutrient_stress.svg" alt/></p><h2 id="Trade-off-between-investing-in-roots-and-experiencing-water-stress"><a class="docs-heading-anchor" href="#Trade-off-between-investing-in-roots-and-experiencing-water-stress">Trade-off between investing in roots and experiencing water stress</a><a id="Trade-off-between-investing-in-roots-and-experiencing-water-stress-1"></a><a class="docs-heading-anchor-permalink" href="#Trade-off-between-investing-in-roots-and-experiencing-water-stress" title="Permalink"></a></h2><details><summary>show code</summary><pre><code class="language-julia hljs">using CairoMakie
+end</code></pre></details><p><img src="../nutrient_stress.svg" alt/></p><h2 id="Trade-off-between-investing-in-roots-and-experiencing-water-stress"><a class="docs-heading-anchor" href="#Trade-off-between-investing-in-roots-and-experiencing-water-stress">Trade-off between investing in roots and experiencing water stress</a><a id="Trade-off-between-investing-in-roots-and-experiencing-water-stress-1"></a><a class="docs-heading-anchor-permalink" href="#Trade-off-between-investing-in-roots-and-experiencing-water-stress" title="Permalink"></a></h2><ul><li>a high root surface area per belowground biomass reduces water stress but the investment costs energy (see figure above)</li></ul><details><summary>show code</summary><pre><code class="language-julia hljs">using CairoMakie
 using Unitful
 import GrasslandTraitSim as sim
 
 let
+    lastn_points = 1500
+
     trait_input = sim.input_traits();
-    input_obj = sim.validation_input(; plotID = &quot;HEG01&quot;, nspecies = 43, time_step_days = 1);
+    input_obj = sim.validation_input(; plotID = &quot;HEG01&quot;, nspecies = 43, time_step_days = 1,
+                                        included = (;
+                                        belowground_competition = true,
+                                        nutrient_growth_reduction = true,
+                                        water_growth_reduction = true,
+                                        root_invest = true));
     p = sim.SimulationParameter()
     sol = sim.solve_prob(; input_obj, p, trait_input);
-    t = sol.simp.mean_input_date_num
-    t_out = sol.simp.output_date_num
-    total_biomass = ustrip.(vec(sol.output.biomass[:, 1, 1, :] * (1 ./ sol.traits.abp)))
+    t = sol.simp.mean_input_date_num[end-lastn_points:end]
+    t_out = sol.simp.output_date_num[end-lastn_points:end]
+    total_biomass = ustrip.(vec(sol.output.biomass[end-lastn_points:end, 1, 1, :] * (1 ./ sol.traits.abp)))
 
-    axis = (width = 900, height = 300)
+    PWP = sol.patch_variables.PWP[1, 1]
+    WHC = sol.patch_variables.WHC[1, 1]
+    water_out = vec(sol.output.water[end-lastn_points:end, 1, 1])
 
-    fig = Figure()
+    function get_Wsc(x; WHC, PWP)
+        return x &gt; WHC ? 1.0 : x &gt; PWP ? (x - PWP) / (WHC - PWP) : 0.0
+    end
 
-    Axis(fig[1, 1:2]; axis..., xticklabelsvisible = false, xticksvisible = true,
-         xticks = 2006:2:2022, ylabel = &quot;Total biomass [kg ha⁻¹]&quot;)
-    lines!(1:10)
-    resize_to_layout!(fig)
+    PET_shifted = max.(sol.input.PET[end-lastn_points:end] .- sol.p.α_PET, -90.0u&quot;mm&quot;)
+    pet_factor = exp.(-sol.p.β_PET .* PET_shifted)
+
+    water_scaled = get_Wsc.(water_out; WHC, PWP) .* pet_factor
+
+
+    fig = Figure(size = (900, 800))
+
+    Axis(fig[1, 1];
+        xticklabelsvisible = false, xticksvisible = true,
+        xticks = 2018:1:2022, ylabel = &quot;Total biomass\n[kg ha⁻¹]&quot;)
+    lines!(t_out, total_biomass;
+            linewidth = 2, color = :black)
+
+    Axis(fig[2, 1];
+        xticklabelsvisible = false, xticksvisible = true,
+        xticks = 2018:1:2022, ylabel = &quot;Soil water content\nin the rooting zone \n[mm]&quot;)
+    lines!(t_out, ustrip.(water_out);
+            linewidth = 2, color = :blue)
+    hlines!(ustrip.([PWP, WHC]))
+
+    Axis(fig[3, 1];
+        xticklabelsvisible = false, xticksvisible = true,
+        xticks = 2018:1:2022, ylabel = &quot;Scaled water\nwith adjustment\nby PET [-]&quot;,
+        limits = (nothing, nothing, -0.1, 1.8))
+        lines!(t_out, water_scaled;
+                linewidth = 2, color = :blue)
+
+    c = vec(sol.calc.root_invest_rsa)
+    colorrange = (minimum(c), maximum(c))
+    species_order = sortperm(c)
+    colormap = :redsblues
+
+    Axis(fig[4, 1];
+        xticks = 2018:1:2022,
+        ylabel = &quot;Growth reduction factor\ndue to water stress [-]\n← stronger reduction, less reduction →&quot;,
+        xlabel = &quot;Time [year]&quot;)
+    for s in sortperm(c)[[1, 2, 3, 4, 5, 39, 40, 41, 42, 43]]
+        lines!(t, vec(sol.output.water_growth[end-lastn_points:end, 1, 1, s]);
+            colorrange, colormap, color = c[s], linewidth = 1)
+    end
+    Colorbar(fig[4, 2]; colorrange, colormap,
+        label = &quot;Growth reduction due to investment into high\nroot surface area per belowground biomass [-]\n← stronger reduction, less reduction →&quot;)
+
+    rowsize!(fig.layout, 4, Relative(0.4))
+
     fig
-end</code></pre><img width=600 height=332 style='object-fit: contain; height: auto;' src="data:image/png;base64, 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"/></details><p><img src="water_stress.svg" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../parameter/">« Parameter</a><a class="docs-footer-nextpage" href="../tutorials/how_to_prepare_input/">Prepare input and run simulation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Tuesday 7 May 2024 15:25">Tuesday 7 May 2024</span>. Using Julia version 1.10.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+end</code></pre></details><p><img src="../water_stress.svg" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../parameter/">« Parameter</a><a class="docs-footer-nextpage" href="../tutorials/how_to_prepare_input/">Prepare input and run simulation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Monday 13 May 2024 14:11">Monday 13 May 2024</span>. Using Julia version 1.10.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
