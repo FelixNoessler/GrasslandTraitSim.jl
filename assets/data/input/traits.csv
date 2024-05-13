@@ -1,44 +1,44 @@
 species,id,amc,sla,height,rsa,abp,lbp,lnc
-Achillea millefolium agg,achil_mill,0.48,0.013,0.4,0.099,0.61,0.61,23.0
-Agrostis capillaris,agros_capi,0.44,0.031,0.25,0.143,0.61,0.47,24.0
-Alopecurus pratensis,alope_prat,0.17,0.022,0.45,0.131,0.57,0.2,20.0
-Anthoxanthum odoratum,antho_odor,0.11,0.026,0.16,0.146,0.59,0.54,21.0
-Arrhenatherum elatius,arrhe_elat,0.08,0.026,1.35,0.116,0.55,0.33,26.0
-Bellis perennis,belli_pere,0.42,0.034,0.06,0.168,0.63,0.67,22.0
-Brachypodium pinnatum,brach_pinn,0.35,0.022,0.55,0.111,0.54,0.4,22.0
-Bromus erectus,bromu_erec,0.16,0.013,0.5,0.126,0.51,0.49,21.0
-Bromus hordeaceus agg incl. B. commutatus,bromu_hord,0.13,0.026,0.06,0.124,0.56,0.49,24.0
-Cardamine pratensis,carda_prat,0.05,0.016,0.28,0.143,0.65,0.89,26.0
-Dactylis glomerata,dacty_glom,0.08,0.024,0.45,0.125,0.63,0.43,23.0
-Daucus carota,daucu_caro,0.43,0.012,0.41,0.093,0.68,0.43,27.0
-Deschampsia cespitosa,desch_cesp,0.53,0.012,0.28,0.093,0.66,0.39,18.0
-Festuca arundinacea,festu_arun,0.14,0.018,0.6,0.087,0.63,0.49,20.0
-Festuca ovina agg,festu_ovin,0.06,0.016,0.15,0.094,0.7,0.49,19.0
-Festuca rubra agg,festu_rubr,0.07,0.017,0.45,0.09,0.66,0.62,15.0
-Galium verum,galiu_veru,0.26,0.016,0.42,0.1,0.65,0.54,19.0
-Helictotrichon pubescens,helic_pube,0.14,0.023,0.6,0.098,0.57,0.68,20.0
-Holcus lanatus,holcu_lana,0.16,0.028,0.32,0.174,0.55,0.44,22.0
-Hypericum perforatum,hyper_perf,0.26,0.022,0.42,0.207,0.51,0.54,22.0
-Leontodon hispidus,leont_hisp,0.51,0.021,0.24,0.138,0.6,0.53,22.0
-Leucanthemum vulgare agg,leuca_vulg,0.58,0.019,0.36,0.124,0.66,0.55,21.0
-Lolium perenne,loliu_pere,0.07,0.02,0.12,0.141,0.56,0.48,23.0
-Lotus corniculatus,lotus_corn,0.25,0.023,0.21,0.112,0.64,0.44,39.0
-Phalaris arundinacea,phala_arun,0.37,0.022,1.45,0.118,0.58,0.32,35.0
-Phleum pratense agg,phleu_prat,0.16,0.018,0.37,0.109,0.65,0.44,22.0
-Phragmites australis,phrag_aust,0.24,0.011,2.5,0.073,0.69,0.31,26.0
-Hieracium pilosella,hiera_pilo,0.58,0.018,0.08,0.116,0.66,0.41,17.0
-Plantago lanceolata,plant_lanc,0.28,0.019,0.15,0.142,0.55,0.52,19.0
-Poa annua,poa_annu,0.09,0.061,0.08,0.158,0.61,0.49,35.0
-Poa pratensis agg,poa_prat,0.09,0.025,0.3,0.113,0.67,0.48,22.0
-Prunella sp,prune_sp,0.34,0.019,0.14,0.133,0.63,0.59,22.0
-Rumex acetosa,rumex_acet,0.16,0.027,0.31,0.112,0.54,0.56,27.0
-Rumex acetosa,rumex_acet,0.07,0.027,0.31,0.097,0.71,0.56,27.0
-Salvia pratensis,salvi_prat,0.36,0.018,0.38,0.097,0.58,0.64,28.0
-Sanguisorba minor,sangu_mino,0.6,0.013,0.2,0.068,0.64,0.48,21.0
-Leontodon autumnalis,leont_autu,0.45,0.022,0.05,0.163,0.52,0.45,21.0
-Trifolium campestre,trifo_camp,0.52,0.029,0.29,0.092,0.68,0.8,40.0
-Trifolium dubium,trifo_dubi,0.66,0.031,0.22,0.112,0.67,0.68,36.0
-Trifolium pratense,trifo_prat,0.39,0.026,0.28,0.059,0.69,0.34,36.0
-Trifolium repens,trifo_repe,0.47,0.03,0.35,0.059,0.74,0.46,37.0
-Veronica chamaedrys,veron_cham,0.22,0.025,0.22,0.105,0.64,0.65,19.0
-Vicia cracca agg,vicia_crac,0.73,0.015,0.75,0.135,0.53,0.68,47.0
+Achillea millefolium agg,achil_mill,0.48,0.013,0.4,0.155,0.61,0.61,23.0
+Agrostis capillaris,agros_capi,0.44,0.031,0.25,0.224,0.61,0.47,24.0
+Alopecurus pratensis,alope_prat,0.17,0.022,0.45,0.174,0.57,0.2,20.0
+Anthoxanthum odoratum,antho_odor,0.11,0.026,0.16,0.21,0.59,0.54,21.0
+Arrhenatherum elatius,arrhe_elat,0.08,0.026,1.35,0.142,0.55,0.33,26.0
+Bellis perennis,belli_pere,0.42,0.034,0.06,0.286,0.63,0.67,22.0
+Brachypodium pinnatum,brach_pinn,0.35,0.022,0.55,0.13,0.54,0.4,22.0
+Bromus erectus,bromu_erec,0.16,0.013,0.5,0.131,0.51,0.49,21.0
+Bromus hordeaceus agg incl. B. commutatus,bromu_hord,0.13,0.026,0.06,0.158,0.56,0.49,24.0
+Cardamine pratensis,carda_prat,0.05,0.016,0.28,0.266,0.65,0.89,26.0
+Dactylis glomerata,dacty_glom,0.08,0.024,0.45,0.213,0.63,0.43,23.0
+Daucus carota,daucu_caro,0.43,0.012,0.41,0.198,0.68,0.43,27.0
+Deschampsia cespitosa,desch_cesp,0.53,0.012,0.28,0.181,0.66,0.39,18.0
+Festuca arundinacea,festu_arun,0.14,0.018,0.6,0.148,0.63,0.49,20.0
+Festuca ovina agg,festu_ovin,0.06,0.016,0.15,0.219,0.7,0.49,19.0
+Festuca rubra agg,festu_rubr,0.07,0.017,0.45,0.175,0.66,0.62,15.0
+Galium verum,galiu_veru,0.26,0.016,0.42,0.186,0.65,0.54,19.0
+Helictotrichon pubescens,helic_pube,0.14,0.023,0.6,0.13,0.57,0.68,20.0
+Holcus lanatus,holcu_lana,0.16,0.028,0.32,0.213,0.55,0.44,22.0
+Hypericum perforatum,hyper_perf,0.26,0.022,0.42,0.215,0.51,0.54,22.0
+Leontodon hispidus,leont_hisp,0.51,0.021,0.24,0.207,0.6,0.53,22.0
+Leucanthemum vulgare agg,leuca_vulg,0.58,0.019,0.36,0.241,0.66,0.55,21.0
+Lolium perenne,loliu_pere,0.07,0.02,0.12,0.179,0.56,0.48,23.0
+Lotus corniculatus,lotus_corn,0.25,0.023,0.21,0.199,0.64,0.44,39.0
+Phalaris arundinacea,phala_arun,0.37,0.022,1.45,0.163,0.58,0.32,35.0
+Phleum pratense agg,phleu_prat,0.16,0.018,0.37,0.202,0.65,0.44,22.0
+Phragmites australis,phrag_aust,0.24,0.011,2.5,0.162,0.69,0.31,26.0
+Hieracium pilosella,hiera_pilo,0.58,0.018,0.08,0.225,0.66,0.41,17.0
+Plantago lanceolata,plant_lanc,0.28,0.019,0.15,0.174,0.55,0.52,19.0
+Poa annua,poa_annu,0.09,0.061,0.08,0.247,0.61,0.49,35.0
+Poa pratensis agg,poa_prat,0.09,0.025,0.3,0.229,0.67,0.48,22.0
+Prunella sp,prune_sp,0.34,0.019,0.14,0.226,0.63,0.59,22.0
+Rumex acetosa,rumex_acet,0.16,0.027,0.31,0.131,0.54,0.56,27.0
+Rumex acetosa,rumex_acet,0.07,0.027,0.31,0.237,0.71,0.56,27.0
+Salvia pratensis,salvi_prat,0.36,0.018,0.38,0.134,0.58,0.64,28.0
+Sanguisorba minor,sangu_mino,0.6,0.013,0.2,0.121,0.64,0.48,21.0
+Leontodon autumnalis,leont_autu,0.45,0.022,0.05,0.177,0.52,0.45,21.0
+Trifolium campestre,trifo_camp,0.52,0.029,0.29,0.196,0.68,0.8,40.0
+Trifolium dubium,trifo_dubi,0.66,0.031,0.22,0.227,0.67,0.68,36.0
+Trifolium pratense,trifo_prat,0.39,0.026,0.28,0.131,0.69,0.34,36.0
+Trifolium repens,trifo_repe,0.47,0.03,0.35,0.168,0.74,0.46,37.0
+Veronica chamaedrys,veron_cham,0.22,0.025,0.22,0.187,0.64,0.65,19.0
+Vicia cracca agg,vicia_crac,0.73,0.015,0.75,0.152,0.53,0.68,47.0
