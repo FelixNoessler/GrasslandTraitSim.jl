@@ -46,10 +46,6 @@ function preallocate_vectors(; input_obj, T = Float64)
         Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim, nspecies),
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :water_growth)
-    root_invest = DimArray(
-        Array{T}(undef, nspecies),
-        (; species = 1:nspecies),
-        name = :root_invest)
 
     #### Community-level output variables
     community_pot_growth = DimArray(
@@ -75,8 +71,7 @@ function preallocate_vectors(; input_obj, T = Float64)
 
     output = (; biomass, water, mown, grazed, trampled, senescence, community_pot_growth,
               act_growth, radiation_reducer, seasonal_growth, temperature_reducer,
-              seasonal_senescence, light_growth, water_growth, nutrient_growth,
-              root_invest)
+              seasonal_senescence, light_growth, water_growth, nutrient_growth)
 
     ############# change and state variables
     du_biomass = DimArray(
@@ -170,6 +165,8 @@ function preallocate_vectors(; input_obj, T = Float64)
 
         ## investment to roots
         root_invest = Array{T}(undef, nspecies),
+        root_invest_rsa = Array{T}(undef, nspecies),
+        root_invest_amc = Array{T}(undef, nspecies),
 
         ## nutrient reducer function
         nutrients_splitted = Array{T}(undef, nspecies),

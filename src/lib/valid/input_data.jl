@@ -381,6 +381,7 @@ function create_included(included_prep = (;);)
         rsa_water_growth_reducer = true,
         water_growth_reduction = true,
         nutrient_growth_reduction = true,
+        root_invest = true,
         temperature_growth_reduction = true,
         season_red = true,
         radiation_red = true)
