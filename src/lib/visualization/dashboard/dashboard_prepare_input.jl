@@ -6,7 +6,7 @@ function prepare_input(; plot_obj, posterior, biomass_stats = nothing)
     time_step_days = plot_obj.obs.menu_timestep.selection.val
 
     input_obj = if time_step_days == 14
-        path = joinpath(@__DIR__, "../../../../assets/data/input/inputs_14_days.jld2")
+        path = assetpath("data/input/inputs_14_days.jld2")
         load_input(path; included, likelihood_included = (; biomass = true, trait = true),
                    plotIDs = [plotID])[Symbol(plotID)]
     else

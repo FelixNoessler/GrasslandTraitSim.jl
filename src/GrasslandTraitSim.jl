@@ -97,9 +97,12 @@ include("water/water.jl")
 include("traits/traits.jl")
 
 
+const ASSETS_DIR = joinpath(@__DIR__, "..", "assets")
+assetpath(files...) = normpath(joinpath(ASSETS_DIR, files...))
+
 function __init__()
     @info "Loading grassland data from the Biodiversity Exploratories"
-    datapath = joinpath(@__DIR__, "..", "assets", "data")
+    datapath = assetpath("data")
     load_gm(datapath)
     load_data(datapath)
 
