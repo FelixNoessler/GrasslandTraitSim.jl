@@ -44,10 +44,12 @@ function light_competition!(; container, biomass)
         @info "Height influence turned off!" maxlog=1
         @. heightinfluence = 1.0
     else
-        @unpack relative_height = container.calc
+        @unpack relative_height, above_biomass = container.calc
         @unpack β_height = container.p
+        @unpack abp = container.traits
 
-        relative_height .= height .* biomass ./ sum(biomass)
+        @. above_biomass = abp * biomass
+        relative_height .= height .* above_biomass ./ sum(above_biomass)
         height_cwm = sum(relative_height)
         @. heightinfluence = (height / height_cwm) ^ β_height
     end

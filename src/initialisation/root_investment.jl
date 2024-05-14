@@ -47,7 +47,7 @@ function root_investment!(; input_obj, prealloc, p)
         end
     end
 
-    @. root_invest = abp * root_invest_amc * root_invest_rsa
+    @. root_invest = root_invest_amc * root_invest_rsa
 
     return nothing
 end

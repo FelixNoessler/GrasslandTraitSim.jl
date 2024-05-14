@@ -88,10 +88,10 @@ Output:
 """
 function calculate_LAI!(; container, biomass)
     @unpack LAIs, com = container.calc
-    @unpack sla, lbp, abp = container.traits
+    @unpack sla, lbp = container.traits
 
     for s in eachindex(LAIs)
-        LAIs[s] = uconvert(NoUnits, sla[s] * biomass[s] * lbp[s] / abp[s])
+        LAIs[s] = uconvert(NoUnits, sla[s] * biomass[s] * lbp[s])
     end
     com.LAItot = sum(LAIs)
 
