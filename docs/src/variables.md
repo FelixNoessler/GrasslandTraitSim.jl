@@ -26,7 +26,8 @@ let
     sol = sim.solve_prob(; input_obj, p, trait_input);
     t = sol.simp.mean_input_date_num[end-lastn_points:end]
     t_out = sol.simp.output_date_num[end-lastn_points:end]
-    total_biomass = ustrip.(vec(sol.output.biomass[end-lastn_points:end, 1, 1, :] * (1 ./ sol.traits.abp)))
+    total_biomass = ustrip.(vec(sum(sol.output.biomass[end-lastn_points:end, 1, 1, :]; 
+                                    dims = :species)))
 
 
     fig = Figure(size = (900, 1000))
@@ -54,7 +55,7 @@ let
 
     ax1 = Axis(fig[3, 1];
         xlabel = "Root suface area per\nbelowground biomass [m² g⁻¹]",
-        ylabel = "Growth reducer due to investment\ninto roots, single effects [-]\n← stronger reduction, less reduction →")
+        ylabel = "Growth reduction due to investment\ninto roots, single effects [-]\n← stronger reduction, less reduction →")
     scatter!(ustrip.(sol.traits.rsa), sol.calc.root_invest_rsa;
             color = c, colormap,
             markersize = 10)
@@ -115,7 +116,8 @@ let
     sol = sim.solve_prob(; input_obj, p, trait_input);
     t = sol.simp.mean_input_date_num[end-lastn_points:end]
     t_out = sol.simp.output_date_num[end-lastn_points:end]
-    total_biomass = ustrip.(vec(sol.output.biomass[end-lastn_points:end, 1, 1, :] * (1 ./ sol.traits.abp)))
+    total_biomass = ustrip.(vec(sum(sol.output.biomass[end-lastn_points:end, 1, 1, :];
+                                    dims = :species)))
 
     PWP = sol.patch_variables.PWP[1, 1]
     WHC = sol.patch_variables.WHC[1, 1]
@@ -131,23 +133,27 @@ let
     water_scaled = get_Wsc.(water_out; WHC, PWP) .* pet_factor
 
 
-    fig = Figure(size = (900, 800))
+    fig = Figure(size = (900, 1000))
 
     Axis(fig[1, 1];
-        xticklabelsvisible = false, xticksvisible = true,
+        xticklabelsvisible = false, 
         xticks = 2018:1:2022, ylabel = "Total biomass\n[kg ha⁻¹]")
     lines!(t_out, total_biomass;
             linewidth = 2, color = :black)
 
     Axis(fig[2, 1];
-        xticklabelsvisible = false, xticksvisible = true,
+        xticklabelsvisible = false, 
         xticks = 2018:1:2022, ylabel = "Soil water content\nin the rooting zone \n[mm]")
     lines!(t_out, ustrip.(water_out);
             linewidth = 2, color = :blue)
     hlines!(ustrip.([PWP, WHC]))
+    text!([t_out[1], t_out[1]], ustrip.([PWP, WHC]);
+          text = ["PWP", "WHC"],
+          align = (:left, :top),
+          color = :grey)
 
     Axis(fig[3, 1];
-        xticklabelsvisible = false, xticksvisible = true,
+        xticklabelsvisible = false, 
         xticks = 2018:1:2022, ylabel = "Scaled water\nwith adjustment\nby PET [-]",
         limits = (nothing, nothing, -0.1, 1.8))
         lines!(t_out, water_scaled;
@@ -157,11 +163,9 @@ let
     colorrange = (minimum(c), maximum(c))
     species_order = sortperm(c)
     colormap = :redsblues
-
     Axis(fig[4, 1];
-        xticks = 2018:1:2022,
-        ylabel = "Growth reduction factor\ndue to water stress [-]\n← stronger reduction, less reduction →",
-        xlabel = "Time [year]")
+        xticks = 2018:1:2022, xticklabelsvisible = false, 
+        ylabel = "Growth reduction factor\ndue to water stress [-]\n← stronger reduction, less reduction →")
     for s in sortperm(c)[[1, 2, 3, 4, 5, 39, 40, 41, 42, 43]]
         lines!(t, vec(sol.output.water_growth[end-lastn_points:end, 1, 1, s]);
             colorrange, colormap, color = c[s], linewidth = 1)
@@ -169,7 +173,25 @@ let
     Colorbar(fig[4, 2]; colorrange, colormap,
         label = "Growth reduction due to investment into high\nroot surface area per belowground biomass [-]\n← stronger reduction, less reduction →")
 
-    rowsize!(fig.layout, 4, Relative(0.4))
+
+    c = ustrip.(sol.traits.sla)
+    colorrange = (minimum(c), maximum(c))
+    species_order = sortperm(c)
+    colormap = :blues
+    Axis(fig[5, 1];
+        xticks = 2018:1:2022,
+        ylabel = "Growth reduction factor\ndue to water stress [-]\n← stronger reduction, less reduction →",
+        xlabel = "Time [year]")
+    for s in sortperm(c)[[1, 2, 3, 4, 5, 39, 40, 41, 42, 43]]
+        lines!(t, vec(sol.output.water_growth[end-lastn_points:end, 1, 1, s]);
+            colorrange, colormap, color = c[s], linewidth = 1)
+    end
+    Colorbar(fig[5, 2]; colorrange, colormap,
+        label = "Specific leaf area\n[m² g⁻¹]")
+
+    rowsize!(fig.layout, 1, Relative(0.1))
+    rowsize!(fig.layout, 2, Relative(0.15))
+    rowsize!(fig.layout, 3, Relative(0.15))
 
     fig
     save("water_stress.svg", fig); nothing # hide
