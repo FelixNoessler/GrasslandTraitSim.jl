@@ -12,7 +12,8 @@ let
     sol = sim.solve_prob(; input_obj, p, trait_input);
     t = sol.simp.mean_input_date_num[end-lastn_points:end]
     t_out = sol.simp.output_date_num[end-lastn_points:end]
-    total_biomass = ustrip.(vec(sol.output.biomass[end-lastn_points:end, 1, 1, :] * (1 ./ sol.traits.abp)))
+    total_biomass = ustrip.(vec(sum(sol.output.biomass[end-lastn_points:end, 1, 1, :];
+                                    dims = :species)))
 
 
     fig = Figure(size = (900, 1000))
@@ -40,7 +41,7 @@ let
 
     ax1 = Axis(fig[3, 1];
         xlabel = &quot;Root suface area per\nbelowground biomass [m² g⁻¹]&quot;,
-        ylabel = &quot;Growth reducer due to investment\ninto roots, single effects [-]\n← stronger reduction, less reduction →&quot;)
+        ylabel = &quot;Growth reduction due to investment\ninto roots, single effects [-]\n← stronger reduction, less reduction →&quot;)
     scatter!(ustrip.(sol.traits.rsa), sol.calc.root_invest_rsa;
             color = c, colormap,
             markersize = 10)
@@ -81,7 +82,8 @@ let
     sol = sim.solve_prob(; input_obj, p, trait_input);
     t = sol.simp.mean_input_date_num[end-lastn_points:end]
     t_out = sol.simp.output_date_num[end-lastn_points:end]
-    total_biomass = ustrip.(vec(sol.output.biomass[end-lastn_points:end, 1, 1, :] * (1 ./ sol.traits.abp)))
+    total_biomass = ustrip.(vec(sum(sol.output.biomass[end-lastn_points:end, 1, 1, :];
+                                    dims = :species)))
 
     PWP = sol.patch_variables.PWP[1, 1]
     WHC = sol.patch_variables.WHC[1, 1]
@@ -97,23 +99,27 @@ let
     water_scaled = get_Wsc.(water_out; WHC, PWP) .* pet_factor
 
 
-    fig = Figure(size = (900, 800))
+    fig = Figure(size = (900, 1000))
 
     Axis(fig[1, 1];
-        xticklabelsvisible = false, xticksvisible = true,
+        xticklabelsvisible = false,
         xticks = 2018:1:2022, ylabel = &quot;Total biomass\n[kg ha⁻¹]&quot;)
     lines!(t_out, total_biomass;
             linewidth = 2, color = :black)
 
     Axis(fig[2, 1];
-        xticklabelsvisible = false, xticksvisible = true,
+        xticklabelsvisible = false,
         xticks = 2018:1:2022, ylabel = &quot;Soil water content\nin the rooting zone \n[mm]&quot;)
     lines!(t_out, ustrip.(water_out);
             linewidth = 2, color = :blue)
     hlines!(ustrip.([PWP, WHC]))
+    text!([t_out[1], t_out[1]], ustrip.([PWP, WHC]);
+          text = [&quot;PWP&quot;, &quot;WHC&quot;],
+          align = (:left, :top),
+          color = :grey)
 
     Axis(fig[3, 1];
-        xticklabelsvisible = false, xticksvisible = true,
+        xticklabelsvisible = false,
         xticks = 2018:1:2022, ylabel = &quot;Scaled water\nwith adjustment\nby PET [-]&quot;,
         limits = (nothing, nothing, -0.1, 1.8))
         lines!(t_out, water_scaled;
@@ -123,11 +129,9 @@ let
     colorrange = (minimum(c), maximum(c))
     species_order = sortperm(c)
     colormap = :redsblues
-
     Axis(fig[4, 1];
-        xticks = 2018:1:2022,
-        ylabel = &quot;Growth reduction factor\ndue to water stress [-]\n← stronger reduction, less reduction →&quot;,
-        xlabel = &quot;Time [year]&quot;)
+        xticks = 2018:1:2022, xticklabelsvisible = false,
+        ylabel = &quot;Growth reduction factor\ndue to water stress [-]\n← stronger reduction, less reduction →&quot;)
     for s in sortperm(c)[[1, 2, 3, 4, 5, 39, 40, 41, 42, 43]]
         lines!(t, vec(sol.output.water_growth[end-lastn_points:end, 1, 1, s]);
             colorrange, colormap, color = c[s], linewidth = 1)
@@ -135,7 +139,25 @@ let
     Colorbar(fig[4, 2]; colorrange, colormap,
         label = &quot;Growth reduction due to investment into high\nroot surface area per belowground biomass [-]\n← stronger reduction, less reduction →&quot;)
 
-    rowsize!(fig.layout, 4, Relative(0.4))
+
+    c = ustrip.(sol.traits.sla)
+    colorrange = (minimum(c), maximum(c))
+    species_order = sortperm(c)
+    colormap = :blues
+    Axis(fig[5, 1];
+        xticks = 2018:1:2022,
+        ylabel = &quot;Growth reduction factor\ndue to water stress [-]\n← stronger reduction, less reduction →&quot;,
+        xlabel = &quot;Time [year]&quot;)
+    for s in sortperm(c)[[1, 2, 3, 4, 5, 39, 40, 41, 42, 43]]
+        lines!(t, vec(sol.output.water_growth[end-lastn_points:end, 1, 1, s]);
+            colorrange, colormap, color = c[s], linewidth = 1)
+    end
+    Colorbar(fig[5, 2]; colorrange, colormap,
+        label = &quot;Specific leaf area\n[m² g⁻¹]&quot;)
+
+    rowsize!(fig.layout, 1, Relative(0.1))
+    rowsize!(fig.layout, 2, Relative(0.15))
+    rowsize!(fig.layout, 3, Relative(0.15))
 
     fig
-end</code></pre></details><p><img src="../water_stress.svg" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../parameter/">« Parameter</a><a class="docs-footer-nextpage" href="../tutorials/how_to_prepare_input/">Prepare input and run simulation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Monday 13 May 2024 14:11">Monday 13 May 2024</span>. Using Julia version 1.10.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+end</code></pre></details><p><img src="../water_stress.svg" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../parameter/">« Parameter</a><a class="docs-footer-nextpage" href="../tutorials/how_to_prepare_input/">Prepare input and run simulation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.3.0 on <span class="colophon-date" title="Tuesday 14 May 2024 08:19">Tuesday 14 May 2024</span>. Using Julia version 1.10.3.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
