@@ -2,9 +2,9 @@
 
 ## Trade-off between investing in roots and experiencing nutrient stress
 
-- plants with a high investment into roots have a high arbuscular mycorrhizal colonisation rate and a high root surface area per belowground biomass  
-    ``\rightarrow`` low growth reduction due to nutrient stress  
-    ``\rightarrow`` investment costs energy, this is implemented by a growth reducer that is independent of the nutrient level  
+- plants with a high investment into roots have a high arbuscular mycorrhizal colonisation rate and a high root surface area per belowground biomass    
+    ``\rightarrow`` low growth reduction due to nutrient stress    
+    ``\rightarrow`` investment costs energy, this is implemented by a growth reducer that is independent of the nutrient level    
 - nutrient stress is stronger if the total biomass is high
 
 
@@ -78,7 +78,7 @@ let
     colgap!(fig.layout, 1, 5)
 
     fig
-    save("nutrient_stress.svg", fig); nothing # hide
+    save("nutrient_stress.png", fig); nothing # hide
 end
 ```
 
@@ -86,7 +86,7 @@ end
 </details>
 ```
 
-![](nutrient_stress.svg)
+![](nutrient_stress.png)
 
 
 ## Trade-off between investing in roots and experiencing water stress
@@ -195,7 +195,7 @@ let
     rowsize!(fig.layout, 3, Relative(0.15))
 
     fig
-    save("water_stress.svg", fig); nothing # hide
+    save("water_stress.png", fig); nothing # hide
 end
 ```
 
@@ -203,4 +203,4 @@ end
 </details>
 ```
 
-![](water_stress.svg)
+![](water_stress.png)

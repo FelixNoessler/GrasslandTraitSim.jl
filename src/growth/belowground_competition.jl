@@ -82,7 +82,7 @@ and the root surface area devided by the above ground biomass (`rsa`).
 - `β_TSB` is the exponent of the below ground
   competition factor [-]
 
-![](../img/below_influence.svg)
+![](../img/below_influence.png)
 """
 function below_ground_competition!(; container, biomass)
     @unpack biomass_density_factor, TS_biomass, TS = container.calc

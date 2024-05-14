@@ -49,7 +49,7 @@ sim.plot_N_amc(; path = f("$docs_img/amc_nut_response_0_5.svg"), δ_amc = 0.5)
 sim.plot_W_sla(; path = f("$docs_img/plot_W_sla.svg"), δ_sla = 1.0)
 sim.plot_W_sla(; path = f("$docs_img/W_sla_response_0_5.svg"), δ_sla = 0.5)
 sim.plant_available_water(; path = f("$docs_img/pet.svg"))
-sim.plot_root_investment(; path = f("$docs_img/root_investment.svg"))
+sim.plot_root_investment(; path = f("$docs_img/root_investment.png"))
 
 #### leaf lifespan
 sim.leaflifespan(; path = f("$docs_img/leaflifespan.svg"))
@@ -57,8 +57,8 @@ sim.leaflifespan(; path = f("$docs_img/leaflifespan.svg"))
 #### reducer functions
 sim.temperatur_reducer(; path = f("$docs_img/temperature_reducer.svg"))
 sim.radiation_reducer(; path = f("$docs_img/radiation_reducer.svg"))
-sim.height_influence(; path = f("$docs_img/height_influence.svg"))
-sim.below_influence(; path = f("$docs_img/below_influence.svg"))
+sim.height_influence(; path = f("$docs_img/height_influence.png"))
+sim.below_influence(; path = f("$docs_img/below_influence.png"))
 
 #### seasonal effects
 sim.seasonal_effect(; path = f("$docs_img/seasonal_reducer.svg"))

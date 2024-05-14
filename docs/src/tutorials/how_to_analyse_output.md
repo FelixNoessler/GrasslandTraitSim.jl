@@ -9,12 +9,12 @@ import GrasslandTraitSim as sim
 using Statistics
 using CairoMakie
 using Unitful
+using RCall # only for functional diversity indices
 
-input_obj = sim.validation_input(;
-    plotID = "HEG01", nspecies = 25,
-    trait_seed = 99);
+input_obj = sim.validation_input(; plotID = "HEG01", nspecies = 43);
+trait_input = sim.input_traits()
 p = sim.SimulationParameter();
-sol = sim.solve_prob(; input_obj, p);
+sol = sim.solve_prob(; input_obj, p, trait_input);
 
 nothing # hide
 ```
@@ -48,6 +48,10 @@ save("biomass.svg", fig); nothing # hide
 ## Share of each species
 
 We can look at the share of each species over time:
+
+```@raw html
+<details><summary>show code</summary>
+```
 
 ```@example output
 # colors are assigned according to the specific leaf area (SLA)
@@ -89,10 +93,14 @@ begin
 
     fig
 end
-save("share_biomass.svg", fig); nothing # hide
+save("share_biomass.png", fig); nothing # hide
 ```
 
-![](share_biomass.svg)
+```@raw html
+</details>
+```
+
+![](share_biomass.png)
 
 ## Soil water content
 
@@ -114,6 +122,10 @@ save("soil_water_content.svg", fig); nothing # hide
 ## Community weighted mean traits
 
 We can calculate for all traits the community weighted mean over time:
+
+```@raw html
+<details><summary>show code</summary>
+```
 
 ```@example output
 relative_biomass = species_biomass ./ total_biomass
@@ -147,11 +159,19 @@ end
 save("traits_time.svg", fig); nothing # hide
 ```
 
+```@raw html
+</details>
+```
+
 ![](traits_time.svg)
 
 ## Grazed and mown biomass
 
 We can look at the grazed and mown biomass over time:
+
+```@raw html
+<details><summary>show code</summary>
+```
 
 ```@example output
 # total 
@@ -175,11 +195,110 @@ end
 save("grazed_mown.svg", fig); nothing # hide
 ```
 
+```@raw html
+</details>
+```
+
+
 ![](grazed_mown.svg)
+
+## Functional diversity indices
+
+```@raw html
+<details><summary>show code</summary>
+```
+
+```@example output
+################ Calculate functional diversity in R
+function traits_to_matrix(trait_data; std_traits = true)
+    trait_names = keys(trait_data)
+    ntraits = length(trait_names)
+    nspecies = length(trait_data[trait_names[1]])
+    m = Matrix{Float64}(undef, nspecies, ntraits)
+
+    for i in eachindex(trait_names)
+
+        if std_traits
+            m[:, i] = trait_data[trait_names[i]] ./ mean(trait_data[trait_names[i]])
+        else
+            m[:, i] = ustrip.(trait_data[trait_names[i]])
+        end
+    end
+
+    return m
+end
+
+tstep = 100
+biomass = sol.output.biomass[1:tstep:end, 1, 1, :]
+biomass_R = ustrip.(biomass.data)
+traits_R = traits_to_matrix(trait_input)
+site_names = string.("time_", 1:size(biomass_R, 1))
+species_names = string.("species_", 1:size(biomass_R, 2))
+
+## transfer data to R
+@rput species_names site_names traits_R biomass_R
+
+R"""
+library(fundiversity)
+
+rownames(traits_R) <- species_names
+rownames(biomass_R) <- site_names
+colnames(biomass_R) <- species_names
+
+fdis_R <- fd_fdis(traits_R, biomass_R)
+fric_R <- fd_fric(traits_R, biomass_R)
+fric_std_R <- fd_fric(traits_R, biomass_R, stand = TRUE)
+feve_R <- fd_feve(traits_R, biomass_R)
+fdiv_R <- fd_fdiv(traits_R, biomass_R)
+"""
+
+## get results back from R
+@rget fdis_R fric_R fric_std_R feve_R fdiv_R
+
+begin
+    fig = Figure(size = (900, 1200))
+
+    Axis(fig[1, 1]; ylabel = "Number of species", xticks = 2006:2:2022,
+         xticklabelsvisible = false, limits = (nothing, nothing, 0, nothing))
+    nspecies = sum(sol.output.biomass[1:tstep:end, 1, 1, :] .> 0.0u"kg / ha"; dims = :species)
+    lines!(sol.simp.output_date_num[1:tstep:end], vec(nspecies);)
+
+    Axis(fig[2, 1]; yscale = identity, xticks = 2006:2:2022, xticklabelsvisible = false,
+         ylabel = "Functional richness -\nfraction of possible volume\nto actual trait volume")
+    lines!(sol.simp.output_date_num[1:tstep:end], fric_std_R.FRic)
+
+    Axis(fig[3, 1]; xticks = 2006:2:2022, xticklabelsvisible = false,
+         ylabel = "Functional dispersion -\nweighted distance to centroid")
+    lines!(sol.simp.output_date_num[1:tstep:end], fdis_R.FDis)
+
+
+    Axis(fig[4, 1]; xticks = 2006:2:2022, xticklabelsvisible = false,
+        ylabel = "Functional divergence")
+    lines!(sol.simp.output_date_num[1:tstep:end], fdiv_R.FDiv)
+
+
+    Axis(fig[5, 1]; xticks = 2006:2:2022, xticklabelsvisible = true,
+        ylabel = "Functional evenness")
+    lines!(sol.simp.output_date_num[1:tstep:end], feve_R.FEve)
+
+    fig
+end
+save("fun_diversity.svg", fig); nothing # hide
+```
+
+```@raw html
+</details>
+```
+
+![](fun_diversity.svg)
 
 ## Shannon and Simpson diversity
 
 We can calculate the Shannon and Simpson diversity over time:
+
+```@raw html
+<details><summary>show code</summary>
+```
 
 ```@example output
 biomass_site = dropdims(mean(sol.output.biomass; dims = (:x, :y)); dims = (:x, :y))
@@ -203,6 +322,10 @@ begin
     fig
 end
 save("shannon_simpson.svg", fig); nothing # hide
+```
+
+```@raw html
+</details>
 ```
 
 ![](shannon_simpson.svg)

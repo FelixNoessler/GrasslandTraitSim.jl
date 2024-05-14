@@ -9,7 +9,7 @@ invest &= \exp(\kappa\_{red, amc} \cdot acm) \cdot abp \\
 \end{align}
 ```
 
-![](../img/root_investment.svg)
+![](../img/root_investment.png)
 """
 function root_investment!(; input_obj, prealloc, p)
     @unpack included = input_obj.simp
