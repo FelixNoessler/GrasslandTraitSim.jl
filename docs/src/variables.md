@@ -92,6 +92,7 @@ end
 ## Trade-off between investing in roots and experiencing water stress
 
 - a high root surface area per belowground biomass reduces water stress but the investment costs energy (see figure above)
+- a low specific leaf area (leafs are thick) reduces water stress but plants with a high specific leaf area have a higher leaf area index and can intercept more light
 
 ```@raw html
 <details><summary>show code</summary>
