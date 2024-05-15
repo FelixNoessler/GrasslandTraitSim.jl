@@ -13,21 +13,23 @@ jobs:
       actions: write
       contents: write
     runs-on: ubuntu-latest
+    container:
+      image: rocker/r2u:latest
     steps:
+      - name: Install git
+        run: sudo apt-get install -y git
       - uses: actions/checkout@v4
-      - name: Setup r2u
-        uses: eddelbuettel/github-actions/r2u-setup@master
       - name: R Package Dependencies
         run: R -q -e 'install.packages("fundiversity")'
-      - uses: julia-actions/setup-julia@v2
-      - uses: julia-actions/cache@v1
-      - name: Install dependencies
-        run: julia --project=docs/ -e '
-          import Pkg;
-          Pkg.develop(path=".");
-          Pkg.instantiate();'
-      - name: Build and deploy documentation 
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-        run: julia --project=docs/ docs/make.jl
+      # - uses: julia-actions/setup-julia@v2
+      # - uses: julia-actions/cache@v1
+      # - name: Install dependencies
+      #   run: julia --project=docs/ -e '
+      #     import Pkg;
+      #     Pkg.develop(path=".");
+      #     Pkg.instantiate();'
+      # - name: Build and deploy documentation 
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+      #   run: julia --project=docs/ docs/make.jl

@@ -1,5 +1,9 @@
 # Influence of intermediate variables
 
+```@meta
+CurrentModule = GrasslandTraitSim
+```
+
 ## Trade-off between investing in roots and experiencing nutrient stress
 
 - plants with a high investment into roots have a high arbuscular mycorrhizal colonisation rate and a high root surface area per belowground biomass
