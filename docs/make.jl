@@ -80,6 +80,7 @@ sim.animate_clonalgrowth(; path = f("$docs_img/clonalgrowth_animation.mp4"))
 
 # for prettyurls you need locally a live server
 makedocs(;
+    repo = "github.com/FelixNoessler/GrasslandTraitSim.jl",
     warnonly  = true,
     plugins = [bib],
     sitename = "GrasslandTraitSim.jl",
