@@ -8,7 +8,7 @@ on:
   pull_request:
 
 jobs:
-  build:
+  build-documentation:
     permissions:
       actions: write
       contents: write
@@ -31,3 +31,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
         run: julia --project=docs/ docs/make.jl
+
+  code-formatting:
+    name: Prettier (JS code formatting)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actionsx/prettier@v2
+        with:
+          args: --check .
