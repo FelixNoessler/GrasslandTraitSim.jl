@@ -13,8 +13,8 @@ jobs:
       actions: write
       contents: write
     runs-on: ubuntu-latest
-    container:
-      image: rocker/r2u:latest
+    # container:
+    #   image: rocker/r2u:latest
     steps:
       # - name: R Package Dependencies
       #   run: R -q -e 'install.packages("fundiversity")'
