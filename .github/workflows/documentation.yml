@@ -16,20 +16,20 @@ jobs:
     container:
       image: rocker/r2u:latest
     steps:
-      - name: R Package Dependencies
-        run: R -q -e 'install.packages("fundiversity")'
+      # - name: R Package Dependencies
+      #   run: R -q -e 'install.packages("fundiversity")'
       - uses: actions/checkout@v4
-      - uses: julia-actions/setup-julia@v2
-        with:
-          version: '1.10.3'
-      - uses: julia-actions/cache@v1
-      - name: Install dependencies
-        run: julia --project=docs/ -e '
-          import Pkg;
-          Pkg.develop(path=".");
-          Pkg.instantiate();'
-      - name: Build and deploy documentation 
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-        run: julia --project=docs/ docs/make.jl
+      # - uses: julia-actions/setup-julia@v2
+      #   with:
+      #     version: '1.10.3'
+      # - uses: julia-actions/cache@v1
+      # - name: Install dependencies
+      #   run: julia --project=docs/ -e '
+      #     import Pkg;
+      #     Pkg.develop(path=".");
+      #     Pkg.instantiate();'
+      # - name: Build and deploy documentation 
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #     DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+      #   run: julia --project=docs/ docs/make.jl
