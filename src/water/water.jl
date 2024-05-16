@@ -123,7 +123,7 @@ function transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
     ####### plant available water:
     W = max(0.0, (water - PWP) / (WHC - PWP))
 
-    return W * PET * sla_effect * LAItot / 3
+    return W * PET * sla_effect * LAItot / 3 # TODO
 end
 
 @doc raw"""

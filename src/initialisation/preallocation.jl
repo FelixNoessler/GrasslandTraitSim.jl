@@ -190,6 +190,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         mown = Array{T}(undef, nspecies)u"kg / ha",
         grazed = Array{T}(undef, nspecies)u"kg / ha",
         trampled = Array{T}(undef, nspecies)u"kg / ha",
+        abp_scaled = Array{T}(undef, nspecies),
 
         ## clonal growth
         clonalgrowth = Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",

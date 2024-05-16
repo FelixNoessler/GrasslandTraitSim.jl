@@ -15,7 +15,7 @@ function init_transfer_functions!(; input_obj, prealloc, p)
         @. A_sla = (η_min_sla + (η_max_sla - η_min_sla) / (1 + exp(-β_η_sla * (sla - 2.0 * lbp * ϕ_sla)))) # TODO
 
         #### Root surface area per above ground biomass
-        @. A_wrsa = (η_max_wrsa + (η_min_wrsa - η_max_wrsa) /
+        @. A_wrsa =  (η_max_wrsa + (η_min_wrsa - η_max_wrsa) /
             (1 + exp(-β_η_wrsa * (rsa - 1.6 * abp * ϕ_rsa))))  # TODO add to documentation and manuscript
     end
 

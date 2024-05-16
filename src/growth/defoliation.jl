@@ -3,7 +3,7 @@ Influence of mowing for plant species with different heights ($height$):
 ![Image of mowing effect](../img/mowing.svg)
 """
 function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
-    @unpack height = container.traits
+    @unpack height, abp = container.traits
     @unpack defoliation, mown, proportion_mown, lowbiomass_correction = container.calc
     # @unpack mown = container.output
     @unpack α_lowB, β_lowB = container.p
@@ -11,11 +11,11 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
     @unpack included = container.simp
 
     # --------- proportion of plant height that is mown
-    proportion_mown .= max.(height .- mowing_height, 0.0u"m") ./ height
+    proportion_mown .= abp .* max.(height .- mowing_height, 0.0u"m") ./ height
 
     # --------- if low species biomass, the plant height is low -> less biomass is mown
     if included.lowbiomass_avoidance
-        @. lowbiomass_correction =  1.0 / (1.0 + exp(β_lowB * (α_lowB - biomass)))
+        @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (abp * biomass - α_lowB)))
     else
         lowbiomass_correction .= 1.0
     end
@@ -73,23 +73,23 @@ function grazing!(; t, x, y, container, LD, biomass)
     @unpack included = container.simp
 
     #################################### total grazed biomass
-    sum_biomass = sum(biomass)
+    @. above_biomass = abp * biomass
+    sum_biomass = sum(above_biomass)
     biomass_exp = sum_biomass * sum_biomass
     total_grazed = κ * LD * biomass_exp / (α_GRZ * α_GRZ + biomass_exp)
 
     #################################### share of grazed biomass per species
     ## Palatability ρ
-    @. above_biomass = abp * biomass
-    relative_lncm .= lnc .* above_biomass ./ sum(above_biomass)
+    relative_lncm .= lnc .* above_biomass ./ sum_biomass
     ρ .= (lnc ./ sum(relative_lncm)) .^ β_PAL_lnc
 
     ## species with low biomass are less grazed
     if included.lowbiomass_avoidance
-        @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (biomass - α_lowB)))
+        @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (above_biomass - α_lowB)))
     else
         lowbiomass_correction .= 1.0
     end
-    @. low_ρ_biomass = lowbiomass_correction * ρ * biomass
+    @. low_ρ_biomass = abp * lowbiomass_correction * ρ * biomass
 
     grazed_share .= low_ρ_biomass ./ sum(low_ρ_biomass)
 
@@ -127,27 +127,31 @@ Maximal the whole biomass of a plant species is removed by trampling.
 ![](../img/trampling_biomass_individual.svg)
 """
 function trampling!(; container, LD, biomass)
-    @unpack height = container.traits
+    @unpack height, abp = container.traits
     @unpack β_TRM_H, β_TRM, α_TRM, α_lowB, β_lowB = container.p
-    @unpack lowbiomass_correction, trampled_share,
+    @unpack lowbiomass_correction, trampled_share, above_biomass, abp_scaled,
             defoliation, height_scaled, trampled = container.calc
     @unpack included = container.simp
 
     #################################### Total trampled biomass
-    sum_biomass = sum(biomass)
+    @. above_biomass = abp * biomass
+    sum_biomass = sum(above_biomass)
     biomass_exp = sum_biomass * sum_biomass
     total_trampled = LD * β_TRM * biomass_exp / (α_TRM * α_TRM + biomass_exp)
 
     #################################### Share of trampled biomass per species
     if included.lowbiomass_avoidance
-        @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (biomass - α_lowB)))
+        @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (above_biomass - α_lowB)))
     else
         lowbiomass_correction .= 1.0
     end
 
+    abp_scaled .= abp ./ mean(abp)
     @. height_scaled = height / 0.5u"m"
-    @. trampled_share = height_scaled ^ β_TRM_H *
-                        lowbiomass_correction * biomass / sum_biomass
+    for i in eachindex(trampled_share)
+        trampled_share[i] = abp_scaled[i] * height_scaled[i] ^ β_TRM_H *
+            lowbiomass_correction[i] * biomass[i] / sum_biomass
+    end
 
     #################################### Add trampled biomass to defoliation
     @. trampled = trampled_share * total_trampled

@@ -18,6 +18,9 @@ function root_investment!(; input_obj, prealloc, p)
     @unpack output = prealloc
 
     if !included.root_invest
+        @. root_invest_rsa = 1.0
+        @. root_invest_amc = 1.0
+        @. root_invest = 1.0
         return nothing
     end
 
