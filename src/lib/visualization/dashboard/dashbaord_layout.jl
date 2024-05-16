@@ -87,7 +87,7 @@ function dashboard_layout(; variable_p)
         halign = :left)
     Label(validation_layout[6, 1], "Time step:"; halign = :left, fontsize = 16)
     menu_timestep = Menu(validation_layout[7, 1];
-        options = [1, 14])
+        options = [1, 7, 14])
 
     ##############################################################################
     # Right box: abiotic and grazing/mowing

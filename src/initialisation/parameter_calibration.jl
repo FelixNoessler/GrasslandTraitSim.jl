@@ -8,20 +8,22 @@ function calibrated_parameter(; input_obj = nothing)
             """high values of β_com_height lead to a step function, too low values
             lead to a community height reducer of around 0.5 independently of the
             community weighted mean plant height"""),
-        # α_sen = (Uniform(0, 0.01), as(Real, 0.0, 0.01)),
-        β_sen = (truncated(Beta(2, 1); lower = 0.8),  as(Real, 0.8, 1.0),
+        α_sen = (Uniform(0, 0.01), as(Real, 0.0, 0.01),
+                 """TODO"""),
+        β_sen = (truncated(Beta(2, 1); lower = 0.3),  as(Real, 0.3, 1.0),
             """a value of 1 means that the leaf life span is equal to the senescence rate,
-            lower values account for for a lower senescence rate for the stem biomass"""),
+            lower values account for for a lower senescence rate for the stem and root
+            biomass"""),
         Ψ₁ = (Uniform(700.0, 3000.0), as(Real, 700.0, 3000.0),
             """Jouven (2006) used 775 for this parameter; this parameter should be lower
             than Ψ₂ which is 3000 because otherwise the senescence rate would be
             decreased in autumn"""),
-        SEN_max = (truncated(Normal(3.0, 2.0); lower = 1.0, upper = 4.0),
+        SEN_max = (truncated(Normal(2.0, 2.0); lower = 1.0, upper = 4.0),
             as(Real, 1.0, 4.0),
             """Jouven (2006) used the value three for this parameter, this means that the
             senescence rate can be three time higher under certain conditions;
             we decided to use a prior from one to four, this means that the senescence rate
-            is not increased in autumn (0) to it is strongly increased (4)"""),
+            is not increased in autumn (1) to it is strongly increased (4)"""),
         SEA_min = (Uniform(0.5, 1.0), as(Real, 0.5, 1.0), "text"),
         SEA_max = (Uniform(1.0, 2.0), as(Real, 1.0, 2.0), "text"),
         ST₂ = (Uniform(1200.0, 3000.0), as(Real, 1200.0, 3000.0), "text"),

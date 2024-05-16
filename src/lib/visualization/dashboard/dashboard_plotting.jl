@@ -180,5 +180,11 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
         num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.traits, :time)]
         y = vec(valid_data.traits[trait = At(trait)])
         scatter!(ax, num_t, y, color = :black, markersize = 8)
+
+        if trait == :height
+            num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.height, :time)]
+            y = vec(valid_data.height)
+            scatter!(ax, num_t, y, color = :darkgrey, markersize = 8)
+        end
     end
 end

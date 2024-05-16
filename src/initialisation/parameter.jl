@@ -166,7 +166,7 @@ $(MYNEWFIELDS)
     ``A_{wrsa, s}`` (``A_{nrsa, s}``) and ``K_{wrsa, s}`` (``K_{nrsa, s}``),
     see [`water_reduction!`](@ref)
     """
-    ϕ_rsa::Q15 = F(0.12)u"m^2 / g"
+    ϕ_rsa::Q15 = F(0.2)u"m^2 / g"
 
     """
     2::``\\beta_{\\eta, wrsa}``::part of the growth reducer based on the root
@@ -383,7 +383,7 @@ $(MYNEWFIELDS)
     the leaf life span to the senescence rate,
     see [`senescence_rate!`](@ref)
     """
-    α_sen = F(0.0)
+    α_sen = F(0.001)
 
     """
     4::``\\beta_{SEN}``::slope of a linear equation that relates the
@@ -508,27 +508,27 @@ $(MYNEWFIELDS)
     """
     8::``\\sigma_{B}``::
     """
-    b_biomass = F(1000.0)
+    b_biomass = F(5000.0)
 
     """
     8::``\\sigma_{sla}``::
     """
-    b_sla = F(0.0005)
+    b_sla = F(0.005)
 
     """
     8::``\\sigma_{lnc}``::
     """
-    b_lnc = F(0.5)
+    b_lnc = F(2.0)
 
     """
     8::``\\sigma_{amc}``::
     """
-    b_amc = F(0.001)
+    b_amc = F(0.01)
 
     """
     8::``\\sigma_{H}``::
     """
-    b_height = F(0.01)
+    b_height = F(0.5)
 
     """
     8::``\\sigma_{rsa}``::

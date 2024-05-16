@@ -18,6 +18,9 @@ function load_data(datapath)
     measuredbiomass = CSV.read("$datapath/validation/measured_biomass.csv",
         DataFrame)
 
+    measuredheight = CSV.read("$datapath/validation/measured_height.csv",
+        DataFrame)
+
     mtraits = CSV.read("$datapath/validation/cwm_cwv_traits.csv",
         DataFrame)
 
@@ -33,7 +36,8 @@ function load_data(datapath)
         soilmoisture,
         evaporation,
         traits,
-        measuredbiomass)
+        measuredbiomass,
+        measuredheight)
 
     ########### input data
     ## time dependent 2009-2022

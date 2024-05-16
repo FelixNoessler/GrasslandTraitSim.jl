@@ -4,9 +4,8 @@ function plot_root_investment(; path = nothing)
     input_obj = validation_input(; plotID = "HEG01", nspecies)
     real_traits = input_traits()
 
-
     prealloc = preallocate_vectors(; input_obj)
-    artificial_traits = (; abp = ones(nspecies), amc = LinRange(0, 1, nspecies),
+    artificial_traits = (; amc = LinRange(0, 1, nspecies),
                          rsa = fill(mean(real_traits.rsa), nspecies))
     prealloc = @set prealloc.traits = artificial_traits
 
@@ -16,36 +15,46 @@ function plot_root_investment(; path = nothing)
     prealloc_real = @set prealloc.traits = real_traits
 
     fig = Figure(size = (800, 900))
-    Axis(fig[1, 1]; limits = (0, 1, 0, nothing),
-              ylabel = "Growth reduction due to\ninvestment in mycorrhiza\n← stronger reduction, less reduction →",
-              xlabel = "Arbuscular mycorrhizal colonisation rate (amc) [-]",)
-    colorrange = (0.0, 3.0)
-    for κ_red_amc in LinRange(0, 3, 7)
+    Axis(fig[1, 1];
+         ylabel = "Growth reduction due to\ninvestment in mycorrhiza\n← stronger reduction, less reduction →",
+         xlabel = "Arbuscular mycorrhizal colonisation rate (amc) [-]",)
+    colorrange = (0.0, 2.0)
+    p.κ_red_rsa = 0u" g / m^2"
+    for κ_red_amc in LinRange(0, 2, 7)
         p.κ_red_amc = κ_red_amc
         root_investment!(; input_obj, prealloc, p)
         lines!(artificial_traits.amc, prealloc.calc.root_invest;
                color = κ_red_amc,
                colorrange)
         root_investment!(; input_obj, prealloc = prealloc_real, p)
-        scatter!(real_traits.amc, prealloc_real.calc.root_invest ./ real_traits.abp;
+        scatter!(real_traits.amc, prealloc_real.calc.root_invest;
             color = κ_red_amc,
             colorrange)
     end
     Colorbar(fig[1, 2]; colorrange, label = "κ_red_amc [-]")
 
-    Axis(fig[2, 1]; limits = (0, 1, 0, 1),
-        ylabel = "Combined effect: Growth reduction due to\ninvestment into roots and mycorrhiza\n← stronger reduction, less reduction →",
-        xlabel = "Arbuscular mycorrhizal colonisation rate (amc) [-]",)
-    colorrange = (minimum(real_traits.abp), maximum(real_traits.abp))
-    p.κ_red_amc = 1.0
-    root_investment!(; input_obj, prealloc = prealloc_real, p)
-    scatter!(real_traits.amc, prealloc_real.calc.root_invest;
-        color = real_traits.abp,
-        colorrange, colormap = :roma)
-    lines!(real_traits.amc, prealloc_real.calc.root_invest;
-            color = (:black, 0.3))
-    text!(0.5, 0.5; text = "κ_red_amc = 1.0", halign = :center, valign = :center)
-    Colorbar(fig[2, 2]; colormap = :roma, colorrange, label = "Abovegorund biomass\nper total biomass [-]")
+
+    artificial_traits = (; amc = fill(mean(real_traits.amc), nspecies),
+        rsa = LinRange(0.1, 0.3, nspecies)u"m^2 / g" )
+    prealloc = @set prealloc.traits = artificial_traits
+    p.κ_red_amc = 0
+
+    Axis(fig[2, 1];
+              ylabel = "Growth reduction due to\ninvestment in rootsurface area per\naboveground biomass\n← stronger reduction, less reduction →",
+              xlabel = "Arbuscular mycorrhizal colonisation rate (amc) [-]",)
+    colorrange = (0.0, 5.0)
+    for κ_red_rsa in LinRange(0, 5, 7)
+        p.κ_red_rsa = κ_red_rsa * u" g / m^2"
+        root_investment!(; input_obj, prealloc, p)
+        lines!(ustrip.(artificial_traits.rsa), prealloc.calc.root_invest;
+               color = κ_red_rsa,
+               colorrange)
+        root_investment!(; input_obj, prealloc = prealloc_real, p)
+        scatter!(ustrip.(real_traits.rsa), prealloc_real.calc.root_invest;
+            color = κ_red_rsa,
+            colorrange)
+    end
+    Colorbar(fig[2, 2]; colorrange, label = "κ_red_rsa [-]")
 
     if !isnothing(path)
         save(path, fig;)

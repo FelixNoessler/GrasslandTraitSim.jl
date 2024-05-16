@@ -19,6 +19,7 @@ function plot_W_rsa(; δ_wrsa = 0.5, path = nothing)
     A = 1 - container.p.δ_wrsa
     rsa = container.traits.rsa[idx]
     ymat = ymat[:, idx]
+    colorrange = (minimum(x0s), maximum(x0s))
 
     fig = Figure(size = (1000, 500))
     Axis(fig[1, 1],
@@ -28,15 +29,15 @@ function plot_W_rsa(; δ_wrsa = 0.5, path = nothing)
     text!(1.2, 1-δ_wrsa + 0.02; text = "1 - δ_wrsa")
     for (i, x0) in enumerate(x0s)
         lines!(xs, ymat[:, i];
-            color = i,
-            colorrange = (1, nspecies))
+            color = x0s[i],
+            colorrange)
 
         ##### midpoint
         x0_y = (1 - A) / 2 + A
         scatter!([x0], [x0_y];
             marker = :x,
-            color = i,
-            colorrange = (1, nspecies))
+            color = x0s[i],
+            colorrange)
     end
     ylims!(-0.1, 1.1)
 
@@ -45,10 +46,10 @@ function plot_W_rsa(; δ_wrsa = 0.5, path = nothing)
         ylabel = "Scaled water availability\nat midpoint (A_wrsa)")
     scatter!(ustrip.(rsa), x0s;
         marker = :x,
-        color = 1:nspecies,
-        colorrange = (1, nspecies))
+        color = x0s,
+        colorrange)
     hlines!([container.p.η_min_wrsa, container.p.η_max_wrsa]; color = :black)
-    text!([0.0, 0.0], [container.p.η_min_wrsa, container.p.η_max_wrsa] .+ 0.02;
+    text!([0.1, 0.22], [container.p.η_min_wrsa, container.p.η_max_wrsa] .+ 0.02;
             text = ["η_min_wrsa", "η_max_wrsa"])
     vlines!(ustrip(container.p.ϕ_rsa); color = :black, linestyle = :dash)
     text!(ustrip(container.p.ϕ_rsa) + 0.01,
@@ -91,6 +92,7 @@ function plot_W_sla(;δ_sla = 0.5, path = nothing)
     x0s = container.transfer_function.A_sla[idx]
     sla = container.traits.sla[idx]
     ymat = ymat[:, idx]
+    colorrange = (minimum(x0s), maximum(x0s))
     ##################
 
     fig = Figure(size = (900, 400))
@@ -103,15 +105,15 @@ function plot_W_sla(;δ_sla = 0.5, path = nothing)
 
     for i in eachindex(x0s)
         lines!(xs, ymat[:, i];
-            color = i,
-            colorrange = (1, nspecies))
+            color = x0s[i],
+            colorrange)
 
         ##### midpoint
         x0_y = 1 - δ_sla / 2
         scatter!([x0s[i]], [x0_y];
             marker = :x,
-            color = i,
-            colorrange = (1, nspecies))
+            color = x0s[i],
+            colorrange)
     end
     ylims!(-0.1, 1.1)
     xlims!(-0.02, nothing)
@@ -121,8 +123,8 @@ function plot_W_sla(;δ_sla = 0.5, path = nothing)
         ylabel = "Scaled water availability\nat midpoint (A_sla)")
     scatter!(ustrip.(sla), x0s;
         marker = :x,
-        color = 1:nspecies,
-        colorrange = (1, nspecies))
+        color = x0s,
+        colorrange)
     hlines!([container.p.η_min_sla, container.p.η_max_sla]; color = :black)
     text!([0.0, 0.0], [container.p.η_min_sla, container.p.η_max_sla] .+ 0.02;
             text = ["η_min_sla", "η_max_sla"])

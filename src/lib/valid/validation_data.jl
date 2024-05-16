@@ -9,9 +9,8 @@ end
 
 function get_validation_data(; plotID, biomass_stats = nothing, mean_input_date = nothing)
     # ---------------------------- biomass
-    biomass_sub =
-        @subset data.valid.measuredbiomass :plotID .== plotID .&&
-            Dates.year.(:date) .<= 2021
+    biomass_sub = @subset data.valid.measuredbiomass :plotID .== plotID .&&
+        Dates.year.(:date) .<= 2021
 
     if !isnothing(biomass_stats)
         biomass_sub = @subset biomass_sub :stat .∈ Ref(biomass_stats)
@@ -29,7 +28,13 @@ function get_validation_data(; plotID, biomass_stats = nothing, mean_input_date 
             (time = date_to_solt(data.valid.traits.t[f]; mean_input_date),
             trait = data.valid.traits.dim))
 
-    return (; traits, biomass, biomass_type)
+    # ---------------------------- measured height
+    height_sub = @subset data.valid.measuredheight :plotID .== plotID .&&
+        Dates.year.(:date) .<= 2021
+    height = DimArray(height_sub.height,
+        (; time = date_to_solt(height_sub.date; mean_input_date)))
+
+    return (; traits, biomass, biomass_type, height)
 end
 
 function date_to_solt(calibration_dates; mean_input_date)

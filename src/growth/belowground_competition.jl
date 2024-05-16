@@ -106,15 +106,7 @@ function below_ground_competition!(; container, biomass)
 
     for i in eachindex(biomass_density_factor)
         biomass_factor = (α_TSB / TS_biomass[i]) ^ β_TSB
-
-        ## biomass density factor should be between 0.33 and 3.0
-        # if biomass_factor > 3.0
-        #     biomass_factor = 3.0
-        # elseif biomass_factor < 0.33
-        #     biomass_factor = 0.33
-        # end
-
-        biomass_density_factor[i] = biomass_factor
+        biomass_density_factor[i] = min(3.0, max(0.33, biomass_factor)) # TODO add in manuscript and doc
     end
 
     return nothing

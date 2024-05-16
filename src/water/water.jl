@@ -117,7 +117,7 @@ function transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
         # community weighted mean specific leaf area
         relative_sla .= sla .* patch_biomass ./ sum(patch_biomass)
         cwm_sla = sum(relative_sla)
-        sla_effect = (cwm_sla / α_TR_sla) ^ β_TR_sla
+        sla_effect = min(2.0, max(0.5, (cwm_sla / α_TR_sla) ^ β_TR_sla))  # TODO change in documentation and manusctipt
     end
 
     ####### plant available water:

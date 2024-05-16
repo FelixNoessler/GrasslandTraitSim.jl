@@ -217,11 +217,11 @@ function traits_to_matrix(trait_data; std_traits = true)
     m = Matrix{Float64}(undef, nspecies, ntraits)
 
     for i in eachindex(trait_names)
-
+        tdat = trait_data[trait_names[i]]
         if std_traits
-            m[:, i] = trait_data[trait_names[i]] ./ mean(trait_data[trait_names[i]])
+            m[:, i] = (tdat .- mean(tdat)) ./ std(tdat)
         else
-            m[:, i] = ustrip.(trait_data[trait_names[i]])
+            m[:, i] = ustrip.(tdat)
         end
     end
 
@@ -231,7 +231,7 @@ end
 tstep = 100
 biomass = sol.output.biomass[1:tstep:end, 1, 1, :]
 biomass_R = ustrip.(biomass.data)
-traits_R = traits_to_matrix(trait_input)
+traits_R = traits_to_matrix(trait_input;)
 site_names = string.("time_", 1:size(biomass_R, 1))
 species_names = string.("species_", 1:size(biomass_R, 2))
 
@@ -245,15 +245,14 @@ rownames(traits_R) <- species_names
 rownames(biomass_R) <- site_names
 colnames(biomass_R) <- species_names
 
-fdis_R <- fd_fdis(traits_R, biomass_R)
-fric_R <- fd_fric(traits_R, biomass_R)
-fric_std_R <- fd_fric(traits_R, biomass_R, stand = TRUE)
-feve_R <- fd_feve(traits_R, biomass_R)
-fdiv_R <- fd_fdiv(traits_R, biomass_R)
+fric_std_R <- fd_fric(traits_R, biomass_R, stand = TRUE)$FRic
+fdis_R <- fd_fdis(traits_R, biomass_R)$FDis
+fdiv_R <- fd_fdiv(traits_R, biomass_R)$FDiv
+feve_R <- fd_feve(traits_R, biomass_R)$FEve
 """
 
 ## get results back from R
-@rget fdis_R fric_R fric_std_R feve_R fdiv_R
+@rget fric_std_R fdis_R fdiv_R feve_R
 
 begin
     fig = Figure(size = (900, 1200))
@@ -265,21 +264,19 @@ begin
 
     Axis(fig[2, 1]; yscale = identity, xticks = 2006:2:2022, xticklabelsvisible = false,
          ylabel = "Functional richness -\nfraction of possible volume\nto actual trait volume")
-    lines!(sol.simp.output_date_num[1:tstep:end], fric_std_R.FRic)
+    lines!(sol.simp.output_date_num[1:tstep:end], fric_std_R)
 
     Axis(fig[3, 1]; xticks = 2006:2:2022, xticklabelsvisible = false,
-         ylabel = "Functional dispersion -\nweighted distance to centroid")
-    lines!(sol.simp.output_date_num[1:tstep:end], fdis_R.FDis)
-
+         ylabel = "Functional dispersion -\nweighted distance to\ncommunity weighted mean")
+    lines!(sol.simp.output_date_num[1:tstep:end], fdis_R)
 
     Axis(fig[4, 1]; xticks = 2006:2:2022, xticklabelsvisible = false,
-        ylabel = "Functional divergence")
-    lines!(sol.simp.output_date_num[1:tstep:end], fdiv_R.FDiv)
-
+        ylabel = "Functional divergence -\nweighted distance to\ncenter of convex hull")
+    lines!(sol.simp.output_date_num[1:tstep:end], fdiv_R)
 
     Axis(fig[5, 1]; xticks = 2006:2:2022, xticklabelsvisible = true,
-        ylabel = "Functional evenness")
-    lines!(sol.simp.output_date_num[1:tstep:end], feve_R.FEve)
+        ylabel = "Functional evenness -\n regularity of species on\nminimum spanning tree,\nweighted by abundance")
+    lines!(sol.simp.output_date_num[1:tstep:end], feve_R)
 
     fig
 end
