@@ -6,7 +6,7 @@ function plot_root_investment(; path = nothing)
 
     prealloc = preallocate_vectors(; input_obj)
     artificial_traits = (; amc = LinRange(0, 1, nspecies),
-                         rsa = fill(mean(real_traits.rsa), nspecies))
+                         srsa = fill(mean(real_traits.srsa), nspecies))
     prealloc = @set prealloc.traits = artificial_traits
 
     prealloc_real = deepcopy(prealloc)
@@ -35,7 +35,7 @@ function plot_root_investment(; path = nothing)
 
 
     artificial_traits = (; amc = fill(mean(real_traits.amc), nspecies),
-        rsa = LinRange(0.1, 0.3, nspecies)u"m^2 / g" )
+        srsa = LinRange(0.1, 0.3, nspecies)u"m^2 / g" )
     prealloc = @set prealloc.traits = artificial_traits
     p.κ_red_amc = 0
 
@@ -46,11 +46,11 @@ function plot_root_investment(; path = nothing)
     for κ_red_rsa in LinRange(0, 5, 7)
         p.κ_red_rsa = κ_red_rsa * u" g / m^2"
         root_investment!(; input_obj, prealloc, p)
-        lines!(ustrip.(artificial_traits.rsa), prealloc.calc.root_invest;
+        lines!(ustrip.(artificial_traits.srsa), prealloc.calc.root_invest;
                color = κ_red_rsa,
                colorrange)
         root_investment!(; input_obj, prealloc = prealloc_real, p)
-        scatter!(ustrip.(real_traits.rsa), prealloc_real.calc.root_invest;
+        scatter!(ustrip.(real_traits.srsa), prealloc_real.calc.root_invest;
             color = κ_red_rsa,
             colorrange)
     end

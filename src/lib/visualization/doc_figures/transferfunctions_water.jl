@@ -14,10 +14,10 @@ function plot_W_rsa(; δ_wrsa = 0.5, path = nothing)
         ymat[i, :] .= container.calc.W_rsa
     end
 
-    idx = sortperm(container.traits.rsa)
+    idx = sortperm(container.traits.srsa)
     x0s = container.transfer_function.A_wrsa[idx]
     A = 1 - container.p.δ_wrsa
-    rsa = container.traits.rsa[idx]
+    srsa = container.traits.srsa[idx]
     ymat = ymat[:, idx]
     colorrange = (minimum(x0s), maximum(x0s))
 
@@ -44,7 +44,7 @@ function plot_W_rsa(; δ_wrsa = 0.5, path = nothing)
     Axis(fig[1, 2];
         xlabel = "Root surface area /\nabove ground biomass [m² g⁻¹]",
         ylabel = "Scaled water availability\nat midpoint (A_wrsa)")
-    scatter!(ustrip.(rsa), x0s;
+    scatter!(ustrip.(srsa), x0s;
         marker = :x,
         color = x0s,
         colorrange)

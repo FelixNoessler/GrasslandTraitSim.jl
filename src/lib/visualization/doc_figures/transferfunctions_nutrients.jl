@@ -80,10 +80,10 @@ function plot_N_rsa(; δ_nrsa = 0.8, path = nothing)
     end
 
     ##################
-    idx = sortperm(container.traits.rsa)
+    idx = sortperm(container.traits.srsa)
     x0s = container.transfer_function.A_nrsa[idx]
     A = 1 - container.p.δ_nrsa
-    rsa = container.traits.rsa[idx]
+    srsa = container.traits.srsa[idx]
     ymat = ymat[:, idx]
     colorrange = (minimum(x0s), maximum(x0s))
     ##################
@@ -116,7 +116,7 @@ function plot_N_rsa(; δ_nrsa = 0.8, path = nothing)
     Axis(fig[2, 2];
         xlabel = "Root surface area /\nabove ground biomass [m² g⁻¹]",
         ylabel = "Nutrient index\nat midpoint (A_nrsa)")
-    scatter!(ustrip.(rsa), x0s;
+    scatter!(ustrip.(srsa), x0s;
         marker = :x,
         color = x0s,
         colorrange)

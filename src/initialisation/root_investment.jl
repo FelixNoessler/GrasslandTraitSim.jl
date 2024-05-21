@@ -14,7 +14,7 @@ invest &= \exp(\kappa\_{red, amc} \cdot acm) \cdot abp \\
 function root_investment!(; input_obj, prealloc, p)
     @unpack included = input_obj.simp
     @unpack root_invest_amc, root_invest_rsa, root_invest = prealloc.calc
-    @unpack amc, rsa = prealloc.traits
+    @unpack amc, srsa = prealloc.traits
     @unpack output = prealloc
 
     if !included.root_invest
@@ -36,7 +36,7 @@ function root_investment!(; input_obj, prealloc, p)
     end
 
     if included.water_growth_reduction || included.nutrient_growth_reduction
-        @. root_invest_rsa = 1 - p.κ_red_rsa * (rsa - 0.15u"m^2/g")
+        @. root_invest_rsa = 1 - p.κ_red_rsa * (srsa - 0.15u"m^2/g")
         for i in eachindex(root_invest_rsa)
             if root_invest_rsa[i] < 0.0
                 root_invest_rsa[i] = 0.0

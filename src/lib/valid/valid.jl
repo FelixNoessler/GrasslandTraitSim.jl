@@ -27,7 +27,7 @@ function load_data(datapath)
     traits = (
         cwm = [mtraits.cwm_sla mtraits.cwm_lncm mtraits.cwm_amc mtraits.cwm_rsa_above mtraits.cwm_height],
         cwv = [mtraits.cwv_sla mtraits.cwv_lncm mtraits.cwv_amc mtraits.cwv_rsa_above mtraits.cwv_height],
-        dim = [:sla, :lnc, :amc, :rsa, :height],
+        dim = [:sla, :lnc, :amc, :srsa, :height],
         t = mtraits.date,
         num_t = mtraits.numeric_date,
         plotID = mtraits.plotID)
@@ -76,8 +76,6 @@ function load_data(datapath)
         DataFrame)
     input_traits.lbp = 0.8 .* input_traits.abp
 
-    f = input_traits.lbp .> input_traits.abp
-    input_traits.lbp[f] = input_traits.abp[f]
     input = (;
         traits = input_traits,
         clim,

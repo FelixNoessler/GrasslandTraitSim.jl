@@ -142,14 +142,14 @@ $(MYNEWFIELDS)
     """
     2::``\\delta_{wrsa}``::part of the growth reducer based on the
     root surface area per aboveground biomass and the water stress function
-    ``W_{rsa, txys}``; maximal possible reduction & calibrated
+    ``W_{srsa, txys}``; maximal possible reduction & calibrated
     see [`water_reduction!`](@ref)
     """
     δ_wrsa = F(0.8)
 
     """
     2::``\\beta_{wrsa}``::part of the growth reducer based on the root surface area
-    per aboveground biomass and the water stress function ``W_{rsa, txys}``;
+    per aboveground biomass and the water stress function ``W_{srsa, txys}``;
     slope of the logistic function, controls how steep the transition
     from ``1-\\delta_{wrsa}`` to ``K_{wrsa, s}`` is,
     see [`water_reduction!`](@ref)
@@ -157,9 +157,9 @@ $(MYNEWFIELDS)
     β_wrsa = F(7.0)
 
     """
-    2::``\\phi_{rsa}``::part of the growth reducer based on the
+    2::``\\phi_{srsa}``::part of the growth reducer based on the
     root surface area per aboveground biomass and the water stress
-    function ``W_{rsa, txys}`` and the nutrient stress function ``N_{rsa, txys}``;
+    function ``W_{srsa, txys}`` and the nutrient stress function ``N_{srsa, txys}``;
     is the root surface area per aboveground biomass area where the species have
     values of ``A_{wrsa, s}`` (``A_{nrsa, s}``) and ``K_{wrsa, s}`` (``K_{nrsa, s}``)
     that are halfway between the minimum and the maximum of
@@ -170,7 +170,7 @@ $(MYNEWFIELDS)
 
     """
     2::``\\beta_{\\eta, wrsa}``::part of the growth reducer based on the root
-    surface area per aboveground biomass and the water stress function ``W_{rsa, txys}``;
+    surface area per aboveground biomass and the water stress function ``W_{srsa, txys}``;
     is the slope of the two logistic functions that relate the root surface area per
     aboveground biomass to ``K_{wrsa, s}`` and ``A_{nrsa, s}``,
     see [`water_reduction!`](@ref)
@@ -180,14 +180,14 @@ $(MYNEWFIELDS)
     """
     2::``\\eta_{\\min, wrsa}``::part of the growth reducer based on the
     root surface area per aboveground biomass and the water stress function
-        ``W_{rsa, txys}``; minimal possible value of ``A_{wrsa, s}``,
+        ``W_{srsa, txys}``; minimal possible value of ``A_{wrsa, s}``,
     see [`water_reduction!`](@ref)
     """
     η_min_wrsa = F(0.05)
 
     """
     2::``\\eta_{\\max, wrsa}``::part of the growth reducer based on the root surface
-    area per aboveground biomass and the water stress function ``W_{rsa, txys}``;
+    area per aboveground biomass and the water stress function ``W_{srsa, txys}``;
     maximal possible value of ``A_{wrsa, s}``,
     see [`water_reduction!`](@ref)
     """
@@ -223,7 +223,7 @@ $(MYNEWFIELDS)
     κ_red_amc = F(0.2)
 
     """
-    2::``\\kappa_{\\text{red}, rsa}``::TODO
+    2::``\\kappa_{\\text{red}, srsa}``::TODO
     """
     κ_red_rsa::Q16 = F(1.0)u"g/m^2"
 
@@ -266,7 +266,7 @@ $(MYNEWFIELDS)
     """
     2::``\\delta_{nrsa}``::part of the growth reducer based on the
     root surface area per aboveground biomass and the nutrient stress function
-    ``N_{rsa, txys}``; maximal growth reduction,
+    ``N_{srsa, txys}``; maximal growth reduction,
     see [`nutrient_reduction!`](@ref)
     """
     δ_nrsa = F(0.9)
@@ -274,8 +274,8 @@ $(MYNEWFIELDS)
     """
     2::``\\beta_{nrsa}``:: part of the growth reducer based on
     the root surface area per aboveground biomass and the nutrient stress
-    function ``N_{rsa, txys}``; slope of a logistic function
-    that calculates the growth reducer ``N_{rsa, txys}``,
+    function ``N_{srsa, txys}``; slope of a logistic function
+    that calculates the growth reducer ``N_{srsa, txys}``,
     see [`nutrient_reduction!`](@ref)
     """
     β_nrsa = F(7.0)
@@ -283,7 +283,7 @@ $(MYNEWFIELDS)
     """
     2::``\\beta_{\\eta, nrsa}``::part of the growth reducer based on
     the root surface area per aboveground biomass and the nutrient stress
-    function ``N_{rsa, txys}``; is the slope of the two logistic functions
+    function ``N_{srsa, txys}``; is the slope of the two logistic functions
     that relate the root surface area per
     aboveground biomass to ``K_{nrsa, s}`` and ``A_{nrsa, s}``,
     see [`nutrient_reduction!`](@ref)
@@ -293,7 +293,7 @@ $(MYNEWFIELDS)
     """
     2::``\\eta_{\\min, nrsa}``::part of the growth reducer based on the
     root surface area per aboveground biomass and the nutrient
-    stress function ``N_{rsa, txys}``; minimal possible value of ``A_{nrsa, s}``,
+    stress function ``N_{srsa, txys}``; minimal possible value of ``A_{nrsa, s}``,
     see [`nutrient_reduction!`](@ref)
     """
     η_min_nrsa = F(0.05)
@@ -301,7 +301,7 @@ $(MYNEWFIELDS)
     """
     2::``\\eta_{\\max, nrsa}``::part of the growth reducer based on the
     root surface area per aboveground biomass and the nutrient
-    stress function ``N_{rsa, txys}``; maximal possible value of ``A_{nrsa, s}``,
+    stress function ``N_{srsa, txys}``; maximal possible value of ``A_{nrsa, s}``,
     see [`nutrient_reduction!`](@ref)
     """
     η_max_nrsa = F(0.6)
@@ -531,9 +531,9 @@ $(MYNEWFIELDS)
     b_height = F(0.5)
 
     """
-    8::``\\sigma_{rsa}``::
+    8::``\\sigma_{srsa}``::
     """
-    b_rsa = F(0.004)
+    b_srsa = F(0.004)
 end
 
 
@@ -566,7 +566,7 @@ function exlude_parameter(; input_obj)
     end
 
     if !likelihood_included.trait
-        append!(excl_p, [:b_sla, :b_lnc, :b_amc, :b_height, :b_rsa])
+        append!(excl_p, [:b_sla, :b_lnc, :b_amc, :b_height, :b_srsa])
     end
 
     if !included.potential_growth

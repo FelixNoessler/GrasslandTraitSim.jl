@@ -355,7 +355,7 @@ function input_traits()
         amc = trait_df.amc,
         sla = trait_df.sla * u"m^2/g",
         height = trait_df.height * u"m",
-        rsa = trait_df.rsa * u"m^2/g",
+        srsa = trait_df.srsa * u"m^2/g",
         abp = trait_df.abp,
         lbp = trait_df.lbp,
         lnc = trait_df.lnc * u"mg/g");

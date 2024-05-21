@@ -30,7 +30,7 @@ Overview of the traits:
 | `sla`       | m² g⁻¹ | specific   leaf area                      | log            |
 | `height`    | m      | plant height                              | log            |
 | `lnc`      | mg g⁻¹ | leaf nitrogen content per leaf dry mass   | log            |
-| `rsa` | m² g⁻¹ | root surface area per aboveground biomass | log            |
+| `srsa` | m² g⁻¹ | root surface area per aboveground biomass | log            |
 | `amc`       | -      | arbuscular mycorrhizal colonisation rate  | logit          |
 | `abp`      | -      | aboveground dry mass per plant dry mass   | logit          |
 | `lbp`      | -      | leaf dry mass per plant dry mass          | logit          |
@@ -63,7 +63,7 @@ function random_traits!(; prealloc, input_obj)
     @. traits.sla = exp(@view traitmat[1, :]) * u"m^2/g"
     @. traits.height = exp(@view traitmat[2, :]) * u"m"
     @. traits.lnc = exp(@view traitmat[3, :]) * u"mg/g"
-    @. traits.rsa = exp(@view traitmat[4, :]) * u"m^2/g"
+    @. traits.srsa = exp(@view traitmat[4, :]) * u"m^2/g"
     @. traits.amc = inverse_logit(@view traitmat[5, :])
     @. traits.abp = inverse_logit(@view traitmat[6, :])
     @. traits.lbp = inverse_logit(@view traitmat[7, :])
@@ -83,7 +83,7 @@ Calculates the similarity between plants concerning their investment
 in fine roots and collaboration with mycorrhiza.
 
 The trait similarity is build with the traits root surface area per
-aboveground biomass (`rsa`) and the arbuscular mycorrhizal
+aboveground biomass (`srsa`) and the arbuscular mycorrhizal
 colonisation rate (`amc`).
 
 Standardized residuals are calculated for both traits:
@@ -113,7 +113,7 @@ set to zero or one respectively.
 """
 function similarity_matrix!(; input_obj, prealloc)
     @unpack nspecies = input_obj.simp
-    @unpack amc, rsa = prealloc.traits
+    @unpack amc, srsa = prealloc.traits
     @unpack amc_resid, rsa_above_resid, TS = prealloc.calc
 
     if isone(nspecies)
@@ -122,7 +122,7 @@ function similarity_matrix!(; input_obj, prealloc)
     end
 
     amc_resid .= (amc .- mean(amc)) ./ std(amc)
-    rsa_above_resid .= (rsa .- mean(rsa)) ./ std(rsa)
+    rsa_above_resid .= (srsa .- mean(srsa)) ./ std(srsa)
 
     for i in Base.OneTo(nspecies)
         for u in Base.OneTo(nspecies)

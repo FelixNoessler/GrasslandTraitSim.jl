@@ -2,7 +2,7 @@
 Models the below-ground competiton between plants.
 
 Plant available nutrients and water are reduced if a large biomass of plant
-species with similar root surface area per above ground biomass (`rsa`)
+species with similar root surface area per above ground biomass (`srsa`)
 and arbuscular mycorrhizal colonisation (`amc`) is already present.
 
 We define for $N$ species the trait similarity matrix $TS \in [0,1]^{N \times N}$ with
@@ -73,7 +73,7 @@ mycorrhizal colonisation.
 The `TS` matrix is computed before the start of the simulation
 ([calculation of trait similarity](@ref similarity_matrix!))
 and includes the traits arbuscular mycorrhizal colonisation rate (`amc`)
-and the root surface area devided by the above ground biomass (`rsa`).
+and the root surface area devided by the above ground biomass (`srsa`).
 
 - `biomass_density_factor` is the factor that adjusts the
   plant available nutrients and soil water [-]
@@ -215,7 +215,7 @@ and later used in the reduction function.
 
 
 Reduction of growth due to stronger water stress for lower specific
-root surface area per above ground biomass (`rsa`).
+root surface area per above ground biomass (`srsa`).
 
 - the strength of the reduction is modified by the parameter `δ_wrsa`
 
@@ -284,7 +284,7 @@ arbuscular mycorrhizal colonisation (`AMC`).
 ![Graphical overview of the AMC functional response](../img/amc_nut_response_0_5.svg)
 
 Reduction of growth due to stronger nutrient stress for lower specific
-root surface area per above ground biomass (`rsa`).
+root surface area per above ground biomass (`srsa`).
 
 - the strength of the reduction is modified by the parameter `δ_nrsa`
 
