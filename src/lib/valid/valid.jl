@@ -74,6 +74,7 @@ function load_data(datapath)
 
     input_traits = CSV.read("$datapath/input/traits.csv",
         DataFrame)
+    input_traits.lbp = 0.8 .* input_traits.abp
 
     f = input_traits.lbp .> input_traits.abp
     input_traits.lbp[f] = input_traits.abp[f]
