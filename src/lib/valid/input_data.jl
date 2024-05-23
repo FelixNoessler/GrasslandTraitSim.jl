@@ -374,7 +374,6 @@ function create_included(included_prep = (;);)
         belowground_competition = true,
         community_height_red = true,
         height_competition = true,
-        pet_growth_reduction = true,
         sla_transpiration = true,
         sla_water_growth_reducer = false,
         rsa_water_growth_reducer = true,

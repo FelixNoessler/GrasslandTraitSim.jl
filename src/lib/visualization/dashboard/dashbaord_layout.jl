@@ -39,15 +39,16 @@ function dashboard_layout(; variable_p)
         halign = :left, font = :bold, fontsize = 16)
     input_obj = validation_input(; plotID = "HEG01", nspecies = 1)
     included_symbols = keys(input_obj.simp.included)
+    is_included = collect(values(input_obj.simp.included))
     labels = String.(included_symbols)
     nstart2 = length(labels) - length(labels) ÷ 2 + 1
     nend1 = nstart2 - 1
     [Label(sim_layout[i+1, 1], labels[i]; halign = :right, fontsize = 10) for i in 1:nend1]
     [Label(sim_layout[i+2-nstart2, 3], labels[i]; halign = :right)
         for i in nstart2:length(labels)]
-    left_toggles = [Toggle(sim_layout[i+1, 2], active = true, height = 10) for i in 1:nend1]
+    left_toggles = [Toggle(sim_layout[i+1, 2], active = is_included[i], height = 10) for i in 1:nend1]
     right_toggle = [Toggle(sim_layout[i+2-nstart2, 4],
-               active = true, height = 10) for i in nstart2:length(labels)]
+               active = is_included[i], height = 10) for i in nstart2:length(labels)]
     toggles_included_prep = vcat(left_toggles, right_toggle)
     toggles_included = Dict(zip(included_symbols, toggles_included_prep))
 

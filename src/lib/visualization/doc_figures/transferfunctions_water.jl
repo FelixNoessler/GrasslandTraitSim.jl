@@ -23,7 +23,7 @@ function plot_W_rsa(; δ_wrsa = 0.5, path = nothing)
 
     fig = Figure(size = (1000, 500))
     Axis(fig[1, 1],
-        xlabel = "Plant available water (W_p)",
+        xlabel = "Plant available water (W_sc)",
         ylabel = "Growth reduction factor (W_rsa)\n← stronger reduction, less reduction →")
     hlines!([1-δ_wrsa]; color = :black)
     text!(1.2, 1-δ_wrsa + 0.02; text = "1 - δ_wrsa")
@@ -97,7 +97,7 @@ function plot_W_sla(;δ_sla = 0.5, path = nothing)
 
     fig = Figure(size = (900, 400))
     Axis(fig[1, 1];
-        xlabel = "Plant available water (W_p)",
+        xlabel = "Plant available water (W_sc)",
         ylabel = "Growth reduction factor (W_sla)\n← stronger reduction, less reduction →",
         title = "")
     hlines!([1-δ_sla]; color = :black)

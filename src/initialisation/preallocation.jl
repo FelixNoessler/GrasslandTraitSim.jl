@@ -176,7 +176,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         N_rsa = Array{T}(undef, nspecies),
 
         ## water reducer function
-        W_p = Array{T}(undef, nspecies),
+
         Waterred = Array{T}(undef, nspecies),
         W_sla = Array{T}(undef, nspecies),
         W_rsa = Array{T}(undef, nspecies),

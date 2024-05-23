@@ -180,7 +180,7 @@ and later used in the reduction function.
 \text{W_sla} = 1 - \text{δ_sla} +
     \frac{\text{δ_sla}}
     {1 + exp(-\text{k_sla} \cdot
-        (\text{W_p} - \text{A_sla}))}
+        (\text{W_{sc}} - \text{A_sla}))}
 ```
 
 - `W_sla` is the reduction factor for the growth based on the
@@ -190,7 +190,6 @@ and later used in the reduction function.
   1 - `δ_sla` and 1 [-]
 - `δ_sla` is the maximal reduction of the
   growth based on the specific leaf area
-- `W_p` is the plant available water [-]
 - `k_sla` is a parameter that defines the steepness of the reduction function
 
 **Overview over the parameters:**
@@ -236,26 +235,18 @@ function water_reduction!(; container, W, PET, PWP, WHC)
 
     Wsc = W > WHC ? 1.0 : W > PWP ? (W - PWP) / (WHC - PWP) : 0.0
 
-    pet_adjustment = 1.0
-    if included.pet_growth_reduction
-        @unpack α_PET, β_PET = container.p
-        pet_adjustment = exp(β_PET * (α_PET - PET))
-    end
-
-    @unpack W_sla, W_rsa, W_p, biomass_density_factor = container.calc
+    @unpack W_sla, W_rsa = container.calc
     @unpack δ_sla, δ_wrsa, β_sla, β_wrsa = container.p
     @unpack A_wrsa, A_sla = container.transfer_function
 
-    W_p .= biomass_density_factor .* (Wsc * pet_adjustment)
-
     if included.sla_water_growth_reducer
-        @. W_sla = 1 - δ_sla + δ_sla / (1 + exp(-β_sla * (W_p - A_sla)))
+        @. W_sla = 1 - δ_sla + δ_sla / (1 + exp(-β_sla * (Wsc - A_sla)))
     else
         W_sla .= 1.0
     end
 
     if included.rsa_water_growth_reducer
-        @. W_rsa = 1 - δ_wrsa + δ_wrsa / (1 + exp(-β_wrsa * (W_p - A_wrsa)))
+        @. W_rsa = 1 - δ_wrsa + δ_wrsa / (1 + exp(-β_wrsa * (Wsc - A_wrsa)))
     else
         W_rsa .= 1.0
     end

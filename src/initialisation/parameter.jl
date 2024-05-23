@@ -10,7 +10,7 @@ the permanent wilting point (see [`input_WHC_PWP!`](@ref)).
 $(MYNEWFIELDS)
 """
 @with_kw_noshow mutable struct SimulationParameter{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8,
-                                  Q10, Q11, Q12, Q13, Q14, Q15, Q16, Q17} @deftype T
+                                  Q10, Q11, Q12, Q13, Q14, Q15} @deftype T
 
     ####################################################################################
     ## 1 Light interception and competition
@@ -72,24 +72,6 @@ $(MYNEWFIELDS)
     β_TSB = F(2.0)
 
     """
-    2::``\\alpha_{PET}``::reference value for influence of
-    the potential evapotranspiration ``PET_{txy}`` on the plant available water;
-    if ``PET_{txy}`` is above ``\\alpha_{PET}``, the factor ``PET_{Wp, txy}``
-    is below one and the plant available water is lowered,
-    see [`water_reduction!`](@ref)
-    """
-    α_PET::Q13 = F(2.0)u"mm"
-
-    """
-    2::``\\beta_{PET}``::slope of the function for the influence of
-    the potential evapotranspiration ``PET_{txy}`` on the plant available
-    water ``PET_{Wp, txy}``; controls how strongly the factor ``PET_{Wp, txy}``
-    deviates from one if the ``PET_{txy}`` deviates from ``\\alpha_{PET}``,
-    see [`water_reduction!`](@ref)
-    """
-    β_PET::Q14 = F(1.2)u"mm^-1"
-
-    """
     2::``\\delta_{sla}``::part of the growth reducer based on the water stress
     and the specific leaf area ``W_{sla, txys}`` function;
     maximal possible growth reduction,
@@ -129,7 +111,7 @@ $(MYNEWFIELDS)
     ``\\eta_{\\min, sla}`` and ``\\eta_{\\max, sla}``,
     see [`water_reduction!`](@ref)
     """
-    ϕ_sla::Q15 = F(0.025)u"m^2 / g"
+    ϕ_sla::Q13 = F(0.025)u"m^2 / g"
 
     """
     2::``\\beta_{\\eta, sla}``::part of the growth reducer based on the water stress
@@ -137,7 +119,7 @@ $(MYNEWFIELDS)
     that relates the specific leaf area to ``A_{sla, s}``,
     see [`water_reduction!`](@ref)
     """
-    β_η_sla::Q16 = F(75.0)u"g / m^2"
+    β_η_sla::Q14 = F(75.0)u"g / m^2"
 
     """
     2::``\\delta_{wrsa}``::part of the growth reducer based on the
@@ -166,7 +148,7 @@ $(MYNEWFIELDS)
     ``A_{wrsa, s}`` (``A_{nrsa, s}``) and ``K_{wrsa, s}`` (``K_{nrsa, s}``),
     see [`water_reduction!`](@ref)
     """
-    ϕ_rsa::Q15 = F(0.2)u"m^2 / g"
+    ϕ_rsa::Q13 = F(0.2)u"m^2 / g"
 
     """
     2::``\\beta_{\\eta, wrsa}``::part of the growth reducer based on the root
@@ -175,7 +157,7 @@ $(MYNEWFIELDS)
     aboveground biomass to ``K_{wrsa, s}`` and ``A_{nrsa, s}``,
     see [`water_reduction!`](@ref)
     """
-    β_η_wrsa::Q16 = F(40.0)u"g / m^2"
+    β_η_wrsa::Q14 = F(40.0)u"g / m^2"
 
     """
     2::``\\eta_{\\min, wrsa}``::part of the growth reducer based on the
@@ -199,7 +181,7 @@ $(MYNEWFIELDS)
     [explo14446v19](@cite)[explo18787v6](@cite)[explo23846v10](@cite)[explo31210v6](@cite),
     see [`input_nutrients!`](@ref)
     """
-    N_max::Q17 = F(35.0)u"g/kg"
+    N_max::Q15 = F(35.0)u"g/kg"
 
     """
     2::``\\delta_{amc}``::part of the growth reducer based on the
@@ -225,7 +207,7 @@ $(MYNEWFIELDS)
     """
     2::``\\kappa_{\\text{red}, srsa}``::TODO
     """
-    κ_red_rsa::Q16 = F(1.0)u"g/m^2"
+    κ_red_rsa::Q14 = F(1.0)u"g/m^2"
 
     """
     2::``\\beta_{\\eta, amc}``::part of the growth reducer based on the
@@ -288,7 +270,7 @@ $(MYNEWFIELDS)
     aboveground biomass to ``K_{nrsa, s}`` and ``A_{nrsa, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    β_η_nrsa::Q16 = F(40.0)u"g / m^2"
+    β_η_nrsa::Q14 = F(40.0)u"g / m^2"
 
     """
     2::``\\eta_{\\min, nrsa}``::part of the growth reducer based on the
@@ -492,7 +474,7 @@ $(MYNEWFIELDS)
     equal to `α_TR_sla` then transpiration is neither increased nor decreased,
     see `transpiration`](@ref)
     """
-    α_TR_sla::Q15 = F(0.03)u"m^2 / g"
+    α_TR_sla::Q13 = F(0.03)u"m^2 / g"
 
     """
     7::``\\beta_{TR, sla}``::controls how strongly a
@@ -609,10 +591,6 @@ function exlude_parameter(; input_obj)
 
     if !included.nutrient_growth_reduction && !included.water_growth_reduction
         append!(excl_p, [:ϕ_rsa])
-    end
-
-    if !included.pet_growth_reduction
-        append!(excl_p, [:α_PET, :β_PET])
     end
 
     if !included.sla_transpiration
