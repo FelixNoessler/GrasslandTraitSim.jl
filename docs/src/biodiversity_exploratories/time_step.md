@@ -62,8 +62,10 @@ function plot_input_time_steps(input_obj1, input_obj2)
     fig
 end
 
-input_obj_1 = sim.validation_input(; plotID = "HEG01", nspecies = 43, time_step_days = 1);
-input_obj_7 = sim.validation_input(; plotID = "HEG01", nspecies = 43, time_step_days = 7);
+trait_input = sim.input_traits()
+nspecies = length(trait_input.amc)
+input_obj_1 = sim.validation_input(; plotID = "HEG01", nspecies, time_step_days = 1);
+input_obj_7 = sim.validation_input(; plotID = "HEG01", nspecies, time_step_days = 7);
 plot_input_time_steps(input_obj_1, input_obj_7)
 ```
 
@@ -84,11 +86,12 @@ plot_input_time_steps(input_obj_1, input_objs_14.HEG01)
 ```@example time_step
 function calc_total_biomass(included; plotID = "HEG01")
      trait_input = sim.input_traits();
+     nspecies = length(trait_input.amc)
      p = sim.SimulationParameter()
-     input_obj_1 = sim.validation_input(; plotID, nspecies = 43, time_step_days = 1, included);
+     input_obj_1 = sim.validation_input(; plotID, nspecies, time_step_days = 1, included);
      
      path = joinpath(dirname(pathof(sim)), "../assets/data/input/inputs_14_days.jld2")
-     input_obj_14 = sim.load_input(path; plotIDs = [plotID])[Symbol(plotID)];
+     input_obj_14 = sim.load_input(path; plotIDs = [plotID], included)[Symbol(plotID)];
      
      ## faster than preprocessing:
      # input_obj_14 = sim.validation_input(; plotID, nspecies = 43, time_step_days = 14, included);

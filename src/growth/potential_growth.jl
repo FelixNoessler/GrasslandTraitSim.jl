@@ -84,7 +84,7 @@ Output:
 - ``LAI_{txys}`` (`LAIs`) leaf area index of each species [-]
 - ``LAI_{tot, txy}`` (`LAItot`) total leaf area index of the plant community [-]
 
-![](../img/lai_traits.svg)
+![](../img/lai_traits.png)
 """
 function calculate_LAI!(; container, biomass)
     @unpack LAIs, com = container.calc

@@ -25,7 +25,7 @@ let
     lastn_points = 1500
 
     trait_input = sim.input_traits();
-    input_obj = sim.validation_input(; plotID = "HEG01", nspecies = 43, time_step_days = 1);
+    input_obj = sim.validation_input(; plotID = "HEG01", nspecies = length(trait_input.amc), time_step_days = 1);
     p = sim.SimulationParameter()
     sol = sim.solve_prob(; input_obj, p, trait_input);
     t = sol.simp.mean_input_date_num[end-lastn_points:end]
@@ -43,7 +43,7 @@ let
             linewidth = 2, color = :black)
 
 
-    c = vec(sol.calc.root_invest_amc .* sol.calc.root_invest_rsa)
+    c = vec(sol.calc.root_invest_amc .* sol.calc.root_invest_srsa)
     colorrange = (minimum(c), maximum(c))
     species_order = sortperm(c)
     colormap = :redsblues
@@ -60,7 +60,7 @@ let
     ax1 = Axis(fig[3, 1];
         xlabel = "Root suface area per\nbelowground biomass [m² g⁻¹]",
         ylabel = "Growth reduction due to investment\ninto roots, single effects [-]\n← stronger reduction, less reduction →")
-    scatter!(ustrip.(sol.traits.rsa), sol.calc.root_invest_rsa;
+    scatter!(ustrip.(sol.traits.srsa), sol.calc.root_invest_srsa;
             color = c, colormap,
             markersize = 10)
 
@@ -111,7 +111,7 @@ let
     lastn_points = 1500
 
     trait_input = sim.input_traits();
-    input_obj = sim.validation_input(; plotID = "HEG01", nspecies = 43, time_step_days = 1,
+    input_obj = sim.validation_input(; plotID = "HEG01", nspecies = length(trait_input.amc), time_step_days = 1,
                                         included = (;
                                         belowground_competition = true,
                                         nutrient_growth_reduction = true,
@@ -132,10 +132,7 @@ let
         return x > WHC ? 1.0 : x > PWP ? (x - PWP) / (WHC - PWP) : 0.0
     end
 
-    PET_shifted = max.(sol.input.PET[end-lastn_points:end] .- sol.p.α_PET, -90.0u"mm")
-    pet_factor = exp.(-sol.p.β_PET .* PET_shifted)
-
-    water_scaled = get_Wsc.(water_out; WHC, PWP) .* pet_factor
+    water_scaled = get_Wsc.(water_out; WHC, PWP)
 
 
     fig = Figure(size = (900, 1000))
@@ -164,7 +161,7 @@ let
         lines!(t_out, water_scaled;
                 linewidth = 2, color = :blue)
 
-    c = vec(sol.calc.root_invest_rsa)
+    c = vec(sol.calc.root_invest_srsa)
     colorrange = (minimum(c), maximum(c))
     species_order = sortperm(c)
     colormap = :redsblues

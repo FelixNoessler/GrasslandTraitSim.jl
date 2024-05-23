@@ -1,6 +1,6 @@
 @doc raw"""
 Influence of mowing for plant species with different heights ($height$):
-![Image of mowing effect](../img/mowing.svg)
+![Image of mowing effect](../img/mowing.png)
 """
 function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
     @unpack height, abp = container.traits
@@ -55,10 +55,10 @@ an equal amount of biomass (total biomass / 3)
 and a leaf nitrogen content of 15, 30 and 40 mg/g:
 
 - `β_PAL_lnc` = 1.5
-![](../img/grazing_1_5.svg)
+![](../img/grazing_1_5.png)
 
 - `β_PAL_lnc` = 5
-![](../img/grazing_5.svg)
+![](../img/grazing_5.png)
 
 Influence of `α_GRZ`:
 ![](../img/α_GRZ.svg)
@@ -121,8 +121,8 @@ Maximal the whole biomass of a plant species is removed by trampling.
 - `β_TRM` [ha m⁻¹]
 - height canopy height [$m$]
 
-![Image of effect of biomass of plants on the trampling](../img/trampling_biomass.svg)
-![Image of effect of livestock density on trampling](../img/trampling_LD.svg)
+![Image of effect of biomass of plants on the trampling](../img/trampling_biomass.png)
+![Image of effect of livestock density on trampling](../img/trampling_LD.png)
 ![](../img/trampling_biomass_individual.svg)
 """
 function trampling!(; container, LD, biomass)

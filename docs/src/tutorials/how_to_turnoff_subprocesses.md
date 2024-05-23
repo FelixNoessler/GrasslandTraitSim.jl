@@ -59,10 +59,8 @@ included = (;
     potential_growth = false,
 )
 
-input_obj = sim.validation_input(; included, plotID = "HEG01", nspecies = 43);
-
-
 trait_input = sim.input_traits()
+input_obj = sim.validation_input(; included, plotID = "HEG01", nspecies = length(trait_input.amc));
 
 # we also exclude all parameters that are not used
 # this is not necessary, but it gives an overview which parameters are used

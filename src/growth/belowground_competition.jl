@@ -144,8 +144,6 @@ belowground competition factor:
 - ``β_{pet}`` is a parameter that defines the steepness of the reduction function
 - ``α_{pet}`` is a parameter that defines the midpoint of the reduction function
 
-![](../img/pet.svg)
-
 Derive the water stress based on the specific leaf area and the
 plant availabe water.
 
@@ -203,14 +201,6 @@ and later used in the reduction function.
 | `k_sla`                   | fixed                     | 5 [-]          |
 | `δ_sla` | calibrated                | -              |
 | `A_sla`      | species-specific, derived | -              |
-
-**Influence of the `δ_sla`:**
-
-`δ_sla` equals 1:
-![](../img/plot_W_sla.svg)
-
-`δ_sla` equals 0.5:
-![](../img/W_sla_response_0_5.svg)
 
 
 Reduction of growth due to stronger water stress for lower specific

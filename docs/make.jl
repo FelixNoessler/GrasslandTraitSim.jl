@@ -34,7 +34,7 @@ f(path; show_img = false) = show_img ? nothing : path
 sim.potential_growth_lai_height(; path = f("$docs_img/potential_growth_lai_height.svg"))
 sim.potential_growth_height_lai(; path = f("$docs_img/potential_growth_height_lai.svg"))
 sim.potential_growth_height(; path = f("$docs_img/potential_growth_height.svg"))
-sim.lai_traits(; path = f("$docs_img/lai_traits.svg"))
+sim.lai_traits(; path = f("$docs_img/lai_traits.png"))
 sim.community_height_influence(; path = f("$docs_img/community_height_influence.svg"))
 
 #### transfer functions
@@ -63,12 +63,12 @@ sim.plot_seasonal_component_senescence(;
     path = f("$docs_img/seasonal_factor_senescence.svg"))
 
 #### land use
-sim.mowing(; path = f("$docs_img/mowing.svg"))
-sim.grazing(; β_PAL_lnc = 1.0, path = f("$docs_img/grazing_1_5.svg"))
-sim.grazing(; β_PAL_lnc = 2.0, path = f("$docs_img/grazing_5.svg"))
+sim.mowing(; path = f("$docs_img/mowing.png"))
+sim.grazing(; β_PAL_lnc = 1.0, path = f("$docs_img/grazing_1_5.png"))
+sim.grazing(; β_PAL_lnc = 2.0, path = f("$docs_img/grazing_5.png"))
 sim.α_GRZ(; path = f("$docs_img/α_GRZ.svg"))
-sim.trampling_biomass(; path = f("$docs_img/trampling_biomass.svg"))
-sim.trampling_livestockdensity(; path = f("$docs_img/trampling_LD.svg"))
+sim.trampling_biomass(; path = f("$docs_img/trampling_biomass.png"))
+sim.trampling_livestockdensity(; path = f("$docs_img/trampling_LD.png"))
 sim.trampling_biomass_individual(; path = f("$docs_img/trampling_biomass_individual.svg"))
 
 ##  clonal growth
