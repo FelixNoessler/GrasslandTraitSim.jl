@@ -97,14 +97,14 @@ function lai_traits(; path = nothing)
     sla = ustrip.(container.traits.sla[idx])
 
 
-    leaf_proportion = (container.traits.lbp ./ container.traits.abp)[idx]
-    colorrange = (minimum(leaf_proportion), maximum(leaf_proportion))
+    abp = (container.traits.abp)[idx]
+    colorrange = (minimum(abp), maximum(abp))
     colormap = :viridis
 
     fig = Figure()
     ax = Axis(fig[1, 1]; xlabel = "Specific leaf area [m² g⁻¹]", ylabel = "Leaf area index [-]", title = "")
-    sc = scatter!(sla, ustrip(ymat), color = leaf_proportion, colormap = colormap)
-    Colorbar(fig[1,2], sc; label = "Fraction of leaf biomass in abovegorund biomass")
+    sc = scatter!(sla, ustrip(ymat), color = abp, colormap = colormap)
+    Colorbar(fig[1,2], sc; label = "Aboveground biomass per total biomass")
 
     if !isnothing(path)
         save(path, fig;)

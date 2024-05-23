@@ -200,14 +200,24 @@ $(MYNEWFIELDS)
     β_amc = F(7.0)
 
     """
-    2::``\\kappa_{\\text{red}, amc}``::TODO
+    2::``\\beta_{\\text{red}, amc}``::TODO
     """
-    κ_red_amc = F(0.2)
+    β_red_amc = F(12.0)
 
     """
-    2::``\\kappa_{\\text{red}, srsa}``::TODO
+    2::``\\beta_{\\text{red}, srsa}``::TODO
     """
-    κ_red_rsa::Q14 = F(1.0)u"g/m^2"
+    β_red_rsa::Q14 = F(20.0)u"g/m^2"
+
+    """
+    2::``\\kappa_{\\text{maxred}, amc}``::TODO
+    """
+    κ_maxred_amc = F(0.15)
+
+    """
+    2::``\\kappa_{\\text{maxred}, srsa}``::TODO
+    """
+    κ_maxred_srsa = F(0.15)
 
     """
     2::``\\beta_{\\eta, amc}``::part of the growth reducer based on the
@@ -449,7 +459,7 @@ $(MYNEWFIELDS)
     """
     5::``\\alpha_{\\text{low}B}``::
     """
-    α_lowB::Q11 = F(100.0)u"kg / ha"
+    α_lowB::Q11 = F(20.0)u"kg / ha"
 
     """
     5::``\\beta_{\\text{low}B}``::

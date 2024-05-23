@@ -24,8 +24,6 @@ function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
     @. mown = lowbiomass_correction * proportion_mown * biomass
     defoliation .+= mown
 
-
-
     return nothing
 end
 
@@ -68,7 +66,7 @@ Influence of `α_GRZ`:
 function grazing!(; t, x, y, container, LD, biomass)
     @unpack lnc, abp = container.traits
     @unpack α_GRZ, β_PAL_lnc, κ, α_lowB, β_lowB = container.p
-    @unpack defoliation, grazed_share, relative_lncm, ρ, grazed,
+    @unpack defoliation, grazed_share, relative_lnc, ρ, grazed,
             lowbiomass_correction, low_ρ_biomass, above_biomass = container.calc
     @unpack included = container.simp
 
@@ -80,16 +78,17 @@ function grazing!(; t, x, y, container, LD, biomass)
 
     #################################### share of grazed biomass per species
     ## Palatability ρ
-    relative_lncm .= lnc .* above_biomass ./ sum_biomass
-    ρ .= (lnc ./ sum(relative_lncm)) .^ β_PAL_lnc
+    relative_lnc .= lnc .* above_biomass ./ sum_biomass
+    cwm_lnc = sum(relative_lnc)
+    ρ .= (lnc ./ cwm_lnc) .^ β_PAL_lnc
 
     ## species with low biomass are less grazed
     if included.lowbiomass_avoidance
-        @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (above_biomass - α_lowB)))
+        @. lowbiomass_correction = 1.0 / (1.0 + exp(-β_lowB * (above_biomass - α_lowB)))
     else
         lowbiomass_correction .= 1.0
     end
-    @. low_ρ_biomass = abp * lowbiomass_correction * ρ * biomass
+    @. low_ρ_biomass = lowbiomass_correction * ρ * above_biomass
 
     grazed_share .= low_ρ_biomass ./ sum(low_ρ_biomass)
 
@@ -150,7 +149,7 @@ function trampling!(; container, LD, biomass)
     @. height_scaled = height / 0.5u"m"
     for i in eachindex(trampled_share)
         trampled_share[i] = abp_scaled[i] * height_scaled[i] ^ β_TRM_H *
-            lowbiomass_correction[i] * biomass[i] / sum_biomass
+            lowbiomass_correction[i] * above_biomass[i] / sum_biomass
     end
 
     #################################### Add trampled biomass to defoliation

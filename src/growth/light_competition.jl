@@ -51,7 +51,9 @@ function light_competition!(; container, biomass)
         @. above_biomass = abp * biomass
         relative_height .= height .* above_biomass ./ sum(above_biomass)
         height_cwm = sum(relative_height)
-        @. heightinfluence = (height / height_cwm) ^ β_height
+
+        # TODO change documentation
+        @. heightinfluence = 2.0 / (1.0 + exp(β_height * ustrip(height_cwm - height)))
     end
 
     @. light_competition = LAIs / LAItot * heightinfluence

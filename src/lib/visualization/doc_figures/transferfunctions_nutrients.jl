@@ -67,7 +67,7 @@ end
 
 
 
-function plot_N_rsa(; δ_nrsa = 0.8, path = nothing)
+function plot_N_srsa(; δ_nrsa = 0.8, path = nothing)
     nspecies, container = create_container(; param = (; δ_nrsa))
     container.calc.biomass_density_factor .= 1.0
 

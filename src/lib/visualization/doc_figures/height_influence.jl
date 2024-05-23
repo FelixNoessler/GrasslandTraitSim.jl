@@ -1,7 +1,7 @@
 function height_influence(; path = nothing)
     nspecies, container = create_container(; )
 
-    height_strength_exps = LinRange(0.0, 1.5, 40)
+    height_strength_exps = LinRange(0.0, 10.0, 40)
     biomass = fill(50, nspecies)u"kg / ha"
     ymat = Array{Float64}(undef, nspecies, length(height_strength_exps))
 

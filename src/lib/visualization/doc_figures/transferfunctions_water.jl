@@ -1,16 +1,14 @@
-function plot_W_rsa(; δ_wrsa = 0.5, path = nothing)
+function plot_W_srsa(; δ_wrsa = 0.5, path = nothing)
     nspecies, container = create_container(; param = (; δ_wrsa))
     xs = LinRange(0, 1.5, 20)
     ymat = fill(0.0, length(xs), nspecies)
 
-    PET = container.p.α_PET
     WHC = 1u"mm"
     PWP = 0u"mm"
     W = 1 * u"mm"
 
     for (i, x) in enumerate(xs)
-        container.calc.biomass_density_factor .= x
-        water_reduction!(; container, W, PET, PWP, WHC)
+        water_reduction!(; container, W = x * u"mm", PWP, WHC)
         ymat[i, :] .= container.calc.W_rsa
     end
 
@@ -42,7 +40,7 @@ function plot_W_rsa(; δ_wrsa = 0.5, path = nothing)
     ylims!(-0.1, 1.1)
 
     Axis(fig[1, 2];
-        xlabel = "Root surface area /\nabove ground biomass [m² g⁻¹]",
+        xlabel = "Root surface area per\nbelowground ground biomass [m² g⁻¹]",
         ylabel = "Scaled water availability\nat midpoint (A_wrsa)")
     scatter!(ustrip.(srsa), x0s;
         marker = :x,

@@ -1,6 +1,5 @@
 function grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, path = nothing)
-
-    nspecies, container = create_container(; )
+    nspecies, container = create_container()
 
     if !isnothing(α_GRZ)
         container.p.α_GRZ = α_GRZ
@@ -10,7 +9,7 @@ function grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, path = nothing)
         container.p.β_PAL_lnc = β_PAL_lnc
     end
 
-    nbiomass = 50
+    nbiomass = 80
     LD = 2u"ha ^ -1"
     biomass_vec = LinRange(0, 500, nbiomass)u"kg / ha"
     grazing_mat = Array{Float64}(undef, nspecies, nbiomass)
@@ -22,7 +21,7 @@ function grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, path = nothing)
         grazing_mat[:, i] = ustrip.(container.calc.defoliation)
     end
 
-    idx = sortperm(container.calc.ρ)
+    idx = sortperm(container.traits.lnc)
     lnc = ustrip.(container.traits.lnc)[idx]
     grazing_mat = grazing_mat[idx, :]
     colorrange = (minimum(lnc), maximum(lnc))

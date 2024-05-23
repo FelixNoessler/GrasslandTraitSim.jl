@@ -122,7 +122,7 @@ function below_influence(; path = nothing)
 
     #################### varying β_TSB, equal biomass, random traits
     below_effects = LinRange(0, 0.5, 30)
-    biomass = fill(90.0, nspecies)u"kg / ha"
+    biomass = fill(20.0, nspecies)u"kg / ha"
     ymat = Array{Float64}(undef, nspecies, length(below_effects))
 
     for (i, below_effect) in enumerate(below_effects)
@@ -142,7 +142,7 @@ function below_influence(; path = nothing)
 
     ##################### artficial example
     mat = [1 0.8 0.2; 0.8 1 0.5; 0.2 0.5 1]
-    biomass = [100.0, 10.0, 10.0]u"kg / ha"
+    biomass = [40.0, 10.0, 10.0]u"kg / ha"
 
     artificial_below = 0.0:0.01:0.5
     artificial_mat = Array{Float64}(undef, 3, length(artificial_below))
@@ -193,31 +193,7 @@ function below_influence(; path = nothing)
         color = :black)
     axislegend(ax2; position = :lt)
 
-    # Axis(fig[3, 1];
-    #     xlabel = "Mean trait similarity",
-    #     title = "β_TSB = $(below_density_effect)")
-    # ylims!(-0.1, nothing)
-    # lines!(quantile(mean_traitsim, [0.0, 1.0]), [1, 1];
-    #     color = :black)
-    # lines!(mean_traitsim[u1], belowsplit_biomass1[u1];
-    #     color = :black, linestyle=:dash)
-    # lines!(mean_traitsim[u2], belowsplit_biomass2[u2];
-    #     color = :black, linestyle = :dot)
-
-    # b1 = ustrip.(biomass1)
-    # plt = scatter!(mean_traitsim, belowsplit_biomass1;
-    #     colormap = :vik100,
-    #     color = b1,
-    #     colorrange = (minimum(b1), maximum(b1)) )
-    # b2 = ustrip.(biomass2)
-    # scatter!(mean_traitsim, belowsplit_biomass2;
-    #     colormap = :vik100,
-    #     color = b2,
-    #     colorrange = (minimum(b2), maximum(b2)) )
-    # Colorbar(fig[3, 2], plt;
-    #          label = "Biomass [kg ha⁻¹]")
-
-    Label(fig[1:2, 0], "Plant available resource (water or nutrients) adjustment factor",
+    Label(fig[1:2, 0], "Plant available nutrient adjustment factor",
         rotation = pi / 2)
 
     colgap!(fig.layout, 2, 10)

@@ -32,7 +32,7 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     ########### Species-specific growth adjustment
     light_competition!(; container, biomass)
     below_ground_competition!(; container, biomass)
-    water_reduction!(; container, W, PWP, WHC, PET = input.PET[t])
+    water_reduction!(; container, W, PWP, WHC)
     nutrient_reduction!(; container, nutrients)
     @. species_specific_red = light_competition * Waterred * Nutred * root_invest
 
