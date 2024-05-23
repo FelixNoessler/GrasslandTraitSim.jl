@@ -21,13 +21,12 @@ function load_data(datapath)
     measuredheight = CSV.read("$datapath/validation/measured_height.csv",
         DataFrame)
 
-    mtraits = CSV.read("$datapath/validation/cwm_cwv_traits.csv",
+    mtraits = CSV.read("$datapath/validation/cwm_traits.csv",
         DataFrame)
 
     traits = (
-        cwm = [mtraits.cwm_sla mtraits.cwm_lncm mtraits.cwm_amc mtraits.cwm_rsa_above mtraits.cwm_height],
-        cwv = [mtraits.cwv_sla mtraits.cwv_lncm mtraits.cwv_amc mtraits.cwv_rsa_above mtraits.cwv_height],
-        dim = [:sla, :lnc, :amc, :srsa, :height],
+        cwm = [mtraits.srsa mtraits.amc mtraits.abp mtraits.sla mtraits.height mtraits.lnc],
+        dim = [:srsa, :amc, :abp, :sla, :height, :lnc],
         t = mtraits.date,
         num_t = mtraits.numeric_date,
         plotID = mtraits.plotID)
@@ -75,6 +74,7 @@ function load_data(datapath)
     input_traits = CSV.read("$datapath/input/traits.csv",
         DataFrame)
     input_traits.lbp = 0.8 .* input_traits.abp
+    input_traits.bbp = 1.0 .- input_traits.bbp
 
     input = (;
         traits = input_traits,

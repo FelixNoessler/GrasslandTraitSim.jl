@@ -11,9 +11,6 @@ function dashboard_layout(; variable_p)
     graz_mow_layout = GridLayout(plottingmenu_layout[3, 1]; halign = :left)
 
     plots_layout = GridLayout(fig[2, 1])
-    topplots_layout = GridLayout(plots_layout[1, 1])
-    bottomplots_layout = GridLayout(plots_layout[2, 1])
-
     right_layout = GridLayout(fig[1:2, 2])
     righttop_layout = GridLayout(right_layout[1, 1]; halign = :left)
     param_layout = GridLayout(right_layout[2, 1]; tellheight = false, valign = :top)
@@ -184,15 +181,17 @@ function dashboard_layout(; variable_p)
     # Plot axes
     ##############################################################################
     axes = Dict()
-    axes[:biomass] = Axis(topplots_layout[1, 1:2]; alignmode = Outside(),
-                          limits = (nothing, nothing, -100.0, 5500.0))
-    axes[:soilwater] = Axis(topplots_layout[1, 3]; alignmode = Outside())
-    axes[:abiotic] = Axis(topplots_layout[1, 4]; alignmode = Outside())
-    axes[:sla] = Axis(bottomplots_layout[1, 1]; alignmode = Outside())
-    axes[:srsa] = Axis(bottomplots_layout[1, 2]; alignmode = Outside())
-    axes[:height] = Axis(bottomplots_layout[1, 3]; alignmode = Outside())
-    axes[:lnc] = Axis(bottomplots_layout[1, 4]; alignmode = Outside())
-    axes[:amc] = Axis(bottomplots_layout[1, 5]; alignmode = Outside())
+    axes[:biomass] = Axis(plots_layout[1, 1]; alignmode = Inside(),
+                          limits = (nothing, nothing, -100.0, nothing))
+    axes[:soilwater] = Axis(plots_layout[1, 2]; alignmode = Inside())
+    axes[:abiotic] = Axis(plots_layout[1, 3]; alignmode = Inside())
+
+    axes[:sla] = Axis(plots_layout[2, 1]; alignmode = Inside())
+    axes[:height] = Axis(plots_layout[2, 2]; alignmode = Inside())
+    axes[:lnc] = Axis(plots_layout[2, 3]; alignmode = Inside())
+    axes[:srsa] = Axis(plots_layout[3, 1]; alignmode = Inside())
+    axes[:amc] = Axis(plots_layout[3, 2]; alignmode = Inside())
+    axes[:abp] = Axis(plots_layout[3, 3]; alignmode = Inside())
 
     ##############################################################################
     # Put all plot objects and observables in a named tuple

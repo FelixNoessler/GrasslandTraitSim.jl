@@ -72,6 +72,7 @@ function calibrated_parameter(; input_obj = nothing)
         b_sla = (truncated(Cauchy(0, 0.05); lower = 0.0), asℝ₊, "text"),
         b_lnc = (truncated(Cauchy(0, 0.5); lower = 0.0), asℝ₊, "text"),
         b_amc = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊, "text"),
+        b_abp = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊, "text"),
         b_height = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊, "text"),
         b_srsa = (truncated(Cauchy(0, 0.01); lower = 0.0), asℝ₊, "text")
     )

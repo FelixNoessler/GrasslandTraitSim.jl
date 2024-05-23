@@ -5,8 +5,10 @@ function band_patch(;
         valid_data)
     ax = plot_obj.axes[:biomass]
     empty!(ax)
-    ax.ylabel = "Green biomass [kg ha⁻¹]"
+    ax.ylabel = "Total biomass [kg ha⁻¹]"
     ax.xlabel = "Time [years]"
+    ax.xticklabelsvisible = false
+    ax.xlabelvisible = false
 
     thin = 1
 
@@ -76,6 +78,8 @@ end
 function soilwater_plot(; sol, plot_obj)
     ax = plot_obj.axes[:soilwater]
     empty!(ax)
+    ax.xticklabelsvisible = false
+    ax.xlabelvisible = false
 
     thin = 1
     t = sol.simp.output_date_num[1:thin:end]
@@ -99,6 +103,9 @@ function abiotic_plot(; sol, plot_obj)
 
     ax = plot_obj.axes[:abiotic]
     empty!(ax)
+    ax.xticklabelsvisible = false
+    ax.xlabelvisible = false
+
     abiotic_colors = [:blue, :brown, :red, :red, :orange]
     abiotic = plot_obj.obs.menu_abiotic.selection.val
     name_index = getindex.([plot_obj.obs.menu_abiotic.options.val...], 2) .== abiotic
@@ -118,10 +125,11 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
     t = sol.simp.output_date_num
 
     trait_names = [
-        "Specific leaf area [m² g⁻¹]", "Leaf nitrogen \nper leaf mass [mg g⁻¹]",
-        "Height [m]", "Mycorrhizal colonisation",
-        "Root surface area /\nabove ground biomass [m² g⁻¹]"]
-    trait_symbols = [:sla, :lnc, :height, :amc, :srsa]
+        "Specific leaf\narea [m² g⁻¹]", "Leaf nitrogen per\nleaf mass [mg g⁻¹]",
+        "Height [m]", "Arbuscular mycorrhizal\ncolonisation [-]",
+        "Root surface area per\nbelowground biomass [m² g⁻¹]",
+        "Aboveground biomass\nper total biomass [-]"]
+    trait_symbols = [:sla, :lnc, :height, :amc, :srsa, :abp]
     name_index = trait_symbols .== trait
     trait_name = trait_names[name_index][1]
 
@@ -144,29 +152,22 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
         lines!(ax, [t[1], t[end]], [trait_i, trait_i], color = (:grey, 0.2))
     end
 
-    cwm_trait_dist = nothing
-    if trait == :amc
-        μ = cwm_trait
-        φ = 1 / sol.p.b_amc
-        α = @. μ * φ
-        β = @. (1.0 - μ) * φ
-
-        try
-            cwm_trait_dist = Beta.(α, β)
-        catch e
-            @warn "Error in Beta distribution: $e"
-            return nothing
-        end
-    else
-        cwm_trait_dist = Laplace.(cwm_trait, sol.p[Symbol("b_$trait")])
-    end
-
+    cwm_trait_dist = Normal.(cwm_trait, sol.p[Symbol("b_$trait")])
     median_trait = median.(cwm_trait_dist)
 
     lines!(ax, t, median_trait, color = :blue)
     band!(ax, t, median_trait .+ cwv_trait, median_trait .- cwv_trait;
         color = (:blue, 0.3))
-    ax.ylabel = "CWM: $trait_name"
+    ax.ylabel = "$trait_name"
+
+    if trait ∈ [:sla, :height, :lnc]
+        ax.xticklabelsvisible = false
+        ax.xlabelvisible = false
+    else
+        ax.xticklabelsvisible = true
+        ax.xlabelvisible = true
+    end
+
 
     if !isnothing(valid_data)
         cwm_trait_dist_sub = cwm_trait_dist[LookupArrays.index(valid_data.traits, :time)]
@@ -181,10 +182,10 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
         y = vec(valid_data.traits[trait = At(trait)])
         scatter!(ax, num_t, y, color = :black, markersize = 8)
 
-        if trait == :height
-            num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.height, :time)]
-            y = vec(valid_data.height)
-            scatter!(ax, num_t, y, color = :darkgrey, markersize = 8)
-        end
+        # if trait == :height
+        #     num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.height, :time)]
+        #     y = vec(valid_data.height)
+        #     scatter!(ax, num_t, y, color = :darkgrey, markersize = 8)
+        # end
     end
 end

@@ -521,6 +521,11 @@ $(MYNEWFIELDS)
     b_lnc = F(2.0)
 
     """
+    8::``\\sigma_{abp}``::
+    """
+    b_abp = F(0.01)
+
+    """
     8::``\\sigma_{amc}``::
     """
     b_amc = F(0.01)

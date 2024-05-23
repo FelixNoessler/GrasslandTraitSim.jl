@@ -133,7 +133,7 @@ function update_plots(; sol, plot_obj, valid_data = nothing)
 
     ########### Trait changes over time
     [trait_time_plot(; plot_obj, sol, valid_data, trait = t) for t in
-        [:amc, :sla, :height, :srsa, :lnc]]
+        [:amc, :sla, :height, :srsa, :lnc, :abp]]
 
     return nothing
 end

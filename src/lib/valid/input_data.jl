@@ -210,7 +210,6 @@ function validation_input(;
 
     return (
         simp = (;
-            # doy = Dates.dayofyear.(date_range[1:end-1] .+ time_step_days ÷ 2),
             output_date = date_range,
             output_date_num = to_numeric.(date_range),
             mean_input_date = date_range[1:end-1] .+ .+ time_step_days ÷ 2,
@@ -377,7 +376,7 @@ function create_included(included_prep = (;);)
         height_competition = true,
         pet_growth_reduction = true,
         sla_transpiration = true,
-        sla_water_growth_reducer = true,
+        sla_water_growth_reducer = false,
         rsa_water_growth_reducer = true,
         water_growth_reduction = true,
         nutrient_growth_reduction = true,

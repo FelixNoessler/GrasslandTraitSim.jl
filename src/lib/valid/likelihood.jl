@@ -103,19 +103,19 @@ function loglikelihood_model(;
             cwm_traitscale = Symbol(:b_, trait_symbol)
             cwmtrait_d = Product(Normal.(sim_cwm_trait, sol.p[cwm_traitscale]);)
 
-            if trait_symbol == :amc
-                μ = sim_cwm_trait
-                φ = 1 / sol.p.b_amc
-                α = @. μ * φ
-                β = @. (1.0 - μ) * φ
+            # if trait_symbol == :amc
+            #     μ = sim_cwm_trait
+            #     φ = 1 / sol.p.b_amc
+            #     α = @. μ * φ
+            #     β = @. (1.0 - μ) * φ
 
-                if any(iszero.(α)) || any(iszero.(β))
-                    ll_trait += -Inf
-                    continue
-                end
+            #     if any(iszero.(α)) || any(iszero.(β))
+            #         ll_trait += -Inf
+            #         continue
+            #     end
 
-                cwmtrait_d = Product(Beta.(α, β))
-            end
+            #     cwmtrait_d = Product(Beta.(α, β))
+            # end
 
             ll = logpdf(cwmtrait_d, measured_cwm)
             ll_trait += ll #-log(ntraits)
