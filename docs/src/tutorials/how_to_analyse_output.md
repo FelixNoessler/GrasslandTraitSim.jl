@@ -228,10 +228,12 @@ function traits_to_matrix(trait_data; std_traits = true)
     return m
 end
 
+trait_input_wo_lbp = Base.structdiff(trait_input, (; lbp = nothing))
+
 tstep = 100
 biomass = sol.output.biomass[1:tstep:end, 1, 1, :]
 biomass_R = ustrip.(biomass.data)
-traits_R = traits_to_matrix(trait_input;)
+traits_R = traits_to_matrix(trait_input_wo_lbp;)
 site_names = string.("time_", 1:size(biomass_R, 1))
 species_names = string.("species_", 1:size(biomass_R, 2))
 
@@ -247,7 +249,7 @@ colnames(biomass_R) <- species_names
 
 fric_std_R <- fd_fric(traits_R, biomass_R, stand = TRUE)$FRic
 fdis_R <- fd_fdis(traits_R, biomass_R)$FDis
-# fdiv_R <- fd_fdiv(traits_R, biomass_R)$FDiv
+fdiv_R <- fd_fdiv(traits_R, biomass_R)$FDiv
 feve_R <- fd_feve(traits_R, biomass_R)$FEve
 """
 
