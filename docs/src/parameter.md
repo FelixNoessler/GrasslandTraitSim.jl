@@ -2,13 +2,15 @@
 CurrentModule = GrasslandTraitSim
 ```
 
-# Model Parameter
+# Parameter
 
+
+## Model Parameter
 ```@docs
 SimulationParameter
 ```
 
-# Simulation settings
+## Simulation settings
 
 | Parameter    | Description                                                                    | used in                    |
 | ------------ | ------------------------------------------------------------------------------ | -------------------------- |

@@ -34,7 +34,7 @@ let
                                     dims = :species)))
 
 
-    fig = Figure(size = (900, 1000))
+    fig = Figure(size = (900, 800))
 
     Axis(fig[1, 1:2];
          xticklabelsvisible = false, xticksvisible = true,
@@ -76,7 +76,6 @@ let
         label = "Growth reduction due to investment into roots, multiplicative effect of both factors [-]\n← stronger reduction, less reduction →")
 
     rowsize!(fig.layout, 1, Relative(0.1))
-    rowsize!(fig.layout, 2, Relative(0.5))
     rowgap!(fig.layout, 1, 5)
     rowgap!(fig.layout, 2, 10)
     colgap!(fig.layout, 1, 5)
@@ -156,8 +155,8 @@ let
 
     Axis(fig[3, 1];
         xticklabelsvisible = false, 
-        xticks = 2018:1:2022, ylabel = "Scaled water\nwith adjustment\nby PET [-]",
-        limits = (nothing, nothing, -0.1, 1.8))
+        xticks = 2018:1:2022, ylabel = "Scaled water",
+        limits = (nothing, nothing, -0.1, 1.1))
         lines!(t_out, water_scaled;
                 linewidth = 2, color = :blue)
 

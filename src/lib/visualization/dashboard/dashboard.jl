@@ -1,5 +1,6 @@
 function dashboard(; posterior = nothing, variable_p = (;),
-                   biomass_stats = nothing)
+                   biomass_stats = ["core", "sade"],
+                   path = nothing)
     set_theme!(
         Theme(
             colgap = 5,
@@ -106,7 +107,13 @@ function dashboard(; posterior = nothing, variable_p = (;),
             [:amc, :sla, :height, :srsa, :lnc]]
     end
 
-    display(plot_obj.fig)
+
+    if isnothing(path)
+        display(plot_obj.fig)
+    else
+        save(path, plot_obj.fig)
+    end
+
     return nothing
 end
 

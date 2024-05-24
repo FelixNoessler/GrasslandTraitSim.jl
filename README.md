@@ -32,23 +32,14 @@ For more information on installing unregistered packages, see [here](https://pkg
 
 ## Run simulations
 
-```julia
+```@example
 import GrasslandTraitSim as sim
 
 trait_input = sim.input_traits();
-input_obj = sim.validation_input(; plotID = "HEG01", nspecies = 43);
+nspecies = length(trait_input.amc)
+input_obj = sim.validation_input(; plotID = "HEG01", nspecies);
 p = sim.SimulationParameter();
 sol = sim.solve_prob(; input_obj, p, trait_input);
+sol.output.biomass
 ```
 
-## Start the GUI for checking the calibration results
-
-```julia
-import GrasslandTraitSim as sim
-using GLMakie
-GLMakie.activate!()
-
-sim.dashboard()
-```
-
-![](assets/screenshot.png)
