@@ -34,15 +34,13 @@ and a leaf nitrogen content of 15, 30 and 40 mg/g:
 Influence of `α_GRZ`:
 ![](../img/α_GRZ.svg)
 """
-function grazing!(; t, x, y, container, LD, biomass)
-    @unpack lnc, abp = container.traits
-    @unpack α_GRZ, β_PAL_lnc, κ, α_lowB, β_lowB = container.p
-    @unpack defoliation, grazed_share, relative_lnc, ρ, grazed,
-            lowbiomass_correction, low_ρ_biomass, above_biomass = container.calc
-    @unpack included = container.simp
+function grazing!(; container, LD)
+    @unpack lnc = container.traits
+    @unpack α_GRZ, β_PAL_lnc, κ = container.p
+    @unpack defoliation, grazed_share, relative_lnc, ρ, grazed, actual_height,
+            height_ρ_biomass, above_biomass = container.calc
 
     #################################### total grazed biomass
-    @. above_biomass = abp * biomass
     sum_biomass = sum(above_biomass)
     biomass_exp = sum_biomass * sum_biomass
     total_grazed = κ * LD * biomass_exp / (α_GRZ * α_GRZ + biomass_exp)
@@ -53,15 +51,8 @@ function grazing!(; t, x, y, container, LD, biomass)
     cwm_lnc = sum(relative_lnc)
     ρ .= (lnc ./ cwm_lnc) .^ β_PAL_lnc
 
-    ## species with low biomass are less grazed
-    if included.lowbiomass_avoidance
-        @. lowbiomass_correction = 1.0 / (1.0 + exp(-β_lowB * (above_biomass - α_lowB)))
-    else
-        lowbiomass_correction .= 1.0
-    end
-    @. low_ρ_biomass = lowbiomass_correction * ρ * above_biomass
-
-    grazed_share .= low_ρ_biomass ./ sum(low_ρ_biomass)
+    @. height_ρ_biomass = actual_height * ρ * above_biomass
+    grazed_share .= height_ρ_biomass ./ sum(height_ρ_biomass)
 
     #################################### add grazed biomass to defoliation
     @. grazed = grazed_share * total_grazed

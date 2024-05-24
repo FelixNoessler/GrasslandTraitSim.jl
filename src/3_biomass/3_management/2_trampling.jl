@@ -24,31 +24,23 @@ Maximal the whole biomass of a plant species is removed by trampling.
 ![Image of effect of livestock density on trampling](../img/trampling_LD.png)
 ![](../img/trampling_biomass_individual.svg)
 """
-function trampling!(; container, LD, biomass)
+function trampling!(; container, LD)
     @unpack height, abp = container.traits
-    @unpack β_TRM_H, β_TRM, α_TRM, α_lowB, β_lowB = container.p
-    @unpack lowbiomass_correction, trampled_share, above_biomass, abp_scaled,
-            defoliation, height_scaled, trampled = container.calc
-    @unpack included = container.simp
+    @unpack β_TRM_H, β_TRM, α_TRM = container.p
+    @unpack trampled_share, above_biomass, abp_scaled,
+            defoliation, height_scaled, trampled, actual_height = container.calc
 
     #################################### Total trampled biomass
-    @. above_biomass = abp * biomass
     sum_biomass = sum(above_biomass)
     biomass_exp = sum_biomass * sum_biomass
     total_trampled = LD * β_TRM * biomass_exp / (α_TRM * α_TRM + biomass_exp)
 
     #################################### Share of trampled biomass per species
-    if included.lowbiomass_avoidance
-        @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (above_biomass - α_lowB)))
-    else
-        lowbiomass_correction .= 1.0
-    end
-
     abp_scaled .= abp ./ mean(abp)
-    @. height_scaled = height / 0.5u"m"
+    @. height_scaled = actual_height / 0.5u"m"
     for i in eachindex(trampled_share)
         trampled_share[i] = abp_scaled[i] * height_scaled[i] ^ β_TRM_H *
-            lowbiomass_correction[i] * above_biomass[i] / sum_biomass
+            above_biomass[i] / sum_biomass
     end
 
     #################################### Add trampled biomass to defoliation

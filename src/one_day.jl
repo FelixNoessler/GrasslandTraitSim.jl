@@ -90,6 +90,8 @@ function one_day!(; t, container)
             trampled .= 0.0u"kg / ha"
 
             if !iszero(sum(patch_biomass))
+                actual_height!(; container, biomass = patch_biomass)
+
                 # ------------------------------------------ growth
                 growth!(; t, container,
                     biomass = patch_biomass,
@@ -114,9 +116,7 @@ function one_day!(; t, container)
                     end
 
                     if !isnan(mowing_height)
-                        mowing!(; t, x, y, container, mowing_height,
-                            biomass = patch_biomass,
-                            mowing_all = input.CUT_mowing)
+                        mowing!(; container, mowing_height)
                     end
                 end
 
@@ -129,13 +129,11 @@ function one_day!(; t, container)
 
                 if !isnan(LD)
                     if included.grazing
-                        grazing!(; t, x, y, container, LD,
-                            biomass = patch_biomass)
+                        grazing!(; container, LD)
                     end
 
                     if included.trampling
-                        trampling!(; container, LD,
-                            biomass = patch_biomass)
+                        trampling!(; container, LD)
                     end
                 end
             end

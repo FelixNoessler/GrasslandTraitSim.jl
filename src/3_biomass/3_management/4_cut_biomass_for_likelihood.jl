@@ -1,7 +1,7 @@
 function calc_cut_biomass!(; container)
     @unpack cutting_height, biomass_cutting_t, cut_biomass = container.valid
     @unpack species_mean_biomass, species_cut_biomass,
-            proportion_mown, lowbiomass_correction = container.calc
+            proportion_mown, actual_height = container.calc
     @unpack α_lowB, β_lowB = container.p
     @unpack biomass = container.output
     @unpack nspecies, included = container.simp
@@ -14,17 +14,13 @@ function calc_cut_biomass!(; container)
             species_mean_biomass[s] = mean(vec_view)
         end
 
+        actual_height!(; container, biomass = species_mean_biomass)
+        @unpack actual_height = container.calc
+
         # --------- proportion of plant height that is mown
-        proportion_mown .= max.(height .- cutting_height[i] * u"m", 0.0u"m") ./ height
+        proportion_mown .= max.(actual_height .- cutting_height[i] * u"m", 0.0u"m") ./ actual_height
 
-        # --------- if low species biomass, the plant height is low -> less biomass is mown
-        if included.lowbiomass_avoidance
-            @. lowbiomass_correction =  1.0 / (1.0 + exp(β_lowB * (α_lowB - species_mean_biomass)))
-        else
-            lowbiomass_correction .= 1.0
-        end
-
-        species_cut_biomass .= lowbiomass_correction .* proportion_mown .* species_mean_biomass
+        species_cut_biomass .=  proportion_mown .* species_mean_biomass
         cut_biomass[i] = sum(species_cut_biomass)
     end
 end

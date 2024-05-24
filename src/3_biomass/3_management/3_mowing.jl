@@ -2,25 +2,14 @@
 Influence of mowing for plant species with different heights ($height$):
 ![Image of mowing effect](../img/mowing.png)
 """
-function mowing!(; t, container, mowing_height, biomass, mowing_all, x, y)
-    @unpack height, abp = container.traits
-    @unpack defoliation, mown, proportion_mown, lowbiomass_correction = container.calc
-    @unpack α_lowB, β_lowB = container.p
-    @unpack nspecies = container.simp
-    @unpack included = container.simp
+function mowing!(; container, mowing_height)
+    @unpack defoliation, mown, proportion_mown, actual_height, above_biomass = container.calc
 
     # --------- proportion of plant height that is mown
-    proportion_mown .= max.(height .- mowing_height, 0.0u"m") ./ height
-
-    # --------- if low species biomass, the plant height is low -> less biomass is mown
-    if included.lowbiomass_avoidance
-        @. lowbiomass_correction =  1.0 / (1.0 + exp(-β_lowB * (abp * biomass - α_lowB)))
-    else
-        lowbiomass_correction .= 1.0
-    end
+    proportion_mown .= max.(actual_height .- mowing_height, 0.0u"m") ./ actual_height
 
     # --------- add the removed biomass to the defoliation vector
-    @. mown = lowbiomass_correction * proportion_mown * abp * biomass
+    @. mown = proportion_mown * above_biomass
     defoliation .+= mown
 
     return nothing

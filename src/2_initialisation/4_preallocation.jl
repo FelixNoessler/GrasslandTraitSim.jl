@@ -135,7 +135,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         defoliation = Array{T}(undef, nspecies)u"kg / ha",
         species_specific_red = Array{T}(undef, nspecies),
         LAIs = Array{T}(undef, nspecies),
-        lowbiomass_correction = Array{T}(undef, nspecies),
+        actual_height = Array{T}(undef, nspecies)u"m",
         above_biomass = Array{T}(undef, nspecies)u"kg / ha",
 
         ## cutted biomass
@@ -162,7 +162,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         # leaf nitrogen (palatability) --> grazing
         relative_lnc = Array{T}(undef, nspecies)u"mg/g",
         ρ = Array{T}(undef, nspecies),
-        low_ρ_biomass = Array{T}(undef, nspecies)u"kg / ha",
+        height_ρ_biomass = Array{T}(undef, nspecies)u"m * kg / ha",
 
         ## investment to roots
         root_invest = Array{T}(undef, nspecies),
