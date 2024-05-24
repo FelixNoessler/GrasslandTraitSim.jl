@@ -72,7 +72,7 @@ sim.trampling_livestockdensity(; path = f("$docs_img/trampling_LD.png"))
 sim.trampling_biomass_individual(; path = f("$docs_img/trampling_biomass_individual.svg"))
 
 ##  clonal growth
-sim.plot_clonalgrowth(; path = f("$docs_img/clonalgrowth.svg"))
+sim.plot_clonalgrowth(; path = f("$docs_img/clonalgrowth.png"))
 sim.animate_clonalgrowth(; path = f("$docs_img/clonalgrowth_animation.mp4"))
 
 # for prettyurls you need locally a live server

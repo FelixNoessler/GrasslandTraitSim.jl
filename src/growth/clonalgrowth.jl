@@ -4,7 +4,7 @@ Yearly clonal growth.
 The biomass is transferred from the home patch to the neighbour (target) patches.
 This is done for all patches once per year.
 
-![](../img/clonalgrowth.svg)
+![](../img/clonalgrowth.png)
 ![](../img/clonalgrowth_animation.mp4)
 """
 function clonalgrowth!(; container)
