@@ -86,16 +86,27 @@ function DocStringExtensions.format(abbrv::MyNewFields, buf, doc)
     return nothing
 end
 
-include("lib/valid/valid.jl")
-include("lib/visualization/visualization.jl")
 include("main_functions.jl")
 include("one_day.jl")
-include("cut_biomass.jl")
-include("initialisation/initialisation.jl")
-include("growth/growth.jl")
-include("water/water.jl")
-include("traits/traits.jl")
 
+include("1_parameter/1_parameter.jl")
+
+include("2_initialisation/1_input_data.jl")
+include("2_initialisation/2_validation_data.jl")
+include("2_initialisation/3_initialisation.jl")
+include("2_initialisation/4_preallocation.jl")
+include("2_initialisation/5_traits.jl")
+
+include("3_biomass/1_growth/1_growth.jl")
+include("3_biomass/2_senescence/1_senescence.jl")
+include("3_biomass/3_management/1_grazing.jl")
+include("3_biomass/3_management/2_trampling.jl")
+include("3_biomass/3_management/3_mowing.jl")
+include("3_biomass/3_management/4_cut_biomass_for_likelihood.jl")
+
+include("4_water/water.jl")
+include("5_likelihood/1_likelihood.jl")
+include("6_visualization/1_visualization.jl")
 
 const ASSETS_DIR = joinpath(@__DIR__, "..", "assets")
 assetpath(files...) = normpath(joinpath(ASSETS_DIR, files...))
@@ -119,5 +130,93 @@ makie_theme = Theme(fontsize = 18,
 function set_global_theme(; theme = makie_theme)
     set_theme!(makie_theme)
 end
+
+function load_data(datapath)
+    ########### validation data
+    soilmoisture = CSV.read("$datapath/validation/soilmoisture.csv",
+        DataFrame)
+
+    evaporation = CSV.read("$datapath/validation/evaporation.csv",
+        DataFrame)
+
+    measuredbiomass = CSV.read("$datapath/validation/measured_biomass.csv",
+        DataFrame)
+
+    measuredheight = CSV.read("$datapath/validation/measured_height.csv",
+        DataFrame)
+
+    mtraits = CSV.read("$datapath/validation/cwm_traits.csv",
+        DataFrame)
+
+    traits = (
+        cwm = [mtraits.srsa mtraits.amc mtraits.abp mtraits.sla mtraits.height mtraits.lnc],
+        dim = [:srsa, :amc, :abp, :sla, :height, :lnc],
+        t = mtraits.date,
+        num_t = mtraits.numeric_date,
+        plotID = mtraits.plotID)
+
+    valid = (;
+        soilmoisture,
+        evaporation,
+        traits,
+        measuredbiomass,
+        measuredheight)
+
+    ########### input data
+    ## time dependent 2009-2022
+    clim = CSV.read("$datapath/input/temperature_precipitation.csv",
+        DataFrame)
+
+    ## time dependent 2006-2008, temperature & precipitation
+    dwd_clim = CSV.read("$datapath/input/dwd_temperature_precipitation.csv",
+        DataFrame)
+
+    ## time dependent 2006-2022
+    pet = CSV.read("$datapath/input/PET.csv",
+        DataFrame)
+
+    ## time dependent 2006-2022
+    par = CSV.read("$datapath/input/par.csv",
+        DataFrame)
+
+    ### mean index from 2011, 2014, 20117, 2021
+    nut = CSV.read("$datapath/input/soilnutrients.csv",
+        DataFrame)
+
+    ## constant WHC & PWP
+    soil = CSV.read("$datapath/input/soilwater.csv",
+        DataFrame)
+
+    ## time dependent 2006 - 2021
+    mow = CSV.read("$datapath/input/mowing.csv",
+        DataFrame)
+
+    ## time dependent 2006 - 2021
+    graz = CSV.read("$datapath/input/grazing.csv",
+        DataFrame)
+
+    input_traits = CSV.read("$datapath/input/traits.csv",
+        DataFrame)
+    input_traits.lbp = 0.8 .* input_traits.abp
+    input_traits.bbp = 1.0 .- input_traits.bbp
+
+    input = (;
+        traits = input_traits,
+        clim,
+        dwd_clim,
+        pet,
+        par,
+        nut,
+        soil,
+        mow,
+        graz)
+
+    global data = (;
+        input,
+        valid)
+
+    return nothing
+end
+
 
 end

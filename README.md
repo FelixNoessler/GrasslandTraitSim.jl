@@ -32,7 +32,7 @@ For more information on installing unregistered packages, see [here](https://pkg
 
 ## Run simulations
 
-```julia
+```@example
 import GrasslandTraitSim as sim
 
 trait_input = sim.input_traits();

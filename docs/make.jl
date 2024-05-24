@@ -31,11 +31,11 @@ docs_img = "docs/src/img"
 f(path; show_img = false) = show_img ? nothing : path
 
 #### potential growth
-sim.potential_growth_lai_height(; path = f("$docs_img/potential_growth_lai_height.svg"))
-sim.potential_growth_height_lai(; path = f("$docs_img/potential_growth_height_lai.svg"))
-sim.potential_growth_height(; path = f("$docs_img/potential_growth_height.svg"))
-sim.lai_traits(; path = f("$docs_img/lai_traits.png"))
-sim.community_height_influence(; path = f("$docs_img/community_height_influence.svg"))
+sim.plot_potential_growth_lai_height(; path = f("$docs_img/potential_growth_lai_height.svg"))
+sim.plot_potential_growth_height_lai(; path = f("$docs_img/potential_growth_height_lai.svg"))
+sim.plot_potential_growth_height(; path = f("$docs_img/potential_growth_height.svg"))
+sim.plot_lai_traits(; path = f("$docs_img/lai_traits.png"))
+sim.plot_community_height_influence(; path = f("$docs_img/community_height_influence.svg"))
 
 #### transfer functions
 sim.plot_W_srsa(; path = f("$docs_img/plot_W_srsa.svg"), δ_wrsa = 1.0)
@@ -49,27 +49,27 @@ sim.plot_N_amc(; path = f("$docs_img/amc_nut_response_0_5.svg"), δ_amc = 0.5)
 sim.plot_root_investment(; path = f("$docs_img/root_investment.png"))
 
 #### leaf lifespan
-sim.leaflifespan(; path = f("$docs_img/leaflifespan.svg"))
+sim.plot_leaflifespan(; path = f("$docs_img/leaflifespan.svg"))
 
 #### reducer functions
-sim.temperatur_reducer(; path = f("$docs_img/temperature_reducer.svg"))
-sim.radiation_reducer(; path = f("$docs_img/radiation_reducer.svg"))
-sim.height_influence(; path = f("$docs_img/height_influence.png"))
-sim.below_influence(; path = f("$docs_img/below_influence.png"))
+sim.plot_temperatur_reducer(; path = f("$docs_img/temperature_reducer.svg"))
+sim.plot_radiation_reducer(; path = f("$docs_img/radiation_reducer.svg"))
+sim.plot_height_influence(; path = f("$docs_img/height_influence.png"))
+sim.plot_below_influence(; path = f("$docs_img/below_influence.png"))
 
 #### seasonal effects
-sim.seasonal_effect(; path = f("$docs_img/seasonal_reducer.svg"))
+sim.plot_seasonal_effect(; path = f("$docs_img/seasonal_reducer.svg"))
 sim.plot_seasonal_component_senescence(;
     path = f("$docs_img/seasonal_factor_senescence.svg"))
 
 #### land use
-sim.mowing(; path = f("$docs_img/mowing.png"))
-sim.grazing(; β_PAL_lnc = 1.0, path = f("$docs_img/grazing_1_5.png"))
-sim.grazing(; β_PAL_lnc = 2.0, path = f("$docs_img/grazing_5.png"))
-sim.α_GRZ(; path = f("$docs_img/α_GRZ.svg"))
-sim.trampling_biomass(; path = f("$docs_img/trampling_biomass.png"))
-sim.trampling_livestockdensity(; path = f("$docs_img/trampling_LD.png"))
-sim.trampling_biomass_individual(; path = f("$docs_img/trampling_biomass_individual.svg"))
+sim.plot_mowing(; path = f("$docs_img/mowing.png"))
+sim.plot_grazing(; β_PAL_lnc = 1.0, path = f("$docs_img/grazing_1_5.png"))
+sim.plot_grazing(; β_PAL_lnc = 2.0, path = f("$docs_img/grazing_5.png"))
+sim.plot_α_GRZ(; path = f("$docs_img/α_GRZ.svg"))
+sim.plot_trampling_biomass(; path = f("$docs_img/trampling_biomass.png"))
+sim.plot_trampling_livestockdensity(; path = f("$docs_img/trampling_LD.png"))
+sim.plot_trampling_biomass_individual(; path = f("$docs_img/trampling_biomass_individual.svg"))
 
 ##  clonal growth
 sim.plot_clonalgrowth(; path = f("$docs_img/clonalgrowth.png"))
