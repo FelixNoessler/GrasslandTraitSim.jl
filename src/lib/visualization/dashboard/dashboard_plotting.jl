@@ -85,7 +85,7 @@ function soilwater_plot(; sol, plot_obj)
     t = sol.simp.output_date_num[1:thin:end]
 
     water_μ = mean(ustrip.(sol.output.water); dims = (:x, :y))[1:thin:end]
-    lines!(ax, t, water_μ; color = :turquoise3, markersize = 6, linewidth = 2)
+    lines!(ax, t, water_μ; color = :turquoise3, linewidth = 2)
 
     PWP = mean(ustrip(sol.patch_variables.PWP))
     WHC = mean(ustrip(sol.patch_variables.WHC))
