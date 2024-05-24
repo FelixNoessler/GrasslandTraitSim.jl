@@ -27,12 +27,13 @@ function plot_mowing(; mowing_height = 0.07u"m",
 
 
     for (i, biomass_i) in enumerate(biomass_vec)
-    biomass = 1 ./ container.traits.abp .* biomass_i
-    container.calc.defoliation .= 0.0u"kg / ha"
-    mowing!(; t = 1, x = 1, y = 1, container, mowing_height,
-            biomass, mowing_all = fill(NaN, 5))
+        biomass = 1 ./ container.traits.abp .* biomass_i
+        actual_height!(; container, biomass)
 
-    mowing_mat[:, i] = ustrip.(container.calc.defoliation)
+        container.calc.defoliation .= 0.0u"kg / ha"
+        mowing!(; container, mowing_height)
+
+        mowing_mat[:, i] = ustrip.(container.calc.defoliation)
     end
 
     idx = sortperm(container.traits.height)

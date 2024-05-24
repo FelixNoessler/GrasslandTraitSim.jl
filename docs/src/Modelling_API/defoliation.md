@@ -9,6 +9,10 @@ Biomass is removed by...
 - 🐄 [grazing and trampling](@ref "Grazing and trampling")
 
 
+```@docs
+actual_height!
+```
+
 ----
 ## Mowing
 

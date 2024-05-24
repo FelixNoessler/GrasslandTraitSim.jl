@@ -67,7 +67,8 @@ function plot_trampling_biomass(; β_TRM = nothing, path = nothing)
     for (i, b) in enumerate(biomass_vals)
         biomass .= b
         container.calc.defoliation .= 0.0u"kg / ha"
-        trampling!(; container, LD, biomass)
+        actual_height!(; container, biomass)
+        trampling!(; container, LD)
         trampling_mat_height[:, i] = container.calc.defoliation
     end
     trampling_mat_height = trampling_mat_height ./ biomass
@@ -120,7 +121,8 @@ function plot_trampling_biomass_individual(; β_TRM = nothing, path = nothing)
     for (i, b) in enumerate(biomass_vals)
         biomass[1] = b
         container.calc.defoliation .= 0.0u"kg / ha"
-        trampling!(; container, LD, biomass)
+        actual_height!(; container, biomass)
+        trampling!(; container, LD)
         trampling_mat_height[:, i] = container.calc.defoliation
     end
     trampling_mat_height = ustrip.(trampling_mat_height)# ./ biomass .* u"d"
@@ -162,13 +164,15 @@ function plot_trampling_livestockdensity(; β_TRM = nothing, path = nothing)
 
     nLD = 10
     biomass = fill(100.0, nspecies)u"kg / ha"
+    actual_height!(; container, biomass)
+
     LDs = LinRange(0.0, 4.0, nLD)u"ha^-1"
 
     trampling_mat_height = Array{Quantity{Float64}}(undef, nspecies, nLD)
 
     for (i, LD) in enumerate(LDs)
         container.calc.defoliation .= 0.0u"kg / ha"
-        trampling!(; container, LD, biomass)
+        trampling!(; container, LD)
         trampling_mat_height[:, i] = container.calc.defoliation
     end
     trampling_mat_height = trampling_mat_height ./ biomass

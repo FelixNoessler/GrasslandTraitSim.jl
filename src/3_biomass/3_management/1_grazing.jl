@@ -36,13 +36,14 @@ Influence of `α_GRZ`:
 """
 function grazing!(; container, LD)
     @unpack lnc = container.traits
-    @unpack α_GRZ, β_PAL_lnc, κ = container.p
+    @unpack η_GRZ, β_PAL_lnc, κ = container.p
     @unpack defoliation, grazed_share, relative_lnc, ρ, grazed, actual_height,
             height_ρ_biomass, above_biomass = container.calc
 
     #################################### total grazed biomass
     sum_biomass = sum(above_biomass)
     biomass_exp = sum_biomass * sum_biomass
+    α_GRZ = κ * LD * η_GRZ
     total_grazed = κ * LD * biomass_exp / (α_GRZ * α_GRZ + biomass_exp)
 
     #################################### share of grazed biomass per species
@@ -79,8 +80,8 @@ function plot_grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, path = nothing)
 
     for (i, biomass) in enumerate(biomass_vec)
         container.calc.defoliation .= 0.0u"kg / ha"
-        grazing!(; t = 1, x = 1, y = 1, container, LD,
-                     biomass = repeat([biomass], nspecies))
+        actual_height!(; container, biomass = repeat([biomass], nspecies))
+        grazing!(; container, LD)
         grazing_mat[:, i] = ustrip.(container.calc.defoliation)
     end
 
@@ -121,16 +122,15 @@ function plot_α_GRZ(; path = nothing)
         ylabel = "Grazed biomass (totgraz)\n[green dry mass kg ha⁻¹]",
         title = "")
 
-    for α_GRZ in [10, 50, 150, 200, 750, 1500, 2000]
+    for η_GRZ in [1, 5, 10, 20]
         x = LinRange(0, 3000, 120)
 
         LD = 2
         κ = 22
+
+        α_GRZ = κ * LD * η_GRZ
         k_exp = 2
-        μₘₐₓ = κ * LD
-        h = 1 / μₘₐₓ
-        a = 1 / (α_GRZ^k_exp * h)
-        y = @. a * x^k_exp / (1^k_exp + a * h * x^k_exp)
+        y = @. κ * LD * x^k_exp / (α_GRZ^k_exp + x^k_exp)
 
         lines!(x, y, label = "$α_GRZ",
             linewidth = 3)

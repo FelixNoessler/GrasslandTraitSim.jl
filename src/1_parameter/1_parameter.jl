@@ -12,7 +12,7 @@ the permanent wilting point (see [`input_WHC_PWP!`](@ref)).
 $(MYNEWFIELDS)
 """
 @with_kw_noshow mutable struct SimulationParameter{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8,
-                                  Q10, Q11, Q12, Q13, Q14, Q15} @deftype T
+                                                   Q9, Q10, Q11, Q12, Q13, Q14} @deftype T
 
     ####################################################################################
     ## 1 Light interception and competition
@@ -113,7 +113,7 @@ $(MYNEWFIELDS)
     ``\\eta_{\\min, sla}`` and ``\\eta_{\\max, sla}``,
     see [`water_reduction!`](@ref)
     """
-    ϕ_sla::Q13 = F(0.025)u"m^2 / g"
+    ϕ_sla::Q12 = F(0.025)u"m^2 / g"
 
     """
     2::``\\beta_{\\eta, sla}``::part of the growth reducer based on the water stress
@@ -121,7 +121,7 @@ $(MYNEWFIELDS)
     that relates the specific leaf area to ``A_{sla, s}``,
     see [`water_reduction!`](@ref)
     """
-    β_η_sla::Q14 = F(75.0)u"g / m^2"
+    β_η_sla::Q13 = F(75.0)u"g / m^2"
 
     """
     2::``\\delta_{wrsa}``::part of the growth reducer based on the
@@ -150,7 +150,7 @@ $(MYNEWFIELDS)
     ``A_{wrsa, s}`` (``A_{nrsa, s}``) and ``K_{wrsa, s}`` (``K_{nrsa, s}``),
     see [`water_reduction!`](@ref)
     """
-    ϕ_rsa::Q13 = F(0.2)u"m^2 / g"
+    ϕ_rsa::Q12 = F(0.2)u"m^2 / g"
 
     """
     2::``\\beta_{\\eta, wrsa}``::part of the growth reducer based on the root
@@ -159,7 +159,7 @@ $(MYNEWFIELDS)
     aboveground biomass to ``K_{wrsa, s}`` and ``A_{nrsa, s}``,
     see [`water_reduction!`](@ref)
     """
-    β_η_wrsa::Q14 = F(40.0)u"g / m^2"
+    β_η_wrsa::Q13 = F(40.0)u"g / m^2"
 
     """
     2::``\\eta_{\\min, wrsa}``::part of the growth reducer based on the
@@ -183,7 +183,7 @@ $(MYNEWFIELDS)
     [explo14446v19](@cite)[explo18787v6](@cite)[explo23846v10](@cite)[explo31210v6](@cite),
     see [`input_nutrients!`](@ref)
     """
-    N_max::Q15 = F(35.0)u"g/kg"
+    N_max::Q14 = F(35.0)u"g/kg"
 
     """
     2::``\\delta_{amc}``::part of the growth reducer based on the
@@ -209,7 +209,7 @@ $(MYNEWFIELDS)
     """
     2::``\\beta_{\\text{red}, srsa}``::TODO
     """
-    β_red_rsa::Q14 = F(20.0)u"g/m^2"
+    β_red_rsa::Q13 = F(20.0)u"g/m^2"
 
     """
     2::``\\kappa_{\\text{maxred}, amc}``::TODO
@@ -282,7 +282,7 @@ $(MYNEWFIELDS)
     aboveground biomass to ``K_{nrsa, s}`` and ``A_{nrsa, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    β_η_nrsa::Q14 = F(40.0)u"g / m^2"
+    β_η_nrsa::Q13 = F(40.0)u"g / m^2"
 
     """
     2::``\\eta_{\\min, nrsa}``::part of the growth reducer based on the
@@ -427,18 +427,16 @@ $(MYNEWFIELDS)
     β_PAL_lnc = F(1.5)
 
     """
-    5::``\\alpha_{GRZ}``::total biomass [kg ha⁻¹] when the daily
-    consumption by grazers reaches half of their
-    maximal consumption defined by κ · livestock density,
+    5::``\\eta_{GRZ}``::defines with  κ · livestock density the aboveground biomass [kg ha⁻¹] when the daily consumption by grazers reaches half of their maximal consumption,
     see [`grazing!`](@ref)
     """
-    α_GRZ::Q11 = F(1000.0)u"kg / ha"
+    η_GRZ = F(10.0)
 
     """
     5::``\\kappa``::maximal consumption of a livestock unit per day,
     see [`grazing!`](@ref)
     """
-    κ::Q10 = F(22.0)u"kg"
+    κ::Q9 = F(22.0)u"kg"
 
     """
     5::``\\alpha_{TRM}``::
@@ -451,7 +449,7 @@ $(MYNEWFIELDS)
     the proportion of biomass that is trampled [ha m⁻¹],
     see [`trampling!`](@ref)
     """
-    β_TRM::Q10 = F(5.0)u"kg"
+    β_TRM::Q9 = F(5.0)u"kg"
 
     """
     5::``\\beta_{TRM, H}``::
@@ -466,7 +464,7 @@ $(MYNEWFIELDS)
     """
     5::``\\beta_{\\text{low}B}``::
     """
-    β_lowB::Q12 = F(0.1)u"ha / kg"
+    β_lowB::Q10 = F(0.1)u"ha / kg"
 
     ####################################################################################
     ## 6 Clonal growth
@@ -486,7 +484,7 @@ $(MYNEWFIELDS)
     equal to `α_TR_sla` then transpiration is neither increased nor decreased,
     see `transpiration`](@ref)
     """
-    α_TR_sla::Q13 = F(0.03)u"m^2 / g"
+    α_TR_sla::Q12 = F(0.03)u"m^2 / g"
 
     """
     7::``\\beta_{TR, sla}``::controls how strongly a
