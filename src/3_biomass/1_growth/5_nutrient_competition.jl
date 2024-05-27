@@ -524,7 +524,7 @@ function plot_below_influence(; θ = nothing, path = nothing)
     end
     lines!([0, maximum(plot_below_effects)], [1, 1];
         color = :black)
-    vlines!(orig_β_TSB)
+    vlines!(ustrip(orig_β_TSB))
     Colorbar(fig[1, 2]; colorrange, colormap, label = "Mean trait similarity")
 
     ax2 = Axis(fig[2, 1];

@@ -49,8 +49,7 @@ if npatches > 1
 loop over patches:
 
 - set very low or negative biomass (< 1e-30 kg ha⁻¹) to zero
-- defoliation ([mowing](@ref mowing!), [grazing](@ref grazing!),
-    [trampling](@ref trampling!))
+- defoliation ([mowing](@ref mowing!), [grazing](@ref grazing!))
 - [growth](@ref growth!)
 - [senescence](@ref senescence!)
 - [soil water dynamics](@ref change_water_reserve)
@@ -60,7 +59,7 @@ function one_day!(; t, container)
     @unpack npatches, patch_xdim, patch_ydim, nspecies, included = container.simp
     @unpack u_biomass, u_water, du_biomass, du_water = container.u
     @unpack WHC, PWP, nutrients = container.patch_variables
-    @unpack com, act_growth, senescence, mown, grazed, trampled, defoliation,
+    @unpack com, act_growth, senescence, mown, grazed, defoliation,
         light_competition, Nutred, Waterred, root_invest = container.calc
 
     ## -------- clonal growth
@@ -87,7 +86,6 @@ function one_day!(; t, container)
             senescence .= 0.0u"kg / ha"
             grazed .= 0.0u"kg / ha"
             mown .= 0.0u"kg / ha"
-            trampled .= 0.0u"kg / ha"
 
             if !iszero(sum(patch_biomass))
                 actual_height!(; container, biomass = patch_biomass)
@@ -120,7 +118,7 @@ function one_day!(; t, container)
                     end
                 end
 
-                # ------------------------------------------ grazing & trampling
+                # ------------------------------------------ grazing
                 LD = if input.LD_grazing isa Vector
                     input.LD_grazing[t]
                 else
@@ -130,10 +128,6 @@ function one_day!(; t, container)
                 if !isnan(LD)
                     if included.grazing
                         grazing!(; container, LD)
-                    end
-
-                    if included.trampling
-                        trampling!(; container, LD)
                     end
                 end
             end
@@ -161,7 +155,6 @@ function one_day!(; t, container)
                 output.act_growth[t, x, y, s] = act_growth[s]
                 output.mown[t, x, y, s] = mown[s]
                 output.grazed[t, x, y, s] = grazed[s]
-                output.trampled[t, x, y, s] = trampled[s]
                 output.senescence[t, x, y, s] = senescence[s]
                 output.light_growth[t, x, y, s] = light_competition[s]
                 output.water_growth[t, x, y, s] = Waterred[s]

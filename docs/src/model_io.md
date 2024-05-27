@@ -19,7 +19,7 @@ CurrentModule = GrasslandTraitSim
 | Variable     | Symbol        | Description                                                                     | used in                                  |
 | ------------ | ------------- | ------------------------------------------------------------------------------- | ---------------------------------------- |
 | `CUT_mowing` | ``CUT_{txy}`` | Height of mowing event, `NaN` means no mowing [m]                               | [`mowing!`](@ref)                        |
-| `LD_grazing` | ``LD_{txy}``  | Grazing intensity measured in livestock units, `NaN` means no grazing [LD ha⁻¹] | [`grazing!`](@ref), [`trampling!`](@ref) |
+| `LD_grazing` | ``LD_{txy}``  | Grazing intensity measured in livestock units, `NaN` means no grazing [LD ha⁻¹] | [`grazing!`](@ref) |
 
 ### Traits of the plant species
 | Variable    | Symbol    |Description                                       | used in                                                                                        |

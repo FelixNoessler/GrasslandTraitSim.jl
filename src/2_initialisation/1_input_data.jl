@@ -368,7 +368,6 @@ function create_included(included_prep = (;);)
         potential_growth = true,
         clonalgrowth = true,
         mowing = true,
-        trampling = true,
         grazing = true,
         lowbiomass_avoidance = true,
         belowground_competition = true,

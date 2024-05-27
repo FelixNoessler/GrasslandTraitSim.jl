@@ -19,7 +19,6 @@ included_keys = (
     :potential_growth,
     :clonalgrowth,
     :mowing,
-    :trampling,
     :grazing,
     :lowbiomass_avoidance,
     :belowground_competition,

@@ -70,9 +70,6 @@ sim.plot_mowing(; θ, path = f("$docs_img/mowing.png"))
 sim.plot_grazing(; β_PAL_lnc = 1.0, θ, path = f("$docs_img/grazing_default.png"))
 sim.plot_grazing(; β_PAL_lnc = 2.0, θ, path = f("$docs_img/grazing_2.png"))
 sim.plot_α_GRZ(; θ, path = f("$docs_img/α_GRZ.png"))
-sim.plot_trampling_biomass(; θ, path = f("$docs_img/trampling_biomass.png"))
-sim.plot_trampling_livestockdensity(; θ, path = f("$docs_img/trampling_LD.png"))
-sim.plot_trampling_biomass_individual(; θ, path = f("$docs_img/trampling_biomass_individual.png"))
 
 ##  clonal growth
 sim.plot_clonalgrowth(; θ, path = f("$docs_img/clonalgrowth.png"))
@@ -111,7 +108,7 @@ makedocs(;
                 "Growth: community adjustment" => "Modelling_API/growth_env_factors.md",
                 "Growth: species-specific adjustment" => "Modelling_API/growth_species_specific.md",
                 "Senescence" => "Modelling_API/senescence.md",
-                "Mowing, grazing, and trampling" => "Modelling_API/defoliation.md",
+                "Mowing and grazing" => "Modelling_API/defoliation.md",
                 "Clonal growth" => "Modelling_API/clonalgrowth.md"],
             "Water dynamics" => "Modelling_API/water.md"],
         "Calibration to grasslands of the Biodiversity Exploratories" => [

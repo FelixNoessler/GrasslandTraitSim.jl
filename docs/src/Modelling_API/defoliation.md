@@ -2,11 +2,11 @@
 CurrentModule=GrasslandTraitSim
 ```
 
-# Mowing, grazing, and trampling
+# Mowing and grazing
 
 Biomass is removed by...
 - 🚜 [mowing](@ref "Mowing")
-- 🐄 [grazing and trampling](@ref "Grazing and trampling")
+- 🐄 [grazing](@ref "Grazing")
 
 
 ```@docs
@@ -21,9 +21,8 @@ mowing!
 ```
 
 ----
-## Grazing and trampling
+## Grazing
 
 ```@docs
 grazing!
-trampling!
 ```

@@ -433,24 +433,6 @@ $(MYNEWFIELDS)
     κ::Qkg = F(22.0)u"kg"
 
     """
-    5::``\\alpha_{TRM}``::
-    """
-    α_TRM::Qkg_ha = F(1000.0)u"kg / ha"
-
-    """
-    5::``\\beta_{TRM}``::defines together with the height of
-    the plants and the livestock density
-    the proportion of biomass that is trampled [ha m⁻¹],
-    see [`trampling!`](@ref)
-    """
-    β_TRM::Qkg = F(5.0)u"kg"
-
-    """
-    5::``\\beta_{TRM, H}``::
-    """
-    β_TRM_H = F(0.5)
-
-    """
     5::``\\alpha_{\\text{low}B}``::
     """
     α_lowB::Qkg_ha = F(20.0)u"kg / ha"
@@ -609,11 +591,7 @@ function exlude_parameter(; input_obj)
         append!(excl_p, [:β_PAL_lnc, :κ, :α_GRZ])
     end
 
-    if !included.trampling
-        append!(excl_p, [:β_TRM, :α_TRM, :β_TRM_H])
-    end
-
-    if !included.mowing && !included.grazing && !included.trampling
+    if !included.mowing && !included.grazing
         append!(excl_p, [:α_lowB, :β_lowB])
     end
 

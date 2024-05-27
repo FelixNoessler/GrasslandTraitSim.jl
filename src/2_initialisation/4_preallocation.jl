@@ -22,10 +22,6 @@ function preallocate_vectors(; input_obj, T = Float64)
         Array{T}(undef, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :grazed)
-    trampled = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
-        name = :trampled)
     senescence = DimArray(
         Array{T}(undef, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
@@ -69,7 +65,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
         name = :seasonal_senescence)
 
-    output = (; biomass, water, mown, grazed, trampled, senescence, community_pot_growth,
+    output = (; biomass, water, mown, grazed, senescence, community_pot_growth,
               act_growth, radiation_reducer, seasonal_growth, temperature_reducer,
               seasonal_senescence, light_growth, water_growth, nutrient_growth)
 
@@ -182,16 +178,12 @@ function preallocate_vectors(; input_obj, T = Float64)
         W_sla = Array{T}(undef, nspecies),
         W_rsa = Array{T}(undef, nspecies),
 
-        ## mowing, grazing, trampling
+        ## mowing and grazing
         mown_height = Array{T}(undef, nspecies)u"m",
         proportion_mown = Array{T}(undef, nspecies),
         grazed_share = Array{T}(undef, nspecies),
-        height_scaled = Array{T}(undef, nspecies),
-        trampled_share = Array{T}(undef, nspecies),
         mown = Array{T}(undef, nspecies)u"kg / ha",
         grazed = Array{T}(undef, nspecies)u"kg / ha",
-        trampled = Array{T}(undef, nspecies)u"kg / ha",
-        abp_scaled = Array{T}(undef, nspecies),
 
         ## clonal growth
         clonalgrowth = Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",

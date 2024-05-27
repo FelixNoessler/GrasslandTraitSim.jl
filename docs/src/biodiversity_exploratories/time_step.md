@@ -115,7 +115,6 @@ included = (;
             potential_growth = false,
             clonalgrowth = false,
             mowing = false,
-            trampling = false,
             grazing = false,
             lowbiomass_avoidance = false,
             belowground_competition = false,
@@ -147,7 +146,6 @@ included = (;
             potential_growth = true,
             clonalgrowth = false,
             mowing = false,
-            trampling = false,
             grazing = false,
             lowbiomass_avoidance = false,
             belowground_competition = false,
@@ -179,7 +177,6 @@ included = (;
             potential_growth = false,
             clonalgrowth = false,
             mowing = true,
-            trampling = false,
             grazing = false,
             lowbiomass_avoidance = false,
             belowground_competition = false,
@@ -204,38 +201,6 @@ fig
 ```
 
 ```@example time_step
-########### Only trampling
-included = (;
-            senescence = false,
-            senescence_season = false,
-            potential_growth = false,
-            clonalgrowth = false,
-            mowing = false,
-            trampling = true,
-            grazing = false,
-            lowbiomass_avoidance = false,
-            belowground_competition = false,
-            community_height_red = false,
-            height_competition = false,
-            pet_growth_reduction = false,
-            sla_transpiration = false,
-            water_growth_reduction = false,
-            nutrient_growth_reduction = false,
-            temperature_growth_reduction = false,
-            season_red = false,
-            radiation_red = false)
-b1, b14, t1, t14 = calc_total_biomass(included)
-fig = Figure()
-Axis(fig[1, 1], ylabel = "Aboveground dry biomass [kg ha⁻¹]",
-                xlabel = "Time [year]",
-                title = "Only trampling")
-lines!(t1, b1; label = "1 day", color = :red, alpha = 0.5)
-lines!(t14, b14; label = "14 days", linestyle = :dash)
-axislegend("Time step"; position = :rt, framevisible = false)
-fig
-```
-
-```@example time_step
 ########### Only grazing
 included = (;
             senescence = false,
@@ -243,7 +208,6 @@ included = (;
             potential_growth = false,
             clonalgrowth = false,
             mowing = false,
-            trampling = false,
             grazing = true,
             lowbiomass_avoidance = false,
             belowground_competition = false,
@@ -275,7 +239,6 @@ included = (;
             potential_growth = true,
             clonalgrowth = false,
             mowing = false,
-            trampling = false,
             grazing = false,
             lowbiomass_avoidance = false,
             belowground_competition = false,
