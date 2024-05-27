@@ -26,93 +26,19 @@ Reduction of growth based on the plant available water
 and the traits specific leaf area and root surface area
 per belowground biomass.
 
+Reduction of growth due to stronger water stress for plants with
+higher specific leaf area (`sla`):
 
-Derives the plant available water.
+- the strength of the reduction is modified by the parameter `δ_sla`
 
-The plant availabe water is dependent on the soil water content,
-the water holding capacity (`WHC`), the permanent
-wilting point (`PWP`), the potential evaporation (`PET`) and a
-belowground competition factor:
+`δ_sla` equals 1:
+![](../img/plot_W_sla.svg)
 
-```math
-\begin{align*}
-    W_{sc, txy} &= \frac{W_{txy} - PWP_{xy}}{WHC_{xy}-PWP_{xy}} \\
-    W_{p, txys} &= D_{txys} \cdot 1 \bigg/ \left(1 + \frac{\text{exp}\left(\beta_{pet} \cdot \left(PET_{txy} - \alpha_{pet} \right) \right)}{ 1 / (1-W_{sc, txy}) - 1}\right)
-\end{align*}
-```
+`δ_sla` equals 0.5:
+![](../img/W_sla_response_0_5.svg)
 
-- ``W_{sc, txy}`` is the scaled soil water content ``\in [0, 1]`` [-]
-- ``W_{txy}`` is the soil water content [mm]
-- ``PWP_{xy}`` is the permanent wilting point [mm]
-- ``WHC_{xy}`` is the water holding capacity [mm]
-- ``W_{p, txys}`` is the plant available water [-]
-- ``D_{txys}`` is the belowground competition factor [-], in the programming code
-  is is called `biomass_density_factor`
-- ``PET_{txy}`` is the potential evapotranspiration [mm]
-- ``β_{pet}`` is a parameter that defines the steepness of the reduction function
-- ``α_{pet}`` is a parameter that defines the midpoint of the reduction function
-
-Derive the water stress based on the specific leaf area and the
-plant availabe water.
-
-It is assumed, that plants with a higher specific leaf area have a higher
-transpiration per biomass and are therefore more sensitive to water stress.
-A transfer function is used to link the specific leaf area to the water
-stress reduction.
-
-**Initialization:**
-
-The specicies-specifc parameter `A_sla` is initialized
-and later used in the reduction function.
-
-```math
-\text{A_sla} = \text{min_sla_mid} +
-    \frac{\text{max_sla_mid} - \text{min_sla_mid}}
-    {1 + exp(-\text{β_sla_mid} \cdot (sla - \text{mid_sla}))}
-```
-
-- `sla` is the specific leaf area of the species [m² g⁻¹]
-- `min_sla_mid` is the minimum of `A_sla` that
-  can be reached with a very low specific leaf area [-]
-- `max_sla_mid` is the maximum of `A_sla` that
-  can be reached with a very high specific leaf area [-]
-- `mid_sla` is a mean specific leaf area [m² g⁻¹]
-- `β_sla_mid` is a parameter that defines the steepness
-  of function that relate the `sla` to `A_sla`
-
-
-**Reduction factor based on the plant availabe water:**
-```math
-\text{W_sla} = 1 - \text{δ_sla} +
-    \frac{\text{δ_sla}}
-    {1 + exp(-\text{k_sla} \cdot
-        (\text{W_{sc}} - \text{A_sla}))}
-```
-
-- `W_sla` is the reduction factor for the growth based on the
-  specific leaf area [-]
-- `A_sla` is the value of the plant available water
-  at which the reduction factor is in the middle between
-  1 - `δ_sla` and 1 [-]
-- `δ_sla` is the maximal reduction of the
-  growth based on the specific leaf area
-- `k_sla` is a parameter that defines the steepness of the reduction function
-
-**Overview over the parameters:**
-
-| Parameter                 | Type                      | Value          |
-| ------------------------- | ------------------------- | -------------- |
-| `min_sla_mid`             | fixed                     | -0.8 [-]       |
-| `max_sla_mid`             | fixed                     | 0.8  [-]       |
-| `mid_sla`                 | fixed                     | 0.025 [m² g⁻¹] |
-| `β_sla_mid`               | fixed                     | 75 [g m⁻²]     |
-| `k_sla`                   | fixed                     | 5 [-]          |
-| `δ_sla` | calibrated                | -              |
-| `A_sla`      | species-specific, derived | -              |
-
-
-Reduction of growth due to stronger water stress for lower specific
-root surface area per above ground biomass (`srsa`).
+Reduction of growth due to stronger water stress for plants with
+lower specific root surface area per above ground biomass (`srsa`).
 
 - the strength of the reduction is modified by the parameter `δ_wrsa`
 
