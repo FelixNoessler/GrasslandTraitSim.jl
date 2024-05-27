@@ -61,8 +61,8 @@ function light_competition!(; container, biomass)
     return nothing
 end
 
-function plot_height_influence(; path = nothing)
-    nspecies, container = create_container_for_plotting(; )
+function plot_height_influence(; θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
 
     height_strength_exps = LinRange(0.0, 10.0, 40)
     biomass = fill(50, nspecies)u"kg / ha"

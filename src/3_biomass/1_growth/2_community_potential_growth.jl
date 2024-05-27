@@ -103,8 +103,8 @@ end
 ################################################################
 # Plots for potential growth
 ################################################################
-function plot_potential_growth_lai_height(; path = nothing)
-    nspecies, container = create_container_for_plotting(; )
+function plot_potential_growth_lai_height(; θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
     biomass = container.u.u_biomass[1, 1, :]
     biomass_vals = LinRange(1, 100, 150)u"kg / ha"
 
@@ -148,8 +148,8 @@ function plot_potential_growth_lai_height(; path = nothing)
     return nothing
 end
 
-function plot_potential_growth_height_lai(; path = nothing)
-    nspecies, container = create_container_for_plotting()
+function plot_potential_growth_height_lai(; θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
     biomass_val = [50.0, 35.0, 10.0]u"kg / ha"
     biomass = container.u.u_biomass[1,1,:]
     lais = zeros(3)
@@ -189,8 +189,8 @@ end
 ################################################################
 # Plots for leaf area index
 ################################################################
-function plot_lai_traits(; path = nothing)
-    nspecies, container = create_container_for_plotting()
+function plot_lai_traits(; θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
     biomass = container.u.u_biomass[1, 1, :]
 
     actual_height!(; container, biomass)
@@ -223,8 +223,8 @@ end
 ################################################################
 # Plots for community height reduction
 ################################################################
-function plot_potential_growth_height(; path = nothing)
-    nspecies, container = create_container_for_plotting()
+function plot_potential_growth_height(; θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
 
     biomass = container.u.u_biomass[1,1,:]
 
@@ -252,7 +252,7 @@ function plot_potential_growth_height(; path = nothing)
     return nothing
 end
 
-function plot_community_height_influence(; path = nothing)
+function plot_community_height_influence(; θ = nothing, path = nothing)
     trait_input = input_traits()
     for k in keys(trait_input)
         @reset trait_input[k] = [mean(trait_input[k])]

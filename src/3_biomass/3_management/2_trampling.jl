@@ -50,8 +50,8 @@ function trampling!(; container, LD)
     return nothing
 end
 
-function plot_trampling_biomass(; β_TRM = nothing, path = nothing)
-    nspecies, container = create_container_for_plotting(; )
+function plot_trampling_biomass(; β_TRM = nothing, θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
 
     if !isnothing(β_TRM)
         container.p.β_TRM = β_TRM * u"ha / kg"
@@ -103,8 +103,8 @@ function plot_trampling_biomass(; β_TRM = nothing, path = nothing)
 end
 
 
-function plot_trampling_biomass_individual(; β_TRM = nothing, path = nothing)
-    nspecies, container = create_container_for_plotting(; )
+function plot_trampling_biomass_individual(; β_TRM = nothing, θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
     container.traits.height .= 0.7u"m"
 
     if !isnothing(β_TRM)
@@ -156,8 +156,8 @@ function plot_trampling_biomass_individual(; β_TRM = nothing, path = nothing)
     return nothing
 end
 
-function plot_trampling_livestockdensity(; β_TRM = nothing, path = nothing)
-    nspecies, container = create_container_for_plotting(; )
+function plot_trampling_livestockdensity(; β_TRM = nothing, θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
     if !isnothing(β_TRM)
         container.p.β_TRM = β_TRM * u"kg / ha"
     end

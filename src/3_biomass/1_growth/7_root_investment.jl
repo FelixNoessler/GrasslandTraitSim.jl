@@ -30,7 +30,7 @@ function root_investment!(; input_obj, prealloc, p)
     return nothing
 end
 
-function plot_root_investment(; path = nothing)
+function plot_root_investment(; θ = nothing, path = nothing)
     p = SimulationParameter()
     real_traits = input_traits()
     nspecies = length(real_traits.amc)

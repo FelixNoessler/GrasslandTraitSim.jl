@@ -46,26 +46,15 @@ function clonalgrowth!(; container)
     return nothing
 end
 
-function animate_clonalgrowth(; path = "clonalgrowth_animation.mp4",
-    β_clo = nothing)
-    nspecies = 1
-    npatches = 100
+function animate_clonalgrowth(; θ = nothing, path = "clonalgrowth_animation.mp4", β_clo = nothing)
     patch_xdim = 10
     patch_ydim = 10
-
-    #####################
-    input_obj = validation_input(;
-    plotID = "HEG01", nspecies,
-    patch_xdim, patch_ydim)
-    p = SimulationParameter()
+    nspecies, container = create_container_for_plotting(; θ, nspecies = 1,
+                                                        patch_xdim, patch_ydim)
     if !isnothing(β_clo)
-    p.β_clo = β_clo
+        container.p.β_clo = β_clo
     end
-    prealloc = preallocate_vectors(; input_obj);
-    prealloc_specific = preallocate_specific_vectors(; input_obj);
-    container = initialization(; input_obj, p, prealloc, prealloc_specific)
     #####################
-
     container.u.u_biomass .= 5.0u"kg / ha"
     container.u.u_biomass[3:6, 3:8, :] .= 10.0u"kg / ha"
 
@@ -107,7 +96,7 @@ function animate_clonalgrowth(; path = "clonalgrowth_animation.mp4",
     return nothing
 end
 
-function plot_clonalgrowth(; path = nothing, β_clo = nothing)
+function plot_clonalgrowth(; θ = nothing, path = nothing, β_clo = nothing)
     nspecies = 1
     npatches = 25
     patch_xdim = 5

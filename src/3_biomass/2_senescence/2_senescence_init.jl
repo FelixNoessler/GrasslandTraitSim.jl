@@ -20,8 +20,8 @@ function senescence_rate!(; input_obj, prealloc, p)
     return nothing
 end
 
-function plot_leaflifespan(; path = nothing)
-    nspecies, container = create_container_for_plotting(; )
+function plot_leaflifespan(; θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
 
     fig = Figure(; size = (700, 400))
     ax = Axis(fig[1, 1];

@@ -8,18 +8,10 @@ CurrentModule=GrasslandTraitSim
 <div class="mermaid">
 flowchart LR
     F[⇅ light competition] --> C[[species-specific adjustment]]
-    G[below ground competition] --> H
-    G --> I
     H[↓ water stress] -->  C
-    I[↓ nutrient stress] --> C;
+    I[↓ nutrient stress] --> C
+    L[↓ cost for investment into roots] --> C;
 </div>
-```
-
-
-## Cost for investment into roots and mycorrhiza
-
-```@docs	
-root_investment!
 ```
 
 ## Light competition
@@ -37,27 +29,6 @@ flowchart LR
 light_competition!
 ```
 
---
-## [Below-ground competition](@id below_competition)
-
-```@raw html
-<div class="mermaid">
-flowchart LR
-    B[biomass] 
-    T[trait similarity of\n root surface area / aboveground biomass\nand arbuscular mycorrhizal colonisation]
-    X["biomass · trait similarity"]
-    E[below ground competition]
-
-    T -->|species with similar\ntraits compete more\nstrongly for the same resources| X
-    B --> X
-    X --> E;
-</div>
-```
-
-```@docs
-below_ground_competition!
-```
-
 ----
 ## Water stress
 
@@ -65,23 +36,17 @@ below_ground_competition!
 <div class="mermaid">
 flowchart LR
     W[↓ water stress] 
-    E["below ground competition factor D [-]"]
     A["soil water content W [mm]"]
     K["water holding capacity WHC [mm]"]
     L["permanent wilting point PWP [mm]"]
     P["scaled soil water content Wsc [-]"]
-    M["plant available water W_p [-]"]
-    H["potential evapotranspiration PET [mm]"]
-    R[trait: root surface area /\n aboveground biomass]
+    R[trait: root surface area /\n belowground biomass]
     S[trait: specific leaf area]
 
     A --> P
     K --> P
     L --> P
-    P --> M
-    E --> M
-    H --> M
-    M --> W
+    P --> W
     R ---> W
     S ---> W;
 </div>
@@ -103,19 +68,33 @@ water_reduction!
 flowchart LR
     S[↓ nutrient stress] 
     N[nutrient index]
-    R[trait: root surface area /\n aboveground biomass]
+    R[trait: root surface area /\n belowground biomass]
     A[trait: arbuscular mycorrhizal colonisation]
-    B[belowground competition]
+    K[nutrient competition factor]
     L[plant available nutrients]
 
     N --> L
-    B --> L
+    K --> L
     L --> S
     R --> S
     A --> S;
+
+    B[biomass] 
+    T[trait similarity of\n root surface area / aboveground biomass\nand arbuscular mycorrhizal colonisation]
+
+
+    T -->|species with similar\ntraits compete more\nstrongly for the same resources| K
+    B --> K;
 </div>
 ```
 
+### [Nutrient competition factor](@id below_competition)
+
+```@docs
+below_ground_competition!
+```
+
+### Growth reduction due to nutrient stress
 The species differ in the response to nutrient availability by different proportion of mycorrhizal colonisations and root surface per above ground biomass. The maximum of both response curves is used for the nutrient reduction function. It is assumed that the plants needs either many fine roots per above ground biomass or have a strong symbiosis with mycorrhizal fungi. 
 
 It is implemented in [`nutrient_reduction!`](@ref).
@@ -129,4 +108,10 @@ nutrient_reduction!
 <script type="module">
     import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
 </script> 
+```
+
+## Cost for investment into roots and mycorrhiza
+
+```@docs	
+root_investment!
 ```

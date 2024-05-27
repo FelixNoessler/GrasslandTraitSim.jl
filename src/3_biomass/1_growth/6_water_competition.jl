@@ -32,10 +32,10 @@ higher specific leaf area (`sla`):
 - the strength of the reduction is modified by the parameter `δ_sla`
 
 `δ_sla` equals 1:
-![](../img/plot_W_sla.svg)
+![](../img/W_sla_response.png)
 
 `δ_sla` equals 0.5:
-![](../img/W_sla_response_0_5.svg)
+![](../img/W_sla_response_0_5.png)
 
 Reduction of growth due to stronger water stress for plants with
 lower specific root surface area per above ground biomass (`srsa`).
@@ -80,7 +80,7 @@ function water_reduction!(; container, W, PWP, WHC)
     return nothing
 end
 
-function plot_W_srsa(; δ_wrsa = 0.5, path = nothing)
+function plot_W_srsa(; δ_wrsa = 0.5, θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; param = (; δ_wrsa))
     xs = LinRange(0, 1.0, 20)
     ymat = fill(0.0, length(xs), nspecies)
@@ -154,7 +154,7 @@ function plot_W_srsa(; δ_wrsa = 0.5, path = nothing)
 end
 
 
-function plot_W_sla(;δ_sla = 0.5, path = nothing)
+function plot_W_sla(;δ_sla = 0.5, θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; param = (; δ_sla))
     xs = LinRange(0, 1, 20)
     ymat = fill(0.0, length(xs), nspecies)

@@ -310,7 +310,7 @@ function nutrient_reduction!(; container, nutrients)
 end
 
 
-function plot_N_amc(; δ_amc = 0.5, path = nothing)
+function plot_N_amc(; δ_amc = 0.5, θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; param = (; δ_amc))
     container.calc.biomass_density_factor .= 1.0
 
@@ -381,7 +381,7 @@ end
 
 
 
-function plot_N_srsa(; δ_nrsa = 0.8, path = nothing)
+function plot_N_srsa(; δ_nrsa = 0.8, θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; param = (; δ_nrsa))
     container.calc.biomass_density_factor .= 1.0
 
@@ -455,8 +455,8 @@ function plot_N_srsa(; δ_nrsa = 0.8, path = nothing)
     return nothing
 end
 
-function plot_below_influence(; path = nothing)
-    nspecies, container = create_container_for_plotting(; )
+function plot_below_influence(; θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
 
     #################### varying β_TSB, equal biomass, random traits
     below_effects = LinRange(0, 10, 30)u"ha / Mg"

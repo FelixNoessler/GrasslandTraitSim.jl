@@ -16,8 +16,8 @@ function mowing!(; container, mowing_height)
 end
 
 function plot_mowing(; mowing_height = 0.07u"m",
-    path = nothing)
-    nspecies, container = create_container_for_plotting(; )
+    θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
 
     nbiomass = 50
     max_biomass = 150

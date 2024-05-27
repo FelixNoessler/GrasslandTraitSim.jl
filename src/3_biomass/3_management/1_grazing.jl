@@ -63,8 +63,8 @@ function grazing!(; container, LD)
     return nothing
 end
 
-function plot_grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, path = nothing)
-    nspecies, container = create_container_for_plotting()
+function plot_grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
 
     if !isnothing(α_GRZ)
         container.p.α_GRZ = α_GRZ
@@ -116,7 +116,7 @@ function plot_grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, path = nothing)
     return nothing
 end
 
-function plot_α_GRZ(; path = nothing)
+function plot_α_GRZ(; θ = nothing, path = nothing)
     fig = Figure(; size = (700, 400))
     Axis(fig[1, 1],
         xlabel = "Total biomass [green dry mass kg ha⁻¹]",

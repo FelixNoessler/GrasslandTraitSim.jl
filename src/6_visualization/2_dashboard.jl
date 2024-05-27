@@ -1,6 +1,6 @@
 function dashboard(; posterior = nothing, variable_p = (;),
                    biomass_stats = ["core", "sade"],
-                   path = nothing)
+                   θ = nothing, path = nothing)
     set_theme!(
         Theme(
             colgap = 5,
