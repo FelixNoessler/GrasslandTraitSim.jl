@@ -70,12 +70,12 @@ function init_nutrient_transfer_functions!(; input_obj, prealloc, p)
         end
 
         @. A_amc = (η_max_amc - (η_max_amc - η_min_amc) /
-            (1 + exp(-β_η_amc * (amc - 1.6 * abp * ϕ_amc)))) # TODO
+            (1 + exp(-β_η_amc * ((1-abp)*amc - ϕ_amc)))) # TODO
 
 
         #### Root surface area per above ground biomass
         @. A_nrsa =  (η_max_nrsa + (η_min_nrsa - η_max_nrsa) /
-            (1 + exp(-β_η_nrsa * (srsa - 1.6 * abp * ϕ_rsa)))) # TODO
+            (1 + exp(-β_η_nrsa * ((1-abp)*srsa - ϕ_rsa)))) # TODO
     end
 
     return nothing
@@ -86,7 +86,7 @@ Calculates the similarity between plants concerning their investment
 in fine roots and collaboration with mycorrhiza.
 
 The trait similarity is build with the traits root surface area per
-aboveground biomass (`srsa`) and the arbuscular mycorrhizal
+belowground biomass (`srsa`) and the arbuscular mycorrhizal
 colonisation rate (`amc`).
 
 Standardized residuals are calculated for both traits:
@@ -208,7 +208,7 @@ The factors are then calculated as follows:
 ```
 
 The reduction factors control the density and increases the "functional dispersion"
-of the root surface area per aboveground biomass and the arbuscular
+of the root surface area per belowground biomass and the arbuscular
 mycorrhizal colonisation.
 
 The `TS` matrix is computed before the start of the simulation
@@ -246,8 +246,10 @@ function below_ground_competition!(; container, biomass)
     end
 
     for i in eachindex(biomass_density_factor)
-        biomass_factor = (α_TSB / TS_biomass[i]) ^ β_TSB
-        biomass_density_factor[i] = min(3.0, max(0.33, biomass_factor)) # TODO add in manuscript and doc
+        # TODO add in manuscript and doc
+        biomass_density_factor[i] = 2.0 / (1.0 + exp(-β_TSB * (α_TSB - TS_biomass[i])))
+        # biomass_factor = (α_TSB / TS_biomass[i]) ^ β_TSB
+        # biomass_density_factor[i] = min(3.0, max(0.33, biomass_factor))
     end
 
     return nothing
@@ -256,7 +258,7 @@ end
 """
 Reduction of growth based on plant available nutrients and
 the traits arbuscular mycorrhizal colonisation and
-root surface area / aboveground biomass.
+root surface area per belowground biomass.
 
 Reduction of growth due to stronger nutrient stress for lower
 arbuscular mycorrhizal colonisation (`AMC`).
@@ -297,6 +299,7 @@ function nutrient_reduction!(; container, nutrients)
             nutrients_splitted = container.calc
 
     @. nutrients_splitted = nutrients * biomass_density_factor
+    @. nutrients_splitted = min(nutrients_splitted, 1.0) # TODO add to documentation
     @. N_amc = 1 - δ_amc + δ_amc /
                (1 + exp(-β_amc * (nutrients_splitted - A_amc)))
     @. N_rsa = 1 - δ_nrsa + δ_nrsa /
@@ -311,7 +314,7 @@ function plot_N_amc(; δ_amc = 0.5, path = nothing)
     nspecies, container = create_container_for_plotting(; param = (; δ_amc))
     container.calc.biomass_density_factor .= 1.0
 
-    xs = LinRange(0.0, 1.5, 20)
+    xs = LinRange(0.0, 1.0, 20)
     ymat = fill(0.0, length(xs), nspecies)
 
     for (i, x) in enumerate(xs)
@@ -323,8 +326,9 @@ function plot_N_amc(; δ_amc = 0.5, path = nothing)
     x0s = container.transfer_function.A_amc[idx]
     A = 1 - container.p.δ_amc
     amc = container.traits.amc[idx]
+    abp = container.traits.abp[idx]
     ymat = ymat[:, idx]
-    colorrange = (minimum(x0s), maximum(x0s))
+    colorrange = (minimum(amc), maximum(amc))
 
     fig = Figure(size = (1000, 500))
     Axis(fig[1, 1];
@@ -332,28 +336,28 @@ function plot_N_amc(; δ_amc = 0.5, path = nothing)
         ylabel = "Growth reduction factor (N_amc)\n← stronger reduction, less reduction →",
         title = "Influence of the mycorrhizal colonisation")
     hlines!([1-δ_amc]; color = :black)
-    text!(1.2, 1-δ_amc + 0.02; text = "1 - δ_amc")
+    text!(0.8, 1-δ_amc + 0.02; text = "1 - δ_amc")
     for i in Base.OneTo(nspecies)
         lines!(xs, ymat[:, i];
-            color = x0s[i],
+            color = amc[i],
             colorrange)
 
         ##### midpoint
         x0_y = (1 - A) / 2 + A
         scatter!(x0s[i], x0_y;
             marker = :x,
-            color = x0s[i],
+            color = amc[i],
             colorrange)
     end
     ylims!(-0.05, 1.05)
 
     Axis(fig[1, 2];
-        xlabel = "Mycorrhizal colonization (AMC)",
+         xlabel = "arbuscular mycorrhizal colonisation per total biomass [-]\n = belowground biomass fraction ⋅\narbuscular mycorrhizal colonisation [-]",
         ylabel = "Nutrient index\nat midpoint (A_amc)")
     for i in Base.OneTo(nspecies)
-        scatter!(amc[i], x0s[i];
+        scatter!((1-abp[i]) * amc[i], x0s[i];
             marker = :x,
-            color = x0s[i],
+            color = amc[i],
             colorrange)
     end
     hlines!([container.p.η_min_amc, container.p.η_max_amc]; color = :black)
@@ -361,9 +365,10 @@ function plot_N_amc(; δ_amc = 0.5, path = nothing)
           text = ["η_min_amc", "η_max_amc"])
     vlines!(container.p.ϕ_amc; color = :black, linestyle = :dash)
     text!(container.p.ϕ_amc + 0.01,
-          (container.p.η_max_amc - container.p.η_min_amc) / 2;
+          (container.p.η_max_amc - container.p.η_min_amc) * 4/5;
           text = "ϕ_amc")
     ylims!(nothing, container.p.η_max_amc + 0.1)
+    Colorbar(fig[1, 3]; colorrange, label = "Arbuscular mycorrhizal colonisation [-]")
 
     if !isnothing(path)
         save(path, fig;)
@@ -380,7 +385,7 @@ function plot_N_srsa(; δ_nrsa = 0.8, path = nothing)
     nspecies, container = create_container_for_plotting(; param = (; δ_nrsa))
     container.calc.biomass_density_factor .= 1.0
 
-    xs = LinRange(0, 1.5, 20)
+    xs = LinRange(0, 1.0, 20)
     ymat = fill(0.0, length(xs), nspecies)
 
     for (i, x) in enumerate(xs)
@@ -392,14 +397,15 @@ function plot_N_srsa(; δ_nrsa = 0.8, path = nothing)
     idx = sortperm(container.traits.srsa)
     x0s = container.transfer_function.A_nrsa[idx]
     A = 1 - container.p.δ_nrsa
-    srsa = container.traits.srsa[idx]
+    srsa = ustrip.(container.traits.srsa[idx])
+    abp = container.traits.abp[idx]
     ymat = ymat[:, idx]
-    colorrange = (minimum(x0s), maximum(x0s))
+    colorrange = (minimum(srsa), maximum(srsa))
     ##################
 
     fig = Figure(size = (900, 500))
 
-    Label(fig[1, 1:2], "Influence of the root surface area / above ground biomass";
+    Label(fig[1, 1:2], "Influence of the root surface area";
         halign = :left,
         font = :bold)
 
@@ -407,36 +413,38 @@ function plot_N_srsa(; δ_nrsa = 0.8, path = nothing)
         xlabel = "Nutrient index",
         ylabel = "Growth reduction factor (N_rsa)\n← stronger reduction, less reduction →")
     hlines!([1-δ_nrsa]; color = :black)
-    text!(1.2, 1-δ_nrsa + 0.02; text = "1 - δ_nrsa")
+    text!(0.7, 1-δ_nrsa + 0.02; text = "1 - δ_nrsa")
     for (i, x0) in enumerate(x0s)
         lines!(xs, ymat[:, i];
-            color = x0s[i],
+            color =srsa[i],
             colorrange)
 
         ##### midpoint
         x0_y = (1 - A) / 2 + A
         scatter!([x0], [x0_y];
             marker = :x,
-            color = x0s[i],
+            color = srsa[i],
             colorrange)
     end
     ylims!(-0.1, 1.1)
 
     Axis(fig[2, 2];
-        xlabel = "Root surface area /\nabove ground biomass [m² g⁻¹]",
+        xlabel = "root surface area per total biomass [m² g⁻¹]\n = belowground biomass fraction ⋅\nroot surface area per belowground biomass [m² g⁻¹]",
         ylabel = "Nutrient index\nat midpoint (A_nrsa)")
-    scatter!(ustrip.(srsa), x0s;
+    scatter!((1 .- abp) .* srsa, x0s;
         marker = :x,
-        color = x0s,
+        color = srsa,
         colorrange)
     hlines!([container.p.η_min_nrsa, container.p.η_max_nrsa]; color = :black)
-    text!([0.1, 0.22], [container.p.η_min_nrsa, container.p.η_max_nrsa] .+ 0.02;
+    text!([0.02, 0.02], [container.p.η_min_nrsa, container.p.η_max_nrsa] .+ 0.02;
             text = ["η_min_nrsa", "η_max_nrsa"])
     vlines!(ustrip(container.p.ϕ_rsa); color = :black, linestyle = :dash)
-    text!(ustrip(container.p.ϕ_rsa) + 0.01,
-            (container.p.η_max_nrsa - container.p.η_min_nrsa) / 2;
+    text!(ustrip(container.p.ϕ_rsa) + 0.001,
+            (container.p.η_max_nrsa - container.p.η_min_nrsa) * 4/5;
             text = "ϕ_rsa")
     ylims!(nothing, container.p.η_max_nrsa + 0.1)
+
+    Colorbar(fig[2, 3]; colorrange, label = "Root surface area per belowground biomass [m² g⁻¹]")
 
     if !isnothing(path)
         save(path, fig;)
@@ -451,7 +459,7 @@ function plot_below_influence(; path = nothing)
     nspecies, container = create_container_for_plotting(; )
 
     #################### varying β_TSB, equal biomass, random traits
-    below_effects = LinRange(0, 0.5, 30)
+    below_effects = LinRange(0, 10, 30)u"ha / Mg"
     biomass = fill(20.0, nspecies)u"kg / ha"
     ymat = Array{Float64}(undef, nspecies, length(below_effects))
 
@@ -473,18 +481,16 @@ function plot_below_influence(; path = nothing)
     ##################### artficial example
     mat = [1 0.8 0.2; 0.8 1 0.5; 0.2 0.5 1]
     biomass = [40.0, 10.0, 10.0]u"kg / ha"
+    artificial_mat = Array{Float64}(undef, 3, length(below_effects))
 
-    artificial_below = 0.0:0.01:0.5
-    artificial_mat = Array{Float64}(undef, 3, length(artificial_below))
-
-    for i in eachindex(artificial_below)
+    for i in eachindex(below_effects)
         c = (;
             calc = (; TS_biomass = zeros(3)u"kg / ha",
                     TS = mat,
                     biomass_density_factor = zeros(3)),
             simp = (; included = (; belowground_competition = true),
                     nspecies = 3),
-            p = (; β_TSB = artificial_below[i],
+            p = (; β_TSB = below_effects[i],
                 α_TSB = 0.4 * 80u"kg / ha"),
             traits = (; abp = fill(0.6, 3)))
         below_ground_competition!(; container = c, biomass)
@@ -498,35 +504,36 @@ function plot_below_influence(; path = nothing)
         "low biomass,\nshares few traits\nwith species 1"]
 
     #####################
+    plot_below_effects = ustrip.(below_effects)
 
     fig = Figure(; size = (900, 800))
     Axis(fig[1, 1];
         xticklabelsvisible = false,
         title = "Real community with equal biomass")
     for i in Base.OneTo(nspecies)
-        lines!(below_effects, ymat[i, :];
+        lines!(plot_below_effects, ymat[i, :];
             colorrange, colormap, color = traitsim[i])
     end
-    lines!([0, maximum(below_effects)], [1, 1];
+    lines!([0, maximum(plot_below_effects)], [1, 1];
         color = :black)
     Colorbar(fig[1, 2]; colorrange, colormap, label = "Mean trait similarity")
 
     ax2 = Axis(fig[2, 1];
-        xlabel = "Strength of resource partitioning\n(β_TSB)",
+        xlabel = "Strength of resource partitioning (β_TSB)",
         title = "Artificial community")
     for i in 1:3
-        lines!(artificial_below, artificial_mat[i, :];
+        lines!(plot_below_effects, artificial_mat[i, :];
             label = artificial_labels[i],
             linewidth = 3)
     end
-    lines!([0.0, maximum(artificial_below)], ones(2);
+    lines!([0.0, maximum(plot_below_effects)], ones(2);
         color = :black)
-    axislegend(ax2; position = :lt)
+    axislegend(ax2; position = :lb)
 
     Label(fig[1:2, 0], "Plant available nutrient adjustment factor",
         rotation = pi / 2)
 
-    colgap!(fig.layout, 2, 10)
+    # colgap!(fig.layout, 2, 10)
 
     if !isnothing(path)
         save(path, fig;)

@@ -1,13 +1,9 @@
 function calibrated_parameter(; input_obj = nothing)
     p = (;
-        α_com_height = (truncated(Beta(2.0, 4.0); upper = 0.5), as(Real, 0.0, 0.5),
+        α_com_height = (truncated(Normal(0.5, 0.2); lower = 0.0, upper = 2.0),
+                        as(Real, 0.0, 20.0),
             """The community height reduction should only apply to plant communities
-            with a low community weighted mean plant height,
-            so it is limited to 0.0 to 0.5 [m]."""),
-        β_com_height = (InverseGamma(4.0, 20.0), asℝ₊,
-            """high values of β_com_height lead to a step function, too low values
-            lead to a community height reducer of around 0.5 independently of the
-            community weighted mean plant height"""),
+            with a low community weighted mean plant height"""),
         α_sen = (Uniform(0, 0.01), as(Real, 0.0, 0.01),
                  """TODO"""),
         β_sen = (truncated(Beta(2, 1); lower = 0.3),  as(Real, 0.3, 1.0),
@@ -32,8 +28,8 @@ function calibrated_parameter(; input_obj = nothing)
         β_TRM = (truncated(Normal(0.0, 2.0); lower = 0.0), asℝ₊, "text"),
         β_TRM_H = (Uniform(0.0, 3.0), as(Real, 0.0, 3.0), "text"),
         α_TRM = (truncated(Normal(10000.0, 1000.0); lower = 0.0), asℝ₊, "text"),
-        η_GRZ = (truncated(Normal(10.0, 2.0); lower = 0.0, upper = 25.0),
-                               as(Real, 0.0, 25.0), "text"),
+        η_GRZ = (truncated(Normal(10.0, 2.0); lower = 0.0, upper = 40.0),
+                               as(Real, 0.0, 40.0), "text"),
         κ = (truncated(Normal(20.0, 2.0); lower = 12.5, upper = 22.5), as(Real, 12.0, 22.5),
             "text"),
         α_lowB = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0), "text"),

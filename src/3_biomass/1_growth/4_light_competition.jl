@@ -15,7 +15,7 @@ Parameter, see also [`SimulationParameter`](@ref):
 Variables:
 - ``LAI_{txys}`` (`LAI`) leaf area index of species `s` at time `t` and patch `xy` [-]
 - ``LAI_{tot, txy}`` (`LAItot`) total leaf area index, see [`calculate_LAI!`](@ref) [-]
-- ``B_{txys}`` (`biomass`) dry aboveground biomass of each species [kg ha⁻¹]
+- ``B_{txys}`` (`biomass`)biomass of each species [kg ha⁻¹]
 - ``H_s`` (`height`) potential plant height [m]
 - ``H_{cwm, txy}`` (`height_cwm`) community weighted mean height [m]
 

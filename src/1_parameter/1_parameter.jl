@@ -11,8 +11,9 @@ the permanent wilting point (see [`input_WHC_PWP!`](@ref)).
 
 $(MYNEWFIELDS)
 """
-@with_kw_noshow mutable struct SimulationParameter{T, Q1, Q2, Q3, Q4, Q5, Q6, Q7, Q8,
-                                                   Q9, Q10, Q11, Q12, Q13, Q14} @deftype T
+@with_kw_noshow mutable struct SimulationParameter{T, Qkg_MJ, Qmha_Mg, Qkg_ha, Qm2_g,
+                                                   Qg_m2, Qg_kg, Qha_MJ, QMJ_ha,
+                                                   QC, QK, Qd, Qkg, Qha_kg, Qha_Mg} @deftype T
 
     ####################################################################################
     ## 1 Light interception and competition
@@ -21,7 +22,7 @@ $(MYNEWFIELDS)
     1::``RUE_{\\max}``::Maximal radiation use efficiency,
     see [`potential_growth!`](@ref)
     """
-    RUE_max::Q1 = F(3 / 1000) * u"kg / MJ"
+    RUE_max::Qkg_MJ = F(3 / 1000)u"kg / MJ"
 
     """
     1::``k``::Extinction coefficient,
@@ -34,14 +35,7 @@ $(MYNEWFIELDS)
     where the community height growth reducer equals 0.5,
     see [`potential_growth!`](@ref)
     """
-    α_com_height::Q7 = F(0.2)u"m"
-
-    """
-    1::``\\beta_{comH}``::is the slope of the logistic function that relates
-    the community weighted mean height to the community height growth reducer,
-    see [`potential_growth!`](@ref)
-    """
-    β_com_height::Q8 = F(5)u"m^-1"
+    α_com_height::Qmha_Mg = F(0.8)u"m * ha / Mg"
 
     """
     1::``\\beta_{H}``::controls how strongly taller plants gets more light for growth,
@@ -61,7 +55,7 @@ $(MYNEWFIELDS)
     the available water and nutrients for growth,
     see [`below_ground_competition!`](@ref)
     """
-    α_TSB::Q11 = F(1200.0)u"kg / ha"
+    α_TSB::Qkg_ha = F(1200.0)u"kg / ha"
 
     """
     2::``\\beta_{TSB}``::part of the equation of the biomass density factor ``D_{txys}``,
@@ -71,7 +65,7 @@ $(MYNEWFIELDS)
     or below ``\\alpha_{TSB}``,
     see [`below_ground_competition!`](@ref)
     """
-    β_TSB = F(2.0)
+    β_TSB::Qha_Mg = F(2.0)u"ha / Mg"
 
     """
     2::``\\delta_{sla}``::part of the growth reducer based on the water stress
@@ -113,7 +107,7 @@ $(MYNEWFIELDS)
     ``\\eta_{\\min, sla}`` and ``\\eta_{\\max, sla}``,
     see [`water_reduction!`](@ref)
     """
-    ϕ_sla::Q12 = F(0.025)u"m^2 / g"
+    ϕ_sla::Qm2_g = F(0.007)u"m^2 / g"
 
     """
     2::``\\beta_{\\eta, sla}``::part of the growth reducer based on the water stress
@@ -121,7 +115,7 @@ $(MYNEWFIELDS)
     that relates the specific leaf area to ``A_{sla, s}``,
     see [`water_reduction!`](@ref)
     """
-    β_η_sla::Q13 = F(75.0)u"g / m^2"
+    β_η_sla::Qg_m2 = F(500.0)u"g / m^2"
 
     """
     2::``\\delta_{wrsa}``::part of the growth reducer based on the
@@ -150,7 +144,7 @@ $(MYNEWFIELDS)
     ``A_{wrsa, s}`` (``A_{nrsa, s}``) and ``K_{wrsa, s}`` (``K_{nrsa, s}``),
     see [`water_reduction!`](@ref)
     """
-    ϕ_rsa::Q12 = F(0.2)u"m^2 / g"
+    ϕ_rsa::Qm2_g = F(0.07)u"m^2 / g"
 
     """
     2::``\\beta_{\\eta, wrsa}``::part of the growth reducer based on the root
@@ -159,7 +153,7 @@ $(MYNEWFIELDS)
     aboveground biomass to ``K_{wrsa, s}`` and ``A_{nrsa, s}``,
     see [`water_reduction!`](@ref)
     """
-    β_η_wrsa::Q13 = F(40.0)u"g / m^2"
+    β_η_wrsa::Qg_m2 = F(80.0)u"g / m^2"
 
     """
     2::``\\eta_{\\min, wrsa}``::part of the growth reducer based on the
@@ -183,7 +177,7 @@ $(MYNEWFIELDS)
     [explo14446v19](@cite)[explo18787v6](@cite)[explo23846v10](@cite)[explo31210v6](@cite),
     see [`input_nutrients!`](@ref)
     """
-    N_max::Q14 = F(35.0)u"g/kg"
+    N_max::Qg_kg = F(35.0)u"g/kg"
 
     """
     2::``\\delta_{amc}``::part of the growth reducer based on the
@@ -209,7 +203,7 @@ $(MYNEWFIELDS)
     """
     2::``\\beta_{\\text{red}, srsa}``::TODO
     """
-    β_red_rsa::Q13 = F(20.0)u"g/m^2"
+    β_red_rsa::Qg_m2 = F(20.0)u"g/m^2"
 
     """
     2::``\\kappa_{\\text{maxred}, amc}``::TODO
@@ -228,7 +222,7 @@ $(MYNEWFIELDS)
     the arbuscular mycorrhizal colonization rate to ``K_{amc, s}`` and ``A_{amc, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    β_η_amc = F(10.0)
+    β_η_amc = F(20.0)
 
     """
     2::``\\eta_{\\min, amc}``::part of the growth reducer based on the
@@ -255,7 +249,7 @@ $(MYNEWFIELDS)
     ``A_{amc, s}`` and ``K_{amc, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    ϕ_amc = F(0.35)
+    ϕ_amc = F(0.17)
 
     """
     2::``\\delta_{nrsa}``::part of the growth reducer based on the
@@ -282,7 +276,7 @@ $(MYNEWFIELDS)
     aboveground biomass to ``K_{nrsa, s}`` and ``A_{nrsa, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    β_η_nrsa::Q13 = F(40.0)u"g / m^2"
+    β_η_nrsa::Qg_m2 = F(100.0)u"g / m^2"
 
     """
     2::``\\eta_{\\min, nrsa}``::part of the growth reducer based on the
@@ -309,38 +303,38 @@ $(MYNEWFIELDS)
     active radiation (`PAR`),
     see [`radiation_reduction!`](@ref)
     """
-    γ₁::Q3 = F(4.45e-6)u"ha / MJ"  # uconvert(u"ha/MJ", 0.0445u"m^2 / MJ")
+    γ₁::Qha_MJ = F(4.45e-6)u"ha / MJ"  # uconvert(u"ha/MJ", 0.0445u"m^2 / MJ")
 
     """
     3::``\\gamma_2``::threshold value of `PAR` from which starts a linear decrease in
     radiation use efficiency,
     see [`radiation_reduction!`](@ref)
     """
-    γ₂::Q4 = F(50000.0)u"MJ / ha" # uconvert(u"MJ/ha", 5.0u"MJ / m^2")
+    γ₂::QMJ_ha = F(50000.0)u"MJ / ha" # uconvert(u"MJ/ha", 5.0u"MJ / m^2")
 
     """
     3::``T_0``::is the lower temperature threshold for growth,
     see [`temperature_reduction!`](@ref)
     """
-    T₀::Q5 = F(4.0)u"°C"
+    T₀::QC = F(4.0)u"°C"
 
     """
     3::``T_1``::is the lower bound for the optimal temperature for growth,
     see [`temperature_reduction!`](@ref)
     """
-    T₁::Q5 = F(10.0)u"°C"
+    T₁::QC = F(10.0)u"°C"
 
     """
     3::``T_2``::is the upper bound for the optiomal temperature for growth,
     see [`temperature_reduction!`](@ref)
     """
-    T₂::Q5 = F(20.0)u"°C"
+    T₂::QC = F(20.0)u"°C"
 
     """
     3::``T_3``::is the maximum temperature for growth,
     see [`temperature_reduction!`](@ref)
     """
-    T₃::Q5 = F(35.0)u"°C"
+    T₃::QC = F(35.0)u"°C"
 
     """
     3::``ST_1``::is a threshold of the temperature degree days,
@@ -348,14 +342,14 @@ $(MYNEWFIELDS)
     descreases to `SEA_max`,
     see [`seasonal_reduction!`](@ref)
     """
-    ST₁::Q6 = F(775.0)u"K"
+    ST₁::QK = F(775.0)u"K"
 
     """
     3::``ST_2``::is a threshold of the temperature degree-days,
     where the seasonality growth factor is set to `SEA_min`,
     see [`seasonal_reduction!`](@ref)
     """
-    ST₂::Q6 = F(1450.0)u"K"
+    ST₂::QK = F(1450.0)u"K"
 
     """
     3::``SEA_{\\min}``::is the minimal value of the seasonal effect,
@@ -384,7 +378,7 @@ $(MYNEWFIELDS)
     leaf life span to the senescence rate,
     see [`senescence_rate!`](@ref)
     """
-    β_sen::Q2 = F(0.9)u"d"
+    β_sen::Qd = F(0.9)u"d"
 
     """
     4::``\\alpha_{ll}``::transform SLA to leaflifespan,
@@ -430,18 +424,18 @@ $(MYNEWFIELDS)
     5::``\\eta_{GRZ}``::defines with  κ · livestock density the aboveground biomass [kg ha⁻¹] when the daily consumption by grazers reaches half of their maximal consumption,
     see [`grazing!`](@ref)
     """
-    η_GRZ = F(10.0)
+    η_GRZ = F(25.0)
 
     """
     5::``\\kappa``::maximal consumption of a livestock unit per day,
     see [`grazing!`](@ref)
     """
-    κ::Q9 = F(22.0)u"kg"
+    κ::Qkg = F(22.0)u"kg"
 
     """
     5::``\\alpha_{TRM}``::
     """
-    α_TRM::Q11 = F(1000.0)u"kg / ha"
+    α_TRM::Qkg_ha = F(1000.0)u"kg / ha"
 
     """
     5::``\\beta_{TRM}``::defines together with the height of
@@ -449,7 +443,7 @@ $(MYNEWFIELDS)
     the proportion of biomass that is trampled [ha m⁻¹],
     see [`trampling!`](@ref)
     """
-    β_TRM::Q9 = F(5.0)u"kg"
+    β_TRM::Qkg = F(5.0)u"kg"
 
     """
     5::``\\beta_{TRM, H}``::
@@ -459,12 +453,12 @@ $(MYNEWFIELDS)
     """
     5::``\\alpha_{\\text{low}B}``::
     """
-    α_lowB::Q11 = F(20.0)u"kg / ha"
+    α_lowB::Qkg_ha = F(20.0)u"kg / ha"
 
     """
     5::``\\beta_{\\text{low}B}``::
     """
-    β_lowB::Q10 = F(0.1)u"ha / kg"
+    β_lowB::Qha_kg = F(0.1)u"ha / kg"
 
     ####################################################################################
     ## 6 Clonal growth
@@ -484,7 +478,7 @@ $(MYNEWFIELDS)
     equal to `α_TR_sla` then transpiration is neither increased nor decreased,
     see `transpiration`](@ref)
     """
-    α_TR_sla::Q12 = F(0.03)u"m^2 / g"
+    α_TR_sla::Qm2_g = F(0.03)u"m^2 / g"
 
     """
     7::``\\beta_{TR, sla}``::controls how strongly a

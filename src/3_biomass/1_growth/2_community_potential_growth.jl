@@ -47,16 +47,17 @@ function potential_growth!(; container, biomass, PAR)
         @info "No community height growth reduction!" maxlog=1
         com.comH_reduction = 1.0
     else
-        @unpack relative_height = container.calc
+        @unpack actual_height, relative_height_per_biomass = container.calc
         @unpack height = container.traits
-        @unpack α_com_height, β_com_height = container.p
-        relative_height .= height .* biomass ./ sum(biomass)
-        height_cwm = sum(relative_height)
-        com.comH_reduction = 1 / (1 + exp(β_com_height * (α_com_height - height_cwm)))
+        @unpack α_com_height = container.p
+
+        relative_height_per_biomass .= biomass .* (height ./ (biomass .+ 1e-10u"kg/ha") ) ./ sum(biomass)
+        cwm_height_per_biomass = sum(relative_height_per_biomass)
+        com.comH_reduction = cwm_height_per_biomass / (α_com_height + cwm_height_per_biomass)
     end
 
     @unpack RUE_max, k = container.p
-    com.potgrowth_total = PAR * RUE_max * (1 - exp(-k * com.LAItot)) * com.comH_reduction
+    com.potgrowth_total = PAR * RUE_max * (1 - exp(-k * com.LAItot * com.comH_reduction))
 
     return nothing
 end
@@ -72,7 +73,7 @@ LAI_{tot, txy} &= \sum_{s=1}^{S} LAI_{txys}
 ```
 
 Variables:
-- ``B_{txys}`` (`biomass`) dry aboveground biomass of each species  [kg ha⁻¹]
+- ``B_{txys}`` (`biomass`) biomass of each species  [kg ha⁻¹]
 - ``SLA_s`` (`sla`) specific leaf area [m² g⁻¹]
 - ``LBP_s`` (`lbp`) leaf biomass per plant biomass [-]
 - ``ABP_s`` (`abp`) aboveground biomass per plant biomass [-]
@@ -105,9 +106,9 @@ end
 function plot_potential_growth_lai_height(; path = nothing)
     nspecies, container = create_container_for_plotting(; )
     biomass = container.u.u_biomass[1, 1, :]
-    biomass_vals = LinRange(0, 100, 150)u"kg / ha"
+    biomass_vals = LinRange(1, 100, 150)u"kg / ha"
 
-    height_vals = reverse([0.2, 0.5, 1.0, 100000.0]u"m")
+    height_vals = reverse([0.1, 0.5, 1.5, 1e10]u"m")
     ymat = Array{Float64}(undef, length(height_vals), length(biomass_vals))
     lai_tot = Array{Float64}(undef, length(biomass_vals))
 
@@ -115,6 +116,7 @@ function plot_potential_growth_lai_height(; path = nothing)
         container.traits.height .= h
         for (i,b) in enumerate(biomass_vals)
             biomass .= b
+            actual_height!(; container, biomass)
             potential_growth!(; container, biomass, PAR = container.input.PAR[150])
 
             ymat[hi, i] = ustrip(container.calc.com.potgrowth_total)
@@ -151,12 +153,13 @@ function plot_potential_growth_height_lai(; path = nothing)
     biomass_val = [50.0, 35.0, 10.0]u"kg / ha"
     biomass = container.u.u_biomass[1,1,:]
     lais = zeros(3)
-    heights = LinRange(0.01, 2, 300)
+    heights = LinRange(0.01, 1.5, 300)
     red = Array{Float64}(undef, 3, length(heights))
     for (li, l) in enumerate(lais)
         for (hi, h) in enumerate(heights)
             biomass .= biomass_val[li]
             @reset container.traits.height = [h * u"m"]
+            actual_height!(; container, biomass)
             potential_growth!(; container, biomass, PAR = container.input.PAR[150])
             pot_gr = ustrip(container.calc.com.potgrowth_total)
 
@@ -172,7 +175,7 @@ function plot_potential_growth_height_lai(; path = nothing)
     lines!(heights, red[1, :]; linewidth, label = "$(lais[1])")
     lines!(heights, red[2, :]; linewidth, label = "$(lais[2])")
     lines!(heights, red[3, :]; linewidth, label = "$(lais[3])")
-    axislegend("Total leaf\narea index [-]"; framevisible = false, position = :rb)
+    axislegend("Total leaf\narea index [-]"; framevisible = true, position = :rb)
 
     if !isnothing(path)
         save(path, fig;)
@@ -190,6 +193,7 @@ function plot_lai_traits(; path = nothing)
     nspecies, container = create_container_for_plotting()
     biomass = container.u.u_biomass[1, 1, :]
 
+    actual_height!(; container, biomass)
     potential_growth!(; container, biomass, PAR = container.input.PAR[150])
     val = container.calc.LAIs
 
@@ -229,6 +233,7 @@ function plot_potential_growth_height(; path = nothing)
 
     for (hi, h) in enumerate(heights)
         @reset container.traits.height = [h * u"m"]
+        actual_height!(; container, biomass)
         potential_growth!(; container, biomass, PAR = container.input.PAR[150])
         red[hi] = container.calc.com.comH_reduction
     end
@@ -288,9 +293,9 @@ function plot_community_height_influence(; path = nothing)
 
     lines!(t[1:tstep:end], l[1:tstep:end]; label = "1.0 m")
     lines!(t[1:tstep:end], s[1:tstep:end]; label = "0.1 m")
-    axislegend(; framevisible = false, position = :rb)
+    axislegend(; framevisible = false, position = :rt)
 
-    Label(fig[1:2, 0], "Dry aboveground biomass [kg ha⁻¹]",
+    Label(fig[1:2, 0], "Total biomass [kg ha⁻¹]",
           rotation= pi/2, fontsize = 16)
 
     if !isnothing(path)

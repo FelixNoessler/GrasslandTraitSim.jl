@@ -11,11 +11,11 @@ function init_water_transfer_functions!(; input_obj, prealloc, p)
         @unpack A_sla, A_wrsa = prealloc.transfer_function
 
         ##### Specific leaf area
-        @. A_sla = (η_min_sla + (η_max_sla - η_min_sla) / (1 + exp(-β_η_sla * (sla - 2.0 * lbp * ϕ_sla)))) # TODO
+        @. A_sla = (η_min_sla + (η_max_sla - η_min_sla) / (1 + exp(-β_η_sla * (lbp * sla - ϕ_sla)))) # TODO
 
         #### Root surface area per above ground biomass
         @. A_wrsa =  (η_max_wrsa + (η_min_wrsa - η_max_wrsa) /
-            (1 + exp(-β_η_wrsa * (srsa - 1.6 * abp * ϕ_rsa))))  # TODO add to documentation and manuscript
+            (1 + exp(-β_η_wrsa * ((1 - abp) * srsa - ϕ_rsa))))  # TODO add to documentation and manuscript
     end
 
     return nothing
@@ -24,7 +24,7 @@ end
 @doc raw"""
 Reduction of growth based on the plant available water
 and the traits specific leaf area and root surface area
-per aboveground biomass.
+per belowground biomass.
 
 
 Derives the plant available water.
@@ -156,7 +156,7 @@ end
 
 function plot_W_srsa(; δ_wrsa = 0.5, path = nothing)
     nspecies, container = create_container_for_plotting(; param = (; δ_wrsa))
-    xs = LinRange(0, 1.5, 20)
+    xs = LinRange(0, 1.0, 20)
     ymat = fill(0.0, length(xs), nspecies)
 
     WHC = 1u"mm"
@@ -171,49 +171,52 @@ function plot_W_srsa(; δ_wrsa = 0.5, path = nothing)
     idx = sortperm(container.traits.srsa)
     x0s = container.transfer_function.A_wrsa[idx]
     A = 1 - container.p.δ_wrsa
-    srsa = container.traits.srsa[idx]
+    srsa = ustrip.(container.traits.srsa[idx])
+    abp = container.traits.abp[idx]
     ymat = ymat[:, idx]
-    colorrange = (minimum(x0s), maximum(x0s))
+    colorrange = (minimum(srsa), maximum(srsa))
 
     fig = Figure(size = (1000, 500))
     Axis(fig[1, 1],
         xlabel = "Plant available water (W_sc)",
         ylabel = "Growth reduction factor (W_rsa)\n← stronger reduction, less reduction →")
     hlines!([1-δ_wrsa]; color = :black)
-    text!(1.2, 1-δ_wrsa + 0.02; text = "1 - δ_wrsa")
+    text!(0.75, 1-δ_wrsa + 0.02; text = "1 - δ_wrsa")
     for (i, x0) in enumerate(x0s)
         lines!(xs, ymat[:, i];
-            color = x0s[i],
+            color = srsa[i],
             colorrange)
 
         ##### midpoint
         x0_y = (1 - A) / 2 + A
         scatter!([x0], [x0_y];
             marker = :x,
-            color = x0s[i],
+            color = srsa[i],
             colorrange)
     end
     ylims!(-0.1, 1.1)
 
     Axis(fig[1, 2];
-        xlabel = "Root surface area per\nbelowground ground biomass [m² g⁻¹]",
+        xlabel = "root surface area per total biomass [m² g⁻¹]\n = belowground biomass fraction ⋅\nroot surface area per belowground biomass [m² g⁻¹]",
         ylabel = "Scaled water availability\nat midpoint (A_wrsa)")
-    scatter!(ustrip.(srsa), x0s;
+    scatter!((1 .- abp) .* srsa, x0s;
         marker = :x,
-        color = x0s,
+        color = srsa,
         colorrange)
     hlines!([container.p.η_min_wrsa, container.p.η_max_wrsa]; color = :black)
-    text!([0.1, 0.22], [container.p.η_min_wrsa, container.p.η_max_wrsa] .+ 0.02;
+    text!([0.04, 0.04], [container.p.η_min_wrsa, container.p.η_max_wrsa] .+ 0.02;
             text = ["η_min_wrsa", "η_max_wrsa"])
     vlines!(ustrip(container.p.ϕ_rsa); color = :black, linestyle = :dash)
-    text!(ustrip(container.p.ϕ_rsa) + 0.01,
-            (container.p.η_max_wrsa - container.p.η_min_wrsa) / 2;
+    text!(ustrip(container.p.ϕ_rsa) + 0.001,
+            (container.p.η_max_wrsa - container.p.η_min_wrsa) * 4/5;
             text = "ϕ_rsa")
     ylims!(nothing, container.p.η_max_wrsa + 0.1)
 
-    Label(fig[0, 1:2], "Influence of the root surface area / above ground biomass";
+    Label(fig[0, 1:2], "Influence of the root surface area";
         halign = :left,
         font = :bold)
+    Colorbar(fig[1, 3]; colorrange, label = "Root surface area per belowground biomass [m² g⁻¹]")
+
 
     if !isnothing(path)
         save(path, fig;)
@@ -227,26 +230,24 @@ end
 
 function plot_W_sla(;δ_sla = 0.5, path = nothing)
     nspecies, container = create_container_for_plotting(; param = (; δ_sla))
-    xs = LinRange(0, 1.5, 20)
+    xs = LinRange(0, 1, 20)
     ymat = fill(0.0, length(xs), nspecies)
-
-    PET = container.p.α_PET
     WHC = 1u"mm"
     PWP = 0u"mm"
-    W = 1u"mm"
 
     for (i, x) in enumerate(xs)
-        container.calc.biomass_density_factor .= x
-        water_reduction!(; container, W, PET, PWP, WHC)
+        W = x * u"mm"
+        water_reduction!(; container, W, PWP, WHC)
         ymat[i, :] .= container.calc.W_sla
     end
 
     ##################
     idx = sortperm(container.traits.sla)
     x0s = container.transfer_function.A_sla[idx]
-    sla = container.traits.sla[idx]
+    sla = ustrip.(container.traits.sla[idx])
+    lbp = container.traits.lbp[idx]
     ymat = ymat[:, idx]
-    colorrange = (minimum(x0s), maximum(x0s))
+    colorrange = (minimum(sla), maximum(sla))
     ##################
 
     fig = Figure(size = (900, 400))
@@ -255,38 +256,40 @@ function plot_W_sla(;δ_sla = 0.5, path = nothing)
         ylabel = "Growth reduction factor (W_sla)\n← stronger reduction, less reduction →",
         title = "")
     hlines!([1-δ_sla]; color = :black)
-    text!(1.2, 1-δ_sla + 0.02; text = "1 - δ_sla")
+    text!(0.8, 1-δ_sla + 0.02; text = "1 - δ_sla")
 
     for i in eachindex(x0s)
         lines!(xs, ymat[:, i];
-            color = x0s[i],
+            color = sla[i],
             colorrange)
 
         ##### midpoint
         x0_y = 1 - δ_sla / 2
         scatter!([x0s[i]], [x0_y];
             marker = :x,
-            color = x0s[i],
+            color = sla[i],
             colorrange)
     end
     ylims!(-0.1, 1.1)
     xlims!(-0.02, nothing)
 
     Axis(fig[1, 2];
-        xlabel = "Specific leaf area [m² g⁻¹]",
+        xlabel = "leaf biomass fraction ⋅ specific leaf area [m² g⁻¹]",
         ylabel = "Scaled water availability\nat midpoint (A_sla)")
-    scatter!(ustrip.(sla), x0s;
+    scatter!(lbp .* sla, x0s;
         marker = :x,
-        color = x0s,
+        color = sla,
         colorrange)
     hlines!([container.p.η_min_sla, container.p.η_max_sla]; color = :black)
-    text!([0.0, 0.0], [container.p.η_min_sla, container.p.η_max_sla] .+ 0.02;
+    text!([0.01, 0.01], [container.p.η_min_sla, container.p.η_max_sla] .+ 0.02;
             text = ["η_min_sla", "η_max_sla"])
     vlines!(ustrip(container.p.ϕ_sla); color = :black, linestyle = :dash)
     text!(ustrip(container.p.ϕ_sla),
-          container.p.η_max_sla - (container.p.η_max_sla - container.p.η_min_sla) / 2;
-          text = "ϕ_sla")
-    ylims!(nothing, container.p.η_max_sla + 0.1)
+          container.p.η_max_sla - (container.p.η_max_sla - container.p.η_min_sla) / 6;
+          text = " ϕ_sla")
+    ylims!(nothing, container.p.η_max_sla + 0.2)
+    Colorbar(fig[1, 3]; colorrange, label = "Specific leaf area [m² g⁻¹]")
+
     if !isnothing(path)
         save(path, fig)
     else

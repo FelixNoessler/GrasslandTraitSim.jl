@@ -137,6 +137,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         LAIs = Array{T}(undef, nspecies),
         actual_height = Array{T}(undef, nspecies)u"m",
         above_biomass = Array{T}(undef, nspecies)u"kg / ha",
+        relative_height_per_biomass = Array{T}(undef, nspecies)u"m * ha / kg",
 
         ## cutted biomass
         species_mean_biomass = Array{T}(undef, nspecies)u"kg / ha",
