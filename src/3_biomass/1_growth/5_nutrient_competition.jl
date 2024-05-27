@@ -266,10 +266,10 @@ arbuscular mycorrhizal colonisation (`AMC`).
 - the strength of the reduction is modified by the parameter `δ_amc`
 
 `δ_amc` equals 1:
-![Graphical overview of the AMC functional response](../img/plot_N_amc.svg)
+![Graphical overview of the AMC functional response](../img/plot_N_amc.png)
 
 `δ_amc` equals 0.5:
-![Graphical overview of the AMC functional response](../img/amc_nut_response_0_5.svg)
+![Graphical overview of the AMC functional response](../img/amc_nut_response_0_5.png)
 
 Reduction of growth due to stronger nutrient stress for lower specific
 root surface area per above ground biomass (`srsa`).
@@ -277,10 +277,10 @@ root surface area per above ground biomass (`srsa`).
 - the strength of the reduction is modified by the parameter `δ_nrsa`
 
 `δ_nrsa` equals 1:
-![Graphical overview of the functional response](../img/plot_N_srsa.svg)
+![Graphical overview of the functional response](../img/plot_N_srsa.png)
 
 `δ_nrsa` equals 0.5:
-![Graphical overview of the functional response](../img/rsa_above_nut_response_0_5.svg)
+![Graphical overview of the functional response](../img/rsa_above_nut_response_0_5.png)
 """
 function nutrient_reduction!(; container, nutrients)
     @unpack included = container.simp

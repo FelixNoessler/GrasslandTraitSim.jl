@@ -117,10 +117,10 @@ root surface area per above ground biomass (`srsa`).
 - the strength of the reduction is modified by the parameter `δ_wrsa`
 
 `δ_wrsa` equals 1:
-![Graphical overview of the functional response](../img/plot_W_srsa.svg)
+![Graphical overview of the functional response](../img/plot_W_srsa.png)
 
 `δ_wrsa` equals 0.5:
-# ![Graphical overview of the functional response](../img/W_rsa_response_0_5.svg)
+# ![Graphical overview of the functional response](../img/W_rsa_response_0_5.png)
 """
 function water_reduction!(; container, W, PWP, WHC)
     @unpack included = container.simp

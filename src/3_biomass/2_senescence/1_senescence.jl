@@ -25,7 +25,7 @@ Variables:
 Output:
 - ``SEN_{base, s}`` (`μ`) basic senescence rate [-]
 
-![](../img/leaflifespan.svg)
+![](../img/leaflifespan.png)
 
 
 ```math
@@ -74,7 +74,7 @@ SEN_{max}  & \text{if}\;\; ST > Ψ_2
 - ``Ψ₂=3000`` [$°C$]
 - ``SEN_{max}=3``
 
-![Seasonal component death rate](../img/seasonal_factor_senescence.svg)
+![Seasonal component death rate](../img/seasonal_factor_senescence.png)
 """
 function seasonal_component_senescence(; container, ST,)
     @unpack Ψ₁, Ψ₂, SEN_max = container.p

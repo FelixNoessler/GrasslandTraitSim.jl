@@ -19,7 +19,7 @@ Variables:
 Output:
 - ``RAD_{txy}`` (`RAD`) growth reduction factor based on too high radiation [-]
 
-![Image of the radiation reducer function](../img/radiation_reducer.svg)
+![Image of the radiation reducer function](../img/radiation_reducer.png)
 """
 function radiation_reduction!(; container, PAR)
     @unpack included = container.simp
@@ -66,7 +66,7 @@ Variables:
 Output:
 - ``TEMP_{txy}`` (`TEMP`) temperature growth factor [-]
 
-![Image of the temperature reducer function](../img/temperature_reducer.svg)
+![Image of the temperature reducer function](../img/temperature_reducer.png)
 """
 function temperature_reduction!(; container, T)
     @unpack included = container.simp
@@ -136,7 +136,7 @@ Variables:
 Output:
 - ``SEA_{txy}`` (`SEA`) seasonal growth factor [-]
 
-![Image of the seasonal effect function](../img/seasonal_reducer.svg)
+![Image of the seasonal effect function](../img/seasonal_reducer.png)
 """
 function seasonal_reduction!(; container, ST)
     @unpack included = container.simp

@@ -26,10 +26,10 @@ Output:
 Note:
 The community height growth reduction factor is the second part of the ``fPARi_{txy}`` equation.
 
-![](../img/potential_growth_lai_height.svg)
-![](../img/potential_growth_height_lai.svg)
-![](../img/potential_growth_height.svg)
-![](../img/community_height_influence.svg)
+![](../img/potential_growth_lai_height.png)
+![](../img/potential_growth_height_lai.png)
+![](../img/potential_growth_height.png)
+![](../img/community_height_influence.png)
 """
 function potential_growth!(; container, biomass, PAR)
     @unpack included = container.simp

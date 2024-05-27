@@ -32,7 +32,7 @@ and a leaf nitrogen content of 15, 30 and 40 mg/g:
 ![](../img/grazing_5.png)
 
 Influence of `α_GRZ`:
-![](../img/α_GRZ.svg)
+![](../img/α_GRZ.png)
 """
 function grazing!(; container, LD)
     @unpack lnc = container.traits

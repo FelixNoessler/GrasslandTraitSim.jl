@@ -22,7 +22,7 @@ Maximal the whole biomass of a plant species is removed by trampling.
 
 ![Image of effect of biomass of plants on the trampling](../img/trampling_biomass.png)
 ![Image of effect of livestock density on trampling](../img/trampling_LD.png)
-![](../img/trampling_biomass_individual.svg)
+![](../img/trampling_biomass_individual.png)
 """
 function trampling!(; container, LD)
     @unpack height, abp = container.traits
