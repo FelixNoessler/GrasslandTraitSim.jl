@@ -266,10 +266,10 @@ arbuscular mycorrhizal colonisation (`AMC`).
 - the strength of the reduction is modified by the parameter `δ_amc`
 
 `δ_amc` equals 1:
-![Graphical overview of the AMC functional response](../img/plot_N_amc.png)
+![Graphical overview of the AMC functional response](../img/N_amc_default.png)
 
 `δ_amc` equals 0.5:
-![Graphical overview of the AMC functional response](../img/amc_nut_response_0_5.png)
+![Graphical overview of the AMC functional response](../img/N_amc_0_5.png)
 
 Reduction of growth due to stronger nutrient stress for lower specific
 root surface area per belowground biomass (`srsa`).
@@ -277,10 +277,10 @@ root surface area per belowground biomass (`srsa`).
 - the strength of the reduction is modified by the parameter `δ_nrsa`
 
 `δ_nrsa` equals 1:
-![Graphical overview of the functional response](../img/plot_N_srsa.png)
+![Graphical overview of the functional response](../img/N_rsa_default.png)
 
 `δ_nrsa` equals 0.5:
-![Graphical overview of the functional response](../img/rsa_above_nut_response_0_5.png)
+![Graphical overview of the functional response](../img/N_rsa_0_5.png)
 """
 function nutrient_reduction!(; container, nutrients)
     @unpack included = container.simp
@@ -310,8 +310,12 @@ function nutrient_reduction!(; container, nutrients)
 end
 
 
-function plot_N_amc(; δ_amc = 0.5, θ = nothing, path = nothing)
-    nspecies, container = create_container_for_plotting(; param = (; δ_amc))
+function plot_N_amc(; δ_amc = nothing, θ = nothing, path = nothing)
+    param = ifelse(isnothing(δ_amc), (;), (; δ_amc))
+    nspecies, container = create_container_for_plotting(; θ, param)
+    δ_amc = container.p.δ_amc
+
+
     container.calc.biomass_density_factor .= 1.0
 
     xs = LinRange(0.0, 1.0, 20)
@@ -334,7 +338,8 @@ function plot_N_amc(; δ_amc = 0.5, θ = nothing, path = nothing)
     Axis(fig[1, 1];
         xlabel = "Nutrient index",
         ylabel = "Growth reduction factor (N_amc)\n← stronger reduction, less reduction →",
-        title = "Influence of the mycorrhizal colonisation")
+        title = "Influence of the mycorrhizal colonisation",
+        limits = (-0.02, 1.02, nothing, nothing))
     hlines!([1-δ_amc]; color = :black)
     text!(0.8, 1-δ_amc + 0.02; text = "1 - δ_amc")
     for i in Base.OneTo(nspecies)
@@ -367,7 +372,7 @@ function plot_N_amc(; δ_amc = 0.5, θ = nothing, path = nothing)
     text!(container.p.ϕ_amc + 0.01,
           (container.p.η_max_amc - container.p.η_min_amc) * 4/5;
           text = "ϕ_amc")
-    ylims!(nothing, container.p.η_max_amc + 0.1)
+    # ylims!(nothing, container.p.η_max_amc + 0.1)
     Colorbar(fig[1, 3]; colorrange, label = "Arbuscular mycorrhizal colonisation [-]")
 
     if !isnothing(path)
@@ -381,8 +386,10 @@ end
 
 
 
-function plot_N_srsa(; δ_nrsa = 0.8, θ = nothing, path = nothing)
-    nspecies, container = create_container_for_plotting(; param = (; δ_nrsa))
+function plot_N_srsa(; δ_nrsa = nothing, θ = nothing, path = nothing)
+    param = ifelse(isnothing(δ_nrsa), (;), (; δ_nrsa))
+    nspecies, container = create_container_for_plotting(; param, θ)
+    δ_nrsa = container.p.δ_nrsa
     container.calc.biomass_density_factor .= 1.0
 
     xs = LinRange(0, 1.0, 20)
@@ -476,6 +483,7 @@ function plot_below_influence(; θ = nothing, path = nothing)
     ymat = ymat[idx, :]
     colorrange = (minimum(traitsim), maximum(traitsim))
     colormap = :viridis
+    orig_β_TSB = container.p.β_TSB
     #####################
 
     ##################### artficial example
@@ -516,6 +524,7 @@ function plot_below_influence(; θ = nothing, path = nothing)
     end
     lines!([0, maximum(plot_below_effects)], [1, 1];
         color = :black)
+    vlines!(orig_β_TSB)
     Colorbar(fig[1, 2]; colorrange, colormap, label = "Mean trait similarity")
 
     ax2 = Axis(fig[2, 1];

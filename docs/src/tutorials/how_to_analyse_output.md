@@ -309,7 +309,7 @@ for t in 1:tend
     b1 = b1[.!iszero.(b1)]
     p1 = b1 ./ sum(b1)
     shannon[t] = -sum(p1 .* log.(p1))
-    simpson[t] = sum(p1 .^ 2)
+    simpson[t] = 1 - sum(p1 .^ 2)
 end
 
 begin

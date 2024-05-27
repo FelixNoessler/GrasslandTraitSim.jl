@@ -25,6 +25,7 @@ cp("assets/biomass_dynamic_overview.png",
 
 ####### load fitted parameter values
 θ = nothing
+# θ = obj.θ
 
 ####### Create Bilbiography
 bib = CitationBibliography("docs/src/lit.bib"; style = :numeric)
@@ -41,14 +42,14 @@ sim.plot_lai_traits(; θ, path = f("$docs_img/lai_traits.png"))
 sim.plot_community_height_influence(; θ, path = f("$docs_img/community_height_influence.png"))
 
 #### transfer functions
-sim.plot_W_srsa(; θ, path = f("$docs_img/plot_W_srsa.png"), δ_wrsa = 1.0)
-sim.plot_W_srsa(; θ, path = f("$docs_img/W_rsa_response_0_5.png"), δ_wrsa = 0.5)
-sim.plot_W_sla(; θ, path = f("$docs_img/W_sla_response.png"), δ_sla = 1.0)
-sim.plot_W_sla(; θ, path = f("$docs_img/W_sla_response_0_5.png"), δ_sla = 0.5)
-sim.plot_N_srsa(; θ, path = f("$docs_img/plot_N_srsa.png"), δ_nrsa = 1.0)
-sim.plot_N_srsa(; θ, path = f("$docs_img/rsa_above_nut_response_0_5.png"), δ_nrsa = 0.5)
-sim.plot_N_amc(; θ, path = f("$docs_img/plot_N_amc.png"), δ_amc = 1.0)
-sim.plot_N_amc(; θ, path = f("$docs_img/amc_nut_response_0_5.png"), δ_amc = 0.5)
+sim.plot_W_srsa(; θ, path = f("$docs_img/W_rsa_default.png"))
+sim.plot_W_srsa(; θ, path = f("$docs_img/W_rsa_0_5.png"), δ_wrsa = 0.5)
+sim.plot_W_sla(; θ, path = f("$docs_img/W_sla_default.png"))
+sim.plot_W_sla(; θ, path = f("$docs_img/W_sla_0_5.png"), δ_sla = 0.5)
+sim.plot_N_srsa(; θ, path = f("$docs_img/N_rsa_default.png"))
+sim.plot_N_srsa(; θ, path = f("$docs_img/N_rsa_0_5.png"), δ_nrsa = 0.5)
+sim.plot_N_amc(; θ, path = f("$docs_img/N_amc_default.png"))
+sim.plot_N_amc(; θ, path = f("$docs_img/N_amc_0_5.png"), δ_amc = 0.5)
 sim.plot_root_investment(; θ, path = f("$docs_img/root_investment.png"))
 
 #### leaf lifespan
@@ -66,8 +67,8 @@ sim.plot_seasonal_component_senescence(; θ, path = f("$docs_img/seasonal_factor
 
 #### land use
 sim.plot_mowing(; θ, path = f("$docs_img/mowing.png"))
-sim.plot_grazing(; β_PAL_lnc = 1.0, θ, path = f("$docs_img/grazing_1_5.png"))
-sim.plot_grazing(; β_PAL_lnc = 2.0, θ, path = f("$docs_img/grazing_5.png"))
+sim.plot_grazing(; β_PAL_lnc = 1.0, θ, path = f("$docs_img/grazing_default.png"))
+sim.plot_grazing(; β_PAL_lnc = 2.0, θ, path = f("$docs_img/grazing_2.png"))
 sim.plot_α_GRZ(; θ, path = f("$docs_img/α_GRZ.png"))
 sim.plot_trampling_biomass(; θ, path = f("$docs_img/trampling_biomass.png"))
 sim.plot_trampling_livestockdensity(; θ, path = f("$docs_img/trampling_LD.png"))

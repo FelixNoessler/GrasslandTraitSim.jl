@@ -21,15 +21,11 @@ a &= \frac{1}{\text{α_GRZ}^2 \cdot h} \\
 - `α_GRZ` is the half-saturation constant [kg ha⁻¹]
 - equation partly based on [Moulin2021](@cite)
 
-Influence of grazing (livestock density = 2), all plant species have
-an equal amount of biomass (total biomass / 3)
-and a leaf nitrogen content of 15, 30 and 40 mg/g:
-
 - `β_PAL_lnc` = 1.5
-![](../img/grazing_1_5.png)
+![](../img/grazing_default.png)
 
 - `β_PAL_lnc` = 5
-![](../img/grazing_5.png)
+![](../img/grazing_2.png)
 
 Influence of `α_GRZ`:
 ![](../img/α_GRZ.png)
@@ -79,9 +75,11 @@ function plot_grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, θ = nothing, pa
     biomass_vec = LinRange(0, 500, nbiomass)u"kg / ha"
     grazing_mat = Array{Float64}(undef, nspecies, nbiomass)
 
-    for (i, biomass) in enumerate(biomass_vec)
+    for (i, biomass_val) in enumerate(biomass_vec)
         container.calc.defoliation .= 0.0u"kg / ha"
-        actual_height!(; container, biomass = repeat([biomass], nspecies))
+        biomass = 1 ./ container.traits.abp .* biomass_val
+        actual_height!(; container, biomass)
+        @show container.calc.above_biomass
         grazing!(; container, LD)
         grazing_mat[:, i] = ustrip.(container.calc.defoliation)
     end
@@ -93,7 +91,7 @@ function plot_grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, θ = nothing, pa
 
     fig = Figure(; size = (700, 400))
     Axis(fig[1, 1],
-        xlabel = "Biomass per species [kg ha⁻¹]",
+        xlabel = "Aboveground biomass per species [kg ha⁻¹]",
         ylabel = "Grazed biomass per species (graz)\n[kg ha⁻¹]",
         title = "")
 

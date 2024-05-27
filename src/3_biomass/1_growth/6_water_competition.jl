@@ -32,10 +32,10 @@ higher specific leaf area (`sla`):
 - the strength of the reduction is modified by the parameter `δ_sla`
 
 `δ_sla` equals 1:
-![](../img/W_sla_response.png)
+![](../img/W_sla_default.png)
 
 `δ_sla` equals 0.5:
-![](../img/W_sla_response_0_5.png)
+![](../img/W_sla_0_5.png)
 
 Reduction of growth due to stronger water stress for plants with
 lower specific root surface area per above ground biomass (`srsa`).
@@ -43,10 +43,10 @@ lower specific root surface area per above ground biomass (`srsa`).
 - the strength of the reduction is modified by the parameter `δ_wrsa`
 
 `δ_wrsa` equals 1:
-![Graphical overview of the functional response](../img/plot_W_srsa.png)
+![Graphical overview of the functional response](../img/W_rsa_default.png)
 
 `δ_wrsa` equals 0.5:
-# ![Graphical overview of the functional response](../img/W_rsa_response_0_5.png)
+# ![Graphical overview of the functional response](../img/W_rsa_0_5.png)
 """
 function water_reduction!(; container, W, PWP, WHC)
     @unpack included = container.simp
@@ -80,8 +80,10 @@ function water_reduction!(; container, W, PWP, WHC)
     return nothing
 end
 
-function plot_W_srsa(; δ_wrsa = 0.5, θ = nothing, path = nothing)
-    nspecies, container = create_container_for_plotting(; param = (; δ_wrsa))
+function plot_W_srsa(; δ_wrsa = nothing, θ = nothing, path = nothing)
+    param = ifelse(isnothing(δ_wrsa), (;), (; δ_wrsa))
+    nspecies, container = create_container_for_plotting(; param, θ)
+    δ_wrsa = container.p.δ_wrsa
     xs = LinRange(0, 1.0, 20)
     ymat = fill(0.0, length(xs), nspecies)
 
@@ -154,8 +156,10 @@ function plot_W_srsa(; δ_wrsa = 0.5, θ = nothing, path = nothing)
 end
 
 
-function plot_W_sla(;δ_sla = 0.5, θ = nothing, path = nothing)
-    nspecies, container = create_container_for_plotting(; param = (; δ_sla))
+function plot_W_sla(; δ_sla = nothing, θ = nothing, path = nothing)
+    param = ifelse(isnothing(δ_sla), (;), (; δ_sla))
+    nspecies, container = create_container_for_plotting(; param, θ)
+    δ_sla = container.p.δ_sla
     xs = LinRange(0, 1, 20)
     ymat = fill(0.0, length(xs), nspecies)
     WHC = 1u"mm"

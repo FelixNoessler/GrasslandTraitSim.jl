@@ -64,9 +64,10 @@ end
 function plot_height_influence(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
 
-    height_strength_exps = LinRange(0.0, 10.0, 40)
+    height_strength_exps = LinRange(0.0, 5.0, 40)
     biomass = fill(50, nspecies)u"kg / ha"
     ymat = Array{Float64}(undef, nspecies, length(height_strength_exps))
+    orig_β_height = container.p.β_height
 
     for (i, β_height) in enumerate(height_strength_exps)
         container = @set container.p.β_height = β_height
@@ -97,7 +98,7 @@ function plot_height_influence(; θ = nothing, path = nothing)
         linewidth = 5,
         linestyle = :dash,
         color = :red)
-
+    vlines!(orig_β_height)
     Colorbar(fig[1, 2]; colormap, colorrange, label = "Plant height [m]")
 
     if !isnothing(path)

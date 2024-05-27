@@ -38,30 +38,32 @@ function calibrated_parameter(; input_obj = nothing)
         β_TSB = (truncated(Normal(1.0, 0.5); lower = 0.0), asℝ₊, "text"),
         α_TR_sla = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊, "text"),
         β_TR_sla = (truncated(Normal(1.0, 5.0); lower = 0.0), asℝ₊, "text"),
-        ϕ_sla = (Uniform(0.01, 0.03), as(Real, 0.01, 0.03), "text"),
+        # ϕ_sla = (Uniform(0.01, 0.03), as(Real, 0.01, 0.03), "text"),
         η_min_sla = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), "text"),
         η_max_sla = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), "text"),
-        β_η_sla = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0), "text"),
-        β_sla = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), "text"),
+        # β_η_sla = (Uniform(0.0, 500.0), as(Real, 0.0, 500.0), "text"),
+        # β_sla = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), "text"),
         δ_wrsa = (Uniform(0.0, 1.0), as𝕀, "text"),
         δ_sla = (Uniform(0.0, 1.0), as𝕀, "text"),
-        ϕ_amc = (Beta(3.0, 10.0), as𝕀, "text"),
+        # ϕ_amc = (Beta(3.0, 10.0), as𝕀, "text"),
         η_min_amc = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), "text"),
         η_max_amc = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), "text"),
-        κ_maxred_amc = (Uniform(0.0, 1.0), as𝕀, "text"),
-        β_η_amc = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), "text"),
-        β_amc = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), "text"),
+        # β_η_amc = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), "text"),
+        # β_amc = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), "text"),
         δ_amc = (Uniform(0.0, 1.0), as𝕀, "text"),
         δ_nrsa = (Uniform(0.0, 1.0), as𝕀, "text"),
-        ϕ_rsa = (Uniform(0.1, 0.25), as(Real, 0.1, 0.25), "text"),
+        # ϕ_rsa = (Uniform(0.1, 0.25), as(Real, 0.1, 0.25), "text"),
         η_min_wrsa = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), "text"),
         η_min_nrsa = (Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), "text"),
         η_max_wrsa =(Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), "text"),
         η_max_nrsa =(Uniform(-1.0, 1.0), as(Real, -1.0, 1.0), "text"),
-        β_η_wrsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), "text"),
-        β_η_nrsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), "text"),
-        β_wrsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), "text"),
-        β_nrsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), "text"),
+        # β_η_wrsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), "text"),
+        # β_η_nrsa = (Uniform(0.0, 250.0), as(Real, 0.0, 250.0), "text"),
+        # β_wrsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), "text"),
+        # β_nrsa = (Uniform(0.0, 50.0), as(Real, 0.0, 50.0), "text"),
+        κ_maxred_amc = (Uniform(0.0, 0.3), as(Real, 0.0, 0.3), "text"),
+        κ_maxred_srsa = (Uniform(0.0, 0.3), as(Real, 0.0, 0.3), "text"),
+
         b_biomass = (truncated(Cauchy(0, 300); lower = 0.0), asℝ₊, "text"),
         b_sla = (truncated(Cauchy(0, 0.05); lower = 0.0), asℝ₊, "text"),
         b_lnc = (truncated(Cauchy(0, 0.5); lower = 0.0), asℝ₊, "text"),
@@ -91,4 +93,24 @@ function calibrated_parameter(; input_obj = nothing)
     t = as((; zip(keys(p), getindex.(collect(p), 2))...))
 
     return (; priordists, lb, ub, t, prior_text)
+end
+
+function check_parameter(p)
+    if p.η_min_amc > p.η_max_amc
+        return false
+    end
+
+    if p.η_min_sla > p.η_max_sla
+        return false
+    end
+
+    if p.η_min_wrsa > p.η_max_wrsa
+        return false
+    end
+
+    if p.η_min_nrsa > p.η_max_nrsa
+        return false
+    end
+
+    return true # everything is fine
 end
