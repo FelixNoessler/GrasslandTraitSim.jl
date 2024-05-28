@@ -5,6 +5,7 @@ using PrettyTables
 using CairoMakie
 using Statistics
 using Distributions
+using Unitful
 import GrasslandTraitSim as sim
 
 inference_obj = sim.calibrated_parameter(; )
@@ -24,26 +25,28 @@ pretty_table(m; header = ["Parameter", "Prior Distribution", "Justification"],
 ```@example priors
 begin
     fig = Figure(; size = (600, 8000))
-
-    for (i,p) in enumerate(keys(inference_obj.priordists))
-        d = inference_obj.priordists[p]
+    
+    Label(fig[0, 1], "logpdf"; tellwidth = false)
+    Label(fig[0, 2], "pdf"; tellwidth = false)
+    p = sim.SimulationParameter()
+    for (i,k) in enumerate(keys(inference_obj.priordists))
+        d = inference_obj.priordists[k]
+        mi = quantile(d, 0.001)
         ma = quantile(d, 0.9999)
-        x = collect(LinRange(0.0, ma, 300))
-        y = logpdf.(d, x)
-        f = isinf.(y)
-        y[f] .= NaN
-        x[f] .= NaN
+        x = collect(LinRange(mi, ma, 300))
         
-        Axis(fig[i, 1]; title = String(p), yticklabelsvisible = false)
-        lines!(x, y; color = :steelblue4, linewidth = 3)
+        Axis(fig[i, 1]; title = String(k), yticklabelsvisible = false)
+        lines!(x, logpdf.(d, x); color = :steelblue4, linewidth = 3)
+        vlines!(ustrip(p[k]); color = :orange, linestyle = :dash)
         
         Axis(fig[i, 2]; yticklabelsvisible = false)
         lines!(x, pdf.(d, x); color = :steelblue4, linewidth = 3)
+        vlines!(ustrip(p[k]); color = :orange, linestyle = :dash)
     end
 
     fig
 end
-save("priors.svg", fig); nothing # hide
+save("priors.png", fig); nothing # hide
 ```
 
-![](priors.svg)
+![](priors.png)
