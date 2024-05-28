@@ -12,8 +12,8 @@ the permanent wilting point (see [`input_WHC_PWP!`](@ref)).
 $(MYNEWFIELDS)
 """
 @with_kw_noshow mutable struct SimulationParameter{T, Qkg_MJ, Qmha_Mg, Qkg_ha, Qm2_g,
-                                                   Qg_m2, Qg_kg, Qha_MJ, QMJ_ha,
-                                                   QC, QK, Qd, Qkg, Qha_kg, Qha_Mg} @deftype T
+                                                 Qg_m2, Qg_kg, Qha_MJ, QMJ_ha,
+                                                 QC, QK, Qd, Qkg, Qha_kg, Qha_Mg}
 
     ####################################################################################
     ## 1 Light interception and competition
@@ -28,7 +28,7 @@ $(MYNEWFIELDS)
     1::``k``::Extinction coefficient,
     see [`potential_growth!`](@ref)
     """
-    k = F(0.6)
+    k::T = F(0.6)
 
     """
     1::``\\alpha_{comH}``::is the community weighted mean height,
@@ -41,7 +41,7 @@ $(MYNEWFIELDS)
     1::``\\beta_{H}``::controls how strongly taller plants gets more light for growth,
     see [`light_competition!`](@ref)
     """
-    β_height = F(0.5)
+    β_height::T = F(0.5)
 
     ####################################################################################
     ## 2 Belowground competition
@@ -73,7 +73,7 @@ $(MYNEWFIELDS)
     maximal possible growth reduction,
     see [`water_reduction!`](@ref)
     """
-    δ_sla = F(0.5)
+    δ_sla::T = F(0.5)
 
     """
     2::``\\beta_{sla}``::part of the growth reducer based on the water stress
@@ -82,23 +82,23 @@ $(MYNEWFIELDS)
     the transition from ``1-\\delta_{sla}`` to 1 is,
     see [`water_reduction!`](@ref)
     """
-    β_sla = F(5.0)
+    β_sla::T = F(5.0)
 
     """
     2::``\\eta_{\\min, sla}``::part of the growth reducer based on the water stress
     and the specific leaf area function ``W_{sla, txys}``;
-    minimum of the midpoint of the logistic function ``A_{sla, s}`` for ``W_{sla, txys}``,
+    ... TODO ... of the logistic function ``A_{sla, s}`` for ``W_{sla, txys}``,
     see [`water_reduction!`](@ref)
     """
-    η_min_sla = F(-0.8)
+    η_μ_sla::T = F(0.0)
 
     """
     2::``\\eta_{\\max, sla}``::part of the growth reducer based on the water stress
     and the specific leaf area function ``W_{sla, txys}``;
-    maximum of the midpoint of the logistic function ``A_{sla, s}`` for ``W_{sla, txys}``,
+    ... TODO ...``A_{sla, s}`` for ``W_{sla, txys}``,
     see [`water_reduction!`](@ref)
     """
-    η_max_sla = F(0.8)
+    η_σ_sla::T = F(0.8)
 
     """
     2::``\\phi_{sla}``::part of the growth reducer based on the water stress and the
@@ -123,7 +123,7 @@ $(MYNEWFIELDS)
     ``W_{srsa, txys}``; maximal possible reduction & calibrated
     see [`water_reduction!`](@ref)
     """
-    δ_wrsa = F(0.8)
+    δ_wrsa::T = F(0.8)
 
     """
     2::``\\beta_{wrsa}``::part of the growth reducer based on the root surface area
@@ -132,7 +132,7 @@ $(MYNEWFIELDS)
     from ``1-\\delta_{wrsa}`` to ``K_{wrsa, s}`` is,
     see [`water_reduction!`](@ref)
     """
-    β_wrsa = F(7.0)
+    β_wrsa::T = F(7.0)
 
     """
     2::``\\phi_{srsa}``::part of the growth reducer based on the
@@ -156,20 +156,21 @@ $(MYNEWFIELDS)
     β_η_wrsa::Qg_m2 = F(80.0)u"g / m^2"
 
     """
-    2::``\\eta_{\\min, wrsa}``::part of the growth reducer based on the
+    2::``\\eta_{\\mu, wrsa}``::part of the growth reducer based on the
     root surface area per aboveground biomass and the water stress function
-        ``W_{srsa, txys}``; minimal possible value of ``A_{wrsa, s}``,
+    ``W_{srsa, txys}``; mean possible value of ``A_{wrsa, s}``,
     see [`water_reduction!`](@ref)
     """
-    η_min_wrsa = F(0.05)
+    η_μ_wrsa::T = F(0.3)
 
     """
-    2::``\\eta_{\\max, wrsa}``::part of the growth reducer based on the root surface
+    2::``\\eta_{\\sigma, wrsa}``::part of the growth reducer based on the root surface
     area per aboveground biomass and the water stress function ``W_{srsa, txys}``;
-    maximal possible value of ``A_{wrsa, s}``,
+    diff to ``\\eta_{\\mu, wrsa}`` to get minimal and maximal possible
+    value of ``A_{wrsa, s}``,
     see [`water_reduction!`](@ref)
     """
-    η_max_wrsa = F(0.6)
+    η_σ_wrsa::T = F(0.3)
 
     """
     2::``N_{\\max}``:: maximal total soil nitrogen, based on the maximum total N
@@ -185,7 +186,7 @@ $(MYNEWFIELDS)
     ``N_{amc, txys}``; maximal possible growth reduction,
     see [`nutrient_reduction!`](@ref)
     """
-    δ_amc = F(0.5)
+    δ_amc::T = F(0.5)
 
     """
     2::``\\beta_{amc}``::part of the growth reducer based on the arbuscular
@@ -193,12 +194,12 @@ $(MYNEWFIELDS)
     slope of a logistic function that calculates the growth reducer ``N_{amc, txys}``,
     see [`nutrient_reduction!`](@ref)
     """
-    β_amc = F(7.0)
+    β_amc::T = F(7.0)
 
     """
     2::``\\beta_{\\text{red}, amc}``::TODO
     """
-    β_red_amc = F(12.0)
+    β_red_amc::T = F(12.0)
 
     """
     2::``\\beta_{\\text{red}, srsa}``::TODO
@@ -208,12 +209,12 @@ $(MYNEWFIELDS)
     """
     2::``\\kappa_{\\text{maxred}, amc}``::TODO
     """
-    κ_maxred_amc = F(0.15)
+    κ_maxred_amc::T = F(0.15)
 
     """
     2::``\\kappa_{\\text{maxred}, srsa}``::TODO
     """
-    κ_maxred_srsa = F(0.15)
+    κ_maxred_srsa::T = F(0.15)
 
     """
     2::``\\beta_{\\eta, amc}``::part of the growth reducer based on the
@@ -222,23 +223,23 @@ $(MYNEWFIELDS)
     the arbuscular mycorrhizal colonization rate to ``K_{amc, s}`` and ``A_{amc, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    β_η_amc = F(20.0)
+    β_η_amc::T = F(20.0)
 
     """
     2::``\\eta_{\\min, amc}``::part of the growth reducer based on the
     arbuscular mycorrhizal colonization rate and the nutrient stress function
-    ``N_{amc, txys}``; minimal possible value of ``A_{amc, s}``,
+    ``N_{amc, txys}``; ... TODO ... ``A_{amc, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    η_min_amc = F(0.05)
+    η_μ_amc::T = F(0.3)
 
     """
-    2::``\\eta_{\\max, amc}``::part of the growth reducer based on
+    2::``\\eta_{\\sigma, amc}``::part of the growth reducer based on
     the arbuscular mycorrhizal colonization rate and the nutrient stress function
-    ``N_{amc, txys}``; maximal possible value of ``A_{amc, s}``,
+    ``N_{amc, txys}``; ... TODO ... ``A_{amc, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    η_max_amc = F(0.6)
+    η_σ_amc::T = F(0.3)
 
     """
     2::``\\phi_{amc}``::part of the growth reducer based on the
@@ -249,7 +250,7 @@ $(MYNEWFIELDS)
     ``A_{amc, s}`` and ``K_{amc, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    ϕ_amc = F(0.17)
+    ϕ_amc::T = F(0.17)
 
     """
     2::``\\delta_{nrsa}``::part of the growth reducer based on the
@@ -257,7 +258,7 @@ $(MYNEWFIELDS)
     ``N_{srsa, txys}``; maximal growth reduction,
     see [`nutrient_reduction!`](@ref)
     """
-    δ_nrsa = F(0.9)
+    δ_nrsa::T = F(0.9)
 
     """
     2::``\\beta_{nrsa}``:: part of the growth reducer based on
@@ -266,7 +267,7 @@ $(MYNEWFIELDS)
     that calculates the growth reducer ``N_{srsa, txys}``,
     see [`nutrient_reduction!`](@ref)
     """
-    β_nrsa = F(7.0)
+    β_nrsa::T = F(7.0)
 
     """
     2::``\\beta_{\\eta, nrsa}``::part of the growth reducer based on
@@ -279,20 +280,20 @@ $(MYNEWFIELDS)
     β_η_nrsa::Qg_m2 = F(100.0)u"g / m^2"
 
     """
-    2::``\\eta_{\\min, nrsa}``::part of the growth reducer based on the
+    2::``\\eta_{\\mu, nrsa}``::part of the growth reducer based on the
     root surface area per aboveground biomass and the nutrient
-    stress function ``N_{srsa, txys}``; minimal possible value of ``A_{nrsa, s}``,
+    stress function ``N_{srsa, txys}``; ... TODO ... ``A_{nrsa, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    η_min_nrsa = F(0.05)
+    η_μ_nrsa::T = F(0.3)
 
     """
-    2::``\\eta_{\\max, nrsa}``::part of the growth reducer based on the
+    2::``\\eta_{\\sigma, nrsa}``::part of the growth reducer based on the
     root surface area per aboveground biomass and the nutrient
-    stress function ``N_{srsa, txys}``; maximal possible value of ``A_{nrsa, s}``,
+    stress function ``N_{srsa, txys}``;... TODO ... ``A_{nrsa, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    η_max_nrsa = F(0.6)
+    η_σ_nrsa::T = F(0.3)
 
     ####################################################################################
     ## 3 Environmental and seasonal growth adjustment
@@ -355,13 +356,13 @@ $(MYNEWFIELDS)
     3::``SEA_{\\min}``::is the minimal value of the seasonal effect,
     see [`seasonal_reduction!`](@ref)
     """
-    SEA_min = F(0.7)
+    SEA_min::T = F(0.7)
 
     """
     3::``SEA_{\\max}``::is the maximal value of the seasonal effect,
     see [`seasonal_reduction!`](@ref)
     """
-    SEA_max = F(1.3)
+    SEA_max::T = F(1.3)
 
     ####################################################################################
     ## 4 Senescence
@@ -371,7 +372,7 @@ $(MYNEWFIELDS)
     the leaf life span to the senescence rate,
     see [`senescence_rate!`](@ref)
     """
-    α_sen = F(0.001)
+    α_sen::T = F(0.001)
 
     """
     4::``\\beta_{SEN}``::slope of a linear equation that relates the
@@ -384,31 +385,31 @@ $(MYNEWFIELDS)
     4::``\\alpha_{ll}``::transform SLA to leaflifespan,
     equation given by [Reich1992](@cite)
     """
-    α_ll = F(2.41)
+    α_ll::T = F(2.41)
 
     """
     4::``\\beta_{ll}``::transform SLA to leaflifespan,
     equation given by [Reich1992](@cite)
     """
-    β_ll = F(0.38)
+    β_ll::T = F(0.38)
 
     """
     4::``Ψ_1``::temperature threshold: senescence starts to increase,
     see [`seasonal_component_senescence`](@ref)
     """
-    Ψ₁ = F(775.0)
+    Ψ₁::T = F(775.0)
 
     """
     4::``Ψ_2``::temperature threshold: senescence reaches maximum,
     see [`seasonal_component_senescence`](@ref)
     """
-    Ψ₂ = F(3000.0)
+    Ψ₂::T = F(3000.0)
 
     """
     4::``SEN_{\\max}``::maximal seasonality factor for the senescence rate,
     see [`seasonal_component_senescence`](@ref)
     """
-    SEN_max = F(3.0)
+    SEN_max::T = F(3.0)
 
     ####################################################################################
     ## 5 Management
@@ -418,13 +419,13 @@ $(MYNEWFIELDS)
     plant species with high leaf nitrogen content,
     see [`grazing!`](@ref)
     """
-    β_PAL_lnc = F(1.5)
+    β_PAL_lnc::T = F(1.5)
 
     """
     5::``\\eta_{GRZ}``::defines with  κ · livestock density the aboveground biomass [kg ha⁻¹] when the daily consumption by grazers reaches half of their maximal consumption,
     see [`grazing!`](@ref)
     """
-    η_GRZ = F(25.0)
+    η_GRZ::T = F(25.0)
 
     """
     5::``\\kappa``::maximal consumption of a livestock unit per day,
@@ -449,7 +450,7 @@ $(MYNEWFIELDS)
     6::``\\beta_{clo}``::Proportion of biomass that growths to the neighbouring cells,
     see [`clonalgrowth!`](@ref)
     """
-    β_clo = F(0.1)
+    β_clo::T = F(0.1)
 
     ####################################################################################
     ## 7 Water dynamics
@@ -468,7 +469,7 @@ $(MYNEWFIELDS)
     from `α_TR_sla` is affecting the transpiration,
     see [`transpiration`](@ref)
     """
-    β_TR_sla = F(0.4)
+    β_TR_sla::T = F(0.4)
 
     ####################################################################################
     ## 8 Variance parameter for likelihood
@@ -476,37 +477,37 @@ $(MYNEWFIELDS)
     """
     8::``\\sigma_{B}``::
     """
-    b_biomass = F(5000.0)
+    b_biomass::T = F(5000.0)
 
     """
     8::``\\sigma_{sla}``::
     """
-    b_sla = F(0.005)
+    b_sla::T = F(0.005)
 
     """
     8::``\\sigma_{lnc}``::
     """
-    b_lnc = F(2.0)
+    b_lnc::T = F(2.0)
 
     """
     8::``\\sigma_{abp}``::
     """
-    b_abp = F(0.01)
+    b_abp::T = F(0.01)
 
     """
     8::``\\sigma_{amc}``::
     """
-    b_amc = F(0.01)
+    b_amc::T = F(0.01)
 
     """
     8::``\\sigma_{H}``::
     """
-    b_height = F(0.5)
+    b_height::T = F(0.5)
 
     """
     8::``\\sigma_{srsa}``::
     """
-    b_srsa = F(0.004)
+    b_srsa::T = F(0.004)
 end
 
 
@@ -564,7 +565,7 @@ function exlude_parameter(; input_obj)
 
     if !included.water_growth_reduction
         water_names = [:ϕ_sla, :η_min_sla, :η_max_sla, :β_η_sla, :β_sla, :δ_wrsa, :δ_sla,
-                       :β_wrsa, :η_min_wrsa, :η_max_wrsa, :β_η_wrsa]
+                       :β_wrsa, :η_μ_wrsa, :η_σ_wrsa, :β_η_wrsa]
         append!(excl_p, water_names)
     end
 

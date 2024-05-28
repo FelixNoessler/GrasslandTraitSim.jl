@@ -5,15 +5,19 @@ the response to water and nutrient stress.
 function init_water_transfer_functions!(; input_obj, prealloc, p)
     @unpack included = input_obj.simp
     if included.water_growth_reduction
-        @unpack δ_sla, δ_wrsa, ϕ_rsa, ϕ_sla, η_min_sla, η_max_sla,
-                β_η_wrsa, β_η_sla, η_max_wrsa, η_min_wrsa = p
+        @unpack δ_sla, δ_wrsa, ϕ_rsa, ϕ_sla, η_μ_sla, η_σ_sla,
+                β_η_wrsa, β_η_sla, η_μ_wrsa, η_σ_wrsa = p
         @unpack srsa, sla, abp, lbp = prealloc.traits
         @unpack A_sla, A_wrsa = prealloc.transfer_function
 
         ##### Specific leaf area
+        η_min_sla = η_μ_sla - η_σ_sla
+        η_max_sla = η_μ_sla + η_σ_sla
         @. A_sla = (η_min_sla + (η_max_sla - η_min_sla) / (1 + exp(-β_η_sla * (lbp * sla - ϕ_sla)))) # TODO
 
         #### Root surface area per above ground biomass
+        η_min_wrsa = η_μ_wrsa - η_σ_wrsa
+        η_max_wrsa = η_μ_wrsa + η_σ_wrsa
         @. A_wrsa =  (η_max_wrsa + (η_min_wrsa - η_max_wrsa) /
             (1 + exp(-β_η_wrsa * ((1 - abp) * srsa - ϕ_rsa))))  # TODO add to documentation and manuscript
     end
@@ -124,6 +128,8 @@ function plot_W_srsa(; δ_wrsa = nothing, θ = nothing, path = nothing)
     end
     ylims!(-0.1, 1.1)
 
+    η_min_wrsa = container.p.η_μ_wrsa - container.p.η_σ_wrsa
+    η_max_wrsa = container.p.η_μ_wrsa + container.p.η_σ_wrsa
     Axis(fig[1, 2];
         xlabel = "root surface area per total biomass [m² g⁻¹]\n = belowground biomass fraction ⋅\nroot surface area per belowground biomass [m² g⁻¹]",
         ylabel = "Scaled water availability\nat midpoint (A_wrsa)")
@@ -131,14 +137,16 @@ function plot_W_srsa(; δ_wrsa = nothing, θ = nothing, path = nothing)
         marker = :x,
         color = srsa,
         colorrange)
-    hlines!([container.p.η_min_wrsa, container.p.η_max_wrsa]; color = :black)
-    text!([0.04, 0.04], [container.p.η_min_wrsa, container.p.η_max_wrsa] .+ 0.02;
-            text = ["η_min_wrsa", "η_max_wrsa"])
+    hlines!([η_min_wrsa, η_max_wrsa]; color = :black)
+    text!([0.03, 0.03], [η_min_wrsa, η_max_wrsa] .+ 0.02;
+            text = [
+                "η_min_wrsa = η_μ_wrsa - η_σ_wrsa",
+                "η_max_wrsa = η_μ_wrsa + η_σ_wrsa"])
     vlines!(ustrip(container.p.ϕ_rsa); color = :black, linestyle = :dash)
     text!(ustrip(container.p.ϕ_rsa) + 0.001,
-            (container.p.η_max_wrsa - container.p.η_min_wrsa) * 4/5;
+            (η_max_wrsa - η_min_wrsa) * 4/5;
             text = "ϕ_rsa")
-    ylims!(nothing, container.p.η_max_wrsa + 0.1)
+    ylims!(nothing, η_max_wrsa + 0.1)
 
     Label(fig[0, 1:2], "Influence of the root surface area";
         halign = :left,
@@ -203,6 +211,8 @@ function plot_W_sla(; δ_sla = nothing, θ = nothing, path = nothing)
     ylims!(-0.1, 1.1)
     xlims!(-0.02, nothing)
 
+    η_min_sla = container.p.η_μ_sla - container.p.η_σ_sla
+    η_max_sla = container.p.η_μ_sla + container.p.η_σ_sla
     Axis(fig[1, 2];
         xlabel = "leaf biomass fraction ⋅ specific leaf area [m² g⁻¹]",
         ylabel = "Scaled water availability\nat midpoint (A_sla)")
@@ -210,14 +220,14 @@ function plot_W_sla(; δ_sla = nothing, θ = nothing, path = nothing)
         marker = :x,
         color = sla,
         colorrange)
-    hlines!([container.p.η_min_sla, container.p.η_max_sla]; color = :black)
-    text!([0.01, 0.01], [container.p.η_min_sla, container.p.η_max_sla] .+ 0.02;
+    hlines!([η_min_sla, η_max_sla]; color = :black)
+    text!([0.01, 0.01], [η_min_sla, η_max_sla] .+ 0.02;
             text = ["η_min_sla", "η_max_sla"])
     vlines!(ustrip(container.p.ϕ_sla); color = :black, linestyle = :dash)
     text!(ustrip(container.p.ϕ_sla),
-          container.p.η_max_sla - (container.p.η_max_sla - container.p.η_min_sla) / 6;
+    η_max_sla - (η_max_sla - η_min_sla) / 6;
           text = " ϕ_sla")
-    ylims!(nothing, container.p.η_max_sla + 0.2)
+    ylims!(nothing, η_max_sla + 0.2)
     Colorbar(fig[1, 3]; colorrange, label = "Specific leaf area [m² g⁻¹]")
 
     if !isnothing(path)

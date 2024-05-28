@@ -120,7 +120,7 @@ function preallocate_vectors(; input_obj, T = Float64)
     global F = T
 
     calc = (;
-        com = CommunityLevel1(),
+        com = CommunityLevel(),
 
         negbiomass = fill(false, ntimesteps + 1, patch_xdim, patch_ydim, nspecies),
 
@@ -201,14 +201,14 @@ function preallocate_vectors(; input_obj, T = Float64)
     return (; u, patch_variables, calc, traits, transfer_function, output)
 end
 
-@with_kw mutable struct CommunityLevel1{T, Q} @deftype T
-    LAItot = F(0.0)
-    potgrowth_total::Q = F(0.0) * u"kg/ha"
-    comH_reduction = F(1.0)
-    RAD = F(1.0)
-    SEA = F(1.0)
-    TEMP = F(1.0)
-    SEN_season = F(1.0)
+@kwdef mutable struct CommunityLevel{T, Qkg_ha}
+    LAItot::T = F(0.0)
+    potgrowth_total::Qkg_ha = F(0.0) * u"kg/ha"
+    comH_reduction::T = F(1.0)
+    RAD::T = F(1.0)
+    SEA::T = F(1.0)
+    TEMP::T = F(1.0)
+    SEN_season::T = F(1.0)
 end
 
 function preallocate_specific_vectors(; input_obj, T = Float64)

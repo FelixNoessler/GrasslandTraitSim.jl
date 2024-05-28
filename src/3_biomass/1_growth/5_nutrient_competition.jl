@@ -56,9 +56,8 @@ the response to water and nutrient stress.
 function init_nutrient_transfer_functions!(; input_obj, prealloc, p)
     @unpack included = input_obj.simp
     if included.nutrient_growth_reduction
-        @unpack δ_amc, δ_nrsa, ϕ_amc, ϕ_rsa, η_min_amc, η_max_amc,
-                β_η_amc, β_η_nrsa,
-                η_min_nrsa, η_max_nrsa = p
+        @unpack δ_amc, δ_nrsa, ϕ_amc, ϕ_rsa, η_μ_amc, η_σ_amc,
+                β_η_amc, β_η_nrsa, η_μ_nrsa, η_σ_nrsa = p
         @unpack amc, srsa, abp = prealloc.traits
         @unpack A_amc, A_nrsa = prealloc.transfer_function
 
@@ -69,11 +68,14 @@ function init_nutrient_transfer_functions!(; input_obj, prealloc, p)
             end
         end
 
+        η_min_amc = η_μ_amc - η_σ_amc
+        η_max_amc = η_μ_amc + η_σ_amc
         @. A_amc = (η_max_amc - (η_max_amc - η_min_amc) /
             (1 + exp(-β_η_amc * ((1-abp)*amc - ϕ_amc)))) # TODO
 
-
         #### Root surface area per above ground biomass
+        η_min_nrsa = η_μ_nrsa - η_σ_nrsa
+        η_max_nrsa = η_μ_nrsa + η_σ_nrsa
         @. A_nrsa =  (η_max_nrsa + (η_min_nrsa - η_max_nrsa) /
             (1 + exp(-β_η_nrsa * ((1-abp)*srsa - ϕ_rsa)))) # TODO
     end
@@ -356,6 +358,8 @@ function plot_N_amc(; δ_amc = nothing, θ = nothing, path = nothing)
     end
     ylims!(-0.05, 1.05)
 
+    η_min_amc = container.p.η_μ_amc - container.p.η_σ_amc
+    η_max_amc = container.p.η_μ_amc + container.p.η_σ_amc
     Axis(fig[1, 2];
          xlabel = "arbuscular mycorrhizal colonisation per total biomass [-]\n = belowground biomass fraction ⋅\narbuscular mycorrhizal colonisation [-]",
         ylabel = "Nutrient index\nat midpoint (A_amc)")
@@ -365,14 +369,14 @@ function plot_N_amc(; δ_amc = nothing, θ = nothing, path = nothing)
             color = amc[i],
             colorrange)
     end
-    hlines!([container.p.η_min_amc, container.p.η_max_amc]; color = :black)
-    text!([0.0, 0.0], [container.p.η_min_amc, container.p.η_max_amc] .+ 0.02;
-          text = ["η_min_amc", "η_max_amc"])
+    hlines!([η_min_amc, η_max_amc]; color = :black)
+    text!([0.0, 0.0], [η_min_amc, η_max_amc] .+ 0.02;
+          text = ["η_min_amc = η_μ_amc - η_σ_amc", "η_max_amc = η_μ_amc + η_σ_amc"])
     vlines!(container.p.ϕ_amc; color = :black, linestyle = :dash)
     text!(container.p.ϕ_amc + 0.01,
-          (container.p.η_max_amc - container.p.η_min_amc) * 4/5;
+          (η_max_amc - η_min_amc) * 4/5;
           text = "ϕ_amc")
-    # ylims!(nothing, container.p.η_max_amc + 0.1)
+    ylims!(nothing, η_max_amc + 0.1)
     Colorbar(fig[1, 3]; colorrange, label = "Arbuscular mycorrhizal colonisation [-]")
 
     if !isnothing(path)
@@ -383,7 +387,6 @@ function plot_N_amc(; δ_amc = nothing, θ = nothing, path = nothing)
 
     return nothing
 end
-
 
 
 function plot_N_srsa(; δ_nrsa = nothing, θ = nothing, path = nothing)
@@ -435,6 +438,8 @@ function plot_N_srsa(; δ_nrsa = nothing, θ = nothing, path = nothing)
     end
     ylims!(-0.1, 1.1)
 
+    η_min_nrsa = container.p.η_μ_nrsa - container.p.η_σ_nrsa
+    η_max_nrsa = container.p.η_μ_nrsa + container.p.η_σ_nrsa
     Axis(fig[2, 2];
         xlabel = "root surface area per total biomass [m² g⁻¹]\n = belowground biomass fraction ⋅\nroot surface area per belowground biomass [m² g⁻¹]",
         ylabel = "Nutrient index\nat midpoint (A_nrsa)")
@@ -442,14 +447,14 @@ function plot_N_srsa(; δ_nrsa = nothing, θ = nothing, path = nothing)
         marker = :x,
         color = srsa,
         colorrange)
-    hlines!([container.p.η_min_nrsa, container.p.η_max_nrsa]; color = :black)
-    text!([0.02, 0.02], [container.p.η_min_nrsa, container.p.η_max_nrsa] .+ 0.02;
-            text = ["η_min_nrsa", "η_max_nrsa"])
+    hlines!([η_min_nrsa, η_max_nrsa]; color = :black)
+    text!([0.02, 0.02], [η_min_nrsa, η_max_nrsa] .+ 0.02;
+            text = ["η_min_nrsa = η_μ_nrsa - η_σ_nrsa", "η_max_nrsa = η_μ_nrsa + η_σ_nrsa"])
     vlines!(ustrip(container.p.ϕ_rsa); color = :black, linestyle = :dash)
     text!(ustrip(container.p.ϕ_rsa) + 0.001,
-            (container.p.η_max_nrsa - container.p.η_min_nrsa) * 4/5;
+            (η_max_nrsa - η_min_nrsa) * 4/5;
             text = "ϕ_rsa")
-    ylims!(nothing, container.p.η_max_nrsa + 0.1)
+    ylims!(nothing, η_max_nrsa + 0.1)
 
     Colorbar(fig[2, 3]; colorrange, label = "Root surface area per belowground biomass [m² g⁻¹]")
 

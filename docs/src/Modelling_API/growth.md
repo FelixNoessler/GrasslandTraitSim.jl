@@ -17,10 +17,9 @@ flowchart LR
     end
     subgraph " "
     F[⇅ light competition] -.-> C
-    G[belowground competition] -.-> H
-    G -.-> I
     H[↓ water stress] -.-> C
     I[↓ nutrient stress] -.-> C
+    P[↓ investment into roots and mycorrhiza] -.-> C
     end;
 </div>
 ```
