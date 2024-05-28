@@ -62,9 +62,9 @@ function plot_mowing(; mowing_height = 0.07u"m",
     resize_to_layout!(fig)
 
     if !isnothing(path)
-    save(path, fig;)
+        save(path, fig;)
     else
-    display(fig)
+        display(fig)
     end
 
     return nothing

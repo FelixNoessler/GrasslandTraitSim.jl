@@ -30,7 +30,7 @@ function calibrated_parameter(; input_obj = nothing)
         # κ = (truncated(Normal(20.0, 2.0); lower = 12.5, upper = 22.5), as(Real, 12.0, 22.5),
         #     "text"),
         α_lowB = (Uniform(0.0, 100.0), as(Real, 0.0, 100.0), "text"),
-        β_lowB = (Uniform(0.0, 1.0), as(Real, 0.0, 1.0), "text"),
+        # β_lowB = (Uniform(0.0, 1.0), as(Real, 0.0, 1.0), "text"),
         α_TSB = (truncated(Normal(1000.0, 1000.0); lower = 0.0), asℝ₊, "text"),
         β_TSB = (truncated(Normal(1.0, 0.5); lower = 0.0), asℝ₊, "text"),
         α_TR_sla = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊, "text"),

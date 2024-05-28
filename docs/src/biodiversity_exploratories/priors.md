@@ -28,7 +28,8 @@ begin
     
     Label(fig[0, 1], "logpdf"; tellwidth = false)
     Label(fig[0, 2], "pdf"; tellwidth = false)
-    p = sim.SimulationParameter()
+    p = sim.load_optim_result()
+
     for (i,k) in enumerate(keys(inference_obj.priordists))
         d = inference_obj.priordists[k]
         mi = quantile(d, 0.001)

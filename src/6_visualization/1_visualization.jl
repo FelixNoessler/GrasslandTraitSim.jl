@@ -32,3 +32,10 @@ function create_container_for_plotting(; nspecies = nothing, param = (;), θ = n
 
     return nspecies, container
 end
+
+function load_optim_result()
+    datapath = assetpath("data")
+    obj = load(datapath * "/optim.jld2", "obj");
+
+    return obj.θ
+end
