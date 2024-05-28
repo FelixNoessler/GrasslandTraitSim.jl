@@ -33,7 +33,7 @@ sim.dashboard()
 import GrasslandTraitSim as sim
 using CairoMakie
 
-sim.dashboard(; path = "dashboard.png")
+sim.dashboard(; variable_p = sim.load_optim_result(), path = "dashboard.png")
 ```
 
 ```@raw html

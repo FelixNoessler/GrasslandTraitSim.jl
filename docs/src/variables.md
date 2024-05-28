@@ -26,7 +26,7 @@ let
 
     trait_input = sim.input_traits();
     input_obj = sim.validation_input(; plotID = "HEG01", nspecies = length(trait_input.amc), time_step_days = 1);
-    p = sim.SimulationParameter()
+    p = sim.optim_parameter()
     sol = sim.solve_prob(; input_obj, p, trait_input);
     t = sol.simp.mean_input_date_num[end-lastn_points:end]
     t_out = sol.simp.output_date_num[end-lastn_points:end]
@@ -116,7 +116,7 @@ let
                                         nutrient_growth_reduction = true,
                                         water_growth_reduction = true,
                                         root_invest = true));
-    p = sim.SimulationParameter()
+    p = sim.optim_parameter()
     sol = sim.solve_prob(; input_obj, p, trait_input);
     t = sol.simp.mean_input_date_num[end-lastn_points:end]
     t_out = sol.simp.output_date_num[end-lastn_points:end]
@@ -150,7 +150,7 @@ let
     hlines!(ustrip.([PWP, WHC]))
     text!([t_out[1], t_out[1]], ustrip.([PWP, WHC]);
           text = ["PWP", "WHC"],
-          align = (:left, :top),
+          align = [(:left, :bottom), (:left, :top)],
           color = :grey)
 
     Axis(fig[3, 1];

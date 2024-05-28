@@ -16,12 +16,17 @@ function create_container_for_plotting(; nspecies = nothing, param = (;), θ = n
 
     input_obj = validation_input(;
         plotID = "HEG01", nspecies, kwargs...)
-    p = SimulationParameter(; param...)
-
+    p = SimulationParameter(;)
 
     if !isnothing(θ)
         for k in keys(θ)
             p[k] = θ[k]
+        end
+    end
+
+    if !isnothing(param) && !isempty(param)
+        for k in keys(param)
+            p[k] = param[k]
         end
     end
 
@@ -38,4 +43,16 @@ function load_optim_result()
     obj = load(datapath * "/optim.jld2", "obj");
 
     return obj.θ
+end
+
+
+function optim_parameter()
+    θ = load_optim_result()
+    p = SimulationParameter()
+
+    for k in keys(θ)
+        p[k] = θ[k]
+    end
+
+    return p
 end
