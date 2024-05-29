@@ -5,12 +5,8 @@ function calibrated_parameter(; input_obj = nothing)
             """The community height reduction should only apply to plant communities
             with a low community weighted mean plant height"""),
 
-        # α_sen = (Uniform(0, 0.01), as(Real, 0.0, 0.01),
-        #          """TODO"""),
-        β_sen = (truncated(Beta(2, 1); lower = 0.3),  as(Real, 0.3, 1.0),
-            """a value of 1 means that the leaf life span is equal to the senescence rate,
-            lower values account for for a lower senescence rate for the stem and root
-            biomass"""),
+        β_sen_sla = (truncated(Normal(0, 0.5); lower = 0.0), asℝ₊,
+            """TODO"""),
 
         β_height = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), "text"),
 

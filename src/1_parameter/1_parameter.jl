@@ -13,7 +13,7 @@ $(MYNEWFIELDS)
 """
 @with_kw_noshow mutable struct SimulationParameter{T, Qkg_MJ, Qmha_Mg, Qkg_ha, Qm2_g,
                                                  Qg_m2, Qg_kg, Qha_MJ, QMJ_ha,
-                                                 QC, QK, Qd, Qkg, Qha_kg, Qha_Mg}
+                                                 QC, QK, QMg_ha, Qkg, Qha_kg, Qha_Mg}
 
     ####################################################################################
     ## 1 Light interception and competition
@@ -372,26 +372,13 @@ $(MYNEWFIELDS)
     the leaf life span to the senescence rate,
     see [`senescence_rate!`](@ref)
     """
-    α_sen::T = F(0.0)
+    α_sen::T = F(0.002)
 
     """
-    4::``\\beta_{SEN}``::slope of a linear equation that relates the
-    leaf life span to the senescence rate,
+    4::``\\beta_{SEN}``::TODO
     see [`senescence_rate!`](@ref)
     """
-    β_sen::Qd = F(0.9)u"d"
-
-    """
-    4::``\\alpha_{ll}``::transform SLA to leaflifespan,
-    equation given by [Reich1992](@cite)
-    """
-    α_ll::T = F(2.41)
-
-    """
-    4::``\\beta_{ll}``::transform SLA to leaflifespan,
-    equation given by [Reich1992](@cite)
-    """
-    β_ll::T = F(0.38)
+    β_sen_sla::QMg_ha = F(1.0)u"Mg/ha"
 
     """
     4::``Ψ_1``::temperature threshold: senescence starts to increase,
@@ -597,7 +584,7 @@ function exlude_parameter(; input_obj)
     end
 
     if  !included.senescence
-        append!(excl_p, [:α_sen, :β_sen, :α_ll, :β_ll])
+        append!(excl_p, [:α_sen, :β_sen_sla])
     end
 
     if !included.senescence || !included.senescence_season

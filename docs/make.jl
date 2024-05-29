@@ -52,9 +52,6 @@ sim.plot_N_amc(; θ, path = f("$docs_img/N_amc_default.png"))
 sim.plot_N_amc(; θ, path = f("$docs_img/N_amc_0_5.png"), δ_amc = 0.5)
 sim.plot_root_investment(; θ, path = f("$docs_img/root_investment.png"))
 
-#### leaf lifespan
-sim.plot_leaflifespan(; θ, path = f("$docs_img/leaflifespan.png"))
-
 #### reducer functions
 sim.plot_temperatur_reducer(; θ, path = f("$docs_img/temperature_reducer.png"))
 sim.plot_radiation_reducer(; θ, path = f("$docs_img/radiation_reducer.png"))

@@ -1,44 +1,6 @@
-include("2_senescence_init.jl")
-
 @doc raw"""
 Calculate the biomass that dies due to senescence.
 
-The basic senescence rate is linked to the specific leaf area via the leaf lifespan. The equation by [Reich1992](@cite) is used for calculating the leaf lifespan based on the specific leaf area (see estimates for LEAVES/BROAD in Table 1 of [Reich1992](@cite)). The original equation calculates the leaf lifespan in months and the specific leaf area in ``cm^2 \cdot g^{-1}``. The specific leaf area was converted to the equation's unit, and the equation was converted to days:
-```math
-\begin{align*}
-    LL_s &= 10^{\left(\alpha_{ll} - \text{log}_{10}(10^4 \cdot SLA_s)\right) /
-                    \beta_{ll}} \cdot \frac{365.25}{12} \\
-    SEN_{base, s} &= \alpha_{SEN} + \beta_{SEN} \cdot LL_s^{-1}
-\end{align*}
-```
-
-Parameter, see also [`SimulationParameter`](@ref):
-- ``\alpha_{ll}`` (`α_ll`) intercept of the equation that relates the specific leaf area to the leaf lifespan [-]
-- ``\beta_{ll}`` (`β_ll`) slope of the equation that relates the specific leaf area to the leaf lifespan [-]
-- ``\alpha_{SEN}`` (`α_sen`) intercept of the equation that relates the leaf lifespan to the senescence rate [-]
-- ``\beta_{SEN}`` (`β_sen`) slope of the equation that relates the leaf lifespan to the senescence rate [d]
-
-Variables:
-- ``SLA_s`` (`sla`) specific leaf area [m² g⁻¹]
-- ``LL_s`` (`leaflifespan`) leaf lifespan [d]
-
-Output:
-- ``SEN_{base, s}`` (`μ`) basic senescence rate [-]
-
-![](../img/leaflifespan.png)
-
-
-```math
-S_{txys} = μ_s \cdot \text{SEN}_t \cdot B_{txys}
-```
-
-The senescence process is based on the senescence rate μ and a
-seasonal component of the senescence.
-
-- `μ` basic senescence rate, see [`senescence_rate!`](@ref)
-- `SEN` seasonal component of the senescence (between 1 and 3),
-  see [`seasonal_component_senescence`](@ref)
-- `B` biomass dry weight [kg ha⁻¹]
 """
 function senescence!(; container, ST, biomass)
     @unpack senescence, μ, com = container.calc
@@ -54,6 +16,28 @@ function senescence!(; container, ST, biomass)
 
     return nothing
 end
+
+"""
+Intialize the basic senescence rate based on the specific leaf area
+"""
+function senescence_rate!(; input_obj, prealloc, p)
+    @unpack included = input_obj.simp
+    @unpack sla = prealloc.traits
+    @unpack μ =  prealloc.calc
+
+    if !included.senescence
+        @. μ = 0.0
+        return nothing
+    end
+
+    @unpack ϕ_sla, α_sen = p
+    @unpack sla = prealloc.traits
+    β_sen_sla = 2u"Mg / ha"
+    @. μ  = 2 * α_sen / (1 + exp(-β_sen_sla * (sla - ϕ_sla)))
+
+    return nothing
+end
+
 
 @doc raw"""
 Seasonal factor for the senescence rate.
@@ -115,6 +99,44 @@ function plot_seasonal_component_senescence(;
             color = :navajowhite4)
     end
     ylims!(-0.05, 3.5)
+
+    if !isnothing(path)
+        save(path, fig;)
+    else
+        display(fig)
+    end
+
+    return nothing
+end
+
+
+function plot_senescence_rate(; θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
+    @unpack sla = container.traits
+    @unpack β_sen_sla, α_sen, ϕ_sla = container.p
+
+    nvals = 200
+    β_sen_sla_values = LinRange(0, 5, nvals)
+    ymat = Array{Float64}(undef, nvals, nspecies)
+    for i in eachindex(β_sen_sla_values)
+        @. ymat[i, :] = 2 * α_sen / (1 + exp(-β_sen_sla_values[i]u"Mg / ha" * (sla - ϕ_sla)))
+    end
+
+    sla_plot = ustrip.(sla)
+    colorrange = (minimum(sla_plot), maximum(sla_plot))
+
+    fig = Figure()
+    Axis(fig[1,1]; xlabel = "β_sen_sla [Mg ha⁻¹]", ylabel = "Senescence rate [-]")
+
+    for i in 1:nspecies
+        lines!(β_sen_sla_values, ymat[:, i]; color = sla_plot[i], colorrange)
+    end
+    hlines!(α_sen; color = :orange, linewidth = 3, linestyle = :dash)
+    vlines!(ustrip(β_sen_sla))
+    text!(3, α_sen * 1.01, text = "α_sen";)
+
+    Colorbar(fig[1, 2]; colorrange, label = "Specific leaf area [m² g⁻¹]")
+
 
     if !isnothing(path)
         save(path, fig;)

@@ -192,7 +192,6 @@ function preallocate_vectors(; input_obj, T = Float64)
         relative_sla = Array{T}(undef, nspecies)u"m^2 / g",
 
         ## based on traits
-        leaflifespan = Array{T}(undef, nspecies)u"d",
         μ = Array{T}(undef, nspecies),
         TS = Array{T}(undef, nspecies, nspecies))
 
