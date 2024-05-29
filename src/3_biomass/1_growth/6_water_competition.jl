@@ -111,7 +111,8 @@ function plot_W_srsa(; δ_wrsa = nothing, θ = nothing, path = nothing)
     fig = Figure(size = (1000, 500))
     Axis(fig[1, 1],
         xlabel = "Plant available water (W_sc)",
-        ylabel = "Growth reduction factor (W_rsa)\n← stronger reduction, less reduction →")
+        ylabel = "Growth reduction factor (W_rsa)\n← stronger reduction, less reduction →",
+        limits = (0, 1, nothing, nothing))
     hlines!([1-δ_wrsa]; color = :black)
     text!(0.75, 1-δ_wrsa + 0.02; text = "1 - δ_wrsa")
     for (i, x0) in enumerate(x0s)
@@ -191,8 +192,7 @@ function plot_W_sla(; δ_sla = nothing, θ = nothing, path = nothing)
     fig = Figure(size = (900, 400))
     Axis(fig[1, 1];
         xlabel = "Plant available water (W_sc)",
-        ylabel = "Growth reduction factor (W_sla)\n← stronger reduction, less reduction →",
-        title = "")
+        ylabel = "Growth reduction factor (W_sla)\n← stronger reduction, less reduction →")
     hlines!([1-δ_sla]; color = :black)
     text!(0.8, 1-δ_sla + 0.02; text = "1 - δ_sla")
 

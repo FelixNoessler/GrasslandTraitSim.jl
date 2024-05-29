@@ -1,7 +1,7 @@
 function calibrated_parameter(; input_obj = nothing)
     p = (;
-        α_com_height = (truncated(Normal(0.5, 0.2); lower = 0.0, upper = 2.0),
-                        as(Real, 0.0, 20.0),
+        α_com_height = (truncated(Normal(0.0, 0.05); lower = 0.0, upper = 2.0),
+                        as(Real, 0.0, 2.0),
             """The community height reduction should only apply to plant communities
             with a low community weighted mean plant height"""),
 
@@ -27,22 +27,22 @@ function calibrated_parameter(; input_obj = nothing)
         α_TR_sla = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊, "text"),
         β_TR_sla = (truncated(Normal(1.0, 5.0); lower = 0.0), asℝ₊, "text"),
 
-        δ_wrsa = (Uniform(0.0, 1.0), as𝕀, "text"),
-        δ_sla = (Uniform(0.0, 1.0), as𝕀, "text"),
-        δ_amc = (Uniform(0.0, 1.0), as𝕀, "text"),
-        δ_nrsa = (Uniform(0.0, 1.0), as𝕀, "text"),
+        δ_wrsa = (Beta(2, 3), as𝕀, "text"),
+        δ_sla = (Beta(2, 3), as𝕀, "text"),
+        δ_amc = (Beta(2, 3), as𝕀, "text"),
+        δ_nrsa = (Beta(2, 3), as𝕀, "text"),
 
-        η_μ_sla = (Uniform(-0.5, 0.5), as(Real, -0.5, 0.5), "text"),
-        η_μ_amc = (Uniform(-0.5, 0.5), as(Real, -0.5, 0.5), "text"),
-        η_μ_wrsa = (Uniform(-0.5, 0.5), as(Real, -0.5, 0.5), "text"),
-        η_μ_nrsa =(Uniform(-0.5, 0.5), as(Real, -0.5, 0.5), "text"),
-        η_σ_sla = (Uniform(0.0, 0.8), as(Real, 0.0, 0.8), "text"),
-        η_σ_amc = (Uniform(0.0, 0.8), as(Real, 0.0, 0.8), "text"),
-        η_σ_wrsa = (Uniform(0.0, 0.8), as(Real, 0.0, 0.8), "text"),
-        η_σ_nrsa =(Uniform(0.0, 0.8), as(Real, 0.0, 0.8), "text"),
+        η_μ_sla = (Uniform(0, 0.5), as(Real, 0, 0.5), "text"),
+        η_μ_amc = (Uniform(0, 0.5), as(Real, 0, 0.5), "text"),
+        η_μ_wrsa = (Uniform(0, 0.5), as(Real, 0, 0.5), "text"),
+        η_μ_nrsa =(Uniform(0, 0.5), as(Real, 0, 0.5), "text"),
+        η_σ_sla = (Beta(1.0, 5.0), as𝕀, "text"),
+        η_σ_amc = (Beta(1.0, 5.0), as𝕀, "text"),
+        η_σ_wrsa = (Beta(1.0, 5.0), as𝕀, "text"),
+        η_σ_nrsa =(Beta(1.0, 5.0), as𝕀, "text"),
 
-        κ_maxred_amc = (Uniform(0.0, 0.3), as(Real, 0.0, 0.3), "text"),
-        κ_maxred_srsa = (Uniform(0.0, 0.3), as(Real, 0.0, 0.3), "text"),
+        κ_maxred_amc = (Beta(1.0, 10.0), as𝕀, "text"),
+        κ_maxred_srsa = (Beta(1.0, 10.0), as𝕀, "text"),
 
         b_biomass = (truncated(Cauchy(0, 300); lower = 0.0), asℝ₊, "text"),
         b_sla = (truncated(Cauchy(0, 0.05); lower = 0.0), asℝ₊, "text"),

@@ -230,7 +230,6 @@ and the root surface area devided by the above ground biomass (`srsa`).
 function below_ground_competition!(; container, biomass)
     @unpack biomass_density_factor, TS_biomass, TS = container.calc
     @unpack included, nspecies = container.simp
-    @unpack abp = container.traits
 
     if !included.belowground_competition
         @info "No below ground competition for resources!" maxlog=1
@@ -341,9 +340,9 @@ function plot_N_amc(; δ_amc = nothing, θ = nothing, path = nothing)
         xlabel = "Nutrient index",
         ylabel = "Growth reduction factor (N_amc)\n← stronger reduction, less reduction →",
         title = "Influence of the mycorrhizal colonisation",
-        limits = (-0.02, 1.02, nothing, nothing))
+        limits = (0, 1, nothing, nothing))
     hlines!([1-δ_amc]; color = :black)
-    text!(0.8, 1-δ_amc + 0.02; text = "1 - δ_amc")
+    text!(0.7, 1-δ_amc + 0.02; text = "1 - δ_amc")
     for i in Base.OneTo(nspecies)
         lines!(xs, ymat[:, i];
             color = amc[i],
@@ -421,7 +420,8 @@ function plot_N_srsa(; δ_nrsa = nothing, θ = nothing, path = nothing)
 
     Axis(fig[2, 1],
         xlabel = "Nutrient index",
-        ylabel = "Growth reduction factor (N_rsa)\n← stronger reduction, less reduction →")
+        ylabel = "Growth reduction factor (N_rsa)\n← stronger reduction, less reduction →",
+        limits = (0, 1, nothing, nothing))
     hlines!([1-δ_nrsa]; color = :black)
     text!(0.7, 1-δ_nrsa + 0.02; text = "1 - δ_nrsa")
     for (i, x0) in enumerate(x0s)
@@ -471,8 +471,9 @@ function plot_below_influence(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
 
     #################### varying β_TSB, equal biomass, random traits
+    orig_β_TSB = container.p.β_TSB
     below_effects = LinRange(0, 10, 30)u"ha / Mg"
-    biomass = fill(20.0, nspecies)u"kg / ha"
+    biomass = fill(container.p.α_TSB / (nspecies * mean(container.calc.TS)), nspecies)
     ymat = Array{Float64}(undef, nspecies, length(below_effects))
 
     for (i, below_effect) in enumerate(below_effects)
@@ -488,7 +489,7 @@ function plot_below_influence(; θ = nothing, path = nothing)
     ymat = ymat[idx, :]
     colorrange = (minimum(traitsim), maximum(traitsim))
     colormap = :viridis
-    orig_β_TSB = container.p.β_TSB
+
     #####################
 
     ##################### artficial example
@@ -499,13 +500,12 @@ function plot_below_influence(; θ = nothing, path = nothing)
     for i in eachindex(below_effects)
         c = (;
             calc = (; TS_biomass = zeros(3)u"kg / ha",
-                    TS = mat,
-                    biomass_density_factor = zeros(3)),
+                      TS = mat,
+                      biomass_density_factor = zeros(3)),
             simp = (; included = (; belowground_competition = true),
-                    nspecies = 3),
+                      nspecies = 3),
             p = (; β_TSB = below_effects[i],
-                α_TSB = 0.4 * 80u"kg / ha"),
-            traits = (; abp = fill(0.6, 3)))
+                   α_TSB = 0.4 * 80u"kg / ha"))
         below_ground_competition!(; container = c, biomass)
 
         artificial_mat[:, i] = c.calc.biomass_density_factor

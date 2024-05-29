@@ -51,3 +51,11 @@ save("priors.png", fig); nothing # hide
 ```
 
 ![](priors.png)
+
+## Show the influence of the prior on specific functions
+
+Run the following function several times to analyse the influence of the prior choice. Each time a new parameters values are generated from the prior. This is possible for all the images in the documentation. You can find the functions that generate the images of the documentation [here](https://github.com/FelixNoessler/GrasslandTraitSim.jl/blob/master/docs/make.jl).
+
+```@example priors
+sim.plot_N_amc(; θ = sim.add_units(sim.sample_prior(; inference_obj = sim.calibrated_parameter(;))))
+```

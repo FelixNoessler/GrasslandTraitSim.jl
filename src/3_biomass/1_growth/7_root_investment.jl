@@ -14,16 +14,18 @@ invest &= \exp(\kappa\_{red, amc} \cdot acm) \cdot abp \\
 function root_investment!(; input_obj, prealloc, p)
     @unpack included = input_obj.simp
     @unpack root_invest_amc, root_invest_srsa, root_invest = prealloc.calc
-    @unpack amc, srsa = prealloc.traits
+    @unpack amc, srsa, abp = prealloc.traits
     @unpack output = prealloc
-    @unpack κ_maxred_amc, κ_maxred_srsa, β_red_amc, β_red_rsa = p
+    @unpack κ_maxred_amc, κ_maxred_srsa, β_red_amc, β_red_rsa, ϕ_amc, ϕ_rsa = p
 
+
+    # TODO add to documentation
     if !included.root_invest
         @. root_invest_srsa = 1.0
         @. root_invest_amc = 1.0
     else
-        @. root_invest_amc = 1 - κ_maxred_amc / (1 + exp(-β_red_amc * (amc - p.ϕ_amc)))
-        @. root_invest_srsa = 1 - κ_maxred_srsa / (1 + exp(-β_red_rsa * (srsa - p.ϕ_rsa)))
+        @. root_invest_amc = 1 - κ_maxred_amc / (1 + exp(-β_red_amc * ((1-abp)*amc - ϕ_amc)))
+        @. root_invest_srsa = 1 - κ_maxred_srsa / (1 + exp(-β_red_rsa * ((1-abp)*srsa - ϕ_rsa)))
     end
 
     @. root_invest = root_invest_amc * root_invest_srsa
@@ -49,14 +51,15 @@ function plot_root_investment(; θ = nothing, path = nothing)
 
     ########## artifical traits - for line
     nspecies_line = 100
-    artificial_traits = (; amc = LinRange(0, 0.8, nspecies_line),
-                         srsa = LinRange(0, 0.4, nspecies_line)u"m^2 / g")
+    artificial_traits = (; amc = LinRange(0, 0.4, nspecies_line),
+                          srsa = LinRange(0, 0.13, nspecies_line)u"m^2 / g")
     artificial_input_obj = validation_input(; plotID = "HEG01", nspecies = nspecies_line)
     artificial_prealloc = preallocate_vectors(; input_obj = artificial_input_obj)
     artificial_prealloc.traits.srsa .= artificial_traits.srsa
     artificial_prealloc.traits.amc .= artificial_traits.amc
+    artificial_prealloc.traits.abp .= 0
 
-    colormap = (:viridis, 0.1)
+    colormap = (:viridis, 0.3)
 
     fig = Figure(size = (800, 900))
     Axis(fig[1, 1];
@@ -80,15 +83,12 @@ function plot_root_investment(; θ = nothing, path = nothing)
         root_investment!(; input_obj = artificial_input_obj, prealloc = artificial_prealloc, p)
         lines!(artificial_traits.amc, artificial_prealloc.calc.root_invest_amc;
                color = x, colorrange, colormap)
-        root_investment!(; input_obj, prealloc, p)
-        scatter!(real_traits.amc, prealloc.calc.root_invest_amc;
-            color = x, colorrange, colormap)
     end
     Colorbar(fig[1, 2]; colorrange, label = "κ_maxred_amc [-]")
 
     lines!(artificial_traits.amc, actual_rootinvest_amc_l; color = orig_κ_maxred_amc,
            colorrange)
-    scatter!(real_traits.amc, actual_rootinvest_amc; color = orig_κ_maxred_amc,
+    scatter!((1 .- real_traits.abp) .* real_traits.amc, actual_rootinvest_amc; color = orig_κ_maxred_amc,
              colorrange)
 
     Axis(fig[2, 1];
@@ -100,15 +100,12 @@ function plot_root_investment(; θ = nothing, path = nothing)
         root_investment!(; input_obj = artificial_input_obj, prealloc = artificial_prealloc, p)
         lines!(ustrip.(artificial_traits.srsa), artificial_prealloc.calc.root_invest_srsa;
                color = x, colorrange, colormap)
-        root_investment!(; input_obj, prealloc, p)
-        scatter!(ustrip.(real_traits.srsa), prealloc.calc.root_invest_srsa;
-            color = x, colorrange, colormap)
     end
     Colorbar(fig[2, 2]; colorrange, label = "κ_maxred_srsa [-]")
 
     lines!(ustrip.(artificial_traits.srsa), actual_rootinvest_srsa_l;
            color = Float64(orig_κ_maxred_srsa), colorrange)
-    scatter!(ustrip.(real_traits.srsa), actual_rootinvest_srsa;
+    scatter!((1 .- real_traits.abp) .* ustrip.(real_traits.srsa), actual_rootinvest_srsa;
              color = orig_κ_maxred_srsa, colorrange)
 
     if !isnothing(path)
