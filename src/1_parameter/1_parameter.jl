@@ -98,7 +98,7 @@ $(MYNEWFIELDS)
     ... TODO ...``A_{sla, s}`` for ``W_{sla, txys}``,
     see [`water_reduction!`](@ref)
     """
-    η_σ_sla::T = F(0.8)
+    η_σ_sla::T = F(0.7)
 
     """
     2::``\\phi_{sla}``::part of the growth reducer based on the water stress and the
@@ -372,7 +372,7 @@ $(MYNEWFIELDS)
     the leaf life span to the senescence rate,
     see [`senescence_rate!`](@ref)
     """
-    α_sen::T = F(0.001)
+    α_sen::T = F(0.0)
 
     """
     4::``\\beta_{SEN}``::slope of a linear equation that relates the
