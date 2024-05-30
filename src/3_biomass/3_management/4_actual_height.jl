@@ -3,13 +3,13 @@ The actual height is reduced if plant species have a low biomass.
 
 ![image relating actual height to aboveground biomass](../img/actual_height.png)
 """
-function actual_height!(; container, biomass)
+function actual_height!(; container, biomass, state_height)
     @unpack β_lowB, α_lowB = container.p
     @unpack height, abp = container.traits
     @unpack above_biomass, actual_height = container.calc
 
     @. above_biomass = abp * biomass
-    @. actual_height = height * 1.0 / (1.0 + exp(-β_lowB * (above_biomass - α_lowB)))
+    @. actual_height = state_height #height * 1.0 / (1.0 + exp(-β_lowB * (above_biomass - α_lowB)))
 
     return nothing
 end

@@ -108,6 +108,8 @@ include("4_water/water.jl")
 include("5_likelihood/1_likelihood.jl")
 include("6_visualization/1_visualization.jl")
 
+include("height/height.jl")
+
 const ASSETS_DIR = joinpath(@__DIR__, "..", "assets")
 assetpath(files...) = normpath(joinpath(ASSETS_DIR, files...))
 

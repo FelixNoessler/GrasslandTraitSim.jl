@@ -12,6 +12,10 @@ function preallocate_vectors(; input_obj, T = Float64)
     water = DimArray(Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim)u"mm",
         (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim),
         name = :state_water)
+    height = DimArray(
+        Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim, nspecies)u"m",
+        (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :state_height)
 
     #### Species-specfic output variables
     mown = DimArray(
@@ -65,7 +69,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
         name = :seasonal_senescence)
 
-    output = (; biomass, water, mown, grazed, senescence, community_pot_growth,
+    output = (; biomass, water, height, mown, grazed, senescence, community_pot_growth,
               act_growth, radiation_reducer, seasonal_growth, temperature_reducer,
               seasonal_senescence, light_growth, water_growth, nutrient_growth)
 
@@ -77,6 +81,10 @@ function preallocate_vectors(; input_obj, T = Float64)
     du_water = DimArray(
         Array{T}(undef, patch_xdim, patch_ydim)u"mm",
         (x = 1:patch_xdim, y = 1:patch_ydim), name = :du_water)
+    du_height = DimArray(
+        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"m",
+        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :du_height)
     u_biomass = DimArray(
         Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
         (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
@@ -85,7 +93,12 @@ function preallocate_vectors(; input_obj, T = Float64)
         Array{T}(undef, patch_xdim, patch_ydim)u"mm",
         (x = 1:patch_xdim, y = 1:patch_ydim),
         name = :u_water)
-    u = (; du_biomass, du_water, u_biomass, u_water)
+    u_height = DimArray(
+        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"m",
+        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :u_height)
+
+    u = (; du_biomass, du_water, du_height, u_biomass, u_water, u_height)
 
     ############# patch variables
     WHC = DimArray(
@@ -137,6 +150,7 @@ function preallocate_vectors(; input_obj, T = Float64)
 
         ## cutted biomass
         species_mean_biomass = Array{T}(undef, nspecies)u"kg / ha",
+        species_mean_height = Array{T}(undef, nspecies)u"m",
         species_cut_biomass = Array{T}(undef, nspecies)u"kg / ha",
 
         ## functional response helper variables

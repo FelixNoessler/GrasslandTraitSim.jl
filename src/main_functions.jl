@@ -55,7 +55,7 @@ Calls the function [`one_day!`](@ref) for each day and set the
 calculated density differences to the output variables.
 """
 function main_loop!(; container)
-    @unpack u_biomass, u_water, du_biomass, du_water = container.u
+    @unpack u_biomass, u_water, u_height, du_biomass, du_water, du_height = container.u
     @unpack output = container
     @unpack ts, patch_xdim, patch_ydim, nspecies = container.simp
     @unpack senescence = container.calc
@@ -68,6 +68,9 @@ function main_loop!(; container)
                 for s in Base.OneTo(nspecies)
                     u_biomass[x, y, s] += du_biomass[x, y, s]
                     output.biomass[t+1, x, y, s] = u_biomass[x, y, s]
+
+                    u_height[x, y, s] += du_height[x, y, s]
+                    output.height[t+1, x, y, s] = u_height[x, y, s]
                 end
 
                 u_water[x, y] += du_water[x, y]

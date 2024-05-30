@@ -1,19 +1,23 @@
 function calc_cut_biomass!(; container)
     @unpack cutting_height, biomass_cutting_t, cut_biomass = container.valid
-    @unpack species_mean_biomass, species_cut_biomass,
+    @unpack species_mean_biomass, species_mean_height, species_cut_biomass,
             proportion_mown, actual_height = container.calc
-    @unpack biomass = container.output
+    @unpack output = container
     @unpack nspecies = container.simp
     @unpack height, abp = container.traits
 
     for i in eachindex(biomass_cutting_t)
         t = biomass_cutting_t[i]
         for s in 1:nspecies
-            vec_view = @view biomass[t, :, :, s]
+            vec_view = @view output.biomass[t, :, :, s]
             species_mean_biomass[s] = mean(vec_view)
+
+            vec_height_view = @view output.height[t, :, :, s]
+            species_mean_height[s] = mean(vec_height_view)
         end
 
-        actual_height!(; container, biomass = species_mean_biomass)
+        actual_height!(; container, biomass = species_mean_biomass,
+                       state_height = species_mean_height)
         @unpack actual_height, above_biomass = container.calc
 
         # --------- proportion of plant height that is mown

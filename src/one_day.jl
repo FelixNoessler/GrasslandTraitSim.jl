@@ -57,7 +57,7 @@ loop over patches:
 function one_day!(; t, container)
     @unpack input, output, traits = container
     @unpack npatches, patch_xdim, patch_ydim, nspecies, included = container.simp
-    @unpack u_biomass, u_water, du_biomass, du_water = container.u
+    @unpack u_biomass, u_water, u_height, du_biomass, du_water, du_height = container.u
     @unpack WHC, PWP, nutrients = container.patch_variables
     @unpack com, act_growth, senescence, mown, grazed, defoliation,
         light_competition, Nutred, Waterred, root_invest = container.calc
@@ -75,6 +75,7 @@ function one_day!(; t, container)
 
             # --------------------- biomass dynamics
             patch_biomass = @view u_biomass[x, y, :]
+            patch_height = @view u_height[x, y, :]
             for i in eachindex(patch_biomass)
                 if patch_biomass[i] < 1e-30u"kg / ha" && !iszero(patch_biomass[i])
                     patch_biomass[i] = 0.0u"kg / ha"
@@ -88,7 +89,7 @@ function one_day!(; t, container)
             mown .= 0.0u"kg / ha"
 
             if !iszero(sum(patch_biomass))
-                actual_height!(; container, biomass = patch_biomass)
+                actual_height!(; container, biomass = patch_biomass, state_height = patch_height)
 
                 # ------------------------------------------ growth
                 growth!(; t, container,
@@ -134,6 +135,10 @@ function one_day!(; t, container)
 
             # -------------- net growth
             @. du_biomass[x, y, :] = act_growth - senescence - defoliation
+
+            # --------------------- height dynamic
+            du_height[x, y, :] .= height_dynamic(; container,
+                                                 state_height = patch_height)
 
             # --------------------- water dynamics
             du_water[x, y] = change_water_reserve(; container, patch_biomass,
