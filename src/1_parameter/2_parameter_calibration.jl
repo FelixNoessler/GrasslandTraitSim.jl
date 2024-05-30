@@ -12,10 +12,11 @@ function calibrated_parameter(; input_obj = nothing)
 
         β_PAL_lnc = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), "text"),
 
-        η_GRZ = (truncated(Normal(10.0, 10.0); lower = 0.0, upper = 40.0),
-                               as(Real, 0.0, 40.0), "text"),
+        η_GRZ = (truncated(Normal(10.0, 10.0); lower = 0.0, upper = 30.0),
+                               as(Real, 0.0, 30.0), "text"),
 
-        α_lowB = (Uniform(0.0, 100.0), as(Real, 0.0, 100.0), "text"),
+        α_lowB = (truncated(Normal(0.0, 10.0); lower = 0, upper = 30),
+                  as(Real, 0.0, 30.0), "text"),
 
         α_TSB = (truncated(Normal(1000.0, 1000.0); lower = 0.0), asℝ₊, "text"),
         β_TSB = (truncated(Normal(1.0, 0.5); lower = 0.0), asℝ₊, "text"),
@@ -37,8 +38,8 @@ function calibrated_parameter(; input_obj = nothing)
         η_σ_wrsa = (Beta(1.0, 5.0), as𝕀, "text"),
         η_σ_nrsa =(Beta(1.0, 5.0), as𝕀, "text"),
 
-        κ_maxred_amc = (Beta(1.0, 10.0), as𝕀, "text"),
-        κ_maxred_srsa = (Beta(1.0, 10.0), as𝕀, "text"),
+        κ_maxred_amc = (Beta(1.0, 30.0), as𝕀, "text"),
+        κ_maxred_srsa = (Beta(1.0, 30.0), as𝕀, "text"),
 
         b_biomass = (truncated(Cauchy(0, 300); lower = 0.0), asℝ₊, "text"),
         b_sla = (truncated(Cauchy(0, 0.05); lower = 0.0), asℝ₊, "text"),

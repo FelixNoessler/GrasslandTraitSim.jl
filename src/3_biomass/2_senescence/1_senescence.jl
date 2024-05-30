@@ -22,7 +22,7 @@ Intialize the basic senescence rate based on the specific leaf area
 """
 function senescence_rate!(; input_obj, prealloc, p)
     @unpack included = input_obj.simp
-    @unpack sla = prealloc.traits
+    @unpack sla, lbp = prealloc.traits
     @unpack μ =  prealloc.calc
 
     if !included.senescence
@@ -30,10 +30,8 @@ function senescence_rate!(; input_obj, prealloc, p)
         return nothing
     end
 
-    @unpack ϕ_sla, α_sen = p
-    @unpack sla = prealloc.traits
-    β_sen_sla = 2u"Mg / ha"
-    @. μ  = 2 * α_sen / (1 + exp(-β_sen_sla * (sla - ϕ_sla)))
+    @unpack β_sen_sla, ϕ_sla, α_sen = p
+    @. μ  = 2 * α_sen / (1 + exp(-β_sen_sla * (lbp * sla - ϕ_sla))) # TODO
 
     return nothing
 end
@@ -114,17 +112,22 @@ function plot_senescence_rate(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
     @unpack sla = container.traits
     @unpack β_sen_sla, α_sen, ϕ_sla = container.p
-
     nvals = 200
     β_sen_sla_values = LinRange(0, 5, nvals)
     ymat = Array{Float64}(undef, nvals, nspecies)
+
+    prealloc = (; traits = container.traits, calc = container.calc)
+    input_obj = (; simp = (; included = (; senescence = true)))
+    p = container.p
+
     for i in eachindex(β_sen_sla_values)
-        @. ymat[i, :] = 2 * α_sen / (1 + exp(-β_sen_sla_values[i]u"Mg / ha" * (sla - ϕ_sla)))
+        p.β_sen_sla = β_sen_sla_values[i]u"Mg / ha"
+        senescence_rate!(; input_obj, prealloc, p)
+        @. ymat[i, :] = prealloc.calc.μ
     end
 
     sla_plot = ustrip.(sla)
     colorrange = (minimum(sla_plot), maximum(sla_plot))
-
     fig = Figure()
     Axis(fig[1,1]; xlabel = "β_sen_sla [Mg ha⁻¹]", ylabel = "Senescence rate [-]")
 

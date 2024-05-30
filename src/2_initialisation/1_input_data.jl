@@ -145,7 +145,7 @@ function validation_input(;
     end
 
     ### ----------------- initial biomass and soilwater content
-    initbiomass = 1500u"kg / ha"
+    initbiomass = 5000.0u"kg / ha"
     initsoilwater = 180.0u"mm"
 
     ### ----------------- dates when biomass was cut (for creating output for validation)

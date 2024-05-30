@@ -121,36 +121,41 @@ function dashboard_layout(; variable_p)
     preset_button = Button(righttop_layout[1, 3]; label = "reset parameter")
 
     p = SimulationParameter()
+    parameter_keys_prep = collect(keys(p))
     for k in keys(variable_p)
         p[k] = variable_p[k]
     end
     inference_obj = calibrated_parameter(; input_obj)
 
-    parameter_keys = keys(p)
 
-    lb = 0.01 .* ustrip.(collect(p))
-    ub = 3 .* ustrip.(collect(p))
+    # lb = 0.01 .* ustrip.(collect(p))
+    # ub = 3 .* ustrip.(collect(p))
+    # for k in keys(inference_obj.lb)
+    #     key_index = findfirst(k .== parameter_keys_prep)
 
-    for k in keys(inference_obj.lb)
-        key_index = findfirst(k .== parameter_keys)
-
-        lb[key_index] = inference_obj.lb[k]
-        ub[key_index] = inference_obj.ub[k]
-    end
-    p_val = ustrip.(collect(p))
+    #     lb[key_index] = inference_obj.lb[k]
+    #     ub[key_index] = inference_obj.ub[k]
+    # end
+    # [$(@sprintf("%.1E", lb[i])), $(@sprintf("%.1E", ub[i]))]
+    # [$(@sprintf("%.1E", lb[i])), $(@sprintf("%.1E", ub[i]))]
+    p_val_prep = ustrip.(collect(p))
 
     inference_keys = keys(inference_obj.priordists)
-    all_keys = collect(keys(p))
-    is_inf_p = parameter_keys .∈ Ref(keys(inference_obj.priordists))
-    inf_str = ifelse.(is_inf_p, "θ: ", "")
+    is_inf_p = collect(parameter_keys_prep .∈ Ref(keys(inference_obj.priordists)))
+    inf_str = ifelse.(is_inf_p, "", "")
 
-    nstart2 = length(p) - length(p) ÷ 2 + 1
+    ##### first all parameters that are calibrated
+    order_inf = sortperm(parameter_keys_prep[is_inf_p])
+    p_val = vcat(p_val_prep[is_inf_p][order_inf], p_val_prep[.! is_inf_p])
+    parameter_keys = vcat(parameter_keys_prep[is_inf_p][order_inf], parameter_keys_prep[.! is_inf_p])
+
+    nstart2 = sum(is_inf_p) + 1#length(p) - length(p) ÷ 2 + 1
     nend1 = nstart2 - 1
     [Label(param_layout[i, 1],
-           "$(inf_str[i]) $(parameter_keys[i]) [$(@sprintf("%.1E", lb[i])), $(@sprintf("%.1E", ub[i]))]";
+           "$(inf_str[i]) $(parameter_keys[i]) ";
            halign = :left) for i in 1:nend1]
     [Label(param_layout[i+1-nstart2, 4],
-           "$(inf_str[i]) $(parameter_keys[i]) [$(@sprintf("%.1E", lb[i])), $(@sprintf("%.1E", ub[i]))]";
+           "$(inf_str[i]) $(parameter_keys[i])";
             halign = :left) for i in nstart2:length(p)]
 
     tb1 = [Textbox(param_layout[i, 2],

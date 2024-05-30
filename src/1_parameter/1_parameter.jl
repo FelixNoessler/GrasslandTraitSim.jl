@@ -90,7 +90,7 @@ $(MYNEWFIELDS)
     ... TODO ... of the logistic function ``A_{sla, s}`` for ``W_{sla, txys}``,
     see [`water_reduction!`](@ref)
     """
-    η_μ_sla::T = F(0.0)
+    η_μ_sla::T = F(0.1)
 
     """
     2::``\\eta_{\\max, sla}``::part of the growth reducer based on the water stress

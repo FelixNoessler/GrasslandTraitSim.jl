@@ -27,7 +27,7 @@ function prepare_input(; plot_obj, posterior, biomass_stats = nothing)
 
     elseif samplingtype == :fixed
         p = SimulationParameter()
-        for (i, k) in enumerate(keys(plot_obj.obs.parameter_keys))
+        for (i, k) in enumerate(plot_obj.obs.parameter_keys)
             p[k] = parse(Float64, plot_obj.obs.tb_p[i].stored_string[]) * unit(p[k])
         end
     else
