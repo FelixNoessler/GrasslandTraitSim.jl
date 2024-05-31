@@ -106,7 +106,7 @@ end
 ################################################################
 function plot_potential_growth_lai_height(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
-    biomass = container.u.u_biomass[1, 1, :]
+    above_biomass = container.u.u_biomass[1, 1, :]
     biomass_vals = LinRange(1, 100, 150)u"kg / ha"
 
     height_vals = reverse([0.1, 0.5, 1.5, 1e10]u"m")
@@ -116,9 +116,10 @@ function plot_potential_growth_lai_height(; θ = nothing, path = nothing)
     for (hi, h) in enumerate(height_vals)
         container.traits.height .= h
         for (i,b) in enumerate(biomass_vals)
-            biomass .= b
-            actual_height!(; container, biomass)
-            potential_growth!(; container, biomass, PAR = container.input.PAR[150])
+            above_biomass .= b
+            potential_growth!(; container, above_biomass,
+                                actual_height = container.traits.height,
+                                PAR = container.input.PAR[150])
 
             ymat[hi, i] = ustrip(container.calc.com.potgrowth_total)
             lai_tot[i] = sum(container.calc.LAIs)
@@ -152,16 +153,18 @@ end
 function plot_potential_growth_height_lai(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
     biomass_val = [50.0, 35.0, 10.0]u"kg / ha"
-    biomass = container.u.u_biomass[1,1,:]
+    above_biomass = container.u.u_biomass[1,1,:]
     lais = zeros(3)
     heights = LinRange(0.01, 1.5, 300)
     red = Array{Float64}(undef, 3, length(heights))
     for (li, l) in enumerate(lais)
         for (hi, h) in enumerate(heights)
-            biomass .= biomass_val[li]
+            above_biomass .= biomass_val[li]
             @reset container.traits.height = [h * u"m"]
-            actual_height!(; container, biomass)
-            potential_growth!(; container, biomass, PAR = container.input.PAR[150])
+
+            potential_growth!(; container, above_biomass,
+                              actual_height = container.traits.height,
+                              PAR = container.input.PAR[150])
             pot_gr = ustrip(container.calc.com.potgrowth_total)
 
             lais[li] = round(container.calc.com.LAItot; digits = 1)
@@ -192,16 +195,15 @@ end
 ################################################################
 function plot_lai_traits(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
-    biomass = container.u.u_biomass[1, 1, :]
+    above_biomass = container.u.u_above_biomass[1, 1, :]
 
-    actual_height!(; container, biomass)
-    potential_growth!(; container, biomass, PAR = container.input.PAR[150])
+    potential_growth!(; container, above_biomass, actual_height = container.traits.height,
+                      PAR = container.input.PAR[150])
     val = container.calc.LAIs
 
     idx = sortperm(container.traits.sla)
     ymat = val[idx]
     sla = ustrip.(container.traits.sla[idx])
-
 
     abp = (container.traits.abp)[idx]
     colorrange = (minimum(abp), maximum(abp))
@@ -226,16 +228,16 @@ end
 ################################################################
 function plot_potential_growth_height(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
-
-    biomass = container.u.u_biomass[1,1,:]
+    above_biomass = container.u.u_biomass[1,1,:]
 
     heights = LinRange(0.01, 2, 300)
     red = Array{Float64}(undef, length(heights))
 
     for (hi, h) in enumerate(heights)
         @reset container.traits.height = [h * u"m"]
-        actual_height!(; container, biomass)
-        potential_growth!(; container, biomass, PAR = container.input.PAR[150])
+        potential_growth!(; container, above_biomass,
+                          actual_height = container.traits.height,
+                          PAR = container.input.PAR[150])
         red[hi] = container.calc.com.comH_reduction
     end
 

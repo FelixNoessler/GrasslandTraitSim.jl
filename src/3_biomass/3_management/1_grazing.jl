@@ -77,9 +77,9 @@ function plot_grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, θ = nothing, pa
 
     for (i, biomass_val) in enumerate(biomass_vec)
         container.calc.defoliation .= 0.0u"kg / ha"
-        biomass = 1 ./ container.traits.abp .* biomass_val
-        actual_height!(; container, biomass)
-        grazing!(; container, LD)
+        above_biomass = 1 ./ container.traits.abp .* biomass_val
+
+        grazing!(; container, LD, above_biomass, actual_height = container.traits.height)
         grazing_mat[:, i] = ustrip.(container.calc.defoliation)
     end
 

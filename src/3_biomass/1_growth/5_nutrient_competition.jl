@@ -473,12 +473,12 @@ function plot_below_influence(; θ = nothing, path = nothing)
     #################### varying β_TSB, equal biomass, random traits
     orig_β_TSB = container.p.β_TSB
     below_effects = LinRange(0, 10, 30)u"ha / Mg"
-    biomass = fill(container.p.α_TSB / (nspecies * mean(container.calc.TS)), nspecies)
+    total_biomass = fill(container.p.α_TSB / (nspecies * mean(container.calc.TS)), nspecies)
     ymat = Array{Float64}(undef, nspecies, length(below_effects))
 
     for (i, below_effect) in enumerate(below_effects)
         container = @set container.p.β_TSB = below_effect
-        below_ground_competition!(; container, biomass)
+        below_ground_competition!(; container, total_biomass)
         ymat[:, i] .= container.calc.biomass_density_factor
     end
 
@@ -494,7 +494,7 @@ function plot_below_influence(; θ = nothing, path = nothing)
 
     ##################### artficial example
     mat = [1 0.8 0.2; 0.8 1 0.5; 0.2 0.5 1]
-    biomass = [40.0, 10.0, 10.0]u"kg / ha"
+    total_biomass = [40.0, 10.0, 10.0]u"kg / ha"
     artificial_mat = Array{Float64}(undef, 3, length(below_effects))
 
     for i in eachindex(below_effects)
@@ -506,7 +506,7 @@ function plot_below_influence(; θ = nothing, path = nothing)
                       nspecies = 3),
             p = (; β_TSB = below_effects[i],
                    α_TSB = 0.4 * 80u"kg / ha"))
-        below_ground_competition!(; container = c, biomass)
+        below_ground_competition!(; container = c, total_biomass)
 
         artificial_mat[:, i] = c.calc.biomass_density_factor
     end

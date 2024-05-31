@@ -64,13 +64,14 @@ function plot_height_influence(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
 
     height_strength_exps = LinRange(0.0, 5.0, 40)
-    biomass = fill(50, nspecies)u"kg / ha"
+    above_biomass = fill(50, nspecies)u"kg / ha"
     ymat = Array{Float64}(undef, nspecies, length(height_strength_exps))
     orig_β_height = container.p.β_height
 
     for (i, β_height) in enumerate(height_strength_exps)
         container = @set container.p.β_height = β_height
-        light_competition!(; container, biomass)
+        light_competition!(; container, above_biomass,
+                           actual_height = container.traits.height)
         ymat[:, i] .= container.calc.heightinfluence
     end
 
