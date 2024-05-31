@@ -14,14 +14,14 @@ Calculates the growth of the plant species.
 - [Community growth adjustment by environmental and seasonal factors](@ref)
 - [Species-specific growth adjustment](@ref)
 """
-function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
+function growth!(; t, container, above_biomass, total_biomass, actual_height, W, nutrients, WHC, PWP)
     @unpack input = container
     @unpack included = container.simp
     @unpack act_growth, com, species_specific_red, light_competition, Waterred,
             Nutred, root_invest = container.calc
 
     ########### Potential growth
-    potential_growth!(; container, biomass, PAR = input.PAR_sum[t])
+    potential_growth!(; container, above_biomass, actual_height, PAR = input.PAR_sum[t])
 
     ########### Community growth adjustment by environmental and seasonal factors
     radiation_reduction!(; container, PAR = input.PAR[t])
@@ -30,8 +30,8 @@ function growth!(; t, container, biomass, W, nutrients, WHC, PWP)
     community_red = com.RAD * com.SEA * com.TEMP
 
     ########### Species-specific growth adjustment
-    light_competition!(; container, biomass)
-    below_ground_competition!(; container, biomass)
+    light_competition!(; container, above_biomass, actual_height)
+    below_ground_competition!(; container, total_biomass)
     water_reduction!(; container, W, PWP, WHC)
     nutrient_reduction!(; container, nutrients)
     @. species_specific_red = light_competition * Waterred * Nutred * root_invest

@@ -57,10 +57,12 @@ loop over patches:
 function one_day!(; t, container)
     @unpack input, output, traits = container
     @unpack npatches, patch_xdim, patch_ydim, nspecies, included = container.simp
-    @unpack u_biomass, u_water, u_height, du_biomass, du_water, du_height = container.u
+    @unpack u_biomass, u_above_biomass, u_below_biomass, u_water, u_height,
+            du_biomass, du_above_biomass, du_below_biomass, du_water, du_height = container.u
     @unpack WHC, PWP, nutrients = container.patch_variables
     @unpack com, act_growth, senescence, mown, grazed, defoliation,
-        light_competition, Nutred, Waterred, root_invest = container.calc
+        light_competition, Nutred, Waterred, root_invest, allocation_above,
+        height_gain, height_loss_mowing, height_loss_grazing = container.calc
 
     ## -------- clonal growth
     # TODO
@@ -75,10 +77,21 @@ function one_day!(; t, container)
 
             # --------------------- biomass dynamics
             patch_biomass = @view u_biomass[x, y, :]
+            patch_above_biomass = @view u_above_biomass[x, y, :]
+            patch_below_biomass = @view u_below_biomass[x, y, :]
             patch_height = @view u_height[x, y, :]
+
             for i in eachindex(patch_biomass)
                 if patch_biomass[i] < 1e-30u"kg / ha" && !iszero(patch_biomass[i])
                     patch_biomass[i] = 0.0u"kg / ha"
+                end
+
+                if patch_above_biomass[i] < 1e-30u"kg / ha" && !iszero(patch_above_biomass[i])
+                    patch_above_biomass[i] = 0.0u"kg / ha"
+                end
+
+                if patch_below_biomass[i] < 1e-30u"kg / ha" && !iszero(patch_below_biomass[i])
+                    patch_below_biomass[i] = 0.0u"kg / ha"
                 end
             end
 
@@ -89,11 +102,11 @@ function one_day!(; t, container)
             mown .= 0.0u"kg / ha"
 
             if !iszero(sum(patch_biomass))
-                actual_height!(; container, biomass = patch_biomass, state_height = patch_height)
-
                 # ------------------------------------------ growth
                 growth!(; t, container,
-                    biomass = patch_biomass,
+                    above_biomass = patch_above_biomass,
+                    total_biomass = patch_biomass,
+                    actual_height = patch_height,
                     W = u_water[x, y],
                     nutrients = nutrients[x, y],
                     WHC = WHC[x, y],
@@ -103,7 +116,7 @@ function one_day!(; t, container)
                 if included.senescence
                     senescence!(; container,
                         ST = input.temperature_sum[t],
-                        biomass = patch_biomass)
+                        total_biomass = patch_biomass)
                 end
 
                 # ------------------------------------------ mowing
@@ -115,7 +128,9 @@ function one_day!(; t, container)
                     end
 
                     if !isnan(mowing_height)
-                        mowing!(; container, mowing_height)
+                        mowing!(; container, mowing_height,
+                                above_biomass = patch_above_biomass,
+                                actual_height = patch_height)
                     end
                 end
 
@@ -128,7 +143,8 @@ function one_day!(; t, container)
 
                 if !isnan(LD)
                     if included.grazing
-                        grazing!(; container, LD)
+                        grazing!(; container, LD, above_biomass = patch_above_biomass,
+                                 actual_height = patch_height)
                     end
                 end
             end
@@ -136,9 +152,16 @@ function one_day!(; t, container)
             # -------------- net growth
             @. du_biomass[x, y, :] = act_growth - senescence - defoliation
 
+            @. allocation_above = (1 - (patch_above_biomass / (patch_biomass)) / traits.abp)
+            @. du_above_biomass[x, y, :] = (act_growth) * allocation_above - defoliation - (1-allocation_above) * senescence
+            @. du_below_biomass[x, y, :] = (act_growth) * (1-allocation_above) - allocation_above * senescence
+            # @show mean(allocation_above), mean(1 .- allocation_above)
+
             # --------------------- height dynamic
-            du_height[x, y, :] .= height_dynamic(; container,
-                                                 state_height = patch_height)
+            height_dynamic!(; container, actual_height = patch_height,
+                           above_biomass = patch_above_biomass)
+
+            @. du_height[x, y, :] = height_gain - height_loss_mowing - height_loss_grazing
 
             # --------------------- water dynamics
             du_water[x, y] = change_water_reserve(; container, patch_biomass,

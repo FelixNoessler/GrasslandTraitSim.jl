@@ -2,7 +2,7 @@
 Calculate the biomass that dies due to senescence.
 
 """
-function senescence!(; container, ST, biomass)
+function senescence!(; container, ST, total_biomass)
     @unpack senescence, μ, com = container.calc
     @unpack included, time_step_days = container.simp
 
@@ -12,7 +12,7 @@ function senescence!(; container, ST, biomass)
         1.0
     end
 
-    @. senescence = (1 - (1 - μ * com.SEN_season) ^ time_step_days.value) * biomass
+    @. senescence = (1 - (1 - μ * com.SEN_season) ^ time_step_days.value) * total_biomass
 
     return nothing
 end

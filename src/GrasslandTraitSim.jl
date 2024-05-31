@@ -102,7 +102,6 @@ include("3_biomass/2_senescence/1_senescence.jl")
 include("3_biomass/3_management/1_grazing.jl")
 include("3_biomass/3_management/2_mowing.jl")
 include("3_biomass/3_management/3_cut_biomass_for_likelihood.jl")
-include("3_biomass/3_management/4_actual_height.jl")
 
 include("4_water/water.jl")
 include("5_likelihood/1_likelihood.jl")

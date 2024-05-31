@@ -2,8 +2,8 @@
 Influence of mowing for plant species with different heights ($height$):
 ![Image of mowing effect](../img/mowing.png)
 """
-function mowing!(; container, mowing_height)
-    @unpack defoliation, mown, proportion_mown, actual_height, above_biomass = container.calc
+function mowing!(; container, mowing_height, above_biomass, actual_height)
+    @unpack defoliation, mown, proportion_mown  = container.calc
 
     # --------- proportion of plant height that is mown
     proportion_mown .= max.(actual_height .- mowing_height, 0.0u"m") ./ actual_height

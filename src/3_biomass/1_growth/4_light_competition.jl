@@ -34,26 +34,25 @@ if it would not be limited by other factors.
 
 ![light competition](../img/height_influence.png)
 """
-function light_competition!(; container, biomass)
+function light_competition!(; container, above_biomass, actual_height)
     @unpack heightinfluence, light_competition, LAIs = container.calc
     @unpack LAItot = container.calc.com
     @unpack included = container.simp
-    @unpack height = container.traits
 
     if !included.height_competition
         @info "Height influence turned off!" maxlog=1
         @. heightinfluence = 1.0
     else
-        @unpack relative_height, above_biomass = container.calc
+        @unpack relative_height = container.calc
         @unpack β_height = container.p
         @unpack abp = container.traits
 
-        @. above_biomass = abp * biomass
-        relative_height .= height .* above_biomass ./ sum(above_biomass)
+
+        relative_height .= actual_height .* above_biomass ./ sum(above_biomass)
         height_cwm = sum(relative_height)
 
         # TODO change documentation
-        @. heightinfluence = 2.0 / (1.0 + exp(β_height * ustrip(height_cwm - height)))
+        @. heightinfluence = 2.0 / (1.0 + exp(β_height * ustrip(height_cwm - actual_height)))
     end
 
     @. light_competition = LAIs / LAItot * heightinfluence

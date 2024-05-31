@@ -9,6 +9,14 @@ function preallocate_vectors(; input_obj, T = Float64)
         Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim, nspecies)u"kg/ha",
         (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :state_biomass)
+    above_biomass = DimArray(
+        Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :state_above_biomass)
+    below_biomass = DimArray(
+        Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim, nspecies)u"kg/ha",
+        (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :state_below_biomass)
     water = DimArray(Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim)u"mm",
         (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim),
         name = :state_water)
@@ -69,7 +77,8 @@ function preallocate_vectors(; input_obj, T = Float64)
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
         name = :seasonal_senescence)
 
-    output = (; biomass, water, height, mown, grazed, senescence, community_pot_growth,
+    output = (; biomass, above_biomass, below_biomass, water, height,
+              mown, grazed, senescence, community_pot_growth,
               act_growth, radiation_reducer, seasonal_growth, temperature_reducer,
               seasonal_senescence, light_growth, water_growth, nutrient_growth)
 
@@ -78,6 +87,14 @@ function preallocate_vectors(; input_obj, T = Float64)
         Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
         (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :du_biomass)
+    du_above_biomass = DimArray(
+        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
+        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :du_above_biomass)
+    du_below_biomass = DimArray(
+        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
+        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :du_below_biomass)
     du_water = DimArray(
         Array{T}(undef, patch_xdim, patch_ydim)u"mm",
         (x = 1:patch_xdim, y = 1:patch_ydim), name = :du_water)
@@ -89,6 +106,14 @@ function preallocate_vectors(; input_obj, T = Float64)
         Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
         (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :u_biomass)
+    u_above_biomass = DimArray(
+        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
+        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+    name = :u_above_biomass)
+    u_below_biomass = DimArray(
+        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
+        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :u_below_biomass)
     u_water = DimArray(
         Array{T}(undef, patch_xdim, patch_ydim)u"mm",
         (x = 1:patch_xdim, y = 1:patch_ydim),
@@ -98,7 +123,8 @@ function preallocate_vectors(; input_obj, T = Float64)
         (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :u_height)
 
-    u = (; du_biomass, du_water, du_height, u_biomass, u_water, u_height)
+    u = (; du_biomass, du_above_biomass, du_below_biomass, du_water, du_height,
+         u_biomass, u_above_biomass, u_below_biomass, u_water, u_height)
 
     ############# patch variables
     WHC = DimArray(
@@ -144,13 +170,15 @@ function preallocate_vectors(; input_obj, T = Float64)
         defoliation = Array{T}(undef, nspecies)u"kg / ha",
         species_specific_red = Array{T}(undef, nspecies),
         LAIs = Array{T}(undef, nspecies),
-        actual_height = Array{T}(undef, nspecies)u"m",
-        above_biomass = Array{T}(undef, nspecies)u"kg / ha",
         relative_height_per_biomass = Array{T}(undef, nspecies)u"m * ha / kg",
+        height_gain = Array{T}(undef, nspecies)u"m",
+        height_loss_mowing = Array{T}(undef, nspecies)u"m",
+        height_loss_grazing = Array{T}(undef, nspecies)u"m",
+        allocation_above = Array{T}(undef, nspecies),
 
         ## cutted biomass
-        species_mean_biomass = Array{T}(undef, nspecies)u"kg / ha",
-        species_mean_height = Array{T}(undef, nspecies)u"m",
+        species_mean_above_biomass = Array{T}(undef, nspecies)u"kg / ha",
+        species_mean_actual_height = Array{T}(undef, nspecies)u"m",
         species_cut_biomass = Array{T}(undef, nspecies)u"kg / ha",
 
         ## functional response helper variables

@@ -30,11 +30,11 @@ a &= \frac{1}{\text{α_GRZ}^2 \cdot h} \\
 Influence of `α_GRZ`:
 ![](../img/α_GRZ.png)
 """
-function grazing!(; container, LD)
+function grazing!(; container, LD, above_biomass, actual_height)
     @unpack lnc = container.traits
     @unpack η_GRZ, β_PAL_lnc, κ = container.p
-    @unpack defoliation, grazed_share, relative_lnc, ρ, grazed, actual_height,
-            height_ρ_biomass, above_biomass = container.calc
+    @unpack defoliation, grazed_share, relative_lnc, ρ, grazed,
+            height_ρ_biomass = container.calc
 
     #################################### total grazed biomass
     sum_biomass = sum(above_biomass)

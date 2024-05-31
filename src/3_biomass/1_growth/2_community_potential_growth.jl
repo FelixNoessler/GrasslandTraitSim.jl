@@ -31,11 +31,11 @@ The community height growth reduction factor is the second part of the ``fPARi_{
 ![](../img/potential_growth_height.png)
 ![](../img/community_height_influence.png)
 """
-function potential_growth!(; container, biomass, PAR)
+function potential_growth!(; container, above_biomass, actual_height, PAR)
     @unpack included = container.simp
     @unpack com = container.calc
 
-    calculate_LAI!(; container, biomass)
+    calculate_LAI!(; container, above_biomass)
 
     if !included.potential_growth
         @info "Zero potential growth!" maxlog=1
@@ -47,11 +47,12 @@ function potential_growth!(; container, biomass, PAR)
         @info "No community height growth reduction!" maxlog=1
         com.comH_reduction = 1.0
     else
-        @unpack actual_height, relative_height_per_biomass = container.calc
+        @unpack relative_height_per_biomass = container.calc
         @unpack height = container.traits
         @unpack α_com_height = container.p
 
-        relative_height_per_biomass .= biomass .* (height ./ (biomass .+ 1e-10u"kg/ha") ) ./ sum(biomass)
+        relative_height_per_biomass .=
+            above_biomass .* (height ./ (above_biomass .+ 1e-10u"kg/ha") ) ./ sum(above_biomass)
         cwm_height_per_biomass = sum(relative_height_per_biomass)
         com.comH_reduction = cwm_height_per_biomass / (α_com_height + cwm_height_per_biomass)
     end
@@ -87,12 +88,12 @@ Output:
 
 ![](../img/lai_traits.png)
 """
-function calculate_LAI!(; container, biomass)
+function calculate_LAI!(; container, above_biomass)
     @unpack LAIs, com = container.calc
-    @unpack sla, lbp = container.traits
+    @unpack sla, lbp, abp = container.traits
 
     for s in eachindex(LAIs)
-        LAIs[s] = uconvert(NoUnits, sla[s] * biomass[s] * lbp[s])
+        LAIs[s] = uconvert(NoUnits, sla[s] * above_biomass[s] * lbp[s] / abp[s]) # TODO
     end
     com.LAItot = sum(LAIs)
 

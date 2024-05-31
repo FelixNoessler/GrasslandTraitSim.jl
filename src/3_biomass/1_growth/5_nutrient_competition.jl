@@ -227,7 +227,7 @@ and the root surface area devided by the above ground biomass (`srsa`).
 
 ![](../img/below_influence.png)
 """
-function below_ground_competition!(; container, biomass)
+function below_ground_competition!(; container, total_biomass)
     @unpack biomass_density_factor, TS_biomass, TS = container.calc
     @unpack included, nspecies = container.simp
 
@@ -242,7 +242,7 @@ function below_ground_competition!(; container, biomass)
     TS_biomass .= 0.0u"kg/ha"
     for s in 1:nspecies
         for i in 1:nspecies
-            TS_biomass[s] += TS[s, i] * biomass[i]
+            TS_biomass[s] += TS[s, i] * total_biomass[i]
         end
     end
 

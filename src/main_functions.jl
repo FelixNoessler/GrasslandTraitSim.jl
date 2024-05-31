@@ -55,7 +55,8 @@ Calls the function [`one_day!`](@ref) for each day and set the
 calculated density differences to the output variables.
 """
 function main_loop!(; container)
-    @unpack u_biomass, u_water, u_height, du_biomass, du_water, du_height = container.u
+    @unpack u_biomass, u_above_biomass, u_below_biomass, u_water, u_height,
+            du_biomass, du_above_biomass, du_below_biomass, du_water, du_height = container.u
     @unpack output = container
     @unpack ts, patch_xdim, patch_ydim, nspecies = container.simp
     @unpack senescence = container.calc
@@ -67,7 +68,12 @@ function main_loop!(; container)
             for y in Base.OneTo(patch_ydim)
                 for s in Base.OneTo(nspecies)
                     u_biomass[x, y, s] += du_biomass[x, y, s]
-                    output.biomass[t+1, x, y, s] = u_biomass[x, y, s]
+                    output.biomass[t+1, x, y, s] = max(u_biomass[x, y, s], 0.0u"kg/ha")
+
+                    u_above_biomass[x, y, s] += du_above_biomass[x, y, s]
+                    u_below_biomass[x, y, s] += du_below_biomass[x, y, s]
+                    output.above_biomass[t+1, x, y, s] = max(u_above_biomass[x, y, s], 0.0u"kg/ha")
+                    output.below_biomass[t+1, x, y, s] = max(u_below_biomass[x, y, s], 0.0u"kg/ha")
 
                     u_height[x, y, s] += du_height[x, y, s]
                     output.height[t+1, x, y, s] = u_height[x, y, s]

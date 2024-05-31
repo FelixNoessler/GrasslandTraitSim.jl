@@ -60,11 +60,11 @@ the initial biomass (`initbiomass`). The soil water content
 - `initsoilwater`: initial soil water content [mm]
 """
 function set_initialconditions!(; container)
-    @unpack u_biomass, u_water, u_height = container.u
+    @unpack u_biomass, u_above_biomass, u_below_biomass, u_water, u_height = container.u
     @unpack output = container
     @unpack initbiomass, initsoilwater = container.site
     @unpack nspecies, patch_xdim, patch_ydim = container.simp
-    @unpack height = container.traits
+    @unpack height, abp = container.traits
 
     @. u_biomass = initbiomass / nspecies
     @. u_water = initsoilwater
@@ -76,6 +76,11 @@ function set_initialconditions!(; container)
         for y in Base.OneTo(patch_ydim)
             for s in Base.OneTo(nspecies)
                 output.biomass[1, x, y, s] = u_biomass[x, y, s]
+
+                u_above_biomass[x, y, s] = u_biomass[x, y, s] * abp[s]
+                u_below_biomass[x, y, s] = u_biomass[x, y, s] * (1-abp[s])
+                output.above_biomass[1, x, y, s] = u_above_biomass[x, y, s]
+                output.below_biomass[1, x, y, s] = u_below_biomass[x, y, s]
 
                 u_height[x, y, s] = height[s] / 2
                 output.height[1, x, y, s] = u_height[x, y, s]
