@@ -1,11 +1,11 @@
-function band_patch(;
+function biomass_plot(;
         plot_obj,
         patch = 1,
         sol,
         valid_data)
     ax = plot_obj.axes[:biomass]
     empty!(ax)
-    ax.ylabel = "Total biomass [kg ha⁻¹]"
+    ax.ylabel = "Aboveground\nbiomass [kg ha⁻¹]"
     ax.xlabel = "Time [years]"
     ax.xticklabelsvisible = false
     ax.xlabelvisible = false
@@ -16,7 +16,7 @@ function band_patch(;
 
     show_standingbiomass = plot_obj.obs.toggle_standingbiomass.active.val
     if show_standingbiomass
-        biomass = vec(sum(ustrip.(sol.output.biomass); dims = (:x, :y, :species))) ./
+        biomass = vec(sum(ustrip.(sol.output.above_biomass); dims = (:x, :y, :species))) ./
                     sol.simp.npatches
         lines!(ax, t, biomass; color = :orange, linewidth = 2)
 
@@ -126,7 +126,7 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
 
     trait_names = [
         "Specific leaf\narea [m² g⁻¹]", "Leaf nitrogen per\nleaf mass [mg g⁻¹]",
-        "Height [m]", "Arbuscular mycorrhizal\ncolonisation [-]",
+        "Potential height [m]", "Arbuscular mycorrhizal\ncolonisation [-]",
         "Root surface area per\nbelowground biomass [m² g⁻¹]",
         "Aboveground biomass\nper total biomass [-]"]
     trait_symbols = [:sla, :lnc, :height, :amc, :srsa, :abp]
@@ -145,6 +145,9 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
     cwm_trait = vec(sum(weighted_trait; dims = 1))
     cwv_trait = sqrt.(vec(sum(relative_biomass .* (cwm_trait .- trait_vals') .^ 2; dims = 2)))
     ax.xlabel = "Time [years]"
+    ax.ylabel = "$trait_name"
+    ax.xticklabelsvisible = false
+    ax.xlabelvisible = false
 
     ### trait values of all species
     for i in 1:(sol.simp.nspecies)
@@ -158,16 +161,6 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
     lines!(ax, t, median_trait, color = :blue)
     band!(ax, t, median_trait .+ cwv_trait, median_trait .- cwv_trait;
         color = (:blue, 0.3))
-    ax.ylabel = "$trait_name"
-
-    if trait ∈ [:sla, :height, :lnc]
-        ax.xticklabelsvisible = false
-        ax.xlabelvisible = false
-    else
-        ax.xticklabelsvisible = true
-        ax.xlabelvisible = true
-    end
-
 
     if !isnothing(valid_data)
         cwm_trait_dist_sub = cwm_trait_dist[LookupArrays.index(valid_data.traits, :time)]
@@ -181,11 +174,142 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
         num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.traits, :time)]
         y = vec(valid_data.traits[trait = At(trait)])
         scatter!(ax, num_t, y, color = :black, markersize = 8)
-
-        # if trait == :height
-        #     num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.height, :time)]
-        #     y = vec(valid_data.height)
-        #     scatter!(ax, num_t, y, color = :darkgrey, markersize = 8)
-        # end
     end
+end
+
+
+function trait_share_plot(; plot_obj, sol)
+    trait = plot_obj.obs.menu_traits.selection.val
+
+    ax = plot_obj.axes[:trait_share]
+    empty!(ax)
+
+    color = ustrip.(sol.traits[trait])
+    colormap = :viridis
+    colorrange = (minimum(color), maximum(color))
+    is = sortperm(color)
+    cmap = cgrad(colormap)
+    colors = [cmap[(co .- colorrange[1]) ./ (colorrange[2] - colorrange[1])]
+            for co in color[is]]
+
+    # calculate biomass proportion of each species
+    biomass_site = dropdims(mean(sol.output.biomass; dims=(:x, :y)); dims = (:x, :y))
+    biomass_ordered = biomass_site[:, sortperm(color)]
+    biomass_fraction = biomass_ordered ./ sum(biomass_ordered; dims = :species)
+    biomass_cumfraction = cumsum(biomass_fraction; dims = 2)
+
+    ax.ylabel = "Relative proportion"
+    ax.xlabel = "Time [year]"
+    limits!(ax, sol.simp.output_date_num[1], sol.simp.output_date_num[end], 0, 1)
+
+    for i in 1:sol.simp.nspecies
+        ylower = nothing
+        if i == 1
+            ylower = zeros(size(biomass_cumfraction, 1))
+        else
+            ylower = biomass_cumfraction[:, i-1]
+        end
+        yupper = biomass_cumfraction[:, i]
+
+        band!(ax, sol.simp.output_date_num, vec(ylower), vec(yupper);
+              color = colors[i])
+    end
+
+    plot_obj.axes[:cb_trait_share].limits[] = colorrange
+
+    return nothing
+end
+
+function simulated_height_plot(; plot_obj, sol, valid_data)
+    ax = plot_obj.axes[:simulated_height]
+    empty!(ax)
+
+    ax.ylabel = "Height [m]"
+    ax.xlabel = "Time [year]"
+
+    species_biomass = dropdims(
+        mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims =(:x, :y))
+    total_biomass = sum(species_biomass, dims = :species)
+    relative_biomass = species_biomass ./ total_biomass
+    height = dropdims(
+        mean(sol.output.height; dims = (:x, :y)),
+        dims = (:x, :y))
+    mean_height = dropdims(sum(height .* relative_biomass; dims = :species); dims = :species)
+
+    lines!(ax, sol.simp.output_date_num, ustrip(mean_height),
+           color = :black)
+
+
+    if !isnothing(valid_data)
+        num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.height, :time)]
+        y = vec(valid_data.height)
+        scatter!(ax, num_t, y, color = :black, markersize = 8)
+    end
+
+    return nothing
+end
+
+
+function functional_dispersion_plot(; plot_obj, sol)
+    ax = plot_obj.axes[:functional_dispersion]
+    empty!(ax)
+
+    ax.ylabel = "Functional dispersion [-]"
+    ax.xlabel = "Time [year]"
+
+    traits = sol.traits
+    biomass = dropdims(
+        mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims =(:x, :y))
+
+    fdis = functional_dispersion(traits, biomass; )
+
+    lines!(ax, sol.simp.output_date_num, fdis; color = :red)
+
+    return nothing
+end
+
+
+function traits_to_matrix(trait_data; std_traits = true)
+    trait_names = keys(trait_data)
+    ntraits = length(trait_names)
+    nspecies = length(trait_data[trait_names[1]])
+    m = Matrix{Float64}(undef, nspecies, ntraits)
+
+    for i in eachindex(trait_names)
+
+        if std_traits
+            m[:, i] = trait_data[trait_names[i]] ./ mean(trait_data[trait_names[i]])
+        else
+            m[:, i] = ustrip.(trait_data[trait_names[i]])
+        end
+    end
+
+    return m
+end
+
+function functional_dispersion(trait_data, biomass_data; kwargs...)
+    # Laliberté & Legendre 2010, checked results with fundiversity R package
+
+    ntimesteps = size(biomass_data, :time)
+    nspecies = size(biomass_data, :species)
+    ntraits = length(trait_data)
+    fdis = Vector{Float64}(undef, ntimesteps)
+
+    trait_m = traits_to_matrix(trait_data; kwargs...)
+
+    for t in 1:ntimesteps
+        relative_biomass = biomass_data[t, :] / sum(biomass_data[t, :])
+
+        z_squarred = zeros(nspecies)
+        for t in 1:ntraits
+            weighted_trait = trait_m[:, t] .* relative_biomass
+            cwm = sum(weighted_trait)
+            z_squarred .+= (trait_m[:, t] .- cwm) .^ 2
+        end
+
+        z = sqrt.(z_squarred)
+        fdis[t] = sum(z .* relative_biomass)
+    end
+
+    return fdis
 end

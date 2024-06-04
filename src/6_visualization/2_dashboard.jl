@@ -86,15 +86,19 @@ function dashboard(; posterior = nothing, variable_p = (;),
     plot_obj.obs.run_button.clicks[] = 1
 
     on(plot_obj.obs.toggle_grazmow.active) do n
-        band_patch(; plot_obj, sol, valid_data)
+        biomass_plot(; plot_obj, sol, valid_data)
     end
 
     on(plot_obj.obs.toggle_standingbiomass.active) do n
-        band_patch(; plot_obj, sol, valid_data)
+        biomass_plot(; plot_obj, sol, valid_data)
     end
 
     on(plot_obj.obs.menu_abiotic.selection) do n
         abiotic_plot(; sol, plot_obj)
+    end
+
+    on(plot_obj.obs.menu_traits.selection) do _
+        trait_share_plot(; plot_obj, sol)
     end
 
     on(plot_obj.obs.toggle_validdata.active) do n
@@ -102,9 +106,7 @@ function dashboard(; posterior = nothing, variable_p = (;),
         if n
             valid_data = get_valid_data(; plot_obj, biomass_stats, mean_input_date)
         end
-        band_patch(; plot_obj, sol, valid_data)
-        [trait_time_plot(; plot_obj, sol, valid_data, trait = t) for t in
-            [:amc, :sla, :height, :srsa, :lnc]]
+        update_plots(; sol, plot_obj, valid_data)
     end
 
 
@@ -127,7 +129,7 @@ end
 
 function update_plots(; sol, plot_obj, valid_data = nothing)
     ########### Biomass
-    band_patch(;
+    biomass_plot(;
         plot_obj,
         sol,
         valid_data)
@@ -141,6 +143,15 @@ function update_plots(; sol, plot_obj, valid_data = nothing)
     ########### Trait changes over time
     [trait_time_plot(; plot_obj, sol, valid_data, trait = t) for t in
         [:amc, :sla, :height, :srsa, :lnc, :abp]]
+
+    ########### simulated mean height
+    simulated_height_plot(; plot_obj, sol, valid_data)
+
+    ########### simulated functional dispersion
+    functional_dispersion_plot(; plot_obj, sol)
+
+    ########### Share of species
+    trait_share_plot(; plot_obj, sol)
 
     return nothing
 end

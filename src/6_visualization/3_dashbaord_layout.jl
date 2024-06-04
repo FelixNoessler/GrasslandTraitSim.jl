@@ -1,5 +1,5 @@
 function dashboard_layout(; variable_p)
-    fig = Figure(; size = (1800, 800))
+    fig = Figure(; size = (1800, 950))
 
     ##############################################################################
     # Define grid layouts
@@ -8,7 +8,6 @@ function dashboard_layout(; variable_p)
     sim_layout = GridLayout(top_menu[1, 2]; tellwidth = false)
     validation_layout = GridLayout(top_menu[1, 3]; valign = :top)
     plottingmenu_layout = GridLayout(top_menu[1, 4]; valign = :top)
-    graz_mow_layout = GridLayout(plottingmenu_layout[3, 1]; halign = :left)
 
     plots_layout = GridLayout(fig[2, 1])
     right_layout = GridLayout(fig[1:2, 2])
@@ -83,15 +82,15 @@ function dashboard_layout(; variable_p)
                    for i in 1:50],
         width = 100,
         halign = :left)
-    Label(validation_layout[6, 1], "Time step:"; halign = :left, fontsize = 16)
-    menu_timestep = Menu(validation_layout[7, 1];
+    Label(validation_layout[4, 3], "Time step:"; halign = :left, fontsize = 16)
+    menu_timestep = Menu(validation_layout[5, 3];
         options = [1, 7, 14])
 
     ##############################################################################
     # Right box: abiotic and grazing/mowing
     ##############################################################################
     Label(plottingmenu_layout[1, 1], "Abiotic variable\n(right upper plot)";
-          halign = :left, fontsize = 16)
+          halign = :left, justification = :left, fontsize = 16)
     menu_abiotic = Menu(plottingmenu_layout[2, 1],
         options = zip([
                 "Precipitation [mm]",
@@ -106,8 +105,14 @@ function dashboard_layout(; variable_p)
                 :temperature_sum,
                 :PAR,
             ]))
-    Label(graz_mow_layout[1, 1], "grazing/mowing?"; fontsize = 16)
-    toggle_grazmow = Toggle(graz_mow_layout[1, 2], active = false)
+    Label(plottingmenu_layout[3, 1][1, 1], "grazing/mowing?"; fontsize = 16)
+    toggle_grazmow = Toggle(plottingmenu_layout[3, 1][1, 2], active = false)
+
+    trait_keys =  [:amc, :sla, :height, :srsa, :lnc, :abp]
+    Label(plottingmenu_layout[1, 2], "Trait\n(right lower plot):";
+          halign = :left, justification = :left, fontsize = 16)
+    menu_traits = Menu(plottingmenu_layout[2, 2];
+                       options = zip(string.(trait_keys), trait_keys))
 
     ##############################################################################
     # Right part: likelihood and parameter settings
@@ -198,7 +203,11 @@ function dashboard_layout(; variable_p)
     axes[:srsa] = Axis(plots_layout[3, 1]; alignmode = Inside())
     axes[:amc] = Axis(plots_layout[3, 2]; alignmode = Inside())
     axes[:abp] = Axis(plots_layout[3, 3]; alignmode = Inside())
-
+    axes[:simulated_height] = Axis(plots_layout[4, 1]; alignmode = Inside())
+    axes[:functional_dispersion] = Axis(plots_layout[4, 2]; alignmode = Inside())
+    axes[:trait_share] = Axis(plots_layout[4, 3]; alignmode = Inside())
+    axes[:cb_trait_share] = Colorbar(plots_layout[4, 4]; halign = :left,
+                                     limits = (0.0, 1.0))
     ##############################################################################
     # Put all plot objects and observables in a named tuple
     ##############################################################################
@@ -209,6 +218,7 @@ function dashboard_layout(; variable_p)
         menu_plotID,
         menu_timestep,
         menu_abiotic,
+        menu_traits,
         parameter_keys,
         tb_p,
         toggles_included,

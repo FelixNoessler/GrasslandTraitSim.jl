@@ -616,7 +616,8 @@ function SimulationParameter(dual_type)
     return p
 end
 
-Base.getindex(obj::SimulationParameter, k) = getfield(obj, k)
+Base.getindex(obj::SimulationParameter, k::Symbol) = getfield(obj, k)
+Base.getindex(obj::SimulationParameter, k::String) = getfield(obj, key(k))
 Base.setindex!(obj::SimulationParameter, val, k) = setfield!(obj, k, val)
 Base.keys(obj::SimulationParameter) = propertynames(obj)
 Base.length(obj::SimulationParameter) = length(propertynames(obj))

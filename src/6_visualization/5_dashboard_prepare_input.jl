@@ -40,7 +40,7 @@ function prepare_input(; plot_obj, posterior, biomass_stats = nothing)
     end
 
     if samplingtype != :fixed
-        for (i, k) in enumerate(keys(plot_obj.obs.parameter_keys))
+        for (i, k) in enumerate(plot_obj.obs.parameter_keys)
             val = round(ustrip(p[k]); digits = 5)
             Makie.set!(plot_obj.obs.tb_p[i], string(val))
         end
