@@ -406,7 +406,7 @@ $(MYNEWFIELDS)
     plant species with high leaf nitrogen content,
     see [`grazing!`](@ref)
     """
-    β_PAL_lnc::T = F(1.5)
+    β_PAL_lnc::T = F(1.2)
 
     """
     5::``\\eta_{GRZ}``::defines with  κ · livestock density the aboveground biomass [kg ha⁻¹] when the daily consumption by grazers reaches half of their maximal consumption,

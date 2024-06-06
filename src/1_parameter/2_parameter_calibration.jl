@@ -8,9 +8,9 @@ function calibrated_parameter(; input_obj = nothing)
         β_sen_sla = (truncated(Normal(0, 5.0); lower = 0.0), asℝ₊,
             """TODO"""),
 
-        β_height = (Uniform(0.0, 15.0), as(Real, 0.0, 10.0), "text"),
+        β_height = (Uniform(0.0, 1.5), as(Real, 0.0, 1.5), "text"),
 
-        β_PAL_lnc = (Uniform(0.0, 5.0), as(Real, 0.0, 5.0), "text"),
+        β_PAL_lnc = (Uniform(0.0, 1.5), as(Real, 0.0, 1.5), "text"),
 
         η_GRZ = (truncated(Normal(10.0, 10.0); lower = 0.0, upper = 30.0),
                                as(Real, 0.0, 30.0), "text"),

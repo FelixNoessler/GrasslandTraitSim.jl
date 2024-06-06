@@ -45,14 +45,13 @@ function light_competition!(; container, above_biomass, actual_height)
     else
         @unpack relative_height = container.calc
         @unpack β_height = container.p
-        @unpack abp = container.traits
-
 
         relative_height .= actual_height .* above_biomass ./ sum(above_biomass)
         height_cwm = sum(relative_height)
 
         # TODO change documentation
-        @. heightinfluence = 2.0 / (1.0 + exp(β_height * ustrip(height_cwm - actual_height)))
+        # @. heightinfluence = 2.0 / (1.0 + exp(β_height * ustrip(height_cwm - actual_height)))
+        @. heightinfluence = (actual_height / height_cwm) ^ β_height
     end
 
     @. light_competition = LAIs / LAItot * heightinfluence
@@ -63,7 +62,7 @@ end
 function plot_height_influence(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
 
-    height_strength_exps = LinRange(0.0, 5.0, 40)
+    height_strength_exps = LinRange(0.0, 1.5, 40)
     above_biomass = fill(50, nspecies)u"kg / ha"
     ymat = Array{Float64}(undef, nspecies, length(height_strength_exps))
     orig_β_height = container.p.β_height

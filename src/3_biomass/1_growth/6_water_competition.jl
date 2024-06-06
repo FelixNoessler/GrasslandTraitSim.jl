@@ -1,30 +1,3 @@
-"""
-Initialisation of the transfer functions that link the traits to
-the response to water and nutrient stress.
-"""
-function init_water_transfer_functions!(; input_obj, prealloc, p)
-    @unpack included = input_obj.simp
-    if included.water_growth_reduction
-        @unpack δ_sla, δ_wrsa, ϕ_rsa, ϕ_sla, η_μ_sla, η_σ_sla,
-                β_η_wrsa, β_η_sla, η_μ_wrsa, η_σ_wrsa = p
-        @unpack srsa, sla, abp, lbp = prealloc.traits
-        @unpack A_sla, A_wrsa = prealloc.transfer_function
-
-        ##### Specific leaf area
-        η_min_sla = η_μ_sla - η_σ_sla
-        η_max_sla = η_μ_sla + η_σ_sla
-        @. A_sla = (η_min_sla + (η_max_sla - η_min_sla) / (1 + exp(-β_η_sla * (lbp * sla - ϕ_sla)))) # TODO
-
-        #### Root surface area per above ground biomass
-        η_min_wrsa = η_μ_wrsa - η_σ_wrsa
-        η_max_wrsa = η_μ_wrsa + η_σ_wrsa
-        @. A_wrsa =  (η_max_wrsa + (η_min_wrsa - η_max_wrsa) /
-            (1 + exp(-β_η_wrsa * ((1 - abp) * srsa - ϕ_rsa))))  # TODO add to documentation and manuscript
-    end
-
-    return nothing
-end
-
 @doc raw"""
 Reduction of growth based on the plant available water
 and the traits specific leaf area and root surface area
@@ -52,7 +25,7 @@ lower specific root surface area per above ground biomass (`srsa`).
 `δ_wrsa` equals 0.5:
 # ![Graphical overview of the functional response](../img/W_rsa_0_5.png)
 """
-function water_reduction!(; container, W, PWP, WHC)
+function water_reduction!(; container, W, PWP, WHC, above_biomass, total_biomass)
     @unpack included = container.simp
     @unpack Waterred = container.calc
     if !included.water_growth_reduction
@@ -64,16 +37,25 @@ function water_reduction!(; container, W, PWP, WHC)
     Wsc = W > WHC ? 1.0 : W > PWP ? (W - PWP) / (WHC - PWP) : 0.0
 
     @unpack W_sla, W_rsa = container.calc
-    @unpack δ_sla, δ_wrsa, β_sla, β_wrsa = container.p
     @unpack A_wrsa, A_sla = container.transfer_function
+    @unpack δ_sla, δ_wrsa, ϕ_rsa, ϕ_sla, η_μ_sla, η_σ_sla,
+    β_η_wrsa, β_η_sla, η_μ_wrsa, η_σ_wrsa, β_sla, β_wrsa = container.p
+    @unpack srsa, sla, abp, lbp = container.traits
 
     if included.sla_water_growth_reducer
+        η_min_sla = η_μ_sla - η_σ_sla
+        η_max_sla = η_μ_sla + η_σ_sla
+        @. A_sla = (η_min_sla + (η_max_sla - η_min_sla) / (1 + exp(-β_η_sla * (lbp * above_biomass/total_biomass * sla - ϕ_sla)))) # TODO
         @. W_sla = 1 - δ_sla + δ_sla / (1 + exp(-β_sla * (Wsc - A_sla)))
     else
         W_sla .= 1.0
     end
 
     if included.rsa_water_growth_reducer
+        η_min_wrsa = η_μ_wrsa - η_σ_wrsa
+        η_max_wrsa = η_μ_wrsa + η_σ_wrsa
+        @. A_wrsa =  (η_max_wrsa + (η_min_wrsa - η_max_wrsa) /
+        (1 + exp(-β_η_wrsa * ((1 - above_biomass/total_biomass) * srsa - ϕ_rsa))))  # TODO add to documentation and manuscript
         @. W_rsa = 1 - δ_wrsa + δ_wrsa / (1 + exp(-β_wrsa * (Wsc - A_wrsa)))
     else
         W_rsa .= 1.0

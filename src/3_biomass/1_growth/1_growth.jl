@@ -32,8 +32,8 @@ function growth!(; t, container, above_biomass, total_biomass, actual_height, W,
     ########### Species-specific growth adjustment
     light_competition!(; container, above_biomass, actual_height)
     below_ground_competition!(; container, total_biomass)
-    water_reduction!(; container, W, PWP, WHC)
-    nutrient_reduction!(; container, nutrients)
+    water_reduction!(; container, W, PWP, WHC, above_biomass, total_biomass)
+    nutrient_reduction!(; container, nutrients, above_biomass, total_biomass)
     @. species_specific_red = light_competition * Waterred * Nutred * root_invest
 
     ########### Final growth

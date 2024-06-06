@@ -49,40 +49,6 @@ function input_nutrients!(; prealloc, input_obj, p)
     return nothing
 end
 
-"""
-Initialisation of the transfer functions that link the traits to
-the response to water and nutrient stress.
-"""
-function init_nutrient_transfer_functions!(; input_obj, prealloc, p)
-    @unpack included = input_obj.simp
-    if included.nutrient_growth_reduction
-        @unpack δ_amc, δ_nrsa, ϕ_amc, ϕ_rsa, η_μ_amc, η_σ_amc,
-                β_η_amc, β_η_nrsa, η_μ_nrsa, η_σ_nrsa = p
-        @unpack amc, srsa, abp = prealloc.traits
-        @unpack A_amc, A_nrsa = prealloc.transfer_function
-
-        #### Arbuscular mycorrhizal colonisation
-        for amc_val in amc
-            if !(0.0 .<= amc_val .<= 1.0)
-                error("$amc (mycorrhizal_colonisation) not between 0 and 1")
-            end
-        end
-
-        η_min_amc = η_μ_amc - η_σ_amc
-        η_max_amc = η_μ_amc + η_σ_amc
-        @. A_amc = (η_max_amc - (η_max_amc - η_min_amc) /
-            (1 + exp(-β_η_amc * ((1-abp)*amc - ϕ_amc)))) # TODO
-
-        #### Root surface area per above ground biomass
-        η_min_nrsa = η_μ_nrsa - η_σ_nrsa
-        η_max_nrsa = η_μ_nrsa + η_σ_nrsa
-        @. A_nrsa =  (η_max_nrsa + (η_min_nrsa - η_max_nrsa) /
-            (1 + exp(-β_η_nrsa * ((1-abp)*srsa - ϕ_rsa)))) # TODO
-    end
-
-    return nothing
-end
-
 @doc raw"""
 Calculates the similarity between plants concerning their investment
 in fine roots and collaboration with mycorrhiza.
@@ -283,7 +249,7 @@ root surface area per belowground biomass (`srsa`).
 `δ_nrsa` equals 0.5:
 ![Graphical overview of the functional response](../img/N_rsa_0_5.png)
 """
-function nutrient_reduction!(; container, nutrients)
+function nutrient_reduction!(; container, nutrients, above_biomass, total_biomass)
     @unpack included = container.simp
     @unpack Nutred = container.calc
 
@@ -294,10 +260,25 @@ function nutrient_reduction!(; container, nutrients)
     end
 
     @unpack A_amc, A_nrsa = container.transfer_function
-    @unpack δ_amc, δ_nrsa, β_amc, β_nrsa = container.p
     @unpack nutrients_splitted, biomass_density_factor,
             N_amc, nutrients_splitted, N_rsa,
             nutrients_splitted = container.calc
+    @unpack δ_amc, δ_nrsa, ϕ_amc, ϕ_rsa, η_μ_amc, η_σ_amc,
+            β_η_amc, β_η_nrsa, η_μ_nrsa, η_σ_nrsa, β_amc, β_nrsa = container.p
+    @unpack amc, srsa = container.traits
+
+
+    η_min_amc = η_μ_amc - η_σ_amc
+    η_max_amc = η_μ_amc + η_σ_amc
+    @. A_amc = (η_max_amc - (η_max_amc - η_min_amc) /
+        (1 + exp(-β_η_amc * ((1-above_biomass/total_biomass)*amc - ϕ_amc)))) # TODO
+
+    #### Root surface area per above ground biomass
+    η_min_nrsa = η_μ_nrsa - η_σ_nrsa
+    η_max_nrsa = η_μ_nrsa + η_σ_nrsa
+    @. A_nrsa =  (η_max_nrsa + (η_min_nrsa - η_max_nrsa) /
+        (1 + exp(-β_η_nrsa * ((1-above_biomass/total_biomass)*srsa - ϕ_rsa)))) # TODO
+
 
     @. nutrients_splitted = nutrients * biomass_density_factor
     @. nutrients_splitted = min(nutrients_splitted, 1.0) # TODO add to documentation

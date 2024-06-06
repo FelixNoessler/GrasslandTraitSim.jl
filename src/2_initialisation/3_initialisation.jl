@@ -26,10 +26,6 @@ function initialization(; input_obj, p, prealloc, prealloc_specific,
     # leaf senescence rate μ []
     senescence_rate!(; input_obj, prealloc, p)
 
-    # linking traits to water and nutrient stress
-    init_water_transfer_functions!(; input_obj, prealloc, p)
-    init_nutrient_transfer_functions!(; input_obj, prealloc, p)
-
     # investment to roots
     root_investment!(; input_obj, prealloc, p)
 
