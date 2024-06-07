@@ -34,7 +34,14 @@ function get_validation_data(; plotID, biomass_stats = nothing, mean_input_date 
     height = DimArray(height_sub.height,
         (; time = date_to_solt(height_sub.date; mean_input_date)))
 
-    return (; traits, biomass, biomass_type, height)
+    # ---------------------------- functional dispersion
+    f = plotID .== data.valid.fun_diversity.plotID
+    fun_diversity = (; fdis = data.valid.fun_diversity.fdis[f],
+                     num_t = data.valid.fun_diversity.num_t[f],
+                     t = data.valid.fun_diversity.t[f])
+
+
+    return (; traits, biomass, biomass_type, height, fun_diversity)
 end
 
 function date_to_solt(calibration_dates; mean_input_date)

@@ -15,7 +15,6 @@ using DocStringExtensions
 using ForwardDiff
 using LinearAlgebra
 using JLD2
-using Parameters
 using Printf
 using Statistics
 using StatsBase
@@ -23,6 +22,7 @@ using PrettyTables
 using TimeSeries
 using TransformVariables
 using Unitful
+using UnPack
 
 @template (FUNCTIONS, METHODS) =
     """
@@ -156,12 +156,20 @@ function load_data(datapath)
         num_t = mtraits.numeric_date,
         plotID = mtraits.plotID)
 
+    fun_diversity = (;
+        fdis = mtraits.fdis,
+        t = mtraits.date,
+        num_t = mtraits.numeric_date,
+        plotID = mtraits.plotID
+    )
+
     valid = (;
         soilmoisture,
         evaporation,
         traits,
         measuredbiomass,
-        measuredheight)
+        measuredheight,
+        fun_diversity)
 
     ########### input data
     ## time dependent 2009-2022

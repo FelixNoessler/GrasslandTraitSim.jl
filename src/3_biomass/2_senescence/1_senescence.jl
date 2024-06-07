@@ -22,7 +22,7 @@ Intialize the basic senescence rate based on the specific leaf area
 """
 function senescence_rate!(; input_obj, prealloc, p)
     @unpack included = input_obj.simp
-    @unpack sla, lbp = prealloc.traits
+    @unpack sla = prealloc.traits
     @unpack μ =  prealloc.calc
 
     if !included.senescence
@@ -30,8 +30,8 @@ function senescence_rate!(; input_obj, prealloc, p)
         return nothing
     end
 
-    @unpack β_sen_sla, ϕ_sla, α_sen = p
-    @. μ  = 2 * α_sen / (1 + exp(-β_sen_sla * (lbp * sla - ϕ_sla))) # TODO
+    @unpack β_sen_sla, ϕ_sen_sla, α_sen = p
+    @. μ  = α_sen * (sla / ϕ_sen_sla) ^ ustrip(β_sen_sla) # TODO
 
     return nothing
 end
@@ -111,9 +111,9 @@ end
 function plot_senescence_rate(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
     @unpack sla = container.traits
-    @unpack β_sen_sla, α_sen, ϕ_sla = container.p
+    @unpack β_sen_sla, α_sen = container.p
     nvals = 200
-    β_sen_sla_values = LinRange(0, 5, nvals)
+    β_sen_sla_values = LinRange(0, 2, nvals)
     ymat = Array{Float64}(undef, nvals, nspecies)
 
     prealloc = (; traits = container.traits, calc = container.calc)
@@ -121,7 +121,7 @@ function plot_senescence_rate(; θ = nothing, path = nothing)
     p = container.p
 
     for i in eachindex(β_sen_sla_values)
-        p.β_sen_sla = β_sen_sla_values[i]u"Mg / ha"
+        p.β_sen_sla = β_sen_sla_values[i]
         senescence_rate!(; input_obj, prealloc, p)
         @. ymat[i, :] = prealloc.calc.μ
     end
@@ -136,7 +136,7 @@ function plot_senescence_rate(; θ = nothing, path = nothing)
     end
     hlines!(α_sen; color = :orange, linewidth = 3, linestyle = :dash)
     vlines!(ustrip(β_sen_sla))
-    text!(3, α_sen * 1.01, text = "α_sen";)
+    text!(1.5, α_sen * 1.01, text = "α_sen";)
 
     Colorbar(fig[1, 2]; colorrange, label = "Specific leaf area [m² g⁻¹]")
 

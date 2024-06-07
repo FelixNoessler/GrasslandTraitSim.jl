@@ -57,7 +57,6 @@ The species differ in their response to water stress by the different trait valu
 It is implemented in [`water_reduction!`](@ref).
 
 ```@docs
-init_water_transfer_functions!
 water_reduction!
 ```
 
@@ -100,7 +99,6 @@ The species differ in the response to nutrient availability by different proport
 It is implemented in [`nutrient_reduction!`](@ref).
 
 ```@docs
-init_nutrient_transfer_functions!
 nutrient_reduction!
 ```
 

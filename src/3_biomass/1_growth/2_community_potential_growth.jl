@@ -265,8 +265,10 @@ function plot_community_height_influence(; θ = nothing, path = nothing)
     input_obj.input.LD_grazing .= NaN * u"ha^-1"
     input_obj.input.CUT_mowing .= NaN * u"m"
     p = SimulationParameter()
-    for k in keys(θ)
-        p[k] = θ[k]
+    if !isnothing(θ)
+        for k in keys(θ)
+            p[k] = θ[k]
+        end
     end
 
     function sim_community_height(; community_height_red)

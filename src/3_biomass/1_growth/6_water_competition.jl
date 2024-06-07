@@ -76,9 +76,11 @@ function plot_W_srsa(; δ_wrsa = nothing, θ = nothing, path = nothing)
     WHC = 1u"mm"
     PWP = 0u"mm"
     W = 1 * u"mm"
+    above_biomass = ones(nspecies)u"kg/ha"
+    total_biomass = fill(2, nspecies)u"kg/ha"
 
     for (i, x) in enumerate(xs)
-        water_reduction!(; container, W = x * u"mm", PWP, WHC)
+        water_reduction!(; container, W = x * u"mm", PWP, WHC, above_biomass, total_biomass)
         ymat[i, :] .= container.calc.W_rsa
     end
 
@@ -155,10 +157,13 @@ function plot_W_sla(; δ_sla = nothing, θ = nothing, path = nothing)
     ymat = fill(0.0, length(xs), nspecies)
     WHC = 1u"mm"
     PWP = 0u"mm"
+    above_biomass = ones(nspecies)u"kg/ha"
+    total_biomass = fill(2, nspecies)u"kg/ha"
 
     for (i, x) in enumerate(xs)
         W = x * u"mm"
-        water_reduction!(; container, W, PWP, WHC)
+        water_reduction!(; container, W, PWP, WHC, above_biomass,
+                          total_biomass)
         ymat[i, :] .= container.calc.W_sla
     end
 

@@ -148,7 +148,7 @@ function update_plots(; sol, plot_obj, valid_data = nothing)
     simulated_height_plot(; plot_obj, sol, valid_data)
 
     ########### simulated functional dispersion
-    functional_dispersion_plot(; plot_obj, sol)
+    functional_dispersion_plot(; plot_obj, sol, valid_data)
 
     ########### Share of species
     trait_share_plot(; plot_obj, sol)

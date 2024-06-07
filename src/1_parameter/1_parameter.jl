@@ -11,9 +11,9 @@ the permanent wilting point (see [`input_WHC_PWP!`](@ref)).
 
 $(MYNEWFIELDS)
 """
-@with_kw_noshow mutable struct SimulationParameter{T, Qkg_MJ, Qmha_Mg, Qkg_ha, Qm2_g,
+@kwdef mutable struct SimulationParameter{T, Qkg_MJ, Qmha_Mg, Qkg_ha, Qm2_g,
                                                  Qg_m2, Qg_kg, Qha_MJ, QMJ_ha,
-                                                 QC, QK, QMg_ha, Qkg, Qha_kg, Qha_Mg}
+                                                 QC, QK, Qkg, Qha_kg, Qha_Mg}
 
     ####################################################################################
     ## 1 Light interception and competition
@@ -375,10 +375,16 @@ $(MYNEWFIELDS)
     α_sen::T = F(0.002)
 
     """
+    4::``\\phi_{sen, sla}``::TODO,
+    see [`water_reduction!`](@ref)
+    """
+    ϕ_sen_sla::Qm2_g = F(0.002)u"m^2 / g"
+
+    """
     4::``\\beta_{SEN}``::TODO
     see [`senescence_rate!`](@ref)
     """
-    β_sen_sla::QMg_ha = F(1.0)u"Mg/ha"
+    β_sen_sla::T = F(0.3)
 
     """
     4::``Ψ_1``::temperature threshold: senescence starts to increase,
@@ -584,7 +590,7 @@ function exlude_parameter(; input_obj)
     end
 
     if  !included.senescence
-        append!(excl_p, [:α_sen, :β_sen_sla])
+        append!(excl_p, [:α_sen, :β_sen_sla, :ϕ_sen_sla])
     end
 
     if !included.senescence || !included.senescence_season
@@ -608,7 +614,7 @@ function exlude_parameter(; input_obj)
 end
 
 F = Float64
-function SimulationParameter(dual_type)
+function SimulationParameter(dual_type::DataType)
     global F = dual_type
     p = SimulationParameter()
     global F = Float64

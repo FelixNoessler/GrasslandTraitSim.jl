@@ -302,9 +302,12 @@ function plot_N_amc(; δ_amc = nothing, θ = nothing, path = nothing)
 
     xs = LinRange(0.0, 1.0, 20)
     ymat = fill(0.0, length(xs), nspecies)
+    above_biomass = ones(nspecies)u"kg/ha"
+    total_biomass = fill(2, nspecies)u"kg/ha"
 
     for (i, x) in enumerate(xs)
-        nutrient_reduction!(; container, nutrients = x)
+        nutrient_reduction!(; container, nutrients = x, above_biomass,
+                             total_biomass)
         ymat[i, :] .= container.calc.N_amc
     end
 
@@ -377,9 +380,12 @@ function plot_N_srsa(; δ_nrsa = nothing, θ = nothing, path = nothing)
 
     xs = LinRange(0, 1.0, 20)
     ymat = fill(0.0, length(xs), nspecies)
+    above_biomass = ones(nspecies)u"kg/ha"
+    total_biomass = fill(2, nspecies)u"kg/ha"
 
     for (i, x) in enumerate(xs)
-        nutrient_reduction!(; container, nutrients = x)
+        nutrient_reduction!(; container, nutrients = x, above_biomass,
+                            total_biomass)
         ymat[i, :] .= container.calc.N_rsa
     end
 

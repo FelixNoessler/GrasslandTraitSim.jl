@@ -58,10 +58,10 @@ function biomass_plot(;
         biomass_lower5 = quantile.(biomass_dist, 0.25)
         biomass_upper5 = quantile.(biomass_dist, 0.75)
 
-        rangebars!(ax, t[1:thin:end], biomass_lower[1:thin:end],
-            biomass_upper[1:thin:end]; color = (:black, 0.3), linewidth = 1)
-        rangebars!(ax, t[1:thin:end], biomass_lower5[1:thin:end],
-            biomass_upper5[1:thin:end]; color = (:black, 0.3), linewidth = 2)
+        # rangebars!(ax, t[1:thin:end], biomass_lower[1:thin:end],
+        #     biomass_upper[1:thin:end]; color = (:black, 0.3), linewidth = 1)
+        # rangebars!(ax, t[1:thin:end], biomass_lower5[1:thin:end],
+        #     biomass_upper5[1:thin:end]; color = (:black, 0.3), linewidth = 2)
 
         biomass = ustrip.(valid_data.biomass)
         num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.biomass, :time)]
@@ -169,8 +169,8 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait)
         upper_trait = quantile.(cwm_trait_dist_sub, 0.975)
         lower5_trait = quantile.(cwm_trait_dist_sub, 0.25)
         upper5_trait = quantile.(cwm_trait_dist_sub, 0.75)
-        rangebars!(ax, tsub, lower_trait, upper_trait; color = (:black, 0.3))
-        rangebars!(ax, tsub, lower5_trait, upper5_trait; color = (:black, 0.3), linewidth = 2)
+        # rangebars!(ax, tsub, lower_trait, upper_trait; color = (:black, 0.3))
+        # rangebars!(ax, tsub, lower5_trait, upper5_trait; color = (:black, 0.3), linewidth = 2)
         num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.traits, :time)]
         y = vec(valid_data.traits[trait = At(trait)])
         scatter!(ax, num_t, y, color = :black, markersize = 8)
@@ -250,20 +250,26 @@ function simulated_height_plot(; plot_obj, sol, valid_data)
 end
 
 
-function functional_dispersion_plot(; plot_obj, sol)
+function functional_dispersion_plot(; plot_obj, sol, valid_data)
     ax = plot_obj.axes[:functional_dispersion]
     empty!(ax)
 
     ax.ylabel = "Functional dispersion [-]"
     ax.xlabel = "Time [year]"
 
-    traits = sol.traits
+    traits = (; height = sol.traits.height, sla = sol.traits.sla, lnc = sol.traits.lnc)
     biomass = dropdims(
         mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims =(:x, :y))
 
     fdis = functional_dispersion(traits, biomass; )
 
     lines!(ax, sol.simp.output_date_num, fdis; color = :red)
+
+    if !isnothing(valid_data)
+        num_t = valid_data.fun_diversity.num_t
+        y = valid_data.fun_diversity.fdis
+        scatter!(ax, num_t, y, color = :black, markersize = 8)
+    end
 
     return nothing
 end
