@@ -36,7 +36,7 @@ function water_reduction!(; container, W, PWP, WHC, above_biomass, total_biomass
 
     Wsc = W > WHC ? 1.0 : W > PWP ? (W - PWP) / (WHC - PWP) : 0.0
 
-    @unpack W_sla, W_rsa = container.calc
+    @unpack W_sla, W_rsa, above_proportion = container.calc
     @unpack A_wrsa, A_sla = container.transfer_function
     @unpack δ_sla, δ_wrsa, ϕ_rsa, ϕ_sla, η_μ_sla, η_σ_sla,
     β_η_wrsa, β_η_sla, η_μ_wrsa, η_σ_wrsa, β_sla, β_wrsa = container.p
@@ -45,7 +45,7 @@ function water_reduction!(; container, W, PWP, WHC, above_biomass, total_biomass
     if included.sla_water_growth_reducer
         η_min_sla = η_μ_sla - η_σ_sla
         η_max_sla = η_μ_sla + η_σ_sla
-        @. A_sla = (η_min_sla + (η_max_sla - η_min_sla) / (1 + exp(-β_η_sla * (lbp * above_biomass/total_biomass * sla - ϕ_sla)))) # TODO
+        @. A_sla = (η_min_sla + (η_max_sla - η_min_sla) / (1 + exp(-β_η_sla * (lbp * above_proportion * sla - ϕ_sla)))) # TODO
         @. W_sla = 1 - δ_sla + δ_sla / (1 + exp(-β_sla * (Wsc - A_sla)))
     else
         W_sla .= 1.0
@@ -55,7 +55,7 @@ function water_reduction!(; container, W, PWP, WHC, above_biomass, total_biomass
         η_min_wrsa = η_μ_wrsa - η_σ_wrsa
         η_max_wrsa = η_μ_wrsa + η_σ_wrsa
         @. A_wrsa =  (η_max_wrsa + (η_min_wrsa - η_max_wrsa) /
-        (1 + exp(-β_η_wrsa * ((1 - above_biomass/total_biomass) * srsa - ϕ_rsa))))  # TODO add to documentation and manuscript
+        (1 + exp(-β_η_wrsa * ((1 - above_proportion) * srsa - ϕ_rsa))))  # TODO add to documentation and manuscript
         @. W_rsa = 1 - δ_wrsa + δ_wrsa / (1 + exp(-β_wrsa * (Wsc - A_wrsa)))
     else
         W_rsa .= 1.0

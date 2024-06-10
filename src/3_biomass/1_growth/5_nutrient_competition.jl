@@ -262,7 +262,7 @@ function nutrient_reduction!(; container, nutrients, above_biomass, total_biomas
     @unpack A_amc, A_nrsa = container.transfer_function
     @unpack nutrients_splitted, biomass_density_factor,
             N_amc, nutrients_splitted, N_rsa,
-            nutrients_splitted = container.calc
+            nutrients_splitted, above_proportion = container.calc
     @unpack δ_amc, δ_nrsa, ϕ_amc, ϕ_rsa, η_μ_amc, η_σ_amc,
             β_η_amc, β_η_nrsa, η_μ_nrsa, η_σ_nrsa, β_amc, β_nrsa = container.p
     @unpack amc, srsa = container.traits
@@ -271,13 +271,13 @@ function nutrient_reduction!(; container, nutrients, above_biomass, total_biomas
     η_min_amc = η_μ_amc - η_σ_amc
     η_max_amc = η_μ_amc + η_σ_amc
     @. A_amc = (η_max_amc - (η_max_amc - η_min_amc) /
-        (1 + exp(-β_η_amc * ((1-above_biomass/total_biomass)*amc - ϕ_amc)))) # TODO
+        (1 + exp(-β_η_amc * ((1-above_proportion)*amc - ϕ_amc)))) # TODO
 
     #### Root surface area per above ground biomass
     η_min_nrsa = η_μ_nrsa - η_σ_nrsa
     η_max_nrsa = η_μ_nrsa + η_σ_nrsa
     @. A_nrsa =  (η_max_nrsa + (η_min_nrsa - η_max_nrsa) /
-        (1 + exp(-β_η_nrsa * ((1-above_biomass/total_biomass)*srsa - ϕ_rsa)))) # TODO
+        (1 + exp(-β_η_nrsa * ((1-above_proportion)*srsa - ϕ_rsa)))) # TODO
 
 
     @. nutrients_splitted = nutrients * biomass_density_factor

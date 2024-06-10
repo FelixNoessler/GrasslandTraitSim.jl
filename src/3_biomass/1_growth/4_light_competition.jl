@@ -39,6 +39,11 @@ function light_competition!(; container, above_biomass, actual_height)
     @unpack LAItot = container.calc.com
     @unpack included = container.simp
 
+    if iszero(LAItot)
+        @. light_competition = 1
+        return nothing
+    end
+
     if !included.height_competition
         @info "Height influence turned off!" maxlog=1
         @. heightinfluence = 1.0
@@ -46,7 +51,8 @@ function light_competition!(; container, above_biomass, actual_height)
         @unpack relative_height = container.calc
         @unpack β_height = container.p
 
-        relative_height .= actual_height .* above_biomass ./ sum(above_biomass)
+        total_above_biomass = sum(above_biomass)
+        relative_height .= actual_height .* above_biomass ./ total_above_biomass
         height_cwm = sum(relative_height)
 
         # TODO change documentation

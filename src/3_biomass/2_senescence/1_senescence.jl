@@ -6,6 +6,11 @@ function senescence!(; container, ST, total_biomass)
     @unpack senescence, μ, com = container.calc
     @unpack included, time_step_days = container.simp
 
+    if !included.senescence
+        @. senescence = 0.0u"kg/ha"
+        return nothing
+    end
+
     com.SEN_season = if included.senescence_season
         seasonal_component_senescence(; container, ST)
     else
@@ -31,8 +36,7 @@ function senescence_rate!(; input_obj, prealloc, p)
     end
 
     @unpack β_sen_sla, ϕ_sen_sla, α_sen = p
-    @. μ  = α_sen * (sla / ϕ_sen_sla) ^ ustrip(β_sen_sla) # TODO
-
+    @. μ  = α_sen * (sla / ϕ_sen_sla) ^ β_sen_sla # TODO
     return nothing
 end
 

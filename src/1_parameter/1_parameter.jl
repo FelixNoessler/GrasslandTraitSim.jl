@@ -378,7 +378,7 @@ $(MYNEWFIELDS)
     4::``\\phi_{sen, sla}``::TODO,
     see [`water_reduction!`](@ref)
     """
-    ϕ_sen_sla::Qm2_g = F(0.002)u"m^2 / g"
+    ϕ_sen_sla::Qm2_g = F(0.009)u"m^2 / g"
 
     """
     4::``\\beta_{SEN}``::TODO
@@ -575,10 +575,6 @@ function exlude_parameter(; input_obj)
         append!(excl_p, [:β_PAL_lnc, :κ, :α_GRZ])
     end
 
-    if !included.mowing && !included.grazing
-        append!(excl_p, [:α_lowB, :β_lowB])
-    end
-
     if  !included.senescence
         append!(excl_p, [:α_sen, :β_sen_sla, :ϕ_sen_sla])
     end
@@ -593,11 +589,6 @@ function exlude_parameter(; input_obj)
 
     if !included.height_competition
         append!(excl_p, [:β_height])
-    end
-
-    if !included.lowbiomass_avoidance
-        append!(excl_p, [:α_lowB, :β_lowB])
-
     end
 
     return excl_p

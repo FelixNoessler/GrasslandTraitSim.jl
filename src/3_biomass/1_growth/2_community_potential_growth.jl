@@ -37,7 +37,7 @@ function potential_growth!(; container, above_biomass, actual_height, PAR)
 
     calculate_LAI!(; container, above_biomass)
 
-    if !included.potential_growth
+    if !included.potential_growth || iszero(com.LAItot)
         @info "Zero potential growth!" maxlog=1
         com.potgrowth_total = 0.0u"kg / ha"
         return nothing
