@@ -13,7 +13,7 @@ $(MYNEWFIELDS)
 """
 @kwdef mutable struct SimulationParameter{T, Qkg_MJ, Qmha_Mg, Qkg_ha, Qm2_g,
                                                  Qg_m2, Qg_kg, Qha_MJ, QMJ_ha,
-                                                 QC, QK, Qkg, Qha_kg, Qha_Mg}
+                                                 QC, QK, Qkg, Qha_Mg}
 
     ####################################################################################
     ## 1 Light interception and competition
@@ -425,16 +425,6 @@ $(MYNEWFIELDS)
     see [`grazing!`](@ref)
     """
     κ::Qkg = F(22.0)u"kg"
-
-    """
-    5::``\\alpha_{\\text{low}B}``::
-    """
-    α_lowB::Qkg_ha = F(20.0)u"kg / ha"
-
-    """
-    5::``\\beta_{\\text{low}B}``::
-    """
-    β_lowB::Qha_kg = F(0.1)u"ha / kg"
 
     ####################################################################################
     ## 6 Clonal growth
