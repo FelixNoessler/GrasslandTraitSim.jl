@@ -5,7 +5,7 @@ function calibrated_parameter(; input_obj = nothing)
             """The community height reduction should only apply to plant communities
             with a low community weighted mean plant height"""),
 
-        β_sen_sla = (truncated(Normal(0, 1.5); lower = 0.0), as(Real, 0.0, 1.5),
+        β_sen_sla = (truncated(Uniform(0, 1.5); lower = 0.0), as(Real, 0.0, 1.5),
             """TODO"""),
 
         β_height = (Uniform(0.0, 1.5), as(Real, 0.0, 1.5), "text"),
@@ -44,7 +44,9 @@ function calibrated_parameter(; input_obj = nothing)
         b_amc = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊, "text"),
         b_abp = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊, "text"),
         b_height = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊, "text"),
-        b_srsa = (truncated(Cauchy(0, 0.01); lower = 0.0), asℝ₊, "text")
+        b_srsa = (truncated(Cauchy(0, 0.01); lower = 0.0), asℝ₊, "text"),
+        b_simheight = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊, "text"),
+        b_fdis = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊, "text"),
     )
 
     if !isnothing(input_obj)

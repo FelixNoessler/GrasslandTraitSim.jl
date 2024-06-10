@@ -62,20 +62,6 @@ function loglikelihood_model(;
                                         dims = (:x, :y));
                                    dims = (:x, :y))
 
-
-        # val = 0.0
-        # for t in data_trait_t
-        #     for x in 1:patch_xdim
-        #         for y in 1:patch_ydim
-        #             for s in 1:nspecies
-        #                 val = ustrip(biomass[t, x, y, s])
-
-        #             end
-        #         end
-        #     end
-        # end
-
-
         species_biomass = ustrip.(species_biomass)
         site_biomass = vec(sum(species_biomass; dims = (:species)))
 
@@ -112,12 +98,10 @@ function loglikelihood_model(;
             #     φ = 1 / sol.p.b_amc
             #     α = @. μ * φ
             #     β = @. (1.0 - μ) * φ
-
             #     if any(iszero.(α)) || any(iszero.(β))
             #         ll_trait += -Inf
             #         continue
             #     end
-
             #     cwmtrait_d = Product(Beta.(α, β))
             # end
 
@@ -126,21 +110,49 @@ function loglikelihood_model(;
         end
     end
 
+
+    ########################################################################
+    ################## Community height
+    ########################################################################
+    ll_height = 0.0
+    if sol.simp.likelihood_included.height
+        height_t = LookupArrays.index(data.height, :time)
+        measured_height = ustrip.(data.height)
+        sim_height = ustrip.(sol.output.height[height_t])
+        height_d = Product(Normal.(sim_height, sol.p[:b_simheight]);)
+        ll_height = logpdf(height_d, measured_height)
+    end
+
+    ########################################################################
+    ################## Functional dispersion
+    ########################################################################
+    ll_fdis = 0.0
+    if sol.simp.likelihood_included.fdis
+        fdis_t = data.fun_diversity.time
+        measured_fdis = data.fun_diversity.fdis
+        traits = (; height = sol.traits.height, sla = sol.traits.sla, lnc = sol.traits.lnc)
+        biomass = dropdims(
+            mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims =(:x, :y))[fdis_t, :]
+        sim_fdis = functional_dispersion(traits, biomass; )
+        fdis_d = Product(Normal.(sim_fdis, sol.p[:b_fdis]);)
+        ll_fdis = logpdf(fdis_d, measured_fdis)
+    end
+
     ########################################################################
     ################## total likelihood
     ########################################################################
-    ll = ll_biomass + ll_trait
+    ll = ll_biomass + ll_trait + ll_height + ll_fdis
 
     ########################################################################
     ################## printing
     ########################################################################
     if pretty_print
-        bl, tl = round(ll_biomass), round(ll_trait)
-        @info "biomass: $(bl) trait cwm: $tl" maxlog=1000
+        bl, tl, hl, fl = round(ll_biomass), round(ll_trait), round(ll_height), round(ll_fdis)
+        println("biomass: $(bl) trait cwm: $tl, height: $hl, fdis: $fl")
     end
 
     if return_seperate
-        return (biomass = ll_biomass, trait = ll_trait)
+        return (biomass = ll_biomass, trait = ll_trait, height = ll_height, fdis = ll_fdis)
     end
 
     return ll

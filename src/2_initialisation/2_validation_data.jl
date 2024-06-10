@@ -38,7 +38,8 @@ function get_validation_data(; plotID, biomass_stats = nothing, mean_input_date 
     f = plotID .== data.valid.fun_diversity.plotID
     fun_diversity = (; fdis = data.valid.fun_diversity.fdis[f],
                      num_t = data.valid.fun_diversity.num_t[f],
-                     t = data.valid.fun_diversity.t[f])
+                     date = data.valid.fun_diversity.t[f],
+                     time = date_to_solt(data.valid.fun_diversity.t[f]; mean_input_date))
 
 
     return (; traits, biomass, biomass_type, height, fun_diversity)

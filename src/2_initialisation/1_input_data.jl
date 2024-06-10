@@ -34,7 +34,7 @@ function validation_input(;
         patch_ydim = 1,
         biomass_stats = nothing,
         included = (;),
-        likelihood_included = (; biomass = true, trait = true),
+        likelihood_included = (; biomass = true, trait = true, height = true, fdis = true),
         trait_seed = missing)
 
 

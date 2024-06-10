@@ -491,6 +491,16 @@ $(MYNEWFIELDS)
     8::``\\sigma_{srsa}``::
     """
     b_srsa::T = F(0.004)
+
+    """
+    8::``\\sigma_{sim,height}``::
+    """
+    b_simheight::T = F(0.5)
+
+    """
+    8::``\\sigma_{fdis}``::
+    """
+    b_fdis::T = F(0.5)
 end
 
 
