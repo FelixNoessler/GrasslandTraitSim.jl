@@ -23,8 +23,7 @@ function solve_prob(; input_obj, p, prealloc = nothing, prealloc_specific = noth
         prealloc_specific = preallocate_specific_vectors(; input_obj, T = θ_type)
     end
 
-    container = initialization(; input_obj, p, prealloc, prealloc_specific,
-                               trait_input, θ_type)
+    container = initialization(; input_obj, p, prealloc, prealloc_specific, trait_input)
 
     main_loop!(; container)
 

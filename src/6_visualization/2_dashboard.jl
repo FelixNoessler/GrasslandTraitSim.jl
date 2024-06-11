@@ -35,7 +35,7 @@ function dashboard(; posterior = nothing, variable_p = (;),
             if show_validdata
                 update_plots(; sol, plot_obj, valid_data)
             else
-                update_plots(; sol, plot_obj)
+                update_plots(; sol, plot_obj, valid_data = nothing)
             end
 
             ll_obj = loglikelihood_model(;
@@ -86,19 +86,19 @@ function dashboard(; posterior = nothing, variable_p = (;),
     plot_obj.obs.run_button.clicks[] = 1
 
     on(plot_obj.obs.toggle_grazmow.active) do n
-        biomass_plot(; plot_obj, sol, valid_data)
+        update_plots(; sol, plot_obj, valid_data)
     end
 
     on(plot_obj.obs.toggle_standingbiomass.active) do n
-        biomass_plot(; plot_obj, sol, valid_data)
+        update_plots(; sol, plot_obj, valid_data)
     end
 
     on(plot_obj.obs.menu_abiotic.selection) do n
-        abiotic_plot(; sol, plot_obj)
+        update_plots(; sol, plot_obj, valid_data)
     end
 
     on(plot_obj.obs.menu_traits.selection) do _
-        trait_share_plot(; plot_obj, sol)
+        update_plots(; sol, plot_obj, valid_data)
     end
 
     on(plot_obj.obs.toggle_validdata.active) do n
@@ -106,6 +106,34 @@ function dashboard(; posterior = nothing, variable_p = (;),
         if n
             valid_data = get_valid_data(; plot_obj, biomass_stats, mean_input_date)
         end
+        update_plots(; sol, plot_obj, valid_data)
+    end
+
+    on(plot_obj.obs.button_panelA.clicks) do _
+        plot_obj.obs.which_pane[] = 1
+        clear_panel!(plot_obj.obs.plots_layout)
+        @reset plot_obj.axes = create_axes_paneA(plot_obj.obs.plots_layout)
+        update_plots(; sol, plot_obj, valid_data)
+    end
+
+    on(plot_obj.obs.button_panelB.clicks) do _
+        plot_obj.obs.which_pane[] = 2
+        clear_panel!(plot_obj.obs.plots_layout)
+        @reset plot_obj.axes = create_axes_paneB(plot_obj.obs.plots_layout)
+        update_plots(; sol, plot_obj, valid_data)
+    end
+
+    on(plot_obj.obs.button_panelC.clicks) do _
+        plot_obj.obs.which_pane[] = 3
+        clear_panel!(plot_obj.obs.plots_layout)
+        @reset plot_obj.axes = create_axes_paneC(plot_obj.obs.plots_layout)
+        update_plots(; sol, plot_obj, valid_data)
+    end
+
+    on(plot_obj.obs.button_panelD.clicks) do _
+        plot_obj.obs.which_pane[] = 4
+        clear_panel!(plot_obj.obs.plots_layout)
+        @reset plot_obj.axes = create_axes_paneD(plot_obj.obs.plots_layout)
         update_plots(; sol, plot_obj, valid_data)
     end
 
@@ -127,31 +155,17 @@ function get_valid_data(; plot_obj, biomass_stats = nothing, mean_input_date)
     return data
 end
 
-function update_plots(; sol, plot_obj, valid_data = nothing)
-    ########### Biomass
-    biomass_plot(;
-        plot_obj,
-        sol,
-        valid_data)
 
-    ########### Soil water
-    soilwater_plot(; sol, plot_obj)
+function update_plots(; plot_obj, kwargs...)
+    pane = plot_obj.obs.which_pane.val
 
-    ########### Abiotic plot
-    abiotic_plot(; sol, plot_obj)
-
-    ########### Trait changes over time
-    [trait_time_plot(; plot_obj, sol, valid_data, trait = t) for t in
-        [:amc, :sla, :height, :srsa, :lnc, :abp]]
-
-    ########### simulated mean height
-    simulated_height_plot(; plot_obj, sol, valid_data)
-
-    ########### simulated functional dispersion
-    functional_dispersion_plot(; plot_obj, sol, valid_data)
-
-    ########### Share of species
-    trait_share_plot(; plot_obj, sol)
-
-    return nothing
+    if pane == 1
+        update_plots_paneA(; plot_obj, kwargs...)
+    elseif pane == 2
+        update_plots_paneB(; plot_obj, kwargs...)
+    elseif pane == 3
+        update_plots_paneC(; plot_obj, kwargs...)
+    elseif pane == 4
+        update_plots_paneD(; plot_obj, kwargs...)
+    end
 end

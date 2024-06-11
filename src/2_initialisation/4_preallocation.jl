@@ -54,6 +54,10 @@ function preallocate_vectors(; input_obj, T = Float64)
         Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim, nspecies),
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :water_growth)
+    root_invest = DimArray(
+        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim, nspecies),
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        name = :root_invest)
 
     #### Community-level output variables
     community_pot_growth = DimArray(
@@ -80,7 +84,8 @@ function preallocate_vectors(; input_obj, T = Float64)
     output = (; biomass, above_biomass, below_biomass, water, height,
               mown, grazed, senescence, community_pot_growth,
               act_growth, radiation_reducer, seasonal_growth, temperature_reducer,
-              seasonal_senescence, light_growth, water_growth, nutrient_growth)
+              seasonal_senescence, light_growth, water_growth, nutrient_growth,
+              root_invest)
 
     ############# change and state variables
     du_biomass = DimArray(
@@ -192,7 +197,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         rsa_above_resid = Array{T}(undef, nspecies),
 
         ## below ground competition
-        biomass_density_factor = Array{T}(undef, nspecies),
+        nutrients_adj_factor = Array{T}(undef, nspecies),
         TS_biomass = Array{T}(undef, nspecies)u"kg / ha",
 
         ## height influence

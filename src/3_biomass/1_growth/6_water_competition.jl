@@ -25,7 +25,7 @@ lower specific root surface area per above ground biomass (`srsa`).
 `δ_wrsa` equals 0.5:
 # ![Graphical overview of the functional response](../img/W_rsa_0_5.png)
 """
-function water_reduction!(; container, W, PWP, WHC, above_biomass, total_biomass)
+function water_reduction!(; container, W, PWP, WHC)
     @unpack included = container.simp
     @unpack Waterred = container.calc
     if !included.water_growth_reduction
@@ -78,9 +78,10 @@ function plot_W_srsa(; δ_wrsa = nothing, θ = nothing, path = nothing)
     W = 1 * u"mm"
     above_biomass = ones(nspecies)u"kg/ha"
     total_biomass = fill(2, nspecies)u"kg/ha"
+    @. container.calc.above_proportion = above_biomass / total_biomass
 
     for (i, x) in enumerate(xs)
-        water_reduction!(; container, W = x * u"mm", PWP, WHC, above_biomass, total_biomass)
+        water_reduction!(; container, W = x * u"mm", PWP, WHC)
         ymat[i, :] .= container.calc.W_rsa
     end
 
@@ -159,11 +160,11 @@ function plot_W_sla(; δ_sla = nothing, θ = nothing, path = nothing)
     PWP = 0u"mm"
     above_biomass = ones(nspecies)u"kg/ha"
     total_biomass = fill(2, nspecies)u"kg/ha"
+    @. container.calc.above_proportion = above_biomass / total_biomass
 
     for (i, x) in enumerate(xs)
         W = x * u"mm"
-        water_reduction!(; container, W, PWP, WHC, above_biomass,
-                          total_biomass)
+        water_reduction!(; container, W, PWP, WHC)
         ymat[i, :] .= container.calc.W_sla
     end
 

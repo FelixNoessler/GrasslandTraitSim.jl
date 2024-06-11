@@ -15,8 +15,8 @@ function calibrated_parameter(; input_obj = nothing)
         η_GRZ = (truncated(Normal(10.0, 10.0); lower = 0.0, upper = 30.0),
                                as(Real, 0.0, 30.0), "text"),
 
-        α_TSB = (truncated(Normal(1000.0, 1000.0); lower = 0.0), asℝ₊, "text"),
-        β_TSB = (truncated(Normal(1.0, 0.5); lower = 0.0), asℝ₊, "text"),
+        α_TSB = (truncated(Normal(18000.0, 1500.0); lower = 0.0), asℝ₊, "text"),
+        β_TSB = (truncated(Normal(3, 0.5); lower = 0.0), asℝ₊, "text"),
 
         α_TR_sla = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊, "text"),
         β_TR_sla = (truncated(Normal(1.0, 5.0); lower = 0.0), asℝ₊, "text"),

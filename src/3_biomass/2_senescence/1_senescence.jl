@@ -25,17 +25,17 @@ end
 """
 Intialize the basic senescence rate based on the specific leaf area
 """
-function senescence_rate!(; input_obj, prealloc, p)
-    @unpack included = input_obj.simp
-    @unpack sla = prealloc.traits
-    @unpack μ =  prealloc.calc
+function senescence_rate!(; container)
+    @unpack included = container.simp
+    @unpack sla = container.traits
+    @unpack μ =  container.calc
 
     if !included.senescence
         @. μ = 0.0
         return nothing
     end
 
-    @unpack β_sen_sla, ϕ_sen_sla, α_sen = p
+    @unpack β_sen_sla, ϕ_sen_sla, α_sen = container.p
     @. μ  = α_sen * (sla / ϕ_sen_sla) ^ β_sen_sla # TODO
     return nothing
 end

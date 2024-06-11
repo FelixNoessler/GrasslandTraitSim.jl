@@ -1,17 +1,51 @@
+function create_axes_paneA(layout)
+    axes = Dict()
+    axes[:biomass] = Axis(layout[1, 1]; alignmode = Inside(),
+                          limits = (nothing, nothing, -100.0, nothing),
+                          ylabel = "Aboveground biomass [kg ha⁻¹]",
+                          xticklabelsvisible = false)
+
+    axes[:simulated_height] = Axis(layout[1, 2]; alignmode = Inside(),
+                                   ylabel = "Height [m]",
+                                   limits = (nothing, nothing, -0.05, 0.71),
+                                   yticks = 0.0:0.1:1.5, xticklabelsvisible = false)
+    axes[:simulated_abp] = Axis(layout[1, 3]; alignmode = Inside(),
+                                ylabel = "Aboveground biomass per total biomass [-]",
+                                xticklabelsvisible = false)
+
+    axes[:soilwater] = Axis(layout[2, 1]; alignmode = Inside(),
+                            ylabel = "Soil water [mm]", xlabel = "Time [years]",
+                            limits=(nothing, nothing, 0.0, nothing))
+    axes[:functional_dispersion] = Axis(layout[2, 2]; alignmode = Inside(),
+                                        ylabel = "Functional dispersion [-]",
+                                        xlabel = "Time [year]")
+    axes[:trait_share] = Axis(layout[2, 3]; alignmode = Inside(),
+                              ylabel = "Relative proportion", xlabel = "Time [year]")
+    axes[:cb_trait_share] = Colorbar(layout[2, 4]; halign = :left,
+                                     limits = (0.0, 1.0))
+
+    return axes
+end
+
+
+function update_plots_paneA(; kwargs...)
+    biomass_plot(; kwargs...)
+    simulated_height_plot(; kwargs...)
+    simulated_aboveground_proportion(; kwargs...)
+    soilwater_plot(; kwargs...)
+    functional_dispersion_plot(; kwargs...)
+    trait_share_plot(; kwargs...)
+end
+
 function biomass_plot(;
-        plot_obj,
-        patch = 1,
-        sol,
-        valid_data)
-    ax = plot_obj.axes[:biomass]
-    empty!(ax)
-    ax.ylabel = "Aboveground\nbiomass [kg ha⁻¹]"
-    ax.xlabel = "Time [years]"
-    ax.xticklabelsvisible = false
-    ax.xlabelvisible = false
+    plot_obj,
+    patch = 1,
+    sol,
+    valid_data, kwargs...)
 
-    thin = 1
+    ax = clear_plotobj_axes(plot_obj, :biomass)
 
+    thin = 20
     t = sol.simp.output_date_num
 
     show_standingbiomass = plot_obj.obs.toggle_standingbiomass.active.val
@@ -30,7 +64,7 @@ function biomass_plot(;
     show_grazmow = plot_obj.obs.toggle_grazmow.active.val
     if show_grazmow
         # -------------- grazing
-    	yupper = (.! isnan.(sol.input.LD_grazing)) .* 5500.0
+        yupper = (.! isnan.(sol.input.LD_grazing)) .* 5500.0
         ylower = fill(0.0, length(yupper))
         band!(ax, sol.simp.mean_input_date_num, ylower, yupper;
             color = (:steelblue4, 0.6))
@@ -75,15 +109,11 @@ function biomass_plot(;
     return nothing
 end
 
-function soilwater_plot(; sol, plot_obj)
-    ax = plot_obj.axes[:soilwater]
-    empty!(ax)
-    ax.xticklabelsvisible = false
-    ax.xlabelvisible = false
+function soilwater_plot(; sol, plot_obj, kwargs...)
+    ax = clear_plotobj_axes(plot_obj, :soilwater)
 
     thin = 1
     t = sol.simp.output_date_num[1:thin:end]
-
     water_μ = mean(ustrip.(sol.output.water); dims = (:x, :y))[1:thin:end]
     lines!(ax, t, water_μ; color = :turquoise3, linewidth = 2)
 
@@ -93,96 +123,21 @@ function soilwater_plot(; sol, plot_obj)
         color = :blue)
     lines!(ax, [sol.simp.output_date_num[1], sol.simp.output_date_num[end]], [WHC, WHC];
         color = :blue)
-    ax.ylabel = "Soil water [mm]"
-    ax.xlabel = "Time [years]"
-    ylims!(ax, 0.0, nothing)
 end
 
-function abiotic_plot(; sol, plot_obj)
-    thin = 1
+function trait_share_plot(; plot_obj, sol, kwargs...)
 
-    ax = plot_obj.axes[:abiotic]
-    empty!(ax)
-    ax.xticklabelsvisible = false
-    ax.xlabelvisible = false
+    trait_names = Dict(
+        :sla => "Specific leaf area [m² g⁻¹]",
+        :lnc => "Leaf nitrogen per leaf mass [mg g⁻¹]",
+        :height => "Potential height [m]",
+        :amc => "Arbuscular mycorrhizal colonisation [-]",
+        :srsa => "Root surface area per belowground biomass [m² g⁻¹]",
+        :abp => "Aboveground biomass per total biomass [-]"
+    )
 
-    abiotic_colors = [:blue, :brown, :red, :red, :orange]
-    abiotic = plot_obj.obs.menu_abiotic.selection.val
-    name_index = getindex.([plot_obj.obs.menu_abiotic.options.val...], 2) .== abiotic
-    abiotic_name = first.([plot_obj.obs.menu_abiotic.options.val...])[name_index][1]
-    abiotic_color = abiotic_colors[name_index][1]
-
-    scatterlines!(ax, sol.simp.mean_input_date_num[1:thin:end],
-        ustrip.(sol.input[abiotic])[1:thin:end];
-        color = abiotic_color, markersize = 4, linewidth = 0.1)
-    ax.ylabel = abiotic_name
-    ax.xlabel = "Time [years]"
-end
-
-function trait_time_plot(; sol, valid_data, plot_obj, trait)
-    ax = plot_obj.axes[trait]
-    empty!(ax)
-    t = sol.simp.output_date_num
-
-    trait_names = [
-        "Specific leaf\narea [m² g⁻¹]", "Leaf nitrogen per\nleaf mass [mg g⁻¹]",
-        "Potential height [m]", "Arbuscular mycorrhizal\ncolonisation [-]",
-        "Root surface area per\nbelowground biomass [m² g⁻¹]",
-        "Aboveground biomass\nper total biomass [-]"]
-    trait_symbols = [:sla, :lnc, :height, :amc, :srsa, :abp]
-    name_index = trait_symbols .== trait
-    trait_name = trait_names[name_index][1]
-
-    trait_vals = ustrip.(sol.traits[trait])
-
-    species_biomass = dropdims(
-        mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims =(:x, :y))
-    total_biomass = sum(species_biomass, dims = :species)
-    relative_biomass = species_biomass ./ total_biomass
-
-    ##  mean
-    weighted_trait = Matrix(trait_vals .* relative_biomass')
-    cwm_trait = vec(sum(weighted_trait; dims = 1))
-    cwv_trait = sqrt.(vec(sum(relative_biomass .* (cwm_trait .- trait_vals') .^ 2; dims = 2)))
-    ax.xlabel = "Time [years]"
-    ax.ylabel = "$trait_name"
-    ax.xticklabelsvisible = false
-    ax.xlabelvisible = false
-
-    ### trait values of all species
-    for i in 1:(sol.simp.nspecies)
-        trait_i = trait_vals[i]
-        lines!(ax, [t[1], t[end]], [trait_i, trait_i], color = (:grey, 0.2))
-    end
-
-    cwm_trait_dist = Normal.(cwm_trait, sol.p[Symbol("b_$trait")])
-    median_trait = median.(cwm_trait_dist)
-
-    lines!(ax, t, median_trait, color = :blue)
-    band!(ax, t, median_trait .+ cwv_trait, median_trait .- cwv_trait;
-        color = (:blue, 0.3))
-
-    if !isnothing(valid_data)
-        cwm_trait_dist_sub = cwm_trait_dist[LookupArrays.index(valid_data.traits, :time)]
-        tsub = t[LookupArrays.index(valid_data.traits, :time)]
-        lower_trait = quantile.(cwm_trait_dist_sub, 0.025)
-        upper_trait = quantile.(cwm_trait_dist_sub, 0.975)
-        lower5_trait = quantile.(cwm_trait_dist_sub, 0.25)
-        upper5_trait = quantile.(cwm_trait_dist_sub, 0.75)
-        # rangebars!(ax, tsub, lower_trait, upper_trait; color = (:black, 0.3))
-        # rangebars!(ax, tsub, lower5_trait, upper5_trait; color = (:black, 0.3), linewidth = 2)
-        num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.traits, :time)]
-        y = vec(valid_data.traits[trait = At(trait)])
-        scatter!(ax, num_t, y, color = :black, markersize = 8)
-    end
-end
-
-
-function trait_share_plot(; plot_obj, sol)
     trait = plot_obj.obs.menu_traits.selection.val
-
-    ax = plot_obj.axes[:trait_share]
-    empty!(ax)
+    ax = clear_plotobj_axes(plot_obj, :trait_share)
 
     color = ustrip.(sol.traits[trait])
     colormap = :viridis
@@ -198,8 +153,6 @@ function trait_share_plot(; plot_obj, sol)
     biomass_fraction = biomass_ordered ./ sum(biomass_ordered; dims = :species)
     biomass_cumfraction = cumsum(biomass_fraction; dims = 2)
 
-    ax.ylabel = "Relative proportion"
-    ax.xlabel = "Time [year]"
     limits!(ax, sol.simp.output_date_num[1], sol.simp.output_date_num[end], 0, 1)
 
     for i in 1:sol.simp.nspecies
@@ -216,16 +169,42 @@ function trait_share_plot(; plot_obj, sol)
     end
 
     plot_obj.axes[:cb_trait_share].limits[] = colorrange
+    plot_obj.axes[:cb_trait_share].label[] = trait_names[trait]
 
     return nothing
 end
 
-function simulated_height_plot(; plot_obj, sol, valid_data)
-    ax = plot_obj.axes[:simulated_height]
-    empty!(ax)
 
-    ax.ylabel = "Height [m]"
-    ax.xlabel = "Time [year]"
+function simulated_aboveground_proportion(; plot_obj, sol, valid_data, kwargs...)
+    ax = clear_plotobj_axes(plot_obj, :simulated_abp)
+
+    ###### calculate biomass weighted proportion of aboveground biomass / total biomass
+    species_totalbiomass = dropdims(
+        mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims =(:x, :y))
+    totalbiomass = sum(species_totalbiomass, dims = :species)
+    species_abovegroundbiomass = dropdims(
+        mean(ustrip.(sol.output.above_biomass); dims = (:x, :y)); dims =(:x, :y))
+    species_above_proportion = species_abovegroundbiomass ./ species_totalbiomass
+    relative_biomass = species_totalbiomass ./ totalbiomass
+    above_proportion = dropdims(sum(species_above_proportion .* relative_biomass;
+                                    dims = :species); dims = :species)
+
+    ###### calculate alpha values
+    mean_species_biomass = vec(mean(species_totalbiomass; dims = (:time)))
+    mean_total_biomass = sum(mean_species_biomass)
+    alpha_val = min.(10 .* mean_species_biomass ./ mean_total_biomass, 1)
+
+    for s in 1:sol.simp.nspecies
+        lines!(ax, sol.simp.output_date_num, species_above_proportion[:, s],
+               color = (:grey, alpha_val[s]))
+    end
+    lines!(ax, sol.simp.output_date_num, vec(above_proportion), color = :black)
+
+    return nothing
+end
+
+function simulated_height_plot(; plot_obj, sol, valid_data, kwargs...)
+    ax = clear_plotobj_axes(plot_obj, :simulated_height)
 
     species_biomass = dropdims(
         mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims =(:x, :y))
@@ -234,11 +213,18 @@ function simulated_height_plot(; plot_obj, sol, valid_data)
     height = dropdims(
         mean(sol.output.height; dims = (:x, :y)),
         dims = (:x, :y))
-    mean_height = dropdims(sum(height .* relative_biomass; dims = :species); dims = :species)
+    mean_height = vec(sum(height .* relative_biomass; dims = :species))
 
-    lines!(ax, sol.simp.output_date_num, ustrip(mean_height),
-           color = :black)
+    ###### calculate alpha values
+    mean_species_biomass = vec(mean(species_biomass; dims = (:time)))
+    mean_total_biomass = sum(mean_species_biomass)
+    alpha_val = min.(10 .* mean_species_biomass ./ mean_total_biomass, 1)
 
+    for s in 1:sol.simp.nspecies
+        lines!(ax, sol.simp.output_date_num, ustrip.(height)[:, s],
+               color = (:grey, alpha_val[s]))
+    end
+    lines!(ax, sol.simp.output_date_num, ustrip(mean_height), color = :black)
 
     if !isnothing(valid_data)
         num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.height, :time)]
@@ -250,12 +236,8 @@ function simulated_height_plot(; plot_obj, sol, valid_data)
 end
 
 
-function functional_dispersion_plot(; plot_obj, sol, valid_data)
-    ax = plot_obj.axes[:functional_dispersion]
-    empty!(ax)
-
-    ax.ylabel = "Functional dispersion [-]"
-    ax.xlabel = "Time [year]"
+function functional_dispersion_plot(; plot_obj, sol, valid_data, kwargs...)
+    ax = clear_plotobj_axes(plot_obj, :functional_dispersion)
 
     traits = (; height = sol.traits.height, sla = sol.traits.sla, lnc = sol.traits.lnc)
     biomass = dropdims(
@@ -273,7 +255,6 @@ function functional_dispersion_plot(; plot_obj, sol, valid_data)
 
     return nothing
 end
-
 
 function traits_to_matrix(trait_data; std_traits = true)
     trait_names = keys(trait_data)

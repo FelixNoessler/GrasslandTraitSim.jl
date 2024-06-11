@@ -8,36 +8,25 @@ the [parameters](@ref "Initialization of parameters") are initialized and the
 [initial conditions of the state variables](@ref "Set the initial conditions of the state variables")
 are set.
 """
-function initialization(; input_obj, p, prealloc, prealloc_specific,
-                        trait_input = nothing, θ_type = Float64)
+function initialization(; input_obj, p, prealloc, prealloc_specific, trait_input)
 
-    ################## Traits ##################
+    ###### Store everything in one object
+    container = tuplejoin((; p = p), input_obj, prealloc, prealloc_specific)
+
+    ###### Traits
     if isnothing(trait_input)
-        # generate random traits
-        random_traits!(; prealloc, input_obj)
+        random_traits!(; container)
     else
-        prealloc = @set prealloc.traits = trait_input
+        @reset container.traits = trait_input
     end
+    similarity_matrix!(; container)
 
-    # distance matrix for below ground competition
-    similarity_matrix!(; input_obj, prealloc)
+    ###### Set some variables that do not vary with time
+    senescence_rate!(; container)
+    input_WHC_PWP!(; container)
+    input_nutrients!(; container)
 
-    ################## Parameters ##################
-    # leaf senescence rate μ []
-    senescence_rate!(; input_obj, prealloc, p)
-
-    # investment to roots
-    root_investment!(; input_obj, prealloc, p)
-
-    # WHC, PWP and nutrient index
-    input_WHC_PWP!(; prealloc, input_obj)
-    input_nutrients!(; prealloc, input_obj, p)
-
-    ################## Store everything in one object ##################
-    p = (; p = p)
-    container = tuplejoin(p, input_obj, prealloc, prealloc_specific)
-
-    ################## Initial conditions ##################
+    ###### Initial conditions
     set_initialconditions!(; container)
 
     return container

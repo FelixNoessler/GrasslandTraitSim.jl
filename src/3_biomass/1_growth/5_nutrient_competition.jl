@@ -33,17 +33,18 @@ and the last equations changes to:
 
 - `nutheterog`: heterogeneity of nutrients [-]
 """
-function input_nutrients!(; prealloc, input_obj, p)
-    @unpack nutrients = prealloc.patch_variables
-    @unpack totalN = input_obj.site
-    @unpack included = input_obj.simp
+function input_nutrients!(; container)
+    @unpack nutrients = container.patch_variables
+    @unpack totalN = container.site
+    @unpack included = container.simp
+    @unpack N_max = container.p
 
     #### data from the biodiversity exploratories
     # mintotalN = 1.2525
     # N_max = 30.63
 
     if included.nutrient_growth_reduction
-        @. nutrients = totalN / p.N_max
+        @. nutrients = totalN / N_max
     end
 
     return nothing
@@ -82,10 +83,10 @@ and 95 % quantile ($Q_{0.95, t}$) of trait values of 100 plant species:
 If the rescaled trait values were below zero or above one, the values were
 set to zero or one respectively.
 """
-function similarity_matrix!(; input_obj, prealloc)
-    @unpack nspecies = input_obj.simp
-    @unpack amc, srsa = prealloc.traits
-    @unpack amc_resid, rsa_above_resid, TS = prealloc.calc
+function similarity_matrix!(; container)
+    @unpack nspecies = container.simp
+    @unpack amc, srsa = container.traits
+    @unpack amc_resid, rsa_above_resid, TS = container.calc
 
     if isone(nspecies)
         TS .= [1.0;;]
@@ -170,7 +171,7 @@ TS \cdot B =
 
 The factors are then calculated as follows:
 ```math
-\text{biomass_density_factor} =
+\text{nutrients_adj_factor} =
     \left(\frac{TS \cdot B}{\text{α_TSB}}\right) ^
     {- \text{β_TSB}} \\
 ```
@@ -184,7 +185,7 @@ The `TS` matrix is computed before the start of the simulation
 and includes the traits arbuscular mycorrhizal colonisation rate (`amc`)
 and the root surface area devided by the above ground biomass (`srsa`).
 
-- `biomass_density_factor` is the factor that adjusts the
+- `nutrients_adj_factor` is the factor that adjusts the
   plant available nutrients [-]
 - `TS` is the trait similarity matrix, $TS \in [0,1]^{N \times N}$ [-]
 - `B` is the biomass vector, $B \in [0, ∞]^{N}$ [kg ha⁻¹]
@@ -194,12 +195,12 @@ and the root surface area devided by the above ground biomass (`srsa`).
 ![](../img/below_influence.png)
 """
 function below_ground_competition!(; container, total_biomass)
-    @unpack biomass_density_factor, TS_biomass, TS = container.calc
+    @unpack nutrients_adj_factor, TS_biomass, TS = container.calc
     @unpack included, nspecies = container.simp
 
     if !included.belowground_competition
         @info "No below ground competition for resources!" maxlog=1
-        @. biomass_density_factor = 1.0
+        @. nutrients_adj_factor = 1.0
         return nothing
     end
 
@@ -212,11 +213,11 @@ function below_ground_competition!(; container, total_biomass)
         end
     end
 
-    for i in eachindex(biomass_density_factor)
+    for i in eachindex(nutrients_adj_factor)
         # TODO add in manuscript and doc
-        biomass_density_factor[i] = 2.0 / (1.0 + exp(-β_TSB * (α_TSB - TS_biomass[i])))
-        # biomass_factor = (α_TSB / TS_biomass[i]) ^ β_TSB
-        # biomass_density_factor[i] = min(3.0, max(0.33, biomass_factor))
+        # nutrients_adj_factor[i] = 2.0 / (1.0 + exp(-β_TSB * (α_TSB - TS_biomass[i])))
+        nutrients_adj_factor[i] = max(α_TSB / TS_biomass[i], 1) ^ ustrip(β_TSB)
+        # nutrients_adj_factor[i] = min(3.0, max(0.33, biomass_factor))
     end
 
     return nothing
@@ -249,7 +250,7 @@ root surface area per belowground biomass (`srsa`).
 `δ_nrsa` equals 0.5:
 ![Graphical overview of the functional response](../img/N_rsa_0_5.png)
 """
-function nutrient_reduction!(; container, nutrients, above_biomass, total_biomass)
+function nutrient_reduction!(; container, nutrients)
     @unpack included = container.simp
     @unpack Nutred = container.calc
 
@@ -260,7 +261,7 @@ function nutrient_reduction!(; container, nutrients, above_biomass, total_biomas
     end
 
     @unpack A_amc, A_nrsa = container.transfer_function
-    @unpack nutrients_splitted, biomass_density_factor,
+    @unpack nutrients_splitted, nutrients_adj_factor,
             N_amc, nutrients_splitted, N_rsa,
             nutrients_splitted, above_proportion = container.calc
     @unpack δ_amc, δ_nrsa, ϕ_amc, ϕ_rsa, η_μ_amc, η_σ_amc,
@@ -279,8 +280,7 @@ function nutrient_reduction!(; container, nutrients, above_biomass, total_biomas
     @. A_nrsa =  (η_max_nrsa + (η_min_nrsa - η_max_nrsa) /
         (1 + exp(-β_η_nrsa * ((1-above_proportion)*srsa - ϕ_rsa)))) # TODO
 
-
-    @. nutrients_splitted = nutrients * biomass_density_factor
+    @. nutrients_splitted = nutrients * nutrients_adj_factor
     @. nutrients_splitted = min(nutrients_splitted, 1.0) # TODO add to documentation
     @. N_amc = 1 - δ_amc + δ_amc /
                (1 + exp(-β_amc * (nutrients_splitted - A_amc)))
@@ -298,16 +298,16 @@ function plot_N_amc(; δ_amc = nothing, θ = nothing, path = nothing)
     δ_amc = container.p.δ_amc
 
 
-    container.calc.biomass_density_factor .= 1.0
+    container.calc.nutrients_adj_factor .= 1.0
 
     xs = LinRange(0.0, 1.0, 20)
     ymat = fill(0.0, length(xs), nspecies)
     above_biomass = ones(nspecies)u"kg/ha"
     total_biomass = fill(2, nspecies)u"kg/ha"
+    @. container.calc.above_proportion = above_biomass / total_biomass
 
     for (i, x) in enumerate(xs)
-        nutrient_reduction!(; container, nutrients = x, above_biomass,
-                             total_biomass)
+        nutrient_reduction!(; container, nutrients = x)
         ymat[i, :] .= container.calc.N_amc
     end
 
@@ -376,16 +376,16 @@ function plot_N_srsa(; δ_nrsa = nothing, θ = nothing, path = nothing)
     param = ifelse(isnothing(δ_nrsa), (;), (; δ_nrsa))
     nspecies, container = create_container_for_plotting(; param, θ)
     δ_nrsa = container.p.δ_nrsa
-    container.calc.biomass_density_factor .= 1.0
+    container.calc.nutrients_adj_factor .= 1.0
 
     xs = LinRange(0, 1.0, 20)
     ymat = fill(0.0, length(xs), nspecies)
     above_biomass = ones(nspecies)u"kg/ha"
     total_biomass = fill(2, nspecies)u"kg/ha"
+    @. container.calc.above_proportion = above_biomass / total_biomass
 
     for (i, x) in enumerate(xs)
-        nutrient_reduction!(; container, nutrients = x, above_biomass,
-                            total_biomass)
+        nutrient_reduction!(; container, nutrients = x)
         ymat[i, :] .= container.calc.N_rsa
     end
 
@@ -466,7 +466,7 @@ function plot_below_influence(; θ = nothing, path = nothing)
     for (i, below_effect) in enumerate(below_effects)
         container = @set container.p.β_TSB = below_effect
         below_ground_competition!(; container, total_biomass)
-        ymat[:, i] .= container.calc.biomass_density_factor
+        ymat[:, i] .= container.calc.nutrients_adj_factor
     end
 
     traitsimmat = ustrip.(copy(container.calc.TS))
@@ -488,14 +488,14 @@ function plot_below_influence(; θ = nothing, path = nothing)
         c = (;
             calc = (; TS_biomass = zeros(3)u"kg / ha",
                       TS = mat,
-                      biomass_density_factor = zeros(3)),
+                      nutrients_adj_factor = zeros(3)),
             simp = (; included = (; belowground_competition = true),
                       nspecies = 3),
             p = (; β_TSB = below_effects[i],
                    α_TSB = 0.4 * 80u"kg / ha"))
         below_ground_competition!(; container = c, total_biomass)
 
-        artificial_mat[:, i] = c.calc.biomass_density_factor
+        artificial_mat[:, i] = c.calc.nutrients_adj_factor
     end
 
     artificial_labels = [

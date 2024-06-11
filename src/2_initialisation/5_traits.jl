@@ -36,10 +36,10 @@ Overview of the traits:
 | `lbp`      | -      | leaf dry mass per plant dry mass          | logit          |
 
 """
-function random_traits!(; prealloc, input_obj)
-    @unpack trait_seed, nspecies = input_obj.simp
-    @unpack traitmat = prealloc.calc
-    @unpack traits = prealloc
+function random_traits!(; container)
+    @unpack trait_seed, nspecies = container.simp
+    @unpack traitmat = container.calc
+    @unpack traits = container
 
     ### set seed
     if ismissing(trait_seed)

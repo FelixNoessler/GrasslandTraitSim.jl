@@ -55,7 +55,7 @@ $(MYNEWFIELDS)
     the available water and nutrients for growth,
     see [`below_ground_competition!`](@ref)
     """
-    α_TSB::Qkg_ha = F(1200.0)u"kg / ha"
+    α_TSB::Qkg_ha = F(18000.0)u"kg / ha"
 
     """
     2::``\\beta_{TSB}``::part of the equation of the biomass density factor ``D_{txys}``,

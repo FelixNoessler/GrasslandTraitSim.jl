@@ -182,9 +182,9 @@ can be seen in the folling table:
 - `WHC`: water holding capacity [mm]
 - `PWP`: permanent wilting point [mm]
 """
-function input_WHC_PWP!(; prealloc, input_obj)
-    @unpack WHC, PWP = prealloc.patch_variables
-    @unpack sand, silt, clay, organic, bulk, rootdepth = input_obj.site
+function input_WHC_PWP!(; container)
+    @unpack WHC, PWP = container.patch_variables
+    @unpack sand, silt, clay, organic, bulk, rootdepth = container.site
 
     @. WHC = (0.5678 * sand +
         0.9228 * silt +

@@ -194,6 +194,7 @@ function one_day!(; t, container)
                 output.light_growth[t, x, y, s] = light_competition[s]
                 output.water_growth[t, x, y, s] = Waterred[s]
                 output.nutrient_growth[t, x, y, s] = Nutred[s]
+                output.root_invest[t, x, y, s] = root_invest[s]
             end
 
         end

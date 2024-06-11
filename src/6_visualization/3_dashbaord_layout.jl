@@ -1,5 +1,5 @@
 function dashboard_layout(; variable_p)
-    fig = Figure(; size = (1800, 950))
+    fig = Figure(; size = (1900, 950))
 
     ##############################################################################
     # Define grid layouts
@@ -85,6 +85,13 @@ function dashboard_layout(; variable_p)
     Label(validation_layout[4, 3], "Time step:"; halign = :left, fontsize = 16)
     menu_timestep = Menu(validation_layout[5, 3];
         options = [1, 7, 14])
+
+
+    which_pane = Observable(1)
+    button_panelA = Button(validation_layout[6, 1][1, 1], label = "Panel A")
+    button_panelB = Button(validation_layout[6, 1][1, 2], label = "Panel B")
+    button_panelC = Button(validation_layout[6, 1][1, 3], label = "Panel C")
+    button_panelD = Button(validation_layout[6, 1][1, 4], label = "Panel D")
 
     ##############################################################################
     # Right box: abiotic and grazing/mowing
@@ -191,29 +198,19 @@ function dashboard_layout(; variable_p)
     ##############################################################################
     # Plot axes
     ##############################################################################
-    axes = Dict()
-    axes[:biomass] = Axis(plots_layout[1, 1]; alignmode = Inside(),
-                          limits = (nothing, nothing, -100.0, nothing))
-    axes[:soilwater] = Axis(plots_layout[1, 2]; alignmode = Inside())
-    axes[:abiotic] = Axis(plots_layout[1, 3]; alignmode = Inside())
+    axes = create_axes_paneA(plots_layout)
 
-    axes[:sla] = Axis(plots_layout[2, 1]; alignmode = Inside())
-    axes[:height] = Axis(plots_layout[2, 2]; alignmode = Inside())
-    axes[:lnc] = Axis(plots_layout[2, 3]; alignmode = Inside())
-    axes[:srsa] = Axis(plots_layout[3, 1]; alignmode = Inside())
-    axes[:amc] = Axis(plots_layout[3, 2]; alignmode = Inside())
-    axes[:abp] = Axis(plots_layout[3, 3]; alignmode = Inside())
-    axes[:simulated_height] = Axis(plots_layout[4, 1]; alignmode = Inside())
-    axes[:functional_dispersion] = Axis(plots_layout[4, 2]; alignmode = Inside())
-    axes[:trait_share] = Axis(plots_layout[4, 3]; alignmode = Inside())
-    axes[:cb_trait_share] = Colorbar(plots_layout[4, 4]; halign = :left,
-                                     limits = (0.0, 1.0))
     ##############################################################################
     # Put all plot objects and observables in a named tuple
     ##############################################################################
     obs = (;
         run_button,
         preset_button,
+        button_panelA,
+        button_panelB,
+        button_panelC,
+        button_panelD,
+        which_pane,
         menu_samplingtype,
         menu_plotID,
         menu_timestep,
@@ -227,7 +224,8 @@ function dashboard_layout(; variable_p)
         toggle_standingbiomass,
         lls,
         gradient_values,
-        gradient_toggle)
+        gradient_toggle,
+        plots_layout)
 
     return (; fig, axes, obs)
 end
@@ -243,4 +241,24 @@ function test_patchnumber(x)
     else
         isinteger(sqrt(parsed_num))
     end
+end
+
+function clear_panel!(layout)
+    clear!(x) = delete!(x)
+    function clear!(x::GridLayout)
+        for el in contents(x)
+            clear!(el)
+        end
+    end
+    clear!(layout)
+    Makie.trim!(layout)
+end
+
+function clear_plotobj_axes(obj, key)
+    ax = obj.axes[key]
+    for plot in copy(ax.scene.plots)
+        delete!(ax.scene, plot)
+    end
+
+    return ax
 end

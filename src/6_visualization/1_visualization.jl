@@ -1,7 +1,12 @@
 include("2_dashboard.jl")
 include("3_dashbaord_layout.jl")
-include("4_dashboard_plotting.jl")
+include("4_dashboard_plots_paneA.jl")
+include("4_dashboard_plots_paneB.jl")
+include("4_dashboard_plots_paneC.jl")
+include("4_dashboard_plots_paneD.jl")
 include("5_dashboard_prepare_input.jl")
+
+
 
 function create_container_for_plotting(; nspecies = nothing, param = (;), θ = nothing, kwargs...)
     trait_input = if isnothing(nspecies)
