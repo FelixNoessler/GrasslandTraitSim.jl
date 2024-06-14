@@ -1,26 +1,76 @@
 function create_axes_paneD(layout)
     axes = Dict()
-    axes[:abiotic] = Axis(layout[1, 1]; alignmode = Inside(),
-                          xlabel = "Time [years]")
+    axes[:functional_dispersion] = Axis(layout[1, 1]; alignmode = Inside(),
+                                        ylabel = "Functional dispersion [-]",
+                                        xlabel = "Time [year]")
     return axes
 end
 
 function update_plots_paneD(; kwargs...)
-    abiotic_plot(; kwargs...)
+    functional_dispersion_plot(; kwargs...)
 end
 
-function abiotic_plot(; sol, plot_obj, kwargs...)
-    thin = 1
-    ax = clear_plotobj_axes(plot_obj, :abiotic)
+function functional_dispersion_plot(; plot_obj, sol, valid_data, kwargs...)
+    ax = clear_plotobj_axes(plot_obj, :functional_dispersion)
 
-    abiotic_colors = [:blue, :brown, :red, :red, :orange]
-    abiotic = plot_obj.obs.menu_abiotic.selection.val
-    name_index = getindex.([plot_obj.obs.menu_abiotic.options.val...], 2) .== abiotic
-    abiotic_name = first.([plot_obj.obs.menu_abiotic.options.val...])[name_index][1]
-    abiotic_color = abiotic_colors[name_index][1]
+    traits = (; height = sol.traits.height, sla = sol.traits.sla, lnc = sol.traits.lnc)
+    biomass = dropdims(
+        mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims =(:x, :y))
 
-    scatterlines!(ax, sol.simp.mean_input_date_num[1:thin:end],
-        ustrip.(sol.input[abiotic])[1:thin:end];
-        color = abiotic_color, markersize = 4, linewidth = 0.1)
-    ax.ylabel = abiotic_name
+    fdis = functional_dispersion(traits, biomass; )
+
+    lines!(ax, sol.simp.output_date_num, fdis; color = :red)
+
+    if !isnothing(valid_data)
+        num_t = valid_data.fun_diversity.num_t
+        y = valid_data.fun_diversity.fdis
+        scatter!(ax, num_t, y, color = :black, markersize = 8)
+    end
+
+    return nothing
+end
+
+function traits_to_matrix(trait_data; std_traits = true)
+    trait_names = keys(trait_data)
+    ntraits = length(trait_names)
+    nspecies = length(trait_data[trait_names[1]])
+    m = Matrix{Float64}(undef, nspecies, ntraits)
+
+    for i in eachindex(trait_names)
+
+        if std_traits
+            m[:, i] = trait_data[trait_names[i]] ./ mean(trait_data[trait_names[i]])
+        else
+            m[:, i] = ustrip.(trait_data[trait_names[i]])
+        end
+    end
+
+    return m
+end
+
+function functional_dispersion(trait_data, biomass_data; kwargs...)
+    # Laliberté & Legendre 2010, checked results with fundiversity R package
+
+    ntimesteps = size(biomass_data, :time)
+    nspecies = size(biomass_data, :species)
+    ntraits = length(trait_data)
+    fdis = Vector{Float64}(undef, ntimesteps)
+
+    trait_m = traits_to_matrix(trait_data; kwargs...)
+
+    for t in 1:ntimesteps
+        relative_biomass = biomass_data[t, :] / sum(biomass_data[t, :])
+
+        z_squarred = zeros(nspecies)
+        for t in 1:ntraits
+            weighted_trait = trait_m[:, t] .* relative_biomass
+            cwm = sum(weighted_trait)
+            z_squarred .+= (trait_m[:, t] .- cwm) .^ 2
+        end
+
+        z = sqrt.(z_squarred)
+        fdis[t] = sum(z .* relative_biomass)
+    end
+
+    return fdis
 end

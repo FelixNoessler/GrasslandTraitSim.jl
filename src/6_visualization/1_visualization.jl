@@ -4,6 +4,7 @@ include("4_dashboard_plots_paneA.jl")
 include("4_dashboard_plots_paneB.jl")
 include("4_dashboard_plots_paneC.jl")
 include("4_dashboard_plots_paneD.jl")
+include("4_dashboard_plots_paneE.jl")
 include("5_dashboard_prepare_input.jl")
 
 

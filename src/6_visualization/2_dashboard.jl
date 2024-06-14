@@ -1,5 +1,4 @@
 function dashboard(; posterior = nothing, variable_p = (;),
-                   biomass_stats = ["core", "sade"],
                    θ = nothing, path = nothing)
     set_theme!(
         Theme(
@@ -19,11 +18,14 @@ function dashboard(; posterior = nothing, variable_p = (;),
     sol = nothing
     mean_input_date = nothing
     valid_data = nothing
+    biomass_stats = nothing
     trait_input = input_traits()
 
     on(plot_obj.obs.run_button.clicks) do n
         if !still_running
             still_running = true
+
+            biomass_stats = plot_obj.obs.menu_biomassvalid.selection.val
 
             p, input_obj = prepare_input(; plot_obj, posterior, biomass_stats)
             sol = solve_prob(; input_obj, p, trait_input)
@@ -109,6 +111,14 @@ function dashboard(; posterior = nothing, variable_p = (;),
         update_plots(; sol, plot_obj, valid_data)
     end
 
+    on(plot_obj.obs.menu_biomassvalid.selection) do new_stat
+        biomass_stats = new_stat
+        if plot_obj.obs.toggle_validdata.active.val
+            valid_data = get_valid_data(; plot_obj, biomass_stats, mean_input_date)
+            update_plots(; sol, plot_obj, valid_data)
+        end
+    end
+
     on(plot_obj.obs.button_panelA.clicks) do _
         plot_obj.obs.which_pane[] = 1
         clear_panel!(plot_obj.obs.plots_layout)
@@ -134,6 +144,13 @@ function dashboard(; posterior = nothing, variable_p = (;),
         plot_obj.obs.which_pane[] = 4
         clear_panel!(plot_obj.obs.plots_layout)
         @reset plot_obj.axes = create_axes_paneD(plot_obj.obs.plots_layout)
+        update_plots(; sol, plot_obj, valid_data)
+    end
+
+    on(plot_obj.obs.button_panelE.clicks) do _
+        plot_obj.obs.which_pane[] = 5
+        clear_panel!(plot_obj.obs.plots_layout)
+        @reset plot_obj.axes = create_axes_paneE(plot_obj.obs.plots_layout)
         update_plots(; sol, plot_obj, valid_data)
     end
 
@@ -167,5 +184,7 @@ function update_plots(; plot_obj, kwargs...)
         update_plots_paneC(; plot_obj, kwargs...)
     elseif pane == 4
         update_plots_paneD(; plot_obj, kwargs...)
+    elseif pane == 5
+        update_plots_paneE(; plot_obj, kwargs...)
     end
 end

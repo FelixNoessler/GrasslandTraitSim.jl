@@ -29,8 +29,8 @@ included_keys = (
     :water_growth_reduction,
     :nutrient_growth_reduction,
     :temperature_growth_reduction,
-    :season_red,
-    :radiation_red
+    :seasonal_growth_adjustment,
+    :radiation_growth_reduction
 )
 
 p_all = sim.SimulationParameter()

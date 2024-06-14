@@ -49,6 +49,10 @@ function calibrated_parameter(; input_obj = nothing)
         b_fdis = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊, "text"),
     )
 
+    prepare_calibration_obj(; p, input_obj)
+end
+
+function prepare_calibration_obj(; p, input_obj = nothing)
     if !isnothing(input_obj)
         exclude_parameters = exlude_parameter(; input_obj)
         f = collect(keys(p)) .∉ Ref(exclude_parameters)

@@ -6,8 +6,7 @@ function dashboard_layout(; variable_p)
     ##############################################################################
     top_menu = GridLayout(fig[1, 1])
     sim_layout = GridLayout(top_menu[1, 2]; tellwidth = false)
-    validation_layout = GridLayout(top_menu[1, 3]; valign = :top)
-    plottingmenu_layout = GridLayout(top_menu[1, 4]; valign = :top)
+    plotsettings_layout = GridLayout(top_menu[1, 3]; valign = :top)
 
     plots_layout = GridLayout(fig[2, 1])
     right_layout = GridLayout(fig[1:2, 2])
@@ -32,9 +31,9 @@ function dashboard_layout(; variable_p)
     run_button = Button(top_menu[1, 1]; label = "run")
 
     ##############################################################################
-    # Left box: turn off parts of the model
+    # Turn off parts of the model
     ##############################################################################
-    Label(sim_layout[1, 1:2], "Simulation settings";
+    Label(sim_layout[1, 1:2], "Turn off parts of the model";
         halign = :left, font = :bold, fontsize = 16)
     input_obj = validation_input(; plotID = "HEG01", nspecies = 1)
     included_symbols = keys(input_obj.simp.included)
@@ -52,59 +51,70 @@ function dashboard_layout(; variable_p)
     toggles_included = Dict(zip(included_symbols, toggles_included_prep))
 
     ##############################################################################
-    # Middle box: validation settings
+    # Select panel
     ##############################################################################
-    Label(validation_layout[1, 1], "Validation";
+    Label(plotsettings_layout[1, 1], "Select panel";
         tellwidth = true, halign = :left,
         font = :bold, fontsize = 16)
-    Label(validation_layout[2, 1], "validation data?";
-        halign = :left, fontsize = 16)
-    toggle_validdata = Toggle(validation_layout[2, 2],
-        active = true,
-        tellwidth = false,
-        halign = :left)
-    Label(validation_layout[3, 1], "standing biomass?";
-        halign = :left, fontsize = 16)
-    toggle_standingbiomass = Toggle(validation_layout[3, 2],
-        active = true,
-        tellwidth = false,
-        halign = :left)
-    Label(validation_layout[4, 1], "Parameter:";
-        tellwidth = true, halign = :left, fontsize = 16)
-    menu_samplingtype = Menu(validation_layout[5, 1];
-        options = zip(["fixed (see right)", "sample prior", "sample posterior"],
-            [:fixed, :prior, :posterior]),
-        halign = :left)
-    Label(validation_layout[4, 2], "PlotID:";
-        tellwidth = true, halign = :left, fontsize = 16)
-    menu_plotID = Menu(validation_layout[5, 2];
-        options = ["$(explo)$(lpad(i, 2, "0"))"  for explo in ["HEG", "SEG", "AEG"]
-                   for i in 1:50],
-        width = 100,
-        halign = :left)
-    Label(validation_layout[4, 3], "Time step:"; halign = :left, fontsize = 16)
-    menu_timestep = Menu(validation_layout[5, 3];
-        options = [1, 7, 14])
-
 
     which_pane = Observable(1)
-    button_panelA = Button(validation_layout[6, 1][1, 1], label = "Panel A")
-    button_panelB = Button(validation_layout[6, 1][1, 2], label = "Panel B")
-    button_panelC = Button(validation_layout[6, 1][1, 3], label = "Panel C")
-    button_panelD = Button(validation_layout[6, 1][1, 4], label = "Panel D")
+    button_panelA = Button(plotsettings_layout[2, 1][1, 1], label = "Panel A: State variables")
+    button_panelB = Button(plotsettings_layout[2, 1][1, 2], label = "Panel B: Traits")
+    button_panelC = Button(plotsettings_layout[2, 1][1, 3], label = "Panel C: Growth reducer")
+    button_panelD = Button(plotsettings_layout[2, 1][1, 4], label = "Panel D: Diversity")
+    button_panelE = Button(plotsettings_layout[2, 1][1, 5], label = "Panel E: Abiotic input")
+
 
     ##############################################################################
-    # Right box: abiotic and grazing/mowing
+    # Settings
     ##############################################################################
-    Label(plottingmenu_layout[1, 1], "Abiotic variable\n(right upper plot)";
+    Label(plotsettings_layout[3, 1], "Settings"; tellwidth = true, halign = :left,
+          font = :bold, fontsize = 16)
+    leftplotsettings_layout = GridLayout(plotsettings_layout[4, 1][1, 1])
+    rightplotsettings_layout = GridLayout(plotsettings_layout[4, 1][1, 2];
+                                          valign = :top)
+
+    Label(leftplotsettings_layout[1, 1], "How to get parameter:";
+        tellwidth = true, halign = :left, fontsize = 16)
+    menu_samplingtype = Menu(leftplotsettings_layout[1, 2];
+        options = zip(
+            ["fixed (see right side)", "sample prior"],
+            [:fixed, :prior]),
+        halign = :left)
+
+    Label(leftplotsettings_layout[2, 1], "PlotID of the Biodiversity Exploratories:";
+        tellwidth = true, halign = :left, justification = :left, fontsize = 16)
+    menu_plotID = Menu(leftplotsettings_layout[2, 2];
+        options = ["$(explo)$(lpad(i, 2, "0"))"  for explo in ["HEG", "SEG", "AEG"]
+                   for i in 1:50],
+        halign = :left)
+
+
+    Label(leftplotsettings_layout[3, 1], "Time step:"; halign = :left, fontsize = 16)
+    menu_timestep = Menu(leftplotsettings_layout[3, 2];
+        options = [1, 7, 14])
+
+    Label(leftplotsettings_layout[4, 1], "Biomass for validation (panel A):";
+          halign = :left, fontsize = 16)
+    labels = ["only cut biomass", "only inferred from sentinel", "both"]
+    select = [["core", "sade"], ["satellite_mean", "satellite_min", "satellite_max"], nothing]
+    menu_biomassvalid = Menu(leftplotsettings_layout[4, 2], options = zip(labels, select))
+
+    trait_keys =  [:amc, :sla, :height, :srsa, :lnc, :abp]
+    Label(leftplotsettings_layout[5, 1], "Trait (panel B):";
           halign = :left, justification = :left, fontsize = 16)
-    menu_abiotic = Menu(plottingmenu_layout[2, 1],
+    menu_traits = Menu(leftplotsettings_layout[5, 2];
+                       options = zip(string.(trait_keys), trait_keys))
+
+    Label(leftplotsettings_layout[6, 1], "Abiotic variable (panel E):";
+          halign = :left, justification = :left, fontsize = 16)
+    menu_abiotic = Menu(leftplotsettings_layout[6, 2],
         options = zip([
-                "Precipitation [mm]",
-                "Potential evapo-\ntranspiration [mm]",
-                "Air temperature [°C]\n",
-                "Air temperaturesum [°C]\n",
-                "Photosynthetically active\nradiation [MJ ha⁻¹]",
+                "Precipitation",
+                "Potential evapotranspiration",
+                "Air temperature",
+                "Air temperaturesum",
+                "Photosynthetically active radiation",
             ], [
                 :precipitation,
                 :PET,
@@ -112,14 +122,26 @@ function dashboard_layout(; variable_p)
                 :temperature_sum,
                 :PAR,
             ]))
-    Label(plottingmenu_layout[3, 1][1, 1], "grazing/mowing?"; fontsize = 16)
-    toggle_grazmow = Toggle(plottingmenu_layout[3, 1][1, 2], active = false)
 
-    trait_keys =  [:amc, :sla, :height, :srsa, :lnc, :abp]
-    Label(plottingmenu_layout[1, 2], "Trait\n(right lower plot):";
+
+    Label(rightplotsettings_layout[1, 1], "show validation\ndata (panel A, B, D)?";
+        halign = :left, justification = :left, fontsize = 16)
+    toggle_validdata = Toggle(rightplotsettings_layout[1, 2],
+        active = true,
+        tellwidth = false,
+        halign = :left)
+
+    Label(rightplotsettings_layout[2, 1], "show standing\nbiomass (panel A)?";
+        halign = :left, justification = :left, fontsize = 16)
+    toggle_standingbiomass = Toggle(rightplotsettings_layout[2, 2],
+        active = true,
+        tellwidth = false,
+        halign = :left)
+
+    Label(rightplotsettings_layout[3, 1], "show grazing and\nmowing (panel A)?";
           halign = :left, justification = :left, fontsize = 16)
-    menu_traits = Menu(plottingmenu_layout[2, 2];
-                       options = zip(string.(trait_keys), trait_keys))
+    toggle_grazmow = Toggle(rightplotsettings_layout[3, 2], active = false)
+
 
     ##############################################################################
     # Right part: likelihood and parameter settings
@@ -127,7 +149,7 @@ function dashboard_layout(; variable_p)
     lls = (;
         biomass = Observable(0.0),
         traits = Observable(0.0))
-    ll_label = @lift("Loglikelihood biomass: $(round($(lls.biomass))) traits: $(round($(lls.traits)))   gradient:")
+    ll_label = @lift("Loglikelihood biomass: $(round($(lls.biomass))) traits: $(round($(lls.traits))) gradient:")
     Label(righttop_layout[1, 1], ll_label; fontsize = 16)
     gradient_toggle = Toggle(righttop_layout[1, 2]; active = false)
     preset_button = Button(righttop_layout[1, 3]; label = "reset parameter")
@@ -193,6 +215,7 @@ function dashboard_layout(; variable_p)
     ##############################################################################
     [rowgap!(param_layout, i, 0) for i in 1:(length(p) ÷ 2 - 1)]
     colgap!(fig.layout, 1, 10)
+    rowgap!(fig.layout, 1, 50)
     colgap!(param_layout, 3, 15)
 
     ##############################################################################
@@ -210,12 +233,14 @@ function dashboard_layout(; variable_p)
         button_panelB,
         button_panelC,
         button_panelD,
+        button_panelE,
         which_pane,
         menu_samplingtype,
         menu_plotID,
         menu_timestep,
         menu_abiotic,
         menu_traits,
+        menu_biomassvalid,
         parameter_keys,
         tb_p,
         toggles_included,
@@ -226,6 +251,9 @@ function dashboard_layout(; variable_p)
         gradient_values,
         gradient_toggle,
         plots_layout)
+
+
+
 
     return (; fig, axes, obs)
 end

@@ -25,7 +25,7 @@ function radiation_reduction!(; container, PAR)
     @unpack included = container.simp
     @unpack com = container.calc
 
-    if !included.radiation_red
+    if !included.radiation_growth_reduction
         @info "No radiation reduction!" maxlog=1
         com.RAD = 1.0
         return nothing
@@ -142,7 +142,7 @@ function seasonal_reduction!(; container, ST)
     @unpack included = container.simp
     @unpack com = container.calc
 
-    if !included.season_red
+    if !included.seasonal_growth_adjustment
         @info "No seasonal reduction!" maxlog=1
         com.SEA = 1.0
         return nothing

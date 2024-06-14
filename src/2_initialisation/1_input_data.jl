@@ -364,7 +364,7 @@ end
 function create_included(included_prep = (;);)
     included = (;
         senescence = true,
-        senescence_season = false,   # TODO
+        senescence_season = true,   # TODO
         potential_growth = true,
         clonalgrowth = true,
         mowing = true,
@@ -380,8 +380,8 @@ function create_included(included_prep = (;);)
         nutrient_growth_reduction = true,
         root_invest = true,
         temperature_growth_reduction = true,
-        season_red = false,   # TODO
-        radiation_red = true)
+        seasonal_growth_adjustment = true,   # TODO
+        radiation_growth_reduction = true)
 
     for k in keys(included_prep)
         @reset included[k] = included_prep[k]

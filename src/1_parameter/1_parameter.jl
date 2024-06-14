@@ -1,4 +1,5 @@
 include("2_parameter_calibration.jl")
+include("2_parameter_calibration_fao.jl")
 
 """
     SimulationParameter(; kwargs...)
@@ -35,7 +36,7 @@ $(MYNEWFIELDS)
     where the community height growth reducer equals 0.5,
     see [`potential_growth!`](@ref)
     """
-    α_com_height::Qmha_Mg = F(0.8)u"m * ha / Mg"
+    α_com_height::Qmha_Mg = F(0.01)u"m * ha / Mg"
 
     """
     1::``\\beta_{H}``::controls how strongly taller plants gets more light for growth,
@@ -209,12 +210,12 @@ $(MYNEWFIELDS)
     """
     2::``\\kappa_{\\text{maxred}, amc}``::TODO
     """
-    κ_maxred_amc::T = F(0.15)
+    κ_maxred_amc::T = F(0.02)
 
     """
     2::``\\kappa_{\\text{maxred}, srsa}``::TODO
     """
-    κ_maxred_srsa::T = F(0.15)
+    κ_maxred_srsa::T = F(0.02)
 
     """
     2::``\\beta_{\\eta, amc}``::part of the growth reducer based on the
@@ -415,7 +416,9 @@ $(MYNEWFIELDS)
     β_PAL_lnc::T = F(1.2)
 
     """
-    5::``\\eta_{GRZ}``::defines with  κ · livestock density the aboveground biomass [kg ha⁻¹] when the daily consumption by grazers reaches half of their maximal consumption,
+    5::``\\eta_{GRZ}``::defines with  κ · livestock density the aboveground
+    biomass [kg ha⁻¹] when the daily consumption by grazers reaches half of
+    their maximal consumption,
     see [`grazing!`](@ref)
     """
     η_GRZ::T = F(25.0)
@@ -544,7 +547,7 @@ function exlude_parameter(; input_obj)
         append!(excl_p, [:β_clo])
     end
 
-    if !included.radiation_red
+    if !included.radiation_growth_reduction
         append!(excl_p, [:γ₁, :γ₂])
     end
 
@@ -552,7 +555,7 @@ function exlude_parameter(; input_obj)
         append!(excl_p, [:T₀, :T₁, :T₂, :T₃])
     end
 
-    if !included.season_red
+    if !included.seasonal_growth_adjustment
         append!(excl_p, [:SEA_min, :SEA_max, :ST₁, :ST₂])
     end
 

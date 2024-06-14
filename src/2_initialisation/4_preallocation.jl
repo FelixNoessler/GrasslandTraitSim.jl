@@ -64,6 +64,10 @@ function preallocate_vectors(; input_obj, T = Float64)
         Array{T}(undef, ntimesteps, patch_xdim, patch_ydim)u"kg/ha",
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
         name = :community_pot_growth)
+    community_height_reducer = DimArray(
+        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim),
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        name = :community_height_reducer)
     radiation_reducer = DimArray(
         Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim),
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
@@ -82,7 +86,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         name = :seasonal_senescence)
 
     output = (; biomass, above_biomass, below_biomass, water, height,
-              mown, grazed, senescence, community_pot_growth,
+              mown, grazed, senescence, community_pot_growth, community_height_reducer,
               act_growth, radiation_reducer, seasonal_growth, temperature_reducer,
               seasonal_senescence, light_growth, water_growth, nutrient_growth,
               root_invest)
