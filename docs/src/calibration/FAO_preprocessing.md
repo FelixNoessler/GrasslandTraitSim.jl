@@ -1,15 +1,15 @@
-
 # Preprocessing of FAO dataset
  
-1. the [PCSE python package](https://github.com/ajwdewit/pcse/) was downloaded
+1. the [PCSE python package](https://github.com/ajwdewit/pcse/) was downloaded (here with `Repo.clone_from`)
 2. data is stored in `yaml` files: [PCSE python package/exp/LINGRA_FAO](https://github.com/ajwdewit/pcse/tree/master/exp/LINGRA_FAO)
-3. data was converted to `csv` files, scripts is adapted from: [PCSE python package: process_experiment_collections.py](https://github.com/ajwdewit/pcse/blob/f456aa83547542be3006e548361f85ea22352920/exp/process_experiment_collections.py)
-4. these `csv` files are used to calibrate parameters of the `GrasslandTraitSim.jl` model, these files are saved under `/assets/data/fao_calibration`
+3. data was converted to `csv` files, script is adapted from: [PCSE python package: process\_experiment\_collections.py](https://github.com/ajwdewit/pcse/blob/f456aa83547542be3006e548361f85ea22352920/exp/process_experiment_collections.py)
+4. these `csv` files (`mowing.csv`, `sites.csv`, `climate.csv`, and `observations.csv`) are used to calibrate parameters of the `GrasslandTraitSim.jl` model, these files are saved under `/assets/data/fao_calibration`
 
 ```python
 import pickle
 import yaml
 import pandas as pd
+from git import Repo 
 from pathlib import Path
 from pcse.base import ParameterProvider, WeatherDataProvider, WeatherDataContainer
 from pcse.util import reference_ET
@@ -47,7 +47,7 @@ def export_weather(obj):
     df = pd.DataFrame(YAMLWeatherDataProvider(obj).export())
     
     # IRRAD is in J/m2/day, convert to MJ/ha/day
-    # see https://doi.org/10.1016/j.jag.2022.102724
+    # see https://doi.org/10.1016/j.jag.2022.102724 for fraction of PAR in global radiation
     fraction_RAD_PAR = 0.45
     df['PAR'] = df['IRRAD'] * 10000 / 1000000 * fraction_RAD_PAR
     
@@ -147,6 +147,7 @@ def load_all_sites():
 ###########################################################################
 ## Run
 ###########################################################################
-exp_dir = Path.cwd() / "python_pcse" / "exp" / "LINGRA_FAO/"
+Repo.clone_from("https://github.com/ajwdewit/pcse", "pcse")
+exp_dir = Path.cwd() / "pcse" / "exp" / "LINGRA_FAO/"
 load_all_sites()
 ```

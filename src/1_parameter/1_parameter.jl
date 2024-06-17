@@ -504,6 +504,11 @@ $(MYNEWFIELDS)
     8::``\\sigma_{fdis}``::
     """
     b_fdis::T = F(0.5)
+
+    """
+    8::``\\sigma_{cumbiomass,fao}``::
+    """
+    b_cumbiomass_fao::T = F(0.5)
 end
 
 

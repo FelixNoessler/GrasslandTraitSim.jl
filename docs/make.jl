@@ -90,6 +90,7 @@ makedocs(;
         "Parameter" => "parameter.md",
         "Dashboard" => "dashboard.md",
         "Visualize model components" => "variables.md",
+        "Time step" => "time_step.md",
         "Tutorials" => [
             "Prepare input and run simulation" => "tutorials/how_to_prepare_input.md",
             "Analyse model output" => "tutorials/how_to_analyse_output.md",
@@ -108,12 +109,18 @@ makedocs(;
                 "Mowing and grazing" => "Modelling_API/defoliation.md",
                 "Clonal growth" => "Modelling_API/clonalgrowth.md"],
             "Water dynamics" => "Modelling_API/water.md"],
-        "Calibration to grasslands of the Biodiversity Exploratories" => [
-            "Calibration data" => "biodiversity_exploratories/calibration_data.md",
-            "Time step" => "biodiversity_exploratories/time_step.md",
-            "Trait data" => "biodiversity_exploratories/traits.md",
-            "Likelihood" => "biodiversity_exploratories/likelihood.md",
-            "Priors" => "biodiversity_exploratories/priors.md"],
+
+
+        "Calibration" => [
+            "Biodiversity Exploratories" => [
+                "Preprocessing" => "calibration/BE_preprocessing.md",
+                "Data" => "calibration/BE_data.md",
+                "Likelihood" => "calibration/BE_likelihood.md",
+                "Priors" => "calibration/BE_priors.md"],
+            "FAO" => [
+                "Preprocessing" => "calibration/FAO_preprocessing.md",
+                "Calibrating potential growth" => "calibration/FAO_irrigated.md"],],
+
         "TOC all functions" => "all_functions.md",
         "References & Acknowledgements" => "References.md"])
 

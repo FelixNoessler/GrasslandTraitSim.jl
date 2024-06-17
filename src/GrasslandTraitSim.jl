@@ -181,7 +181,7 @@ function load_data(datapath)
         DataFrame)
 
     ## time dependent 2006-2022
-    pet = CSV.read("$datapath/input/PET.csv",
+    pet = CSV.read("$datapath/input/pet.csv",
         DataFrame)
 
     ## time dependent 2006-2022
