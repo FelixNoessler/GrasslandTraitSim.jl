@@ -245,6 +245,7 @@ function preallocate_vectors(; input_obj, T = Float64)
 
         ## based on traits
         μ = Array{T}(undef, nspecies),
+        μ_sla = Array{T}(undef, nspecies),
         TS = Array{T}(undef, nspecies, nspecies))
 
     global F = Float64

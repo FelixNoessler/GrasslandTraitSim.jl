@@ -1,37 +1,13 @@
 @doc raw"""
-Derive a nutrient index by combining total nitrogen and carbon to nitrogen ratio.
+Derive a nutrient index from total soil nitrogen.
 
 ```math
-\begin{align*}
-\text{CN_scaled} &= \frac{\text{CNratio} - \text{minCNratio}}
-                    {\text{maxCNratio} - \text{minCN_ratio}} \\
-\text{totalN_scaled} &= \frac{\text{totalN} - \text{mintotalN}}
-                        {\text{N_max} - \text{mintotalN}} \\
-\text{nutrients} &= \frac{1}{1 + exp(-\text{totalN_β} ⋅ \text{totalN_scaled}
-                                     -\text{CN_β} ⋅ \text{CN_scaled}⁻¹)}
-\end{align*}
+\text{nutrients} = \frac{\text{totalN}}{N_\max}
 ```
 
-- `CNratio`: carbon to nitrogen ratio [-]
 - `totalN`: total nitrogen [g kg⁻¹]
-- `minCNratio`: minimum carbon to nitrogen ratio [-]
-- `maxCNratio`: maximum carbon to nitrogen ratio [-]
-- `mintotalN`: minimum total nitrogen [g kg⁻¹]
 - `N_max`: maximum total nitrogen [g kg⁻¹]
-- `totalN_β`: scaling parameter for total nitrogen [-]
-- `CN_β`: scaling parameter for carbon to nitrogen ratio [-]
 - `nutrients`: nutrient index [-]
-
-Additionally if more than one patch is simulated a gradient of nutrients can be added
-and the last equations changes to:
-
-```math
-\text{nutrients} = \frac{1}{1 + exp(-\text{totalN_β} ⋅ \text{totalN_scaled}
-                                    -\text{CN_β} ⋅ \text{CN_scaled}⁻¹
-                                    -\text{nutheterog} * (\text{nutgradient} - 0.5))}
-```
-
-- `nutheterog`: heterogeneity of nutrients [-]
 """
 function input_nutrients!(; container)
     @unpack nutrients = container.patch_variables

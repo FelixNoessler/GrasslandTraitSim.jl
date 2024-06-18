@@ -93,6 +93,10 @@ function one_day!(; t, container)
                 if patch_below_biomass[i] < 1e-30u"kg / ha" && !iszero(patch_below_biomass[i])
                     patch_below_biomass[i] = 0.0u"kg / ha"
                 end
+
+                if patch_height[i] < 1e-30u"m" && !iszero(patch_height[i])
+                    patch_height[i] = 0.0u"m"
+                end
             end
 
             for s in 1:nspecies

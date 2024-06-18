@@ -110,17 +110,6 @@ makedocs(;
                 "Clonal growth" => "Modelling_API/clonalgrowth.md"],
             "Water dynamics" => "Modelling_API/water.md"],
 
-
-        "Calibration" => [
-            "Biodiversity Exploratories" => [
-                "Preprocessing" => "calibration/BE_preprocessing.md",
-                "Data" => "calibration/BE_data.md",
-                "Likelihood" => "calibration/BE_likelihood.md",
-                "Priors" => "calibration/BE_priors.md"],
-            "FAO" => [
-                "Preprocessing" => "calibration/FAO_preprocessing.md",
-                "Calibrating potential growth" => "calibration/FAO_irrigated.md"],],
-
         "TOC all functions" => "all_functions.md",
         "References & Acknowledgements" => "References.md"])
 

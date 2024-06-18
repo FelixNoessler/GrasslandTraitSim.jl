@@ -3,8 +3,8 @@ Initialize the simulation object.
 
 The function is called once at the beginning of the simulation within [`solve_prob`](@ref).
 
-The [traits](@ref "Initialization of traits") of the species are generated,
-the [parameters](@ref "Initialization of parameters") are initialized and the
+The [traits](@ref "Initialization of traits") of the species are generated or
+set if provided, the [parameters](@ref "Initialization of parameters") are initialized and the
 [initial conditions of the state variables](@ref "Set the initial conditions of the state variables")
 are set.
 """
@@ -37,12 +37,20 @@ Set the initial conditions for the state variables.
 
 Each plant species (`u_biomass`) gets an equal share of
 the initial biomass (`initbiomass`). The soil water content
-(`u_water`) is set to 180 mm.
+(`u_water`) is set to 180 mm. The height is set to half of the
+maximum height of the species. The above- and belowground biomass
+(`u_above_biomass`, `u_below_biomass`) are calculated based on the
+aboveground biomass proportion (`abp`).
 
 - `u_biomass`: state variable biomass [kg ha⁻¹]
 - `u_water`: state variable soil water content [mm]
+- `u_height`: state variable height [m]
+- `u_above_biomass`: state variable aboveground biomass [kg ha⁻¹]
+- `u_below_biomass`: state variable belowground biomass [kg ha⁻¹]
 - `initbiomass`: initial biomass [kg ha⁻¹]
 - `initsoilwater`: initial soil water content [mm]
+- `height`: potential height of the species [m]
+- `abp`: aboveground biomass proportion [-]
 """
 function set_initialconditions!(; container)
     @unpack u_biomass, u_above_biomass, u_below_biomass, u_water, u_height = container.u

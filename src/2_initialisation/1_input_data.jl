@@ -73,8 +73,8 @@ function validation_input(;
             :precipitation = :precipitation .* u"mm"
             :PET = :PET .* u"mm"
             :PET_sum = :PET .* u"mm"
-            :PAR = :PAR .* 10000 .* u"MJ / ha"
-            :PAR_sum = :PAR .* 10000 .* u"MJ / ha"
+            :PAR = :PAR .* u"MJ / ha"
+            :PAR_sum = :PAR .* u"MJ / ha"
             :CUT_mowing = prepare_mowing(mow_sub) ./ 100 .* u"m"
             :LD_grazing = prepare_grazing(graz_sub) ./ u"ha"
             :doy = Dates.dayofyear.(:date)
@@ -105,8 +105,9 @@ function validation_input(;
         precipitation = Array{eltype(daily_input_df.precipitation)}(undef, ntimesteps)
         PET = Array{eltype(daily_input_df.PET)}(undef, ntimesteps)
         PET_sum = Array{eltype(daily_input_df.PET)}(undef, ntimesteps)
-        PAR = Array{eltype(daily_input_df.PAR)}(undef, ntimesteps)
-        PAR_sum = Array{eltype(daily_input_df.PAR_sum)}(undef, ntimesteps)
+        par_type = eltype(float(daily_input_df.PAR[1]))
+        PAR = Array{par_type}(undef, ntimesteps)
+        PAR_sum = Array{par_type}(undef, ntimesteps)
         CUT_mowing = Array{eltype(daily_input_df.CUT_mowing)}(undef, ntimesteps)
         LD_grazing = Array{eltype(daily_input_df.LD_grazing)}(undef, ntimesteps)
 
@@ -365,6 +366,7 @@ function create_included(included_prep = (;);)
     included = (;
         senescence = true,
         senescence_season = true,   # TODO
+        senescence_sla = true,
         potential_growth = true,
         clonalgrowth = true,
         mowing = true,
