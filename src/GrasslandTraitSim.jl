@@ -177,7 +177,7 @@ function load_data(datapath)
         DataFrame)
 
     ## time dependent 2006-2008, temperature & precipitation
-    dwd_clim = CSV.read("$datapath/input/dwd_temperature_precipitation.csv",
+    dwd_clim = CSV.read("$datapath/input/temperature_precipitation_dwd.csv",
         DataFrame)
 
     ## time dependent 2006-2022
