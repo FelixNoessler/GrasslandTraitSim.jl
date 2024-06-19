@@ -32,7 +32,7 @@ function radiation_reduction!(; container, PAR)
     end
 
     @unpack γ₁, γ₂ = container.p
-    com.RAD = min(1.0, 1.0 − γ₁ * (PAR − γ₂))
+    com.RAD = max(min(1.0, 1.0 − γ₁ * (PAR − γ₂)), 0.0)
 
     return nothing
 end
@@ -78,7 +78,10 @@ function temperature_reduction!(; container, T)
         return nothing
     end
 
-    @unpack T₀, T₁, T₂, T₃ = container.p
+    @unpack T₀, T_opt, T_opt_width, T₃ = container.p
+
+    T₁ = T_opt - T_opt_width
+    T₂ = T_opt + T_opt_width
 
     if T < T₀
         com.TEMP = 0.0
@@ -168,7 +171,7 @@ end
 function plot_radiation_reducer(; PARs = LinRange(0.0, 15.0 * 100^2, 1000)u"MJ / ha",
                            θ = nothing, path = nothing)
 
-    nspecies, container = create_container_for_plotting(; nspecies = 1)
+    nspecies, container = create_container_for_plotting(; nspecies = 1, θ)
     PARs = sort(ustrip.(PARs)) .* unit(PARs[1])
 
     y = Float64[]
@@ -209,7 +212,7 @@ end
 function plot_temperatur_reducer(; Ts = collect(LinRange(0.0, 40.0, 500)) .* u"°C",
                             θ = nothing, path = nothing)
 
-    nspecies, container = create_container_for_plotting(; nspecies = 1)
+    nspecies, container = create_container_for_plotting(; nspecies = 1, θ)
 
     y = Float64[]
     for T in Ts
@@ -244,7 +247,7 @@ end
 
 function plot_seasonal_effect(; STs = LinRange(0, 3500, 1000)u"K", θ = nothing, path = nothing)
 
-    nspecies, container = create_container_for_plotting(; nspecies = 1)
+    nspecies, container = create_container_for_plotting(; nspecies = 1, θ)
 
     y = Float64[]
     for ST in STs

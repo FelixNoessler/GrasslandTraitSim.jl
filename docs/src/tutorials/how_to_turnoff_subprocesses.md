@@ -22,7 +22,7 @@ included_keys = (
     :grazing,
     :lowbiomass_avoidance,
     :belowground_competition,
-    :community_height_red,
+    :community_self_shading,
     :height_competition,
     :pet_growth_reduction,
     :sla_transpiration,

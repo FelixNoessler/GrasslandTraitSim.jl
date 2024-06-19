@@ -83,7 +83,7 @@ function plot_seasonal_component_senescence(;
     STs = LinRange(0, 4000, 500),
     θ = nothing, path = nothing)
 
-    nspecies, container = create_container_for_plotting(; nspecies = 1)
+    nspecies, container = create_container_for_plotting(; nspecies = 1, θ)
     STs = sort(STs)
 
     y = Float64[]

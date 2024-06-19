@@ -179,7 +179,6 @@ function preallocate_vectors(; input_obj, T = Float64)
         defoliation = Array{T}(undef, nspecies)u"kg / ha",
         species_specific_red = Array{T}(undef, nspecies),
         LAIs = Array{T}(undef, nspecies),
-        relative_height_per_biomass = Array{T}(undef, nspecies)u"m * ha / kg",
         height_gain = Array{T}(undef, nspecies)u"m",
         height_loss_mowing = Array{T}(undef, nspecies)u"m",
         height_loss_grazing = Array{T}(undef, nspecies)u"m",
@@ -256,7 +255,7 @@ end
 @kwdef mutable struct CommunityLevel{T, Qkg_ha}
     LAItot::T = F(0.0)
     potgrowth_total::Qkg_ha = F(0.0) * u"kg/ha"
-    comH_reduction::T = F(1.0)
+    self_shading::T = F(1.0)
     RAD::T = F(1.0)
     SEA::T = F(1.0)
     TEMP::T = F(1.0)

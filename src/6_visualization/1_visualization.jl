@@ -26,9 +26,9 @@ function create_container_for_plotting(; nspecies = nothing, param = (;), θ = n
 
     if !isnothing(θ)
         for k in keys(θ)
-            p[k] = θ[k]
+                p[k] = θ[k]
+            end
         end
-    end
 
     if !isnothing(param) && !isempty(param)
         for k in keys(param)

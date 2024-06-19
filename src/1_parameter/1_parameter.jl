@@ -12,9 +12,8 @@ the permanent wilting point (see [`input_WHC_PWP!`](@ref)).
 
 $(MYNEWFIELDS)
 """
-@kwdef mutable struct SimulationParameter{T, Qkg_MJ, Qmha_Mg, Qkg_ha, Qm2_g,
-                                                 Qg_m2, Qg_kg, Qha_MJ, QMJ_ha,
-                                                 QC, QK, Qkg, Qha_Mg}
+@kwdef mutable struct SimulationParameter{T, Qkg_MJ, Qm, Qkg_ha, Qm2_g, Qg_m2, Qg_kg,
+                                          Qha_MJ, QMJ_ha, QC, QK, Qkg, Qha_Mg}
 
     ####################################################################################
     ## 1 Light interception and competition
@@ -32,11 +31,11 @@ $(MYNEWFIELDS)
     k::T = F(0.6)
 
     """
-    1::``\\alpha_{comH}``::is the community weighted mean height,
-    where the community height growth reducer equals 0.5,
+    1::``\\alpha_{comH}``::is the community weighted mean height per
+    total leaf area index, where the community self shading reducer equals 0.5,
     see [`potential_growth!`](@ref)
     """
-    α_com_height::Qmha_Mg = F(0.01)u"m * ha / Mg"
+    α_height_per_lai::Qm = F(0.02)u"m"
 
     """
     1::``\\beta_{H}``::controls how strongly taller plants gets more light for growth,
@@ -320,17 +319,29 @@ $(MYNEWFIELDS)
     """
     T₀::QC = F(4.0)u"°C"
 
-    """
-    3::``T_1``::is the lower bound for the optimal temperature for growth,
-    see [`temperature_reduction!`](@ref)
-    """
-    T₁::QC = F(10.0)u"°C"
+    # """
+    # 3::``T_1``::is the lower bound for the optimal temperature for growth,
+    # see [`temperature_reduction!`](@ref)
+    # """
+    # T₁::QC = F(10.0)u"°C"
+    # """
+    # 3::``T_2``::is the upper bound for the optiomal temperature for growth,
+    # see [`temperature_reduction!`](@ref)
+    # """
+    # T₂::QC = F(20.0)u"°C"
 
     """
-    3::``T_2``::is the upper bound for the optiomal temperature for growth,
+    3::``T_{opt}``::is the mean of the optimal temperature range for growth,
     see [`temperature_reduction!`](@ref)
     """
-    T₂::QC = F(20.0)u"°C"
+    T_opt::QC = F(10.0)u"°C"
+
+    """
+    3::``T_{opt,width}``::defines the optimal temperature range for growth:
+    ``T_{opt}`` ±  ``T_{opt,width}``
+    see [`temperature_reduction!`](@ref)
+    """
+    T_opt_width::QC = F(5.0)u"°C"
 
     """
     3::``T_3``::is the maximum temperature for growth,
@@ -601,8 +612,8 @@ function exlude_parameter(; input_obj)
         append!(excl_p, [:Ψ₁, :Ψ₂, :SEN_max])
     end
 
-    if !included.community_height_red
-        append!(excl_p, [:α_com_height, :β_com_height])
+    if !included.community_self_shading
+        append!(excl_p, [:α_height_per_lai, :β_com_height])
     end
 
     if !included.height_competition
@@ -641,7 +652,7 @@ end
 
 function add_units(x; p = SimulationParameter())
     for k in keys(x)
-        @reset x[k] = x[k] * unit(p[k])
+            @reset x[k] = x[k] * unit(p[k])
     end
     return x
 end

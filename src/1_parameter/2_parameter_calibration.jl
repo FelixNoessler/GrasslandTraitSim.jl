@@ -1,6 +1,6 @@
 function calibrated_parameter(; input_obj = nothing)
     p = (;
-        α_com_height = (truncated(Normal(0.0, 0.05); lower = 0.0, upper = 2.0),
+        α_height_per_lai = (truncated(Normal(0.0, 0.05); lower = 0.0, upper = 2.0),
                         as(Real, 0.0, 2.0),
             """The community height reduction should only apply to plant communities
             with a low community weighted mean plant height"""),

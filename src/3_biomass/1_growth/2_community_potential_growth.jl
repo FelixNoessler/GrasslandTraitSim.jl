@@ -13,7 +13,7 @@ fPARi_{txy} &= \left(1 - \exp\left(-k \cdot LAI_{tot, txy}\right)\right) \cdot
 Parameter, see also [`SimulationParameter`](@ref):
 - ``RUE_{max}`` (`RUE_max`) maximum radiation use efficiency [kg MJ⁻¹]
 - ``k`` (`k`) extinction coefficient [-]
-- ``\alpha_{comH}`` (`α_com_height`) is the community weighted mean height, where the community height growth reducer is 0.5 [m]
+- ``\alpha_{height, lai}`` (`α_height_per_lai`) is the community weighted mean height, where the community height growth reducer is 0.5 [m]
 - ``\beta_{comH}`` (`β_com_height`) is the slope of the logistic function that relates the community weighted mean height to the community height growth reducer [m⁻¹]
 
 Variables:
@@ -43,22 +43,26 @@ function potential_growth!(; container, above_biomass, actual_height, PAR)
         return nothing
     end
 
-    if !included.community_height_red
+    if !included.community_self_shading
         @info "No community height growth reduction!" maxlog=1
-        com.comH_reduction = 1.0
+        com.self_shading = 1.0
     else
-        @unpack relative_height_per_biomass = container.calc
-        @unpack height = container.traits
-        @unpack α_com_height = container.p
+        @unpack relative_height = container.calc
+        @unpack α_height_per_lai = container.p
 
-        relative_height_per_biomass .=
-            above_biomass .* (height ./ (above_biomass .+ 1e-10u"kg/ha") ) ./ sum(above_biomass)
-        cwm_height_per_biomass = sum(relative_height_per_biomass)
-        com.comH_reduction = cwm_height_per_biomass / (α_com_height + cwm_height_per_biomass)
+        ## community weighted mean height
+        relative_height .= above_biomass ./ sum(above_biomass) .* actual_height
+        cwm_height = sum(relative_height)
+
+        ## community weighted mean height per total leaf area index
+        height_per_lai = cwm_height ./ com.LAItot
+
+        ## community shading factor
+        com.self_shading = height_per_lai / (α_height_per_lai + height_per_lai)
     end
 
     @unpack RUE_max, k = container.p
-    com.potgrowth_total = PAR * RUE_max * (1 - exp(-k * com.LAItot * com.comH_reduction))
+    com.potgrowth_total = PAR * RUE_max * (1 - exp(-k * com.LAItot * com.self_shading))
 
     return nothing
 end
@@ -238,7 +242,7 @@ function plot_potential_growth_height(; θ = nothing, path = nothing)
         potential_growth!(; container, above_biomass,
                           actual_height = container.traits.height,
                           PAR = container.input.PAR[150])
-        red[hi] = container.calc.com.comH_reduction
+        red[hi] = container.calc.com.self_shading
     end
 
     fig = Figure()
@@ -271,8 +275,8 @@ function plot_community_height_influence(; θ = nothing, path = nothing)
         end
     end
 
-    function sim_community_height(; community_height_red)
-        @reset input_obj.simp.included.community_height_red .= community_height_red
+    function sim_community_height(; community_self_shading)
+        @reset input_obj.simp.included.community_self_shading .= community_self_shading
         @reset trait_input.height = [0.1u"m"]
         sol_small = solve_prob(; input_obj, p, trait_input);
         s = vec(ustrip.(sol_small.output.biomass[:, 1, 1, 1]))
@@ -290,14 +294,14 @@ function plot_community_height_influence(; θ = nothing, path = nothing)
     Axis(fig[1, 1]; limits = (nothing, nothing, 0, nothing),
          title = "Without community height reduction",
          xlabel = "", ylabel = "", xticklabelsvisible = false)
-    t, s, l = sim_community_height(; community_height_red = false)
+    t, s, l = sim_community_height(; community_self_shading = false)
     lines!(t[1:tstep:end], l[1:tstep:end]; label = "1.0 m")
     lines!(t[1:tstep:end], s[1:tstep:end]; label = "0.1 m")
 
     Axis(fig[2, 1]; limits = (nothing, nothing, 0, nothing),
         title = "With community height reduction",
         xlabel = "Date [year]", ylabel = "")
-    t, s, l = sim_community_height(; community_height_red = true)
+    t, s, l = sim_community_height(; community_self_shading = true)
 
     lines!(t[1:tstep:end], l[1:tstep:end]; label = "1.0 m")
     lines!(t[1:tstep:end], s[1:tstep:end]; label = "0.1 m")
