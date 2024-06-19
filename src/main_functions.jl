@@ -91,3 +91,21 @@ end
 @inline tuplejoin(x) = x
 @inline tuplejoin(x, y) = (; x..., y...)
 @inline tuplejoin(x, y, z...) = (; x..., tuplejoin(y, z...)...)
+
+celsius_int = typeof(1u"°C")
+celsius_float = typeof(1.0u"°C")
+
+Base.:+(a::celsius_int, b::celsius_int) = float(a) + float(b)
+Base.:+(a::celsius_float, b::celsius_int) = a + float(b)
+Base.:+(a::celsius_int, b::celsius_float) = float(a) + b
+Base.:+(a::celsius_float, b::celsius_float) = (ustrip(a) + ustrip(b)) * u"°C"
+
+Base.:-(a::celsius_int, b::celsius_int) = float(a) - float(b)
+Base.:-(a::celsius_float, b::celsius_int) = a - float(b)
+Base.:-(a::celsius_int, b::celsius_float) = float(a) - b
+Base.:-(a::celsius_float, b::celsius_float) = (ustrip(a) - ustrip(b)) * u"°C"
+
+Base.:/(a::celsius_int, b::celsius_int) = float(a) / float(b)
+Base.:/(a::celsius_float, b::celsius_int) = a / float(b)
+Base.:/(a::celsius_int, b::celsius_float) = float(a) / b
+Base.:/(a::celsius_float, b::celsius_float) = ustrip(a) / ustrip(b)
