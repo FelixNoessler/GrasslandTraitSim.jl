@@ -8,51 +8,14 @@ import GrasslandTraitSim as sim
 using CairoMakie
 using Unitful
 using Statistics
-using PrettyTables
 ```
 
-All the subprocesses that can be turned off are listed in the `included_keys` variable. Let's check which parameters are used in each subprocess. Note that some parameters are used in multiple subprocesses and are therefore not listed in the table below:
+All the subprocesses that can be turned off are listed here:
 ```@example turnoff_subprocesses
-included_keys = (
-    :senescence,
-    :senescence_season,
-    :potential_growth,
-    :clonalgrowth,
-    :mowing,
-    :grazing,
-    :lowbiomass_avoidance,
-    :belowground_competition,
-    :community_self_shading,
-    :height_competition,
-    :pet_growth_reduction,
-    :sla_transpiration,
-    :water_growth_reduction,
-    :nutrient_growth_reduction,
-    :temperature_growth_reduction,
-    :seasonal_growth_adjustment,
-    :radiation_growth_reduction
-)
-
-p_all = sim.SimulationParameter()
-p_dict = Dict()
-for k in included_keys
-    included_prep = (; zip([k], [false])...)
-
-    input_obj = (; simp = (; included = sim.create_included(included_prep),
-                             likelihood_included = (; biomass = false, trait = false),
-                             npatches = 5))
-    p = sim.SimulationParameter(input_obj;)    
-    p_notin = keys(p_all)[.!(collect(keys(p_all)) .∈ Ref(keys(p)))]   
-    p_dict[k] = p_notin    
-end
-
-pretty_table(p_dict; header = ["Subprocess", "Parameter that are only used in the specific subprocess"],
-             sortkeys = true,
-             alignment=:l)
-nothing # hide
+sim.create_included()
 ```
 
-We have to write all the processes that we want to turn off in the `included` named tuple. Here we want to exclude the potential growth of the species. The named tuple looks as follows:
+We have to write all the processes that we want to turn off in the `included` named tuple. By default, all other processes are included. Here we want to exclude the potential growth of the species. The named tuple looks as follows:
 ```@example turnoff_subprocesses
 included = (;
     potential_growth = false,
@@ -60,10 +23,7 @@ included = (;
 
 trait_input = sim.input_traits()
 input_obj = sim.validation_input(; included, plotID = "HEG01", nspecies = length(trait_input.amc));
-
-# we also exclude all parameters that are not used
-# this is not necessary, but it gives an overview which parameters are used
-p = sim.SimulationParameter(input_obj; exclude_not_used = true)
+p = sim.SimulationParameter()
 ```
 
 Run the simulation and let's visualize the biomass dynamic without potential growth:

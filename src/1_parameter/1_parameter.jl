@@ -1,6 +1,3 @@
-include("2_parameter_calibration.jl")
-include("2_parameter_calibration_fao.jl")
-
 """
     SimulationParameter(; kwargs...)
 
@@ -319,17 +316,6 @@ $(MYNEWFIELDS)
     """
     T₀::QC = F(4.0)u"°C"
 
-    # """
-    # 3::``T_1``::is the lower bound for the optimal temperature for growth,
-    # see [`temperature_reduction!`](@ref)
-    # """
-    # T₁::QC = F(10.0)u"°C"
-    # """
-    # 3::``T_2``::is the upper bound for the optiomal temperature for growth,
-    # see [`temperature_reduction!`](@ref)
-    # """
-    # T₂::QC = F(20.0)u"°C"
-
     """
     3::``T_{opt}``::is the mean of the optimal temperature range for growth,
     see [`temperature_reduction!`](@ref)
@@ -520,20 +506,13 @@ $(MYNEWFIELDS)
     8::``\\sigma_{cumbiomass,fao}``::
     """
     b_cumbiomass_fao::T = F(0.5)
+
+    """
+    8::``\\text{total init biomass}``::Initial biomass for the FAO dataset
+    """
+    total_biomass_init_fao::Qkg_ha = F(10.0)u"kg / ha"
 end
 
-
-function SimulationParameter(input_obj::NamedTuple; exclude_not_used = true)
-    p = SimulationParameter()
-
-    if exclude_not_used
-        exclude_parameters = exlude_parameter(; input_obj)
-        f = collect(keys(p)) .∉ Ref(exclude_parameters)
-        p = (; zip(keys(p)[f], collect(p)[f])...)
-    end
-
-    return p
-end
 
 function Base.show(io::IO, obj::SimulationParameter)
     p_names = collect(keys(obj))
@@ -541,86 +520,6 @@ function Base.show(io::IO, obj::SimulationParameter)
     m = hcat(p_names, vals)
     pretty_table(io, m; header = ["Parameter", "Value"],  alignment=[:r, :l], crop = :none)
     return nothing
-end
-
-function exlude_parameter(; input_obj)
-    @unpack likelihood_included, included, npatches = input_obj.simp
-
-    excl_p = Symbol[]
-    if !likelihood_included.biomass
-        append!(excl_p, [:b_biomass])
-    end
-
-    if !likelihood_included.trait
-        append!(excl_p, [:b_sla, :b_lnc, :b_amc, :b_height, :b_srsa])
-    end
-
-    if !included.potential_growth
-        append!(excl_p, [:RUE_max, :k])
-    end
-
-    if isone(npatches) || !included.clonalgrowth
-        append!(excl_p, [:β_clo])
-    end
-
-    if !included.radiation_growth_reduction
-        append!(excl_p, [:γ₁, :γ₂])
-    end
-
-    if !included.temperature_growth_reduction
-        append!(excl_p, [:T₀, :T₁, :T₂, :T₃])
-    end
-
-    if !included.seasonal_growth_adjustment
-        append!(excl_p, [:SEA_min, :SEA_max, :ST₁, :ST₂])
-    end
-
-    if !included.water_growth_reduction
-        water_names = [:ϕ_sla, :η_min_sla, :η_max_sla, :β_η_sla, :β_sla, :δ_wrsa, :δ_sla,
-                       :β_wrsa, :η_μ_wrsa, :η_σ_wrsa, :β_η_wrsa]
-        append!(excl_p, water_names)
-    end
-
-    if !included.nutrient_growth_reduction
-        nutrient_names = [:N_max, :ϕ_amc, :η_min_amc, :η_max_amc, :κ_red_amc, :β_η_amc,
-                          :β_amc, :δ_amc, :δ_nrsa, :β_nrsa,
-                          :η_min_nrsa, :η_max_nrsa, :β_η_nrsa]
-        append!(excl_p, nutrient_names)
-    end
-
-    if !included.nutrient_growth_reduction && !included.water_growth_reduction
-        append!(excl_p, [:ϕ_rsa])
-    end
-
-    if !included.sla_transpiration
-        append!(excl_p, [:α_TR_sla, :β_TR_sla])
-    end
-
-    if !included.belowground_competition
-        append!(excl_p, [:α_TSB, :β_TSB])
-    end
-
-    if !included.grazing
-        append!(excl_p, [:β_PAL_lnc, :κ, :α_GRZ])
-    end
-
-    if  !included.senescence
-        append!(excl_p, [:α_sen, :β_sen_sla, :ϕ_sen_sla])
-    end
-
-    if !included.senescence || !included.senescence_season
-        append!(excl_p, [:Ψ₁, :Ψ₂, :SEN_max])
-    end
-
-    if !included.community_self_shading
-        append!(excl_p, [:α_height_per_lai, :β_com_height])
-    end
-
-    if !included.height_competition
-        append!(excl_p, [:β_height])
-    end
-
-    return excl_p
 end
 
 F = Float64
@@ -652,7 +551,7 @@ end
 
 function add_units(x; p = SimulationParameter())
     for k in keys(x)
-            @reset x[k] = x[k] * unit(p[k])
+        @reset x[k] = x[k] * unit(p[k])
     end
     return x
 end
