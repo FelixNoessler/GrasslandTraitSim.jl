@@ -18,12 +18,9 @@ function prepare_input(; plot_obj, posterior, biomass_stats = nothing)
     samplingtype = plot_obj.obs.menu_samplingtype.selection.val
 
     if samplingtype == :prior
-        inference_obj = calibrated_parameter(; input_obj)
-        θ = sample_prior(; inference_obj)
-        p = SimulationParameter()
-        for k in keys(θ)
-            p[k] = θ[k] * unit(p[k])
-        end
+        priors = get_priors(plot_obj.obs.prior_obj)
+        θ = sample_prior(priors)
+        p = add_to_p(θ)
 
     elseif samplingtype == :fixed
         p = SimulationParameter()

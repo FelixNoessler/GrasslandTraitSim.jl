@@ -159,23 +159,10 @@ function dashboard_layout(; variable_p)
     for k in keys(variable_p)
         p[k] = variable_p[k]
     end
-    inference_obj = calibrated_parameter(; input_obj)
-
-
-    # lb = 0.01 .* ustrip.(collect(p))
-    # ub = 3 .* ustrip.(collect(p))
-    # for k in keys(inference_obj.lb)
-    #     key_index = findfirst(k .== parameter_keys_prep)
-
-    #     lb[key_index] = inference_obj.lb[k]
-    #     ub[key_index] = inference_obj.ub[k]
-    # end
-    # [$(@sprintf("%.1E", lb[i])), $(@sprintf("%.1E", ub[i]))]
-    # [$(@sprintf("%.1E", lb[i])), $(@sprintf("%.1E", ub[i]))]
+    prior_obj = calibrated_parameter_BE(; )
     p_val_prep = ustrip.(collect(p))
-
-    inference_keys = keys(inference_obj.priordists)
-    is_inf_p = collect(parameter_keys_prep .∈ Ref(keys(inference_obj.priordists)))
+    prior_keys = keys(get_priors(prior_obj))
+    is_inf_p = collect(parameter_keys_prep .∈ Ref(prior_keys))
     inf_str = ifelse.(is_inf_p, "", "")
 
     ##### first all parameters that are calibrated
@@ -248,6 +235,7 @@ function dashboard_layout(; variable_p)
         toggle_validdata,
         toggle_standingbiomass,
         lls,
+        prior_obj,
         gradient_values,
         gradient_toggle,
         plots_layout)
