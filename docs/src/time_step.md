@@ -76,7 +76,7 @@ path = joinpath(dirname(pathof(sim)), "../assets/data/input/inputs_14_days.jld2"
 input_objs_14 = sim.load_input(path; plotIDs = ["HEG01"]);
 
 ## faster than preprocessing:
-input_obj_14 = sim.validation_input(; plotID = "HEG01", nspecies = 43, time_step_days = 14);
+# input_obj_14 = sim.validation_input(; plotID = "HEG01", nspecies = 43, time_step_days = 14);
 
 plot_input_time_steps(input_obj_1, input_objs_14.HEG01)
 ```

@@ -16,6 +16,7 @@ using ForwardDiff
 using LinearAlgebra
 using JLD2
 using Printf
+using ProtoStructs
 using Statistics
 using StatsBase
 using PrettyTables

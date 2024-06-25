@@ -43,6 +43,57 @@ $(MYNEWFIELDS)
     ####################################################################################
     ## 2 Belowground competition
     ####################################################################################
+
+    ############################# Water competition
+    """
+    2::``\\text{water-red-SRSA-Lolium}``::TODO; water growth reducer for Lolium perenne
+    at 0.4 scaled soil water content
+    see [`water_reduction!`](@ref)
+    """
+    R_wrsa_04_Lolium::T = F(0.97)
+
+    """
+    2::``\\text{SRSA-Lolium}``::TODO fixed value for Lolium perenne
+    see [`water_reduction!`](@ref)
+    """
+    RSA_per_totalbiomass_Lolium::Qm2_g = F(0.07832)u"m^2 / g"
+
+    """
+    2::``\\text{RSA-per-totalbiomass-influence}``::TODO
+    see [`water_reduction!`](@ref)
+    """
+    RSA_per_totalbiomass_influence::T = F(0.01)
+
+    """
+    2::``\\eta_{\\min, wrsa}``::TODO
+    see [`water_reduction!`](@ref)
+    """
+    R_wrsa_04_min::T = F(0.0)
+
+    """
+    2::``\\eta_{\\max, wrsa}``::TODO
+    see [`water_reduction!`](@ref)
+    """
+    R_wrsa_04_max::T = F(1.0)
+
+    """
+    2::``\\beta_{wrsa}``::part of the growth reducer based on the root surface area
+    per aboveground biomass and the water stress function ``W_{srsa, txys}``;
+    slope of the logistic function, controls how steep the transition
+    from ``1-\\delta_{wrsa}`` to ``K_{wrsa, s}`` is,
+    see [`water_reduction!`](@ref)
+    """
+    β_wrsa::T = F(7.0)
+
+    ############################# Nutrient competition
+    """
+    2::``N_{\\max}``:: maximal total soil nitrogen, based on the maximum total N
+    of ≈ 30.63 [g kg⁻¹] in the data from the Biodiversity Exploratories
+    [explo14446v19](@cite)[explo18787v6](@cite)[explo23846v10](@cite)[explo31210v6](@cite),
+    see [`input_nutrients!`](@ref)
+    """
+    N_max::Qg_kg = F(35.0)u"g/kg"
+
     """
     2::``\\alpha_{TSB}``::part of the equation of the biomass density factor ``D_{txys}``,
     if the matrix multiplication between the trait similarity matrix and the biomass
@@ -63,119 +114,6 @@ $(MYNEWFIELDS)
     see [`below_ground_competition!`](@ref)
     """
     β_TSB::Qha_Mg = F(2.0)u"ha / Mg"
-
-    """
-    2::``\\delta_{sla}``::part of the growth reducer based on the water stress
-    and the specific leaf area ``W_{sla, txys}`` function;
-    maximal possible growth reduction,
-    see [`water_reduction!`](@ref)
-    """
-    δ_sla::T = F(0.5)
-
-    """
-    2::``\\beta_{sla}``::part of the growth reducer based on the water stress
-    and the specific leaf area function ``W_{sla, txys}``;
-    slope of the logistic function, controls how steep
-    the transition from ``1-\\delta_{sla}`` to 1 is,
-    see [`water_reduction!`](@ref)
-    """
-    β_sla::T = F(5.0)
-
-    """
-    2::``\\eta_{\\min, sla}``::part of the growth reducer based on the water stress
-    and the specific leaf area function ``W_{sla, txys}``;
-    ... TODO ... of the logistic function ``A_{sla, s}`` for ``W_{sla, txys}``,
-    see [`water_reduction!`](@ref)
-    """
-    η_μ_sla::T = F(0.1)
-
-    """
-    2::``\\eta_{\\max, sla}``::part of the growth reducer based on the water stress
-    and the specific leaf area function ``W_{sla, txys}``;
-    ... TODO ...``A_{sla, s}`` for ``W_{sla, txys}``,
-    see [`water_reduction!`](@ref)
-    """
-    η_σ_sla::T = F(0.7)
-
-    """
-    2::``\\phi_{sla}``::part of the growth reducer based on the water stress and the
-    specific leaf area function ``W_{sla, txys}``; is the specific leaf area where
-    the species has a value of ``A_{sla, s}`` that is halfway between
-    ``\\eta_{\\min, sla}`` and ``\\eta_{\\max, sla}``,
-    see [`water_reduction!`](@ref)
-    """
-    ϕ_sla::Qm2_g = F(0.007)u"m^2 / g"
-
-    """
-    2::``\\beta_{\\eta, sla}``::part of the growth reducer based on the water stress
-    and the specific leaf area function ``W_{sla, txys}``; slope of a logistic function
-    that relates the specific leaf area to ``A_{sla, s}``,
-    see [`water_reduction!`](@ref)
-    """
-    β_η_sla::Qg_m2 = F(500.0)u"g / m^2"
-
-    """
-    2::``\\delta_{wrsa}``::part of the growth reducer based on the
-    root surface area per aboveground biomass and the water stress function
-    ``W_{srsa, txys}``; maximal possible reduction & calibrated
-    see [`water_reduction!`](@ref)
-    """
-    δ_wrsa::T = F(0.8)
-
-    """
-    2::``\\beta_{wrsa}``::part of the growth reducer based on the root surface area
-    per aboveground biomass and the water stress function ``W_{srsa, txys}``;
-    slope of the logistic function, controls how steep the transition
-    from ``1-\\delta_{wrsa}`` to ``K_{wrsa, s}`` is,
-    see [`water_reduction!`](@ref)
-    """
-    β_wrsa::T = F(7.0)
-
-    """
-    2::``\\phi_{srsa}``::part of the growth reducer based on the
-    root surface area per aboveground biomass and the water stress
-    function ``W_{srsa, txys}`` and the nutrient stress function ``N_{srsa, txys}``;
-    is the root surface area per aboveground biomass area where the species have
-    values of ``A_{wrsa, s}`` (``A_{nrsa, s}``) and ``K_{wrsa, s}`` (``K_{nrsa, s}``)
-    that are halfway between the minimum and the maximum of
-    ``A_{wrsa, s}`` (``A_{nrsa, s}``) and ``K_{wrsa, s}`` (``K_{nrsa, s}``),
-    see [`water_reduction!`](@ref)
-    """
-    ϕ_rsa::Qm2_g = F(0.07)u"m^2 / g"
-
-    """
-    2::``\\beta_{\\eta, wrsa}``::part of the growth reducer based on the root
-    surface area per aboveground biomass and the water stress function ``W_{srsa, txys}``;
-    is the slope of the two logistic functions that relate the root surface area per
-    aboveground biomass to ``K_{wrsa, s}`` and ``A_{nrsa, s}``,
-    see [`water_reduction!`](@ref)
-    """
-    β_η_wrsa::Qg_m2 = F(80.0)u"g / m^2"
-
-    """
-    2::``\\eta_{\\mu, wrsa}``::part of the growth reducer based on the
-    root surface area per aboveground biomass and the water stress function
-    ``W_{srsa, txys}``; mean possible value of ``A_{wrsa, s}``,
-    see [`water_reduction!`](@ref)
-    """
-    η_μ_wrsa::T = F(0.3)
-
-    """
-    2::``\\eta_{\\sigma, wrsa}``::part of the growth reducer based on the root surface
-    area per aboveground biomass and the water stress function ``W_{srsa, txys}``;
-    diff to ``\\eta_{\\mu, wrsa}`` to get minimal and maximal possible
-    value of ``A_{wrsa, s}``,
-    see [`water_reduction!`](@ref)
-    """
-    η_σ_wrsa::T = F(0.3)
-
-    """
-    2::``N_{\\max}``:: maximal total soil nitrogen, based on the maximum total N
-    of ≈ 30.63 [g kg⁻¹] in the data from the Biodiversity Exploratories
-    [explo14446v19](@cite)[explo18787v6](@cite)[explo23846v10](@cite)[explo31210v6](@cite),
-    see [`input_nutrients!`](@ref)
-    """
-    N_max::Qg_kg = F(35.0)u"g/kg"
 
     """
     2::``\\delta_{amc}``::part of the growth reducer based on the
@@ -248,6 +186,19 @@ $(MYNEWFIELDS)
     see [`nutrient_reduction!`](@ref)
     """
     ϕ_amc::T = F(0.17)
+
+
+    """
+    2::``\\phi_{srsa}``::part of the growth reducer based on the
+    root surface area per aboveground biomass and the water stress
+    function ``W_{srsa, txys}`` and the nutrient stress function ``N_{srsa, txys}``;
+    is the root surface area per aboveground biomass area where the species have
+    values of ``A_{wrsa, s}`` (``A_{nrsa, s}``) and ``K_{wrsa, s}`` (``K_{nrsa, s}``)
+    that are halfway between the minimum and the maximum of
+    ``A_{wrsa, s}`` (``A_{nrsa, s}``) and ``K_{wrsa, s}`` (``K_{nrsa, s}``),
+    see [`water_reduction!`](@ref)
+    """
+    ϕ_rsa::Qm2_g = F(0.07)u"m^2 / g"
 
     """
     2::``\\delta_{nrsa}``::part of the growth reducer based on the

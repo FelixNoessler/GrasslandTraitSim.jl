@@ -87,10 +87,7 @@ end
 
 function calibrated_parameter_fao_water_limited()
     p = (;
-        δ_wrsa = (Beta(2, 3), as𝕀, "text"),
-        δ_sla = (Beta(2, 3), as𝕀, "text"),
-        η_μ_wrsa = (Uniform(0, 0.5), as(Real, 0, 0.5), "text"),
-        η_μ_sla = (Uniform(0, 0.5), as(Real, 0, 0.5), "text"),
+        R_wrsa_04_Lolium = (Beta(15, 5), as𝕀, "text"),
     )
 end
 

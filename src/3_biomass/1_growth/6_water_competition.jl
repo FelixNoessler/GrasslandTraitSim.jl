@@ -4,30 +4,20 @@ and the traits specific leaf area and root surface area
 per belowground biomass.
 
 Reduction of growth due to stronger water stress for plants with
-higher specific leaf area (`sla`):
-
-- the strength of the reduction is modified by the parameter `δ_sla`
-
-`δ_sla` equals 1:
-![](../img/W_sla_default.png)
-
-`δ_sla` equals 0.5:
-![](../img/W_sla_0_5.png)
-
-Reduction of growth due to stronger water stress for plants with
 lower specific root surface area per above ground biomass (`srsa`).
 
-- the strength of the reduction is modified by the parameter `δ_wrsa`
-
-`δ_wrsa` equals 1:
 ![Graphical overview of the functional response](../img/W_rsa_default.png)
 
-`δ_wrsa` equals 0.5:
-# ![Graphical overview of the functional response](../img/W_rsa_0_5.png)
 """
 function water_reduction!(; container, W, PWP, WHC)
     @unpack included = container.simp
-    @unpack Waterred = container.calc
+    @unpack Waterred, above_proportion = container.calc
+    @unpack R_wrsa_04, x0_wrsa = container.transfer_function
+    @unpack srsa = container.traits
+    @unpack RSA_per_totalbiomass_Lolium, R_wrsa_04_Lolium,
+            RSA_per_totalbiomass_influence,
+            R_wrsa_04_min, R_wrsa_04_max, β_wrsa  = container.p
+
     if !included.water_growth_reduction
         @info "No water reduction!" maxlog=1
         @. Waterred = 1.0
@@ -36,190 +26,108 @@ function water_reduction!(; container, W, PWP, WHC)
 
     Wsc = W > WHC ? 1.0 : W > PWP ? (W - PWP) / (WHC - PWP) : 0.0
 
-    @unpack W_sla, W_rsa, above_proportion = container.calc
-    @unpack A_wrsa, A_sla = container.transfer_function
-    @unpack δ_sla, δ_wrsa, ϕ_rsa, ϕ_sla, η_μ_sla, η_σ_sla,
-    β_η_wrsa, β_η_sla, η_μ_wrsa, η_σ_wrsa, β_sla, β_wrsa = container.p
-    @unpack srsa, sla, abp, lbp = container.traits
-
-    if included.sla_water_growth_reducer
-        η_min_sla = η_μ_sla - η_σ_sla
-        η_max_sla = η_μ_sla + η_σ_sla
-        @. A_sla = (η_min_sla + (η_max_sla - η_min_sla) / (1 + exp(-β_η_sla * (lbp * above_proportion * sla - ϕ_sla)))) # TODO
-        @. W_sla = 1 - δ_sla + δ_sla / (1 + exp(-β_sla * (Wsc - A_sla)))
+    if iszero(Wsc)
+        @. Waterred = 0.0
+    elseif isone(Wsc)
+        @. Waterred = 1.0
     else
-        W_sla .= 1.0
-    end
+        ###### relate the root surface area per total biomass
+        ###### to growth reduction at 0.4 of Wsc
+        ## midpoint of logistic function
+        x0_reduction_at_04 =RSA_per_totalbiomass_Lolium -
+            RSA_per_totalbiomass_Lolium / 10 ^ RSA_per_totalbiomass_influence
 
-    if included.rsa_water_growth_reducer
-        η_min_wrsa = η_μ_wrsa - η_σ_wrsa
-        η_max_wrsa = η_μ_wrsa + η_σ_wrsa
-        @. A_wrsa =  (η_max_wrsa + (η_min_wrsa - η_max_wrsa) /
-        (1 + exp(-β_η_wrsa * ((1 - above_proportion) * srsa - ϕ_rsa))))  # TODO add to documentation and manuscript
-        @. W_rsa = 1 - δ_wrsa + δ_wrsa / (1 + exp(-β_wrsa * (Wsc - A_wrsa)))
-    else
-        W_rsa .= 1.0
-    end
+        ## slope of logistic function
+        k_reduction_at_04 = 1 / (x0_reduction_at_04 -  RSA_per_totalbiomass_Lolium) *
+            log((R_wrsa_04_max - R_wrsa_04_Lolium) /
+                (R_wrsa_04_Lolium - R_wrsa_04_min))
 
-    @. Waterred = W_sla * W_rsa
+        ## growth reduction at 0.4 of Wsc
+        @. R_wrsa_04 = R_wrsa_04_min + (R_wrsa_04_max - R_wrsa_04_min) /
+            (1 + exp(-k_reduction_at_04 *
+                        ((1 - above_proportion) * srsa - x0_reduction_at_04)))
+
+        ###### growth reduction due to water stress for different Wsc
+        ## midpoint of logistic function
+        @. x0_wrsa = log(1/R_wrsa_04 - 1) / β_wrsa + 0.4
+
+        ## growth reduction
+        @. Waterred = 1 / (1 + exp(-β_wrsa * (Wsc - x0_wrsa)))
+    end
 
     return nothing
 end
 
-function plot_W_srsa(; δ_wrsa = nothing, θ = nothing, path = nothing)
-    param = ifelse(isnothing(δ_wrsa), (;), (; δ_wrsa))
-    nspecies, container = create_container_for_plotting(; param, θ)
-    δ_wrsa = container.p.δ_wrsa
-    xs = LinRange(0, 1.0, 20)
+function plot_W_srsa(; θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
+    xs = LinRange(-0.1, 1.1, 200)
     ymat = fill(0.0, length(xs), nspecies)
 
     WHC = 1u"mm"
     PWP = 0u"mm"
     W = 1 * u"mm"
-    above_biomass = ones(nspecies)u"kg/ha"
+
     total_biomass = fill(2, nspecies)u"kg/ha"
+    above_biomass = container.traits.abp .* total_biomass
     @. container.calc.above_proportion = above_biomass / total_biomass
 
     for (i, x) in enumerate(xs)
         water_reduction!(; container, W = x * u"mm", PWP, WHC)
-        ymat[i, :] .= container.calc.W_rsa
+        ymat[i, :] .= container.calc.Waterred
     end
 
     idx = sortperm(container.traits.srsa)
-    x0s = container.transfer_function.A_wrsa[idx]
-    A = 1 - container.p.δ_wrsa
+    R_04 = container.transfer_function.R_wrsa_04[idx]
     srsa = ustrip.(container.traits.srsa[idx])
     abp = container.traits.abp[idx]
     ymat = ymat[:, idx]
     colorrange = (minimum(srsa), maximum(srsa))
 
     fig = Figure(size = (1000, 500))
-    Axis(fig[1, 1],
+    ax1 = Axis(fig[1, 1],
         xlabel = "Plant available water (W_sc)",
         ylabel = "Growth reduction factor (W_rsa)\n← stronger reduction, less reduction →",
-        limits = (0, 1, nothing, nothing))
-    hlines!([1-δ_wrsa]; color = :black)
-    text!(0.75, 1-δ_wrsa + 0.02; text = "1 - δ_wrsa")
-    for (i, x0) in enumerate(x0s)
+        limits = (-0.05, 1.05, -0.1, 1.1))
+
+    for (i, r04) in enumerate(R_04)
         lines!(xs, ymat[:, i];
             color = srsa[i],
             colorrange)
 
-        ##### midpoint
-        x0_y = (1 - A) / 2 + A
-        scatter!([x0], [x0_y];
+        ##### reduction at 0.4
+        scatter!([0.4], [r04];
             marker = :x,
             color = srsa[i],
             colorrange)
     end
-    ylims!(-0.1, 1.1)
 
-    η_min_wrsa = container.p.η_μ_wrsa - container.p.η_σ_wrsa
-    η_max_wrsa = container.p.η_μ_wrsa + container.p.η_σ_wrsa
-    Axis(fig[1, 2];
-        xlabel = "root surface area per total biomass [m² g⁻¹]\n = belowground biomass fraction ⋅\nroot surface area per belowground biomass [m² g⁻¹]",
-        ylabel = "Scaled water availability\nat midpoint (A_wrsa)")
-    scatter!((1 .- abp) .* srsa, x0s;
+    scatter!([0.4], [container.p.R_wrsa_04_Lolium];
+        markersize = 15,
+        color = :red)
+
+    ax2 = Axis(fig[1, 2];
+        xlabel = "root surface area per total biomass [m² g⁻¹]\n = belowground biomass fraction [-] ⋅\nroot surface area per belowground biomass [m² g⁻¹]",
+        ylabel = "Growth reducer at Wsc = 0.4 (R_wrsa_04)")
+    scatter!((1 .- abp) .* srsa, R_04;
         marker = :x,
         color = srsa,
         colorrange)
-    hlines!([η_min_wrsa, η_max_wrsa]; color = :black)
-    text!([0.03, 0.03], [η_min_wrsa, η_max_wrsa] .+ 0.02;
-            text = [
-                "η_min_wrsa = η_μ_wrsa - η_σ_wrsa",
-                "η_max_wrsa = η_μ_wrsa + η_σ_wrsa"])
-    vlines!(ustrip(container.p.ϕ_rsa); color = :black, linestyle = :dash)
-    text!(ustrip(container.p.ϕ_rsa) + 0.001,
-            (η_max_wrsa - η_min_wrsa) * 4/5;
-            text = "ϕ_rsa")
-    ylims!(nothing, η_max_wrsa + 0.1)
+    hlines!([container.p.R_wrsa_04_min, container.p.R_wrsa_04_max]; color = :black)
 
-    Label(fig[0, 1:2], "Influence of the root surface area";
+
+    scatter!([ustrip(container.p.RSA_per_totalbiomass_Lolium)], [container.p.R_wrsa_04_Lolium];
+        markersize = 15,
+        color = :red)
+
+    Label(fig[0, 1:2], "Influence of the root surface area per total biomass on the water stress growth reducer";
         halign = :left,
         font = :bold)
     Colorbar(fig[1, 3]; colorrange, label = "Root surface area per belowground biomass [m² g⁻¹]")
 
+    linkyaxes!(ax1, ax2)
 
     if !isnothing(path)
         save(path, fig;)
-    else
-        display(fig)
-    end
-
-    return nothing
-end
-
-
-function plot_W_sla(; δ_sla = nothing, θ = nothing, path = nothing)
-    param = ifelse(isnothing(δ_sla), (;), (; δ_sla))
-    nspecies, container = create_container_for_plotting(; param, θ)
-    δ_sla = container.p.δ_sla
-    xs = LinRange(0, 1, 20)
-    ymat = fill(0.0, length(xs), nspecies)
-    WHC = 1u"mm"
-    PWP = 0u"mm"
-    above_biomass = ones(nspecies)u"kg/ha"
-    total_biomass = fill(2, nspecies)u"kg/ha"
-    @. container.calc.above_proportion = above_biomass / total_biomass
-
-    for (i, x) in enumerate(xs)
-        W = x * u"mm"
-        water_reduction!(; container, W, PWP, WHC)
-        ymat[i, :] .= container.calc.W_sla
-    end
-
-    ##################
-    idx = sortperm(container.traits.sla)
-    x0s = container.transfer_function.A_sla[idx]
-    sla = ustrip.(container.traits.sla[idx])
-    lbp = container.traits.lbp[idx]
-    ymat = ymat[:, idx]
-    colorrange = (minimum(sla), maximum(sla))
-    ##################
-
-    fig = Figure(size = (900, 400))
-    Axis(fig[1, 1];
-        xlabel = "Plant available water (W_sc)",
-        ylabel = "Growth reduction factor (W_sla)\n← stronger reduction, less reduction →")
-    hlines!([1-δ_sla]; color = :black)
-    text!(0.8, 1-δ_sla + 0.02; text = "1 - δ_sla")
-
-    for i in eachindex(x0s)
-        lines!(xs, ymat[:, i];
-            color = sla[i],
-            colorrange)
-
-        ##### midpoint
-        x0_y = 1 - δ_sla / 2
-        scatter!([x0s[i]], [x0_y];
-            marker = :x,
-            color = sla[i],
-            colorrange)
-    end
-    ylims!(-0.1, 1.1)
-    xlims!(-0.02, nothing)
-
-    η_min_sla = container.p.η_μ_sla - container.p.η_σ_sla
-    η_max_sla = container.p.η_μ_sla + container.p.η_σ_sla
-    Axis(fig[1, 2];
-        xlabel = "leaf biomass fraction ⋅ specific leaf area [m² g⁻¹]",
-        ylabel = "Scaled water availability\nat midpoint (A_sla)")
-    scatter!(lbp .* sla, x0s;
-        marker = :x,
-        color = sla,
-        colorrange)
-    hlines!([η_min_sla, η_max_sla]; color = :black)
-    text!([0.01, 0.01], [η_min_sla, η_max_sla] .+ 0.02;
-            text = ["η_min_sla", "η_max_sla"])
-    vlines!(ustrip(container.p.ϕ_sla); color = :black, linestyle = :dash)
-    text!(ustrip(container.p.ϕ_sla),
-    η_max_sla - (η_max_sla - η_min_sla) / 6;
-          text = " ϕ_sla")
-    ylims!(nothing, η_max_sla + 0.2)
-    Colorbar(fig[1, 3]; colorrange, label = "Specific leaf area [m² g⁻¹]")
-
-    if !isnothing(path)
-        save(path, fig)
     else
         display(fig)
     end

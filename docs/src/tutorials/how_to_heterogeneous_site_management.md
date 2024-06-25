@@ -52,9 +52,7 @@ input = NamedTuple(daily_input_prep)
 
 # --------------- add everything together
 input_obj = (; input, simp, site = input_obj_prep.site)
-```
 
-```@example heterog_input
 p = sim.SimulationParameter() 
 
 sol = sim.solve_prob(; input_obj, p);
