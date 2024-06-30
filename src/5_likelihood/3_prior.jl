@@ -25,19 +25,20 @@ get_upperbound(p) = (; zip(keys(p), quantile.(first.(collect(p)), 1.0))...)s
 function calibrated_parameter_fao_irrigated()
     p = (;
         ################ Stronger self-shading for smaller plants => less potential growth
-        α_height_per_lai = (truncated(Normal(0, 0.02); lower = 0), asℝ₊,
-            """self-shading for community with 0.2 m height with LAI 4
-            -> 0.2 / 4 = 0.05  -> growth at this value is half of
-            the maximal growth; the parameter is similar to a half-saturation constant
-            of a Michaelis-Menten equation"""),
+        # α_height_per_lai = (truncated(Normal(0, 0.02); lower = 0), asℝ₊,
+        #     """self-shading for community with 0.2 m height with LAI 4
+        #     -> 0.2 / 4 = 0.05  -> growth at this value is half of
+        #     the maximal growth; the parameter is similar to a half-saturation constant
+        #     of a Michaelis-Menten equation"""),
 
         ################ Radiation growth reducer
-        γ₁ = (truncated(Normal(0, 0.000005); lower = 0), asℝ₊,
+        γ₁ = (truncated(Normal(0, 0.000005); lower = 0, upper = 0.00001),
+              as(Real, 0, 0.00001),
             """value of original parameter value encoded as prior
             sim.plot_radiation_reducer(;
                 θ = sim.add_units(sim.sample_prior(;
                 inference_obj = sim.calibrated_parameter_fao_irrigated(;))))"""),
-        γ₂ = (truncated(Normal(50000, 10000); lower = 0), asℝ₊,
+        γ₂ = (truncated(Normal(50000, 2000); lower = 0), asℝ₊,
             """value of original parameter value encoded as prior"""),
 
         ################ Temperature growth reducer
@@ -55,7 +56,7 @@ function calibrated_parameter_fao_irrigated()
         ################ Seasonal growth adjustment
         ST₁ = (truncated(Normal(775, 100); lower = 0, upper = 1000), as(Real, 0, 1000),
             """TODO"""),
-        ST₂ = (truncated(Normal(1450, 1000); lower = 1000, upper = 5000),
+        ST₂ = (truncated(Normal(1450, 200); lower = 1000, upper = 5000),
                as(Real, 1000, 5000),
             """TODO"""),
         SEA_min = (truncated(Normal(1, 0.2); lower = 0, upper = 1), as(Real, 0, 1),
@@ -64,18 +65,18 @@ function calibrated_parameter_fao_irrigated()
             """TODO"""),
 
         ################ Senescence rate
-        α_sen = (truncated(Normal(0.0, 0.0005); lower = 0.0), asℝ₊,
-            """TODO"""),
+        # α_sen = (truncated(Normal(0.0, 0.0005); lower = 0.0, upper = 0.001),
+        #          as(Real, 0, 0.001), """TODO"""),
 
         ################ Seasonal senescence adjustment
-        Ψ₁ = (truncated(Normal(775, 200); lower = 0, upper = 1500.0),
-              as(Real, 0.0, 1500.0),
-              """TODO"""),
-        Ψ₂ = (truncated(Normal(3000, 500); lower = 1500, upper = 5000),
-              as(Real, 1500, 5000),
-              """TODO"""),
-        SEN_max = (truncated(Normal(1, 0.5); lower = 1, upper = 4), as(Real, 1, 4),
-                   """Senescence in autumn can only increase"""),
+        # Ψ₁ = (truncated(Normal(775, 200); lower = 0, upper = 1500.0),
+        #       as(Real, 0.0, 1500.0),
+        #       """TODO"""),
+        # Ψ₂ = (truncated(Normal(3000, 200); lower = 1500, upper = 5000),
+        #       as(Real, 1500, 5000),
+        #       """TODO"""),
+        # SEN_max = (truncated(Normal(1, 0.5); lower = 1, upper = 4), as(Real, 1, 4),
+        #            """Senescence in autumn can only increase"""),
 
         ################ Sepecific for calibration
         b_cumbiomass_fao = (truncated(Normal(0, 500); lower = 0), asℝ₊,
@@ -94,44 +95,44 @@ end
 
 function calibrated_parameter_BE(;)
     p = (;
-        β_sen_sla = (truncated(Uniform(0, 1.5); lower = 0.0), as(Real, 0.0, 1.5),
-            """TODO"""),
+        # β_sen_sla = (truncated(Uniform(0, 1.5); lower = 0.0), as(Real, 0.0, 1.5),
+        #     """TODO"""),
 
         β_height = (Uniform(0.0, 1.5), as(Real, 0.0, 1.5), "text"),
 
-        β_PAL_lnc = (Uniform(0.0, 1.5), as(Real, 0.0, 1.5), "text"),
+        # β_PAL_lnc = (Uniform(0.0, 1.5), as(Real, 0.0, 1.5), "text"),
 
-        η_GRZ = (truncated(Normal(10.0, 10.0); lower = 0.0, upper = 30.0),
-                               as(Real, 0.0, 30.0), "text"),
+        # η_GRZ = (truncated(Normal(10.0, 10.0); lower = 0.0, upper = 30.0),
+        #                        as(Real, 0.0, 30.0), "text"),
 
-        α_TSB = (truncated(Normal(18000.0, 1500.0); lower = 0.0), asℝ₊, "text"),
-        β_TSB = (truncated(Normal(3, 0.5); lower = 0.0), asℝ₊, "text"),
+        # α_TSB = (truncated(Normal(18000.0, 1500.0); lower = 0.0), asℝ₊, "text"),
+        # β_TSB = (truncated(Normal(3, 0.5); lower = 0.0), asℝ₊, "text"),
 
-        α_TR_sla = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊, "text"),
-        β_TR_sla = (truncated(Normal(1.0, 5.0); lower = 0.0), asℝ₊, "text"),
+        # α_TR_sla = (truncated(Normal(0.02, 0.01); lower = 0.0), asℝ₊, "text"),
+        # β_TR_sla = (truncated(Normal(1.0, 5.0); lower = 0.0), asℝ₊, "text"),
 
 
-        δ_amc = (Beta(2, 3), as𝕀, "text"),
-        δ_nrsa = (Beta(2, 3), as𝕀, "text"),
+        # δ_amc = (Beta(2, 3), as𝕀, "text"),
+        # δ_nrsa = (Beta(2, 3), as𝕀, "text"),
 
-        η_μ_amc = (Uniform(0, 0.5), as(Real, 0, 0.5), "text"),
-        η_μ_nrsa =(Uniform(0, 0.5), as(Real, 0, 0.5), "text"),
-        η_σ_sla = (Beta(1.0, 5.0), as𝕀, "text"),
-        η_σ_amc = (Beta(1.0, 5.0), as𝕀, "text"),
-        η_σ_wrsa = (Beta(1.0, 5.0), as𝕀, "text"),
-        η_σ_nrsa =(Beta(1.0, 5.0), as𝕀, "text"),
+        # η_μ_amc = (Uniform(0, 0.5), as(Real, 0, 0.5), "text"),
+        # η_μ_nrsa =(Uniform(0, 0.5), as(Real, 0, 0.5), "text"),
+        # η_σ_sla = (Beta(1.0, 5.0), as𝕀, "text"),
+        # η_σ_amc = (Beta(1.0, 5.0), as𝕀, "text"),
+        # η_σ_wrsa = (Beta(1.0, 5.0), as𝕀, "text"),
+        # η_σ_nrsa =(Beta(1.0, 5.0), as𝕀, "text"),
 
-        κ_maxred_amc = (Beta(1.0, 30.0), as𝕀, "text"),
-        κ_maxred_srsa = (Beta(1.0, 30.0), as𝕀, "text"),
+        # κ_maxred_amc = (Beta(1.0, 30.0), as𝕀, "text"),
+        # κ_maxred_srsa = (Beta(1.0, 30.0), as𝕀, "text"),
 
         b_biomass = (truncated(Cauchy(0, 300); lower = 0.0), asℝ₊, "text"),
-        b_sla = (truncated(Cauchy(0, 0.05); lower = 0.0), asℝ₊, "text"),
-        b_lnc = (truncated(Cauchy(0, 0.5); lower = 0.0), asℝ₊, "text"),
-        b_amc = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊, "text"),
-        b_abp = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊, "text"),
-        b_height = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊, "text"),
-        b_srsa = (truncated(Cauchy(0, 0.01); lower = 0.0), asℝ₊, "text"),
-        b_simheight = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊, "text"),
-        b_fdis = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊, "text"),
+        # b_sla = (truncated(Cauchy(0, 0.05); lower = 0.0), asℝ₊, "text"),
+        # b_lnc = (truncated(Cauchy(0, 0.5); lower = 0.0), asℝ₊, "text"),
+        # b_amc = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊, "text"),
+        # b_abp = (truncated(Cauchy(0, 30); lower = 0.0), asℝ₊, "text"),
+        # b_height = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊, "text"),
+        # b_srsa = (truncated(Cauchy(0, 0.01); lower = 0.0), asℝ₊, "text"),
+        # b_simheight = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊, "text"),
+        # b_fdis = (truncated(Cauchy(0, 1); lower = 0.0), asℝ₊, "text"),
     )
 end
