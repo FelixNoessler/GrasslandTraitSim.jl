@@ -209,7 +209,7 @@ function plot_radiation_reducer(; PARs = LinRange(0.0, 15.0 * 100^2, 1000)u"MJ /
     return nothing
 end
 
-function plot_temperatur_reducer(; Ts = collect(LinRange(0.0, 40.0, 500)) .* u"°C",
+function plot_temperature_reducer(; Ts = collect(LinRange(0.0, 40.0, 500)) .* u"°C",
                             θ = nothing, path = nothing)
 
     nspecies, container = create_container_for_plotting(; nspecies = 1, θ)
@@ -271,7 +271,7 @@ function plot_seasonal_effect(; STs = LinRange(0, 3500, 1000)u"K", θ = nothing,
             color = :navajowhite4)
     end
 
-    ylims!(-0.05, 1.6)
+    ylims!(-0.05, 2.5)
 
     if !isnothing(path)
         save(path, fig;)

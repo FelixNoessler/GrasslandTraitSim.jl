@@ -249,6 +249,7 @@ function plot_potential_growth_height(; θ = nothing, path = nothing)
     Axis(fig[1,1]; xlabel = "Community weighted mean height [m]",
          ylabel = "Community height growth reduction factor [-]")
     lines!(heights, red; linewidth = 3.0)
+    ylims!(0, 1.01)
 
     if !isnothing(path)
         save(path, fig;)

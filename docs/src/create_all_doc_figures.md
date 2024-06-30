@@ -27,7 +27,7 @@ sim.plot_N_amc(; θ, path = f("$docs_img/N_amc_0_5.png"), δ_amc = 0.5)
 sim.plot_root_investment(; θ, path = f("$docs_img/root_investment.png"))
 
 #### reducer functions
-sim.plot_temperatur_reducer(; θ, path = f("$docs_img/temperature_reducer.png"))
+sim.plot_temperature_reducer(; θ, path = f("$docs_img/temperature_reducer.png"))
 sim.plot_radiation_reducer(; θ, path = f("$docs_img/radiation_reducer.png"))
 sim.plot_height_influence(; θ, path = f("$docs_img/height_influence.png"))
 sim.plot_below_influence(; θ, path = f("$docs_img/below_influence.png"))
