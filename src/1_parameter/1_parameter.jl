@@ -262,29 +262,22 @@ $(MYNEWFIELDS)
     γ₂::QMJ_ha = F(50000.0)u"MJ / ha" # uconvert(u"MJ/ha", 5.0u"MJ / m^2")
 
     """
-    3::``T_0``::is the lower temperature threshold for growth,
-    see [`temperature_reduction!`](@ref)
-    """
-    T₀::QC = F(4.0)u"°C"
-
-    """
     3::``T_{opt}``::is the mean of the optimal temperature range for growth,
     see [`temperature_reduction!`](@ref)
     """
-    T_opt::QC = F(10.0)u"°C"
+    T_opt::QC = F(14.0)u"°C"
 
     """
-    3::``T_{opt,width}``::defines the optimal temperature range for growth:
-    ``T_{opt}`` ±  ``T_{opt,width}``
+    3::``T_{T_width1}``::TODO,
     see [`temperature_reduction!`](@ref)
     """
-    T_opt_width::QC = F(5.0)u"°C"
+    T_width1::QC = F(8.0)u"°C"
 
     """
-    3::``T_3``::is the maximum temperature for growth,
+    3::``T_{T_width2}``::TODO,
     see [`temperature_reduction!`](@ref)
     """
-    T₃::QC = F(35.0)u"°C"
+    T_width2::QC = F(4.0)u"°C"
 
     """
     3::``ST_1``::is a threshold of the temperature degree days,
@@ -321,7 +314,7 @@ $(MYNEWFIELDS)
     the leaf life span to the senescence rate,
     see [`senescence_rate!`](@ref)
     """
-    α_sen::T = F(0.002)
+    α_sen::T = F(0.001)
 
     """
     4::``\\phi_{sen, sla}``::TODO,
