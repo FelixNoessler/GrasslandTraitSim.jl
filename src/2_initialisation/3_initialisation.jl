@@ -8,10 +8,12 @@ set if provided, the [parameters](@ref "Initialization of parameters") are initi
 [initial conditions of the state variables](@ref "Set the initial conditions of the state variables")
 are set.
 """
-function initialization(; input_obj, p, prealloc, prealloc_specific, trait_input)
+function initialization(; input_obj, p, prealloc, prealloc_specific, trait_input,
+                        callback = (; t = []))
 
     ###### Store everything in one object
-    container = tuplejoin((; p = p), input_obj, prealloc, prealloc_specific)
+    container = tuplejoin((; p = p), input_obj, prealloc, prealloc_specific,
+                          (; callback = callback))
 
     ###### Traits
     if isnothing(trait_input)

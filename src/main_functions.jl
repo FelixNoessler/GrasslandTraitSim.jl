@@ -14,7 +14,7 @@ There is also a tutorial on the model output:
 [How to analyse the model output](@ref)
 """
 function solve_prob(; input_obj, p, prealloc = nothing, prealloc_specific = nothing,
-                     trait_input = nothing, θ_type = Float64)
+                     trait_input = nothing, θ_type = Float64, callback = (; t = []))
     if isnothing(prealloc)
         prealloc = preallocate_vectors(; input_obj, T = θ_type)
     end
@@ -23,7 +23,8 @@ function solve_prob(; input_obj, p, prealloc = nothing, prealloc_specific = noth
         prealloc_specific = preallocate_specific_vectors(; input_obj, T = θ_type)
     end
 
-    container = initialization(; input_obj, p, prealloc, prealloc_specific, trait_input)
+    container = initialization(; input_obj, p, prealloc, prealloc_specific, trait_input,
+                               callback)
 
     main_loop!(; container)
 
@@ -82,10 +83,26 @@ function main_loop!(; container)
                 output.water[t+1, x, y] = u_water[x, y]
             end
         end
+
+        # TODO: check if this is the right place for the callback
+        callback_above_biomass!(; t, container)
     end
 
     return nothing
 end
+
+function callback_above_biomass!(; t, container)
+    @unpack callback = container
+    @unpack u_above_biomass, u_below_biomass, u_biomass = container.u
+
+    if t ∈ callback.t
+        ab_bb = u_above_biomass ./ u_below_biomass
+        @. u_above_biomass = callback.above_biomass[t = At(t)]
+        @. u_below_biomass = u_above_biomass / ab_bb
+        @. u_biomass = u_above_biomass + u_below_biomass
+    end
+end
+
 
 ### helper functions
 @inline tuplejoin(x) = x
