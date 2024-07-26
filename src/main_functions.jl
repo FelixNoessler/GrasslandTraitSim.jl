@@ -127,6 +127,11 @@ Base.:/(a::celsius_float, b::celsius_int) = a / float(b)
 Base.:/(a::celsius_int, b::celsius_float) = float(a) / b
 Base.:/(a::celsius_float, b::celsius_float) = ustrip(a) / ustrip(b)
 
+Base.:*(a::Number, b::celsius_int) = a * float(b)
+Base.:*(a::celsius_int, b::Number) = float(a) * b
+Base.:*(a::celsius_float, b::Number) = ustrip(a) * b * u"°C"
+Base.:*(a::Number, b::celsius_float) = a * ustrip(b) * u"°C"
+
 celsius_vec_int = typeof([1u"°C"])
 celsius_vec_float = typeof([1.0u"°C"])
 
