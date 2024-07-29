@@ -144,39 +144,24 @@ function dashboard_layout(; variable_p)
 
 
     ##############################################################################
-    # Right part: likelihood and parameter settings
+    # Right part: Parameter settings
     ##############################################################################
-    lls = (;
-        biomass = Observable(0.0),
-        traits = Observable(0.0))
-    ll_label = @lift("Loglikelihood biomass: $(round($(lls.biomass))) traits: $(round($(lls.traits))) gradient:")
-    Label(righttop_layout[1, 1], ll_label; fontsize = 16)
-    gradient_toggle = Toggle(righttop_layout[1, 2]; active = false)
-    preset_button = Button(righttop_layout[1, 3]; label = "reset parameter")
+    preset_button = Button(righttop_layout[1, 1]; label = "reset parameter")
 
     p = SimulationParameter()
-    parameter_keys_prep = collect(keys(p))
+    parameter_keys = collect(keys(p))
     for k in keys(variable_p)
         p[k] = variable_p[k]
     end
-    prior_obj = calibrated_parameter_BE(; )
-    p_val_prep = ustrip.(collect(p))
-    prior_keys = keys(get_priors(prior_obj))
-    is_inf_p = collect(parameter_keys_prep .∈ Ref(prior_keys))
-    inf_str = ifelse.(is_inf_p, "", "")
+    p_val = ustrip.(collect(p))
 
-    ##### first all parameters that are calibrated
-    order_inf = sortperm(parameter_keys_prep[is_inf_p])
-    p_val = vcat(p_val_prep[is_inf_p][order_inf], p_val_prep[.! is_inf_p])
-    parameter_keys = vcat(parameter_keys_prep[is_inf_p][order_inf], parameter_keys_prep[.! is_inf_p])
-
-    nstart2 = sum(is_inf_p) + 1#length(p) - length(p) ÷ 2 + 1
+    nstart2 = length(p) - length(p) ÷ 2 + 1
     nend1 = nstart2 - 1
     [Label(param_layout[i, 1],
-           "$(inf_str[i]) $(parameter_keys[i]) ";
+           "$(parameter_keys[i]) ";
            halign = :left) for i in 1:nend1]
     [Label(param_layout[i+1-nstart2, 4],
-           "$(inf_str[i]) $(parameter_keys[i])";
+           "$(parameter_keys[i])";
             halign = :left) for i in nstart2:length(p)]
 
     tb1 = [Textbox(param_layout[i, 2],
@@ -234,10 +219,6 @@ function dashboard_layout(; variable_p)
         toggle_grazmow,
         toggle_validdata,
         toggle_standingbiomass,
-        lls,
-        prior_obj,
-        gradient_values,
-        gradient_toggle,
         plots_layout)
 
 

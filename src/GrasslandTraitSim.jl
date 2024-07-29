@@ -49,7 +49,6 @@ function DocStringExtensions.format(abbrv::MyNewFields, buf, doc)
         "**Management**",
         "**Clonal growth**",
         "**Water dynamics**",
-        "**Variance parameter for likelihood**"
     ]
 
     p = SimulationParameter()

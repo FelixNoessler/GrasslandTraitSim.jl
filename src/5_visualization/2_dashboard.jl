@@ -40,31 +40,6 @@ function dashboard(; posterior = nothing, variable_p = (;),
                 update_plots(; sol, plot_obj, valid_data = nothing)
             end
 
-            ll_obj = loglikelihood_model(;
-                p,
-                plotID = plot_obj.obs.menu_plotID.selection.val,
-                data = valid_data,
-                sol = sol,
-                return_seperate = true)
-
-            plot_obj.obs.lls.biomass[] = ll_obj.biomass
-            plot_obj.obs.lls.traits[] = ll_obj.trait
-
-            calculate_gradient = plot_obj.obs.gradient_toggle.active.val
-            if calculate_gradient
-                @info "Calculating gradient"
-                plotID = plot_obj.obs.menu_plotID.selection.val
-
-                g = gradient_evaluation(; plotID, input_obj, valid_data,
-                                        p, trait_input)
-
-                p_keys = keys(p)
-                for i in eachindex(g)
-                    f = p_keys[i] .== plot_obj.obs.parameter_keys
-                    plot_obj.obs.gradient_values[findfirst(f)][] = 2.0 #round(g[i]; digits = 2)
-                end
-            end
-
             still_running = false
         end
     end
@@ -80,7 +55,7 @@ function dashboard(; posterior = nothing, variable_p = (;),
     on(plot_obj.obs.preset_button.clicks) do n
         @info "Parameter reset"
         p = SimulationParameter()
-        for (i, k) in enumerate(keys(plot_obj.obs.parameter_keys))
+        for (i, k) in enumerate(plot_obj.obs.parameter_keys)
             Makie.set!(plot_obj.obs.tb_p[i], string(ustrip(p[k])))
         end
     end

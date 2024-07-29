@@ -1,9 +1,8 @@
-function load_input(path; included = (;), likelihood_included = (;), plotIDs = nothing)
+function load_input(path; included = (;),  plotIDs = nothing)
     inputs = load(path)
 
     for k in keys(inputs)
         @reset inputs[k].simp.included = create_included(included)
-        @reset inputs[k].simp.likelihood_included = likelihood_included
     end
 
     if isnothing(plotIDs)
@@ -34,7 +33,7 @@ function validation_input(;
         patch_ydim = 1,
         biomass_stats = nothing,
         included = (;),
-        likelihood_included = (; biomass = false, trait = false, height = false, fdis = false),
+
         trait_seed = missing)
 
 
@@ -225,8 +224,7 @@ function validation_input(;
             patch_ydim,
             nutheterog,
             trait_seed,
-            included,
-            likelihood_included),
+            included),
         site = (;
             initbiomass,
             initsoilwater,

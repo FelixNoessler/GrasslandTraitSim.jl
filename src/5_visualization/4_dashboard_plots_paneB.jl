@@ -57,23 +57,12 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait, kwargs...)
         lines!(ax, [t[1], t[end]], [trait_i, trait_i], color = (:grey, 0.2))
     end
 
-    cwm_trait_dist = Normal.(cwm_trait, sol.p[Symbol("b_$trait")])
-    median_trait = median.(cwm_trait_dist)
-
-    lines!(ax, t[1:thin:end], median_trait[1:thin:end], color = :blue)
-    band!(ax, t[1:thin:end], median_trait[1:thin:end] .+ cwv_trait[1:thin:end],
-          median_trait[1:thin:end] .- cwv_trait[1:thin:end];
+    lines!(ax, t[1:thin:end], cwm_trait[1:thin:end], color = :blue)
+    band!(ax, t[1:thin:end], cwm_trait[1:thin:end] .+ cwv_trait[1:thin:end],
+    cwm_trait[1:thin:end] .- cwv_trait[1:thin:end];
           color = (:blue, 0.3))
 
     if !isnothing(valid_data)
-        cwm_trait_dist_sub = cwm_trait_dist[LookupArrays.index(valid_data.traits, :time)]
-        tsub = t[LookupArrays.index(valid_data.traits, :time)]
-        lower_trait = quantile.(cwm_trait_dist_sub, 0.025)
-        upper_trait = quantile.(cwm_trait_dist_sub, 0.975)
-        lower5_trait = quantile.(cwm_trait_dist_sub, 0.25)
-        upper5_trait = quantile.(cwm_trait_dist_sub, 0.75)
-        # rangebars!(ax, tsub, lower_trait, upper_trait; color = (:black, 0.3))
-        # rangebars!(ax, tsub, lower5_trait, upper5_trait; color = (:black, 0.3), linewidth = 2)
         num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.traits, :time)]
         y = vec(valid_data.traits[trait = At(trait)])
         scatter!(ax, num_t, y, color = :black, markersize = 8)

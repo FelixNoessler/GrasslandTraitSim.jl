@@ -70,20 +70,7 @@ function biomass_plot(; plot_obj, sol, valid_data, kwargs...)
         cutbiomass_μ = vec(ustrip.(sol.valid.cut_biomass))
         t = sol.simp.output_date_num[sol.valid.biomass_cutting_t]
 
-        biomass_dist = Normal.(cutbiomass_μ, sol.p.b_biomass)
-        biomass_median = median.(biomass_dist)
-
-        scatter!(ax, t[1:thin:end], biomass_median[1:thin:end]; color = :orange)
-
-        biomass_lower = quantile.(biomass_dist, 0.025)
-        biomass_upper = quantile.(biomass_dist, 0.975)
-        biomass_lower5 = quantile.(biomass_dist, 0.25)
-        biomass_upper5 = quantile.(biomass_dist, 0.75)
-
-        # rangebars!(ax, t[1:thin:end], biomass_lower[1:thin:end],
-        #     biomass_upper[1:thin:end]; color = (:black, 0.3), linewidth = 1)
-        # rangebars!(ax, t[1:thin:end], biomass_lower5[1:thin:end],
-        #     biomass_upper5[1:thin:end]; color = (:black, 0.3), linewidth = 2)
+        scatter!(ax, t[1:thin:end], cutbiomass_μ[1:thin:end]; color = :orange)
 
         biomass = ustrip.(valid_data.biomass)
         num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.biomass, :time)]

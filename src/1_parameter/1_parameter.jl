@@ -403,64 +403,6 @@ $(MYNEWFIELDS)
     see [`transpiration`](@ref)
     """
     β_TR_sla::T = F(0.4)
-
-    ####################################################################################
-    ## 8 Variance parameter for likelihood
-    ####################################################################################
-    """
-    8::``\\sigma_{B}``::
-    """
-    b_biomass::T = F(5000.0)
-
-    """
-    8::``\\sigma_{sla}``::
-    """
-    b_sla::T = F(0.005)
-
-    """
-    8::``\\sigma_{lnc}``::
-    """
-    b_lnc::T = F(2.0)
-
-    """
-    8::``\\sigma_{abp}``::
-    """
-    b_abp::T = F(0.01)
-
-    """
-    8::``\\sigma_{amc}``::
-    """
-    b_amc::T = F(0.01)
-
-    """
-    8::``\\sigma_{H}``::
-    """
-    b_height::T = F(0.5)
-
-    """
-    8::``\\sigma_{srsa}``::
-    """
-    b_srsa::T = F(0.004)
-
-    """
-    8::``\\sigma_{sim,height}``::
-    """
-    b_simheight::T = F(0.5)
-
-    """
-    8::``\\sigma_{fdis}``::
-    """
-    b_fdis::T = F(0.5)
-
-    """
-    8::``\\sigma_{cumbiomass,fao}``::
-    """
-    b_cumbiomass_fao::T = F(0.5)
-
-    """
-    8::``\\text{total init biomass}``::Initial biomass for the FAO dataset
-    """
-    total_biomass_init_fao::Qkg_ha = F(10.0)u"kg / ha"
 end
 
 

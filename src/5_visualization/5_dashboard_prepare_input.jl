@@ -7,7 +7,7 @@ function prepare_input(; plot_obj, posterior, biomass_stats = nothing)
 
     input_obj = if time_step_days == 14
         path = assetpath("data/input/inputs_14_days.jld2")
-        load_input(path; included, likelihood_included = (; biomass = true, trait = true),
+        load_input(path; included,
                    plotIDs = [plotID])[Symbol(plotID)]
     else
         validation_input(; plotID, nspecies = 71, included, biomass_stats,
