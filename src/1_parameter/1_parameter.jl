@@ -285,14 +285,14 @@ $(MYNEWFIELDS)
     descreases to `SEA_max`,
     see [`seasonal_reduction!`](@ref)
     """
-    ST₁::QK = F(775.0)u"K"
+    ST₁::QK = F(775.0)u"°C"
 
     """
     3::``ST_2``::is a threshold of the temperature degree-days,
     where the seasonality growth factor is set to `SEA_min`,
     see [`seasonal_reduction!`](@ref)
     """
-    ST₂::QK = F(1450.0)u"K"
+    ST₂::QK = F(1450.0)u"°C"
 
     """
     3::``SEA_{\\min}``::is the minimal value of the seasonal effect,

@@ -150,14 +150,14 @@ function seasonal_reduction!(; container, ST)
 
     @unpack SEA_min, SEA_max, ST₁, ST₂ = container.p
 
-    if ST < 200.0u"K"
+    if ST < 200.0u"°C"
         com.SEA = SEA_min
-    elseif ST < ST₁ - 200.0u"K"
-        com.SEA = SEA_min + (SEA_max - SEA_min) * (ST - 200.0u"K") / (ST₁ - 400.0u"K")
-    elseif ST < ST₁ - 100.0u"K"
+    elseif ST < ST₁ - 200.0u"°C"
+        com.SEA = SEA_min + (SEA_max - SEA_min) * (ST - 200.0u"°C") / (ST₁ - 400.0u"°C")
+    elseif ST < ST₁ - 100.0u"°C"
         com.SEA = SEA_max
     elseif ST < ST₂
-        com.SEA = SEA_min + (SEA_min - SEA_max) * (ST - ST₂) / (ST₂ - (ST₁ - 100.0u"K"))
+        com.SEA = SEA_min + (SEA_min - SEA_max) * (ST - ST₂) / (ST₂ - (ST₁ - 100.0u"°C"))
     else
         com.SEA = SEA_min
     end
