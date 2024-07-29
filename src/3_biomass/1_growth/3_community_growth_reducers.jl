@@ -78,12 +78,7 @@ function temperature_reduction!(; container, T)
         return nothing
     end
 
-    @unpack T_opt, T_width1, T_width2 = container.p
-
-    T₀ = T_opt - T_width1 - T_width2
-    T₁ = T_opt - T_width1
-    T₂ = T_opt + 2 * T_width1
-    T₃ = T_opt + 2 * T_width1 + 2 * T_width2
+    @unpack T₀, T₁, T₂, T₃ = container.p
 
     if T < T₀
         com.TEMP = 0.0
