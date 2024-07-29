@@ -262,22 +262,28 @@ $(MYNEWFIELDS)
     γ₂::QMJ_ha = F(50000.0)u"MJ / ha" # uconvert(u"MJ/ha", 5.0u"MJ / m^2")
 
     """
-    3::``T_{opt}``::is the mean of the optimal temperature range for growth,
+    3::``T_{0}``::TODO,
     see [`temperature_reduction!`](@ref)
     """
-    T_opt::QC = F(14.0)u"°C"
+    T₀::QC = F(4.0)u"°C"
 
     """
-    3::``T_{T_width1}``::TODO,
+    3::``T_{1}``::TODO,
     see [`temperature_reduction!`](@ref)
     """
-    T_width1::QC = F(8.0)u"°C"
+    T₁::QC = F(10.0)u"°C"
 
     """
-    3::``T_{T_width2}``::TODO,
+    3::``T_{2}``::TODO,
     see [`temperature_reduction!`](@ref)
     """
-    T_width2::QC = F(4.0)u"°C"
+    T₂::QC = F(20.0)u"°C"
+
+    """
+    3::``T_{3}``::TODO,
+    see [`temperature_reduction!`](@ref)
+    """
+    T₃::QC = F(35.0)u"°C"
 
     """
     3::``ST_1``::is a threshold of the temperature degree days,
