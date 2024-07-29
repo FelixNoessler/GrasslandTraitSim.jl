@@ -10,7 +10,7 @@ the permanent wilting point (see [`input_WHC_PWP!`](@ref)).
 $(MYNEWFIELDS)
 """
 @kwdef mutable struct SimulationParameter{T, Qkg_MJ, Qm, Qkg_ha, Qm2_g, Qg_m2, Qg_kg,
-                                          Qha_MJ, QMJ_ha, QC, QK, Qkg, Qha_Mg}
+                                          Qha_MJ, QMJ_ha, QC, Qkg, Qha_Mg}
 
     ####################################################################################
     ## 1 Light interception and competition
@@ -291,14 +291,14 @@ $(MYNEWFIELDS)
     descreases to `SEA_max`,
     see [`seasonal_reduction!`](@ref)
     """
-    ST₁::QK = F(775.0)u"°C"
+    ST₁::QC = F(775.0)u"°C"
 
     """
     3::``ST_2``::is a threshold of the temperature degree-days,
     where the seasonality growth factor is set to `SEA_min`,
     see [`seasonal_reduction!`](@ref)
     """
-    ST₂::QK = F(1450.0)u"°C"
+    ST₂::QC = F(1450.0)u"°C"
 
     """
     3::``SEA_{\\min}``::is the minimal value of the seasonal effect,
@@ -338,13 +338,13 @@ $(MYNEWFIELDS)
     4::``Ψ_1``::temperature threshold: senescence starts to increase,
     see [`seasonal_component_senescence`](@ref)
     """
-    Ψ₁::T = F(775.0)
+    Ψ₁::QC = F(775.0)u"°C"
 
     """
     4::``Ψ_2``::temperature threshold: senescence reaches maximum,
     see [`seasonal_component_senescence`](@ref)
     """
-    Ψ₂::T = F(3000.0)
+    Ψ₂::QC = F(3000.0)u"°C"
 
     """
     4::``SEN_{\\max}``::maximal seasonality factor for the senescence rate,

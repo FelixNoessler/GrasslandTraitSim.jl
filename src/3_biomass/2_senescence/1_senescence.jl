@@ -72,7 +72,6 @@ SEN_{max}  & \text{if}\;\; ST > Ψ_2
 function seasonal_component_senescence(; container, ST,)
     @unpack Ψ₁, Ψ₂, SEN_max = container.p
 
-    ST = ustrip(ST)
     lin_increase(ST) = 1 + (SEN_max - 1) * (ST - Ψ₁) / (Ψ₂ - Ψ₁)
     SEN = ST < Ψ₁ ? 1 : ST < Ψ₂ ? lin_increase(ST) : SEN_max
 
