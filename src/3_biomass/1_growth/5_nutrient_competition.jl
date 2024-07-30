@@ -180,7 +180,7 @@ function below_ground_competition!(; container, total_biomass)
         return nothing
     end
 
-    @unpack β_TSB, α_TSB = container.p
+    @unpack TSB_max, TSB_k, nutadj_max = container.p
 
     TS_biomass .= 0.0u"kg/ha"
     for s in 1:nspecies
@@ -190,10 +190,12 @@ function below_ground_competition!(; container, total_biomass)
     end
 
     for i in eachindex(nutrients_adj_factor)
-        # TODO add in manuscript and doc
-        # nutrients_adj_factor[i] = 2.0 / (1.0 + exp(-β_TSB * (α_TSB - TS_biomass[i])))
-        nutrients_adj_factor[i] = max(α_TSB / TS_biomass[i], 1) ^ ustrip(β_TSB)
-        # nutrients_adj_factor[i] = min(3.0, max(0.33, biomass_factor))
+        # TODO change documentation
+        nutrients_adj_factor[i] = nutadj_max * (1 - exp(TSB_k * (TS_biomass[i]  - TSB_max)))
+
+        if nutrients_adj_factor[i] < 0
+            nutrients_adj_factor[i] = 0.0
+        end
     end
 
     return nothing
@@ -262,7 +264,10 @@ function nutrient_reduction!(; container, nutrients)
                (1 + exp(-β_amc * (nutrients_splitted - A_amc)))
     @. N_rsa = 1 - δ_nrsa + δ_nrsa /
                (1 + exp(-β_nrsa * (nutrients_splitted - A_nrsa)))
+
     @. Nutred = max(N_amc, N_rsa)
+    Nutred[nutrients_splitted .<= 0.0] .= 0.0
+    Nutred[nutrients_splitted .>= 1.0] .= 1.0
 
     return nothing
 end
@@ -435,7 +440,7 @@ function plot_below_influence(; θ = nothing, path = nothing)
 
     #################### varying β_TSB, equal biomass, random traits
     orig_β_TSB = container.p.β_TSB
-    below_effects = LinRange(0, 10, 30)u"ha / Mg"
+    below_effects = LinRange(0, 3, 30)u"ha / Mg"
     total_biomass = fill(container.p.α_TSB / (nspecies * mean(container.calc.TS)), nspecies)
     ymat = Array{Float64}(undef, nspecies, length(below_effects))
 
@@ -511,6 +516,41 @@ function plot_below_influence(; θ = nothing, path = nothing)
         rotation = pi / 2)
 
     # colgap!(fig.layout, 2, 10)
+
+    if !isnothing(path)
+        save(path, fig;)
+    else
+        display(fig)
+    end
+
+    return nothing
+end
+
+
+function plot_nutrient_adjustment(; θ = nothing, path = nothing)
+    nspecies, container = create_container_for_plotting(; θ)
+    @unpack TSB_max, TSB_k, nutadj_max = container.p
+
+    TS_B = LinRange(0, 1.2 * ustrip(TSB_max), 200)u"kg / ha"
+
+    nutrients_adj_factor = @. nutadj_max * (1 - exp(TSB_k * (TS_B  - TSB_max)))
+    nutrients_adj_factor[nutrients_adj_factor .< 0] .= 0.0
+
+    fig = Figure()
+    Axis(fig[1, 1]; xlabel = "∑ TS ⋅ B [kg ⋅ ha⁻¹]",
+         ylabel = "nutrient adjustment factor [-]")
+    lines!(ustrip.(TS_B), nutrients_adj_factor; linestyle = :solid, color = :coral2, linewidth = 2)
+
+    hlines!(1; linestyle = :dash, color = :black)
+    text!([100, 100], [0.2, 1.5];
+          text = ["""overcrowding → strong competition,
+                  per plant nutrient availability is low""",
+                  """low biomass density → less competition,
+                  per plant nutrient availability is high"""])
+
+    scatter!([ustrip(TSB_max), 0.0], [0.0, nutadj_max])
+    text!([ustrip(TSB_max), 0.0], [0.0, nutadj_max];
+          text = ["TSB_max", "nutadj_max"])
 
     if !isnothing(path)
         save(path, fig;)

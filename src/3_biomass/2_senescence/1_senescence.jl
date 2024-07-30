@@ -122,18 +122,15 @@ function plot_senescence_rate(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
     @unpack sla = container.traits
     @unpack β_sen_sla, α_sen = container.p
+    @unpack p = container
     nvals = 200
     β_sen_sla_values = LinRange(0, 2, nvals)
     ymat = Array{Float64}(undef, nvals, nspecies)
 
-    prealloc = (; traits = container.traits, calc = container.calc)
-    input_obj = (; simp = (; included = (; senescence = true)))
-    p = container.p
-
     for i in eachindex(β_sen_sla_values)
         p.β_sen_sla = β_sen_sla_values[i]
-        senescence_rate!(; input_obj, prealloc, p)
-        @. ymat[i, :] = prealloc.calc.μ
+        senescence_rate!(; container)
+        @. ymat[i, :] = container.calc.μ
     end
 
     sla_plot = ustrip.(sla)

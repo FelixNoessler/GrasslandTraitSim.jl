@@ -28,7 +28,7 @@ a &= \frac{1}{\text{α_GRZ}^2 \cdot h} \\
 ![](../img/grazing_2.png)
 
 Influence of `α_GRZ`:
-![](../img/α_GRZ.png)
+![](../img/η_GRZ.png)
 """
 function grazing!(; container, LD, above_biomass, actual_height)
     @unpack lnc = container.traits
@@ -113,7 +113,7 @@ function plot_grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, θ = nothing, pa
     return nothing
 end
 
-function plot_α_GRZ(; θ = nothing, path = nothing)
+function plot_η_GRZ(; θ = nothing, path = nothing)
     fig = Figure(; size = (700, 400))
     Axis(fig[1, 1],
         xlabel = "Total biomass [green dry mass kg ha⁻¹]",
@@ -134,8 +134,7 @@ function plot_α_GRZ(; θ = nothing, path = nothing)
             linewidth = 3)
     end
 
-    axislegend("α_GRZ";
-        framevisible = true, position = :rb)
+    axislegend("η_GRZ"; framevisible = true, position = :rb)
 
     if !isnothing(path)
         save(path, fig;)

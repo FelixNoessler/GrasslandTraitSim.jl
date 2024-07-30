@@ -9,8 +9,8 @@ the permanent wilting point (see [`input_WHC_PWP!`](@ref)).
 
 $(MYNEWFIELDS)
 """
-@kwdef mutable struct SimulationParameter{T, Qkg_MJ, Qm, Qkg_ha, Qm2_g, Qg_m2, Qg_kg,
-                                          Qha_MJ, QMJ_ha, QC, Qkg, Qha_Mg}
+@kwdef mutable struct SimulationParameter{T, Qkg_MJ, Qkg_ha, Qha_kg, Qm2_g, Qg_m2, Qg_kg,
+                                          Qha_MJ, QMJ_ha, QC, Qkg}
 
     ####################################################################################
     ## 1 Light interception and competition
@@ -28,11 +28,10 @@ $(MYNEWFIELDS)
     k::T = F(0.6)
 
     """
-    1::``\\alpha_{comH}``::is the community weighted mean height per
-    total leaf area index, where the community self shading reducer equals 0.5,
+    1::``\\alpha_{\text{shading}}``::TODO,
     see [`potential_growth!`](@ref)
     """
-    α_height_per_lai::Qm = F(0.02)u"m"
+    self_shading_severity::T = F(0.75)
 
     """
     1::``\\beta_{H}``::controls how strongly taller plants gets more light for growth,
@@ -50,7 +49,7 @@ $(MYNEWFIELDS)
     at 0.4 scaled soil water content
     see [`water_reduction!`](@ref)
     """
-    R_wrsa_04_Lolium::T = F(0.97)
+    R_wrsa_04_Lolium::T = F(0.95)
 
     """
     2::``\\text{SRSA-Lolium}``::TODO fixed value for Lolium perenne
@@ -62,7 +61,7 @@ $(MYNEWFIELDS)
     2::``\\text{RSA-per-totalbiomass-influence}``::TODO
     see [`water_reduction!`](@ref)
     """
-    RSA_per_totalbiomass_influence::T = F(0.01)
+    RSA_per_totalbiomass_influence::T = F(1.0)
 
     """
     2::``\\eta_{\\min, wrsa}``::TODO
@@ -95,25 +94,22 @@ $(MYNEWFIELDS)
     N_max::Qg_kg = F(35.0)u"g/kg"
 
     """
-    2::``\\alpha_{TSB}``::part of the equation of the biomass density factor ``D_{txys}``,
-    if the matrix multiplication between the trait similarity matrix and the biomass
-    equals ``\\alpha_{TSB}`` the biomass density factor is one and the available water
-    and nutrients for growth are neither in- nor decreased, a lower value of the matrix
-    multiplication leads to biomass density factor above one and an increase of
-    the available water and nutrients for growth,
+    2::``TSB_{\\max}``::TODO,
     see [`below_ground_competition!`](@ref)
     """
-    α_TSB::Qkg_ha = F(18000.0)u"kg / ha"
+    TSB_max::Qkg_ha = F(18000.0)u"kg / ha"
 
     """
-    2::``\\beta_{TSB}``::part of the equation of the biomass density factor ``D_{txys}``,
-    controls how strongly the biomass density factor
-    deviates from one, if the matrix multiplication between the
-    trait similarity matrix and the biomass of the species is above
-    or below ``\\alpha_{TSB}``,
+    2::``TSB_k``::TODO,
     see [`below_ground_competition!`](@ref)
     """
-    β_TSB::Qha_Mg = F(2.0)u"ha / Mg"
+    TSB_k::Qha_kg = F(0.001)u"ha / kg"
+
+    """
+    2::``nutadj_{\\max}``::TODO,
+    see [`below_ground_competition!`](@ref)
+    """
+    nutadj_max::T = F(3.0)
 
     """
     2::``\\delta_{amc}``::part of the growth reducer based on the
@@ -134,12 +130,12 @@ $(MYNEWFIELDS)
     """
     2::``\\beta_{\\text{red}, amc}``::TODO
     """
-    β_red_amc::T = F(12.0)
+    β_red_amc::T = F(25.0)
 
     """
     2::``\\beta_{\\text{red}, srsa}``::TODO
     """
-    β_red_rsa::Qg_m2 = F(20.0)u"g/m^2"
+    β_red_rsa::Qg_m2 = F(70.0)u"g/m^2"
 
     """
     2::``\\kappa_{\\text{maxred}, amc}``::TODO
@@ -158,7 +154,7 @@ $(MYNEWFIELDS)
     the arbuscular mycorrhizal colonization rate to ``K_{amc, s}`` and ``A_{amc, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    β_η_amc::T = F(20.0)
+    β_η_amc::T = F(10.0)
 
     """
     2::``\\eta_{\\min, amc}``::part of the growth reducer based on the
@@ -166,7 +162,7 @@ $(MYNEWFIELDS)
     ``N_{amc, txys}``; ... TODO ... ``A_{amc, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    η_μ_amc::T = F(0.3)
+    η_μ_amc::T = F(0.5)
 
     """
     2::``\\eta_{\\sigma, amc}``::part of the growth reducer based on
@@ -174,7 +170,7 @@ $(MYNEWFIELDS)
     ``N_{amc, txys}``; ... TODO ... ``A_{amc, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    η_σ_amc::T = F(0.3)
+    η_σ_amc::T = F(0.5)
 
     """
     2::``\\phi_{amc}``::part of the growth reducer based on the
@@ -185,7 +181,7 @@ $(MYNEWFIELDS)
     ``A_{amc, s}`` and ``K_{amc, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    ϕ_amc::T = F(0.17)
+    ϕ_amc::T = F(0.03)
 
 
     """
@@ -206,7 +202,7 @@ $(MYNEWFIELDS)
     ``N_{srsa, txys}``; maximal growth reduction,
     see [`nutrient_reduction!`](@ref)
     """
-    δ_nrsa::T = F(0.9)
+    δ_nrsa::T = F(0.2)
 
     """
     2::``\\beta_{nrsa}``:: part of the growth reducer based on
@@ -233,7 +229,7 @@ $(MYNEWFIELDS)
     stress function ``N_{srsa, txys}``; ... TODO ... ``A_{nrsa, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    η_μ_nrsa::T = F(0.3)
+    η_μ_nrsa::T = F(0.5)
 
     """
     2::``\\eta_{\\sigma, nrsa}``::part of the growth reducer based on the
@@ -241,7 +237,7 @@ $(MYNEWFIELDS)
     stress function ``N_{srsa, txys}``;... TODO ... ``A_{nrsa, s}``,
     see [`nutrient_reduction!`](@ref)
     """
-    η_σ_nrsa::T = F(0.3)
+    η_σ_nrsa::T = F(0.5)
 
     ####################################################################################
     ## 3 Environmental and seasonal growth adjustment

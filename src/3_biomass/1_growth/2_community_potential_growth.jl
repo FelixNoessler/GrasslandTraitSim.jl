@@ -13,7 +13,7 @@ fPARi_{txy} &= \left(1 - \exp\left(-k \cdot LAI_{tot, txy}\right)\right) \cdot
 Parameter, see also [`SimulationParameter`](@ref):
 - ``RUE_{max}`` (`RUE_max`) maximum radiation use efficiency [kg MJ⁻¹]
 - ``k`` (`k`) extinction coefficient [-]
-- ``\alpha_{height, lai}`` (`α_height_per_lai`) is the community weighted mean height, where the community height growth reducer is 0.5 [m]
+- ``\alpha_{height, lai}`` (`self_shading_severity`) is the community weighted mean height, where the community height growth reducer is 0.5 [m]
 - ``\beta_{comH}`` (`β_com_height`) is the slope of the logistic function that relates the community weighted mean height to the community height growth reducer [m⁻¹]
 
 Variables:
@@ -48,21 +48,20 @@ function potential_growth!(; container, above_biomass, actual_height, PAR)
         com.self_shading = 1.0
     else
         @unpack relative_height = container.calc
-        @unpack α_height_per_lai = container.p
+        @unpack self_shading_severity = container.p
 
         ## community weighted mean height
         relative_height .= above_biomass ./ sum(above_biomass) .* actual_height
         cwm_height = sum(relative_height)
 
-        ## community weighted mean height per total leaf area index
-        height_per_lai = cwm_height ./ com.LAItot
-
-        ## community shading factor
-        com.self_shading = height_per_lai / (α_height_per_lai + height_per_lai)
+        # self_shading_severity is the growth reduction factor ∈ [0, 1]
+        # at a community weighted mean height of 0.2 m
+        # 0.4 means that the growth is reduced by 60 % with a community weighted mean height of 0.2 m
+        com.self_shading = exp(log(self_shading_severity)*0.2u"m" / cwm_height)
     end
 
     @unpack RUE_max, k = container.p
-    com.potgrowth_total = PAR * RUE_max * (1 - exp(-k * com.LAItot * com.self_shading))
+    com.potgrowth_total = PAR * RUE_max * (1 - exp(-k * com.LAItot)) * com.self_shading
 
     return nothing
 end

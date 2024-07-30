@@ -40,7 +40,7 @@ sim.plot_seasonal_component_senescence(; θ, path = f("$docs_img/seasonal_factor
 sim.plot_mowing(; θ, path = f("$docs_img/mowing.png"))
 sim.plot_grazing(; β_PAL_lnc = 1.0, θ, path = f("$docs_img/grazing_default.png"))
 sim.plot_grazing(; β_PAL_lnc = 2.0, θ, path = f("$docs_img/grazing_2.png"))
-sim.plot_α_GRZ(; θ, path = f("$docs_img/α_GRZ.png"))
+sim.plot_η_GRZ(; θ, path = f("$docs_img/η_GRZ.png"))
 
 ##  clonal growth
 sim.plot_clonalgrowth(; θ, path = f("$docs_img/clonalgrowth.png"))

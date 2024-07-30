@@ -35,7 +35,7 @@ function water_reduction!(; container, W, PWP, WHC)
         ###### to growth reduction at 0.4 of Wsc
         ## midpoint of logistic function
         x0_reduction_at_04 = RSA_per_totalbiomass_Lolium -
-            RSA_per_totalbiomass_Lolium / 10 ^ RSA_per_totalbiomass_influence
+            RSA_per_totalbiomass_Lolium / RSA_per_totalbiomass_influence
 
         ## slope of logistic function
         k_reduction_at_04 = 1 / (x0_reduction_at_04 -  RSA_per_totalbiomass_Lolium) *
