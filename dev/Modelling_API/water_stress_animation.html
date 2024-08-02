@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Water Stress Visualization</title>
+    <style>
+        text {
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+        .slider-container {
+            margin: 10px;
+        }
+        .slider-label {
+            display: inline-block;
+            width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="slider-container">
+        <label class="slider-label">mean response (strong to weak growth reduction): <span id="R_wrsa_04_ϕ-value">0.9</span></label>
+        <input type="range" id="R_wrsa_04_ϕ" min="0.1" max="0.99" step="0.01" value="0.9">
+    </div>
+    <div class="slider-container">
+        <label class="slider-label">difference between species (no to strong difference): <span id="β_wrsa_red04-value">20</span></label>
+        <input type="range" id="β_wrsa_red04" min="0.1" max="30" step="0.1" value="20">
+    </div>
+    <div class="slider-container">
+        <label class="slider-label">slope of response: <span id="β_wrsa-value">7</span></label>
+        <input type="range" id="β_wrsa" min="5" max="15" step="0.1" value="7">
+    </div>
+    <!-- <div class="slider-container">
+        <label class="slider-label">ϕ_rsa (usually fixed): <span id="ϕ_rsa-value">0.15</span></label>
+        <input type="range" id="ϕ_rsa" min="0.05" max="0.25" step="0.01" value="0.15">
+    </div> -->
+    <svg width="750" height="600"></svg>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/d3-scale-chromatic@2.0.0/dist/d3-scale-chromatic.min.js"></script>
+    
+    
+<script>
+// Set up SVG dimensions
+const margin = { top: 20, right: 60, bottom: 50, left: 70 },
+    width = 600 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+
+const svg = d3.select("svg")
+    .append("g")
+    .attr("transform", `translate(${margin.left},${margin.top})`);
+
+const x = d3.scaleLinear().domain([0, 1]).range([0, width]);
+const y = d3.scaleLinear().domain([0, 1]).range([height, 0]);
+const color = d3.scaleSequential(d3.interpolateViridis).domain([0.05, 0.25]);
+
+const xAxis = d3.axisBottom(x);
+const yAxis = d3.axisLeft(y);
+
+svg.append("g")
+    .attr("transform", `translate(0,${height})`)
+    .call(xAxis)
+    .append("text")
+    .attr("class", "axis-label")
+    .attr("x", width / 2)
+    .attr("y", 40)
+    .attr("fill", "#000")
+    .text("Plant available water (Wsc) [-]");
+
+svg.append("g")
+    .call(yAxis)
+    .append("text")
+    .attr("class", "axis-label")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -height / 2)
+    .attr("y", -40)
+    .attr("fill", "#000")
+    .attr("text-anchor", "middle")
+    .text("Soil water growth reducer (Waterred) [-]");
+
+const line = d3.line()
+    .x(d => x(d.Wsc))
+    .y(d => y(d.Waterred));
+
+// Initial parameters
+let β_wrsa = 7, β_wrsa_red04 = 20, ϕ_rsa = 0.15, R_wrsa_04_ϕ = 0.9;
+const rsa_values = [0.05, 0.10, 0.15, 0.20, 0.25];
+
+// Update parameters and plot
+function updateParameters() {
+    β_wrsa = +d3.select("#β_wrsa").property("value");
+    β_wrsa_red04 = +d3.select("#β_wrsa_red04").property("value");
+    R_wrsa_04_ϕ = +d3.select("#R_wrsa_04_ϕ").property("value");
+
+    d3.select("#β_wrsa-value").text(β_wrsa);
+    d3.select("#β_wrsa_red04-value").text(β_wrsa_red04);
+    d3.select("#R_wrsa_04_ϕ-value").text(R_wrsa_04_ϕ);
+
+    plot();
+}
+
+function calculateWaterred(Wsc, rsa) {
+    const x0_reduction_at_04 = ϕ_rsa + 1 / β_wrsa_red04 * Math.log((1 - R_wrsa_04_ϕ) / R_wrsa_04_ϕ);
+    const R_wrsa_04 = 1 / (1 + Math.exp(-β_wrsa_red04 * (rsa - x0_reduction_at_04)));
+    const x0_wrsa = Math.log(1 / R_wrsa_04 - 1) / β_wrsa + 0.4;
+    return 1 / (1 + Math.exp(-β_wrsa * (Wsc - x0_wrsa)));
+}
+
+function plot() {
+    svg.selectAll(".line").remove();
+
+    rsa_values.forEach(rsa => {
+        const data = [];
+        for (let Wsc = 0; Wsc <= 1; Wsc += 0.01) {
+            data.push({ Wsc, Waterred: calculateWaterred(Wsc, rsa) });
+        }
+
+        svg.append("path")
+            .datum(data)
+            .attr("class", "line")
+            .attr("fill", "none")
+            .attr("stroke", color(rsa))
+            .attr("stroke-width", 1.5)
+            .attr("d", line);
+    });
+
+    updateColorbar();
+}
+
+function updateColorbar() {
+    const colorbarHeight = 300;
+    const colorbarWidth = 20;
+    const colorScale = d3.scaleLinear()
+        .domain([0, colorbarHeight])
+        .range([0.05, 0.25]);
+
+    if (svg.selectAll(".colorbar").empty()) {
+        const defs = svg.append("defs");
+
+        const linearGradient = defs.append("linearGradient")
+            .attr("id", "linear-gradient")
+            .attr("x1", "0%")
+            .attr("y1", "100%")
+            .attr("x2", "0%")
+            .attr("y2", "0%");
+
+        for (let i = 0; i <= colorbarHeight; i++) {
+            linearGradient.append("stop")
+                .attr("offset", `${(i / colorbarHeight) * 100}%`)
+                .attr("stop-color", color(colorScale(i)));
+        }
+
+        svg.append("rect")
+            .attr("x", width + 10)
+            .attr("y", (height - colorbarHeight) / 2)
+            .attr("width", colorbarWidth)
+            .attr("height", colorbarHeight)
+            .style("fill", "url(#linear-gradient)")
+            .attr("class", "colorbar");
+
+        const colorbarScale = d3.scaleLinear()
+            .domain([0.05, 0.25])
+            .range([(height - colorbarHeight) / 2 + colorbarHeight, (height - colorbarHeight) / 2]);
+
+        const colorbarAxis = d3.axisRight(colorbarScale)
+            .ticks(5)
+            .tickFormat(d3.format(".3f"));
+
+        svg.append("g")
+            .attr("transform", `translate(${width + 10 + colorbarWidth}, 0)`)
+            .attr("class", "colorbar-axis")
+            .call(colorbarAxis);
+            
+        svg.append("text")
+            .attr("x", width + 10 + colorbarWidth + 10)
+            .attr("y", (height - colorbarHeight) / 2 + colorbarHeight / 3)
+            .attr("fill", "#000")
+            .text("Root surface area per total biomass [m² g⁻¹]")
+            .attr("class", "colorbar-label")
+            .attr("text-anchor", "middle")
+            .attr("transform", `rotate(90, ${width + 10 + colorbarWidth + 10}, ${(height - colorbarHeight) / 2 + colorbarHeight / 2})`);
+    }
+}
+
+// Initial plot
+plot();
+
+// Event listeners for sliders
+d3.selectAll("input").on("input", updateParameters);
+</script>
+</body>
+</html>
