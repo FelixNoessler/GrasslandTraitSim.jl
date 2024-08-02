@@ -33,6 +33,10 @@ light_competition!
 ## Water stress
 
 ```@raw html
+<iframe src="../water_stress_animation.html" width="750" height="600" scrolling="no"></iframe> 
+```
+
+```@raw html
 <div class="mermaid">
 flowchart LR
     W[↓ water stress] 
@@ -41,14 +45,12 @@ flowchart LR
     L["permanent wilting point PWP [mm]"]
     P["scaled soil water content Wsc [-]"]
     R[trait: root surface area /\n belowground biomass]
-    S[trait: specific leaf area]
 
     A --> P
     K --> P
     L --> P
     P --> W
-    R ---> W
-    S ---> W;
+    R ---> W;
 </div>
 ```
 
