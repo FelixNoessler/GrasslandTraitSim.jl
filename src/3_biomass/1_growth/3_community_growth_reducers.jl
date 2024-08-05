@@ -242,13 +242,12 @@ function plot_temperature_reducer(; Ts = collect(LinRange(0.0, 40.0, 500)) .* u"
     return nothing
 end
 
-function plot_seasonal_effect(; STs = LinRange(0, 3500, 1000)u"K", θ = nothing, path = nothing)
-
+function plot_seasonal_effect(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; nspecies = 1, θ)
-
+    STs = LinRange(0, 3500, 1000)
     y = Float64[]
     for ST in STs
-        seasonal_reduction!(; ST, container)
+        seasonal_reduction!(; ST = ST * u"°C", container)
         push!(y, container.calc.com.SEA)
     end
 

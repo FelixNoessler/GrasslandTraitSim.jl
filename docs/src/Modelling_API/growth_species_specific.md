@@ -71,7 +71,7 @@ flowchart LR
     N[nutrient index]
     R[trait: root surface area /\n belowground biomass]
     A[trait: arbuscular mycorrhizal colonisation]
-    K[nutrient competition factor]
+    K[nutrient adjustment]
     L[plant available nutrients]
 
     N --> L

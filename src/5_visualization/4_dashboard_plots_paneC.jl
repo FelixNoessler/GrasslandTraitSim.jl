@@ -1,9 +1,16 @@
 function create_axes_paneC(layout)
     axes = Dict()
+
+    axes[:static_water_reducer] = Axis(layout[1, 1];
+        xlabel = "Scaled soil water content",
+        ylabel = "Growth reduction factor (Wred)\n← stronger reduction, less reduction →",
+        title = "Water growth reducer",
+        limits = (0, 1, -0.05, 1.05),
+        alignmode = Inside())
     axes[:static_nutrient_reducer] = Axis(layout[1, 2];
         xlabel = "Nutrient index",
         ylabel = "Growth reduction factor (Nutred)\n← stronger reduction, less reduction →",
-        title = "Nutrient reducer",
+        title = "Nutrient growth reducer",
         limits = (0, 1, -0.05, 1.05),
         alignmode = Inside())
 
@@ -12,13 +19,15 @@ function create_axes_paneC(layout)
     axes[:nutrient_reducer] = Axis(layout[2, 2];
                                    limits = (nothing, nothing, -0.05, 1.05))
     axes[:root_invest] = Axis(layout[2, 3];
-                              limits = (nothing, nothing, -0.05, 1.05))
+                              limits = (nothing, nothing, -0.05, 1.05),
+                              title = "Root investment")
 
     return axes
 end
 
 function update_plots_paneC(; kwargs...)
     plot_static_nutrient_reducer(; kwargs...)
+    plot_static_water_reducer(; kwargs...)
 
     plot_water_reducer(; kwargs...)
     plot_nutrient_reducer(; kwargs...)
@@ -30,7 +39,7 @@ function plot_static_nutrient_reducer(; plot_obj, sol, kwargs...)
 
     real_nutrients = mean(sol.patch_variables.nutrients; dims = (:x, :y))[1, 1]
     nspecies = sol.simp.nspecies
-    δ_amc = sol.p.δ_amc
+    δ_namc = sol.p.δ_namc
     δ_nrsa = sol.p.δ_nrsa
     srsa = sol.traits.srsa
     amc = sol.traits.amc
@@ -41,9 +50,7 @@ function plot_static_nutrient_reducer(; plot_obj, sol, kwargs...)
     ymat_rsa = fill(0.0, length(xs), nspecies)
     ymat_both = fill(0.0, length(xs), nspecies)
 
-    total_biomass = fill(2, nspecies)u"kg/ha"
-    above_biomass = abp .* total_biomass
-    @. sol.calc.above_proportion = above_biomass / total_biomass
+    @. sol.calc.above_proportion = abp
     @. sol.calc.nutrients_adj_factor = 1.0
 
     for (i, x) in enumerate(xs)
@@ -52,11 +59,6 @@ function plot_static_nutrient_reducer(; plot_obj, sol, kwargs...)
         ymat_rsa[i, :] .= sol.calc.N_rsa
         ymat_both[i, :] .= sol.calc.Nutred
     end
-
-    hlines!(ax, [1-δ_amc]; color = :darkorange)
-    hlines!(ax, [1-δ_nrsa]; color = :indianred)
-    text!(ax, 0.7, 1-δ_amc + 0.02; text = "1 - δ_amc")
-    text!(ax, 0.7, 1-δ_nrsa + 0.02; text = "1 - δ_nrsa")
 
     for i in Base.OneTo(nspecies)
         lines!(ax, xs, ymat_amc[:, i]; color = (:darkorange, 0.2))
@@ -69,6 +71,48 @@ function plot_static_nutrient_reducer(; plot_obj, sol, kwargs...)
     return nothing
 end
 
+function plot_static_water_reducer(; plot_obj, sol, kwargs...)
+    ax = clear_plotobj_axes(plot_obj, :static_water_reducer)
+
+    nspecies = sol.simp.nspecies
+    xs = LinRange(-0.1, 1.1, 200)
+    ymat = fill(0.0, length(xs), nspecies)
+
+    WHC = 1u"mm"
+    PWP = 0u"mm"
+    W = 1 * u"mm"
+
+    total_biomass = fill(2, nspecies)u"kg/ha"
+    above_biomass = sol.traits.abp .* total_biomass
+    @. sol.calc.above_proportion = above_biomass / total_biomass
+
+    for (i, x) in enumerate(xs)
+        water_reduction!(; container = sol, W = x * u"mm", PWP, WHC)
+        ymat[i, :] .= sol.calc.Waterred
+    end
+
+    idx = sortperm(sol.traits.srsa)
+    R_05 = sol.transfer_function.R_05[idx]
+    srsa = ustrip.(sol.traits.srsa[idx])
+    abp = sol.traits.abp[idx]
+    ymat = ymat[:, idx]
+
+    fig = Figure(size = (1000, 500))
+    ax1 = Axis(fig[1, 1],
+        xlabel = "Plant available water (W_sc)",
+        ylabel = "Growth reduction factor (W_rsa)\n← stronger reduction, less reduction →",
+        limits = (-0.05, 1.05, -0.1, 1.1))
+
+    for i in eachindex(R_05)
+        lines!(ax, xs, ymat[:, i]; color = (:black, 0.3))
+    end
+
+    scatter!([0.4], [sol.p.α_wrsa_05];
+        markersize = 15,
+        color = :red)
+
+    return nothing
+end
 
 function plot_water_reducer(; plot_obj, sol, kwargs...)
     ax = clear_plotobj_axes(plot_obj, :water_reducer)

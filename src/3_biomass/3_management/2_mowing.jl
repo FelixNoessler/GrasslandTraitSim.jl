@@ -43,19 +43,18 @@ function plot_mowing(; mowing_height = 0.07u"m",
     colorrange = (minimum(height), maximum(height))
     colormap = :viridis
 
-    fig = Figure(;)
+    fig = Figure(; )
     Axis(fig[1, 1],
-    xlabel = "Aboveground biomass per species [kg ha⁻¹]",
-    ylabel = """Amount of aboveground biomass that is
-            removed by mowing (mow) [kg ha⁻¹]""",
-    title = "",
-    aspect = DataAspect(),
-    width = 400, height = 400)
+        xlabel = "Aboveground biomass per species [kg ha⁻¹]",
+        ylabel = """Amount of aboveground biomass that is
+                removed by mowing (mow) [kg ha⁻¹]""",
+        title = "",
+        width = 400, height = 400)
 
     for i in 1:nspecies
-    lines!(ustrip.(biomass_vec), mowing_mat[i, :];
-    linewidth = 3, color = height[i], colorrange, colormap)
-    lines!([0, max_biomass], [0, max_biomass]; linestyle = :dash, color = (:black, 0.01))
+        lines!(ustrip.(biomass_vec), mowing_mat[i, :];
+        linewidth = 3, color = height[i], colorrange, colormap)
+        lines!([0, max_biomass], [0, max_biomass]; linestyle = :dash, color = (:black, 0.01))
     end
 
     Colorbar(fig[1, 2]; colorrange, colormap, label = "Plant height [m]")

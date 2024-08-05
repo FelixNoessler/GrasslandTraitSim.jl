@@ -13,18 +13,22 @@ invest &= \exp(\kappa\_{red, amc} \cdot acm) \cdot abp \\
 """
 function root_investment!(; container)
     @unpack included = container.simp
-    @unpack root_invest_amc, root_invest_srsa, root_invest, above_proportion = container.calc
+    @unpack root_invest_amc, root_invest_srsa,
+            root_invest, above_proportion = container.calc
     @unpack amc, srsa = container.traits
-    @unpack output = container
-    @unpack κ_maxred_amc, κ_maxred_srsa, β_red_amc, β_red_rsa, ϕ_amc, ϕ_rsa = container.p
+    @unpack κ_maxred_amc, κ_maxred_srsa, δ_namc, δ_nrsa, δ_wrsa, ϕ_amc, ϕ_rsa = container.p
 
     # TODO add to documentation
     if !included.root_invest
         @. root_invest_srsa = 1.0
         @. root_invest_amc = 1.0
     else
-        @. root_invest_amc = 1 - κ_maxred_amc / (1 + exp(-β_red_amc * ((1-above_proportion)*amc - ϕ_amc)))
-        @. root_invest_srsa = 1 - κ_maxred_srsa / (1 + exp(-β_red_rsa * ((1-above_proportion)*srsa - ϕ_rsa)))
+        δ_rsa = (δ_nrsa + δ_wrsa) / 2
+
+        @. root_invest_amc = 1 - κ_maxred_amc /
+            (1 + exp(-δ_namc * ((1 - above_proportion) * amc - ϕ_amc)))
+        @. root_invest_srsa = 1 - κ_maxred_srsa /
+            (1 + exp(-δ_rsa * ((1 - above_proportion) * srsa - ϕ_rsa)))
     end
 
     @. root_invest = root_invest_amc * root_invest_srsa

@@ -87,7 +87,7 @@ function plot_seasonal_component_senescence(;
 
     y = Float64[]
     for ST in STs
-        g = seasonal_component_senescence(; container, ST)
+        g = seasonal_component_senescence(; container, ST = ST * u"°C")
         push!(y, g)
     end
 

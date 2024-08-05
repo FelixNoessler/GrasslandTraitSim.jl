@@ -159,11 +159,8 @@ function preallocate_vectors(; input_obj, T = Float64)
 
     ############# Transfer function
     transfer_function = (;
-        K_amc = Array{T}(undef, nspecies),
-        A_amc = Array{T}(undef, nspecies),
-        R_wrsa_04 = Array{T}(undef, nspecies),
-        x0_wrsa = Array{T}(undef, nspecies),
-        A_nrsa = Array{T}(undef, nspecies))
+        R_05 = Array{T}(undef, nspecies),
+        x0 = Array{T}(undef, nspecies))
 
     global F = T
 
