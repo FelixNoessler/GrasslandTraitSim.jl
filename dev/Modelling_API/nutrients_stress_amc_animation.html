@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Water Stress Visualization</title>
+    <title>AMC Nutrient Stress Visualization</title>
     
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="https://d3js.org/d3.v6.min.js"></script>
-    <script src="https://unpkg.com/d3-scale-chromatic@2.0.0/dist/d3-scale-chromatic.min.js"></script>
-    
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
         body, text {
@@ -19,28 +17,31 @@
         }
         tr.spaceUnder>td { padding-bottom: 0.7em;}
     </style>
+    
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/d3-scale-chromatic@2.0.0/dist/d3-scale-chromatic.min.js"></script>
 </head>
 <body>
     <table>
         <col width="300px">
         <col width="30px">
         <tr class="spaceUnder">
-            <td>mean response at \(W_{sc} = 0.5\) \(\;\alpha_{wrsa,05}\;\)<br>see red dot (strong to weak growth reduction)</td>
+            <td>mean response at \(NUT = 0.5\) \(\;\alpha_{namc,05}\;\)<br>see red dot (strong to weak growth reduction)</td>
             <td><span id="R_wrsa_04_ϕ-value">0.9</span></td>
             <td><input type="range" id="R_wrsa_04_ϕ" min="0.1" max="0.99" step="0.01" value="0.9"></td>
         </tr>
         <tr class="spaceUnder">
-            <td>difference between species \(\;\delta_{wrsa}\;\) <br>(no to strong difference)</td>
+            <td>difference between species \(\;\delta_{namc}\;\) <br>(no to strong difference)</td>
             <td><span id="β_wrsa_red04-value">10</span></td>
             <td><input type="range" id="β_wrsa_red04" min="0.1" max="15.0" step="0.1" value="10"></td>
         </tr>
         <tr>
-            <td>slope of response  \(\beta_{wrsa}\)</td>
+            <td>slope of response  \(\beta_{namc}\)</td>
             <td><span id="β_wrsa-value">7</span></td>
             <td><input type="range" id="β_wrsa" min="5" max="15" step="0.1" value="7"></td>
         </tr>
     </table>
-    
+
     <svg width="750" height="600"></svg>
 
     <script>
@@ -55,7 +56,7 @@
 
         const x = d3.scaleLinear().domain([0, 1]).range([0, width]);
         const y = d3.scaleLinear().domain([0, 1]).range([height, 0]);
-        const color = d3.scaleSequential(d3.interpolateViridis).domain([0.05, 0.25]);
+        const color = d3.scaleSequential(d3.interpolateViridis).domain([0.0, 0.4]);
 
         const xAxis = d3.axisBottom(x);
         const yAxis = d3.axisLeft(y);
@@ -68,7 +69,7 @@
             .attr("x", width / 2)
             .attr("y", 40)
             .attr("fill", "#000")
-            .text("Plant available water (W_sc) [-]");
+            .text("Plant available nutrients (N_p) [-]");
 
         svg.append("g")
             .call(yAxis)
@@ -79,15 +80,15 @@
             .attr("y", -40)
             .attr("fill", "#000")
             .attr("text-anchor", "middle")
-            .text("Soil water growth reducer (W_rsa) [-]");
+            .text("Nutrient growth reducer based on AMC (N_amc) [-]");
 
         const line = d3.line()
             .x(d => x(d.Wsc))
             .y(d => y(d.Waterred));
 
         // Initial parameters
-        let β_wrsa = 7, β_wrsa_red04 = 20, ϕ_rsa = 0.15, R_wrsa_04_ϕ = 0.9;
-        const rsa_values = [0.05, 0.10, 0.15, 0.20, 0.25];
+        let β_wrsa = 7, β_wrsa_red04 = 10, ϕ_rsa = 0.2, R_wrsa_04_ϕ = 0.9;
+        const rsa_values = [0.0, 0.10, 0.2, 0.30, 0.4];
 
         // Update parameters and plot
         function updateParameters() {
@@ -141,7 +142,7 @@
             const colorbarWidth = 20;
             const colorScale = d3.scaleLinear()
                 .domain([0, colorbarHeight])
-                .range([0.05, 0.25]);
+                .range([0.0, 0.4]);
 
             if (svg.selectAll(".colorbar").empty()) {
                 const defs = svg.append("defs");
@@ -168,7 +169,7 @@
                     .attr("class", "colorbar");
 
                 const colorbarScale = d3.scaleLinear()
-                    .domain([0.05, 0.25])
+                    .domain([0.0, 0.4])
                     .range([(height - colorbarHeight) / 2 + colorbarHeight, (height - colorbarHeight) / 2]);
 
                 const colorbarAxis = d3.axisRight(colorbarScale)
@@ -180,14 +181,22 @@
                     .attr("class", "colorbar-axis")
                     .call(colorbarAxis);
                     
-                svg.append("text")
-                    .attr("x", width + 10 + colorbarWidth + 10)
-                    .attr("y", (height - colorbarHeight) / 2 + colorbarHeight / 3)
-                    .attr("fill", "#000")
-                    .text("Root surface area per total biomass [m² g⁻¹]")
-                    .attr("class", "colorbar-label")
+                const textData = ["Arbuscular mycorrhizal", "colonisation per total biomass [m² g⁻¹]"];
+                const centerX = width + 10 + colorbarWidth + 60;
+                const centerY = (height - colorbarHeight) / 2 + colorbarHeight / 2;    
+                svg.append("text")   
+                    .attr("x", centerX)
+                    .attr("y", centerY) 
                     .attr("text-anchor", "middle")
-                    .attr("transform", `rotate(90, ${width + 10 + colorbarWidth + 10}, ${(height - colorbarHeight) / 2 + colorbarHeight / 2})`);
+                    .attr("font-size", "16px")
+                    .attr("transform", `rotate(90, ${centerX}, ${centerY})`)  // Rotate around the center
+                    .selectAll("tspan")
+                    .data(textData)
+                    .enter()
+                    .append("tspan")
+                    .attr("x", centerX)
+                    .attr("dy", (d, i) => i * 25 - ((textData.length - 1) * 10))  // Adjust dy to center the lines
+                    .text(d => d);
             }
         }
 
