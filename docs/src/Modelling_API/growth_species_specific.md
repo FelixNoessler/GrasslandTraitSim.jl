@@ -33,10 +33,6 @@ light_competition!
 ## Water stress
 
 ```@raw html
-<iframe src="../water_stress_animation.html" width="750" height="600" scrolling="no"></iframe> 
-```
-
-```@raw html
 <div class="mermaid">
 flowchart LR
     W[↓ water stress] 
@@ -57,6 +53,10 @@ flowchart LR
 The species differ in their response to water stress by the different trait values of the specific leaf area and the root surface areas per above ground biomass. The values of both response functions are multiplied to get factor that reduces the growth. 
 
 It is implemented in [`water_reduction!`](@ref).
+
+```@raw html
+<iframe src="../water_stress_animation.html" width="750" height="600" scrolling="no"></iframe> 
+```
 
 ```@docs
 water_reduction!
@@ -99,6 +99,15 @@ below_ground_competition!
 The species differ in the response to nutrient availability by different proportion of mycorrhizal colonisations and root surface per above ground biomass. The maximum of both response curves is used for the nutrient reduction function. It is assumed that the plants needs either many fine roots per above ground biomass or have a strong symbiosis with mycorrhizal fungi. 
 
 It is implemented in [`nutrient_reduction!`](@ref).
+
+
+```@raw html
+<iframe src="../nutrient_stress_rsa_animation.html" width="750" height="600" scrolling="no"></iframe> 
+```
+
+```@raw html
+<iframe src="../nutrients_stress_amc_animation.html" width="750" height="600" scrolling="no"></iframe> 
+```
 
 ```@docs
 nutrient_reduction!
