@@ -73,8 +73,12 @@ function plot_height_influence(; θ = nothing, path = nothing)
     ymat = Array{Float64}(undef, nspecies, length(height_strength_exps))
     orig_β_height = container.p.β_height
 
+    ### otherwise the function won't be calculated
+    ### the LAI is not used in the hieght influence function
+    container.calc.com.LAItot = 0.2 * nspecies
+
     for (i, β_height) in enumerate(height_strength_exps)
-        container = @set container.p.β_height = β_height
+        @reset container.p.β_height = β_height
         light_competition!(; container, above_biomass,
                            actual_height = container.traits.height)
         ymat[:, i] .= container.calc.heightinfluence
