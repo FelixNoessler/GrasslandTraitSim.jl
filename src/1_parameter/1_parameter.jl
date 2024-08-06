@@ -2,7 +2,14 @@
     T, Qkg_MJ, Qkg_ha, Qha_kg, Qm2_g, Qg_m2, Qg_kg, Qha_MJ, QMJ_ha, QC, Qkg}
 
     ####################################################################################
-    ## 1 Light interception and competition
+    ## 1 Mean/reference trait values
+    ####################################################################################
+    ϕ_rsa::Qm2_g = F(0.07)u"m^2 / g"
+    ϕ_amc::T = F(0.2)
+    ϕ_sla::Qm2_g = F(0.009)u"m^2 / g"
+
+    ####################################################################################
+    ## 2 Light interception and competition
     ####################################################################################
     RUE_max::Qkg_MJ = F(3 / 1000)u"kg / MJ"
     k::T = F(0.6)
@@ -10,11 +17,8 @@
     β_height::T = F(0.5)
 
     ####################################################################################
-    ## 2 Belowground competition
+    ## 3 Belowground competition
     ####################################################################################
-    ϕ_rsa::Qm2_g = F(0.07)u"m^2 / g"
-    ϕ_amc::T = F(0.2)
-
     ############################# Water competition
     α_wrsa_05::T = F(0.9)
     β_wrsa::T = F(7.0)
@@ -37,7 +41,7 @@
     κ_maxred_srsa::T = F(0.01)
 
     ####################################################################################
-    ## 3 Environmental and seasonal growth adjustment
+    ## 4 Environmental and seasonal growth adjustment
     ####################################################################################
     γ₁::Qha_MJ = F(4.45e-6)u"ha / MJ"
     γ₂::QMJ_ha = F(50000.0)u"MJ / ha"
@@ -51,31 +55,29 @@
     SEA_max::T = F(1.3)
 
     ####################################################################################
-    ## 4 Senescence
+    ## 5 Senescence
     ####################################################################################
-    α_sen::T = F(0.001)
-    ϕ_sen_sla::Qm2_g = F(0.009)u"m^2 / g"
+    α_sen_month::T = F(0.001)
     β_sen_sla::T = F(0.3)
     Ψ₁::QC = F(775.0)u"°C"
     Ψ₂::QC = F(3000.0)u"°C"
     SEN_max::T = F(3.0)
 
     ####################################################################################
-    ## 5 Management
+    ## 6 Management
     ####################################################################################
     β_PAL_lnc::T = F(1.2)
     η_GRZ::T = F(25.0)
     κ::Qkg = F(22.0)u"kg"
 
     ####################################################################################
-    ## 6 Clonal growth
+    ## 7 Clonal growth
     ####################################################################################
     β_clo::T = F(0.1)
 
     ####################################################################################
-    ## 7 Water dynamics
+    ## 8 Water dynamics
     ####################################################################################
-    α_TR_sla::Qm2_g = F(0.03)u"m^2 / g"
     β_TR_sla::T = F(0.4)
 end
 
@@ -129,13 +131,13 @@ end
 #     the leaf life span to the senescence rate,
 #     see [`senescence_rate!`](@ref)
 #     """
-#     α_sen::T = F(0.001)
+#     α_sen_month::T = F(0.001)
 
 #     """
 #     4::``\\phi_{sen, sla}``::TODO,
 #     see [`water_reduction!`](@ref)
 #     """
-#     ϕ_sen_sla::Qm2_g = F(0.009)u"m^2 / g"
+#     ϕ_sla::Qm2_g = F(0.009)u"m^2 / g"
 
 #     """
 #     4::``\\beta_{SEN}``::TODO
@@ -197,18 +199,11 @@ end
 #     ####################################################################################
 #     ## 7 Water dynamics
 #     ####################################################################################
-#     """
-#     7::``\\alpha_{TR, sla}``::reference community weighted mean specific leaf area,
-#     if the community weighted mean specific leaf area is
-#     equal to `α_TR_sla` then transpiration is neither increased nor decreased,
-#     see `transpiration`](@ref)
-#     """
-#     α_TR_sla::Qm2_g = F(0.03)u"m^2 / g"
 
 #     """
 #     7::``\\beta_{TR, sla}``::controls how strongly a
 #     community mean specific leaf area that deviates
-#     from `α_TR_sla` is affecting the transpiration,
+#     from `ϕ_sla` is affecting the transpiration,
 #     see [`transpiration`](@ref)
 #     """
 #     β_TR_sla::T = F(0.4)

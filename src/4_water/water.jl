@@ -47,13 +47,13 @@ per day.
 - `PET` is the potential evapotranspiration [mm]
 - `LAItot` is the total leaf area index of all plants [-]
 """
-function change_water_reserve(; container, patch_biomass, water, precipitation,
+function change_water_reserve(; container, patch_above_biomass, water, precipitation,
                               PET, WHC, PWP)
     @unpack LAItot = container.calc.com
 
     # -------- Evapotranspiration
     AEv = evaporation(; water, WHC, PET, LAItot)
-    ATr = transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
+    ATr = transpiration(; container, patch_above_biomass, water, PWP, WHC, PET, LAItot)
     AET = min(water, ATr + AEv)
 
     # -------- Drainage
@@ -80,7 +80,7 @@ If the community weighted mean specific leaf area is high
 \begin{align}
     \text{W} &= \frac{\text{water} - \text{PWP}}{\text{WHC} - \text{PWP}} \\
     \text{sla_effect} &=
-        \left(\frac{\text{cwm_sla}}{\text{α_TR_sla}} \right)^{\text{β_TR_sla}} \\
+        \left(\frac{\text{cwm_sla}}{\text{ϕ_sla}} \right)^{\text{β_TR_sla}} \\
     \text{ATr} &=
         \text{W} \cdot \text{PET} \cdot \text{sla_effect} \cdot
         \min\left(1; \frac{\text{LAItot}}{3} \right)
@@ -98,10 +98,10 @@ If the community weighted mean specific leaf area is high
   specific leaf area on the transpiration, can range from
   0 (no transpiraiton at all) to ∞ (very strong transpiration) [-]
 - `cwm_sla` is the community weighted mean specific leaf area [m² kg⁻¹]
-- `α_TR_sla` is a specific leaf area, if the `cwm_sla` equals `α_TR_sla`
+- `ϕ_sla` is a specific leaf area, if the `cwm_sla` equals `ϕ_sla`
   the `sla_effect` is 1 [m² kg⁻¹]
 - `β_TR_sla` is the exponent in the `sla_effect` function and influences
-  how strong a `cwm_sla` that deviates from `α_TR_sla`
+  how strong a `cwm_sla` that deviates from `ϕ_sla`
   changes the `sla_effect` [-]
 """
 function transpiration(; container, patch_above_biomass, water, PWP, WHC, PET, LAItot)
@@ -117,7 +117,7 @@ function transpiration(; container, patch_above_biomass, water, PWP, WHC, PET, L
         # community weighted mean specific leaf area
         relative_sla .= sla .* patch_above_biomass ./ sum(patch_above_biomass)
         cwm_sla = sum(relative_sla)
-        sla_effect = min(2.0, max(0.5, (cwm_sla / α_TR_sla) ^ β_TR_sla))  # TODO change in documentation and manusctipt
+        sla_effect = min(2.0, max(0.5, (cwm_sla / ϕ_sla) ^ β_TR_sla))  # TODO change in documentation and manusctipt
     end
 
     ####### plant available water:

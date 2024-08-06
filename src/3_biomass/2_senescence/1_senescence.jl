@@ -35,15 +35,18 @@ function senescence_rate!(; container)
     end
 
     if included.senescence_sla
-        @unpack β_sen_sla, ϕ_sen_sla = container.p
+        @unpack β_sen_sla, ϕ_sla = container.p
         @unpack sla = container.traits
-        @. μ_sla = (sla / ϕ_sen_sla) ^ β_sen_sla
+        @. μ_sla = (sla / ϕ_sla) ^ β_sen_sla
     else
         @. μ_sla = 1.0
     end
 
-    @unpack α_sen = container.p
-    @. μ  = α_sen * μ_sla # TODO
+    @unpack α_sen_month = container.p
+    days_per_month = 30.44
+    senescence_per_day = 1 - (1 - α_sen_month) ^ (1 / days_per_month)
+
+    @. μ  = senescence_per_day * μ_sla # TODO
     return nothing
 end
 
@@ -121,7 +124,7 @@ end
 function plot_senescence_rate(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
     @unpack sla = container.traits
-    @unpack β_sen_sla, α_sen = container.p
+    @unpack β_sen_sla, α_sen_month = container.p
     @unpack p = container
     nvals = 200
     β_sen_sla_values = LinRange(0, 2, nvals)
@@ -141,9 +144,9 @@ function plot_senescence_rate(; θ = nothing, path = nothing)
     for i in 1:nspecies
         lines!(β_sen_sla_values, ymat[:, i]; color = sla_plot[i], colorrange)
     end
-    hlines!(α_sen; color = :orange, linewidth = 3, linestyle = :dash)
+    hlines!(α_sen_month; color = :orange, linewidth = 3, linestyle = :dash)
     vlines!(ustrip(β_sen_sla))
-    text!(1.5, α_sen * 1.01, text = "α_sen";)
+    text!(1.5, α_sen_month * 1.01, text = "α_sen_month";)
 
     Colorbar(fig[1, 2]; colorrange, label = "Specific leaf area [m² g⁻¹]")
 
