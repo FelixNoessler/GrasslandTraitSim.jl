@@ -11,12 +11,13 @@ input_obj = sim.validation_input(; included, plotID = &quot;HEG01&quot;, nspecie
 p = sim.SimulationParameter()</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">┌───────────────────────┬──────────────────┐
 │<span class="sgr1">             Parameter │ Value            │
 ├───────────────────────┼──────────────────┤
+│                 ϕ_rsa │ 0.07 m^2 g^-1    │
+│                 ϕ_amc │ 0.2              │
+│                 ϕ_sla │ 0.009 m^2 g^-1   │
 │               RUE_max │ 0.003 kg MJ^-1   │
 │                     k │ 0.6              │
 │ self_shading_severity │ 0.75             │
 │              β_height │ 0.5              │
-│                 ϕ_rsa │ 0.07 m^2 g^-1    │
-│                 ϕ_amc │ 0.2              │
 │             α_wrsa_05 │ 0.9              │
 │                β_wrsa │ 7.0              │
 │                δ_wrsa │ 20.0 g m^-2      │
@@ -42,8 +43,7 @@ p = sim.SimulationParameter()</code></pre><pre class="documenter-example-output"
 │                   ST₂ │ 1450.0 °C        │
 │               SEA_min │ 0.7              │
 │               SEA_max │ 1.3              │
-│                 α_sen │ 0.001            │
-│             ϕ_sen_sla │ 0.009 m^2 g^-1   │
+│           α_sen_month │ 0.001            │
 │             β_sen_sla │ 0.3              │
 │                    Ψ₁ │ 775.0 °C         │
 │                    Ψ₂ │ 3000.0 °C        │
@@ -52,7 +52,6 @@ p = sim.SimulationParameter()</code></pre><pre class="documenter-example-output"
 │                 η_GRZ │ 25.0             │
 │                     κ │ 22.0 kg          │
 │                 β_clo │ 0.1              │
-│              α_TR_sla │ 0.03 m^2 g^-1    │
 │              β_TR_sla │ 0.4              │
 └───────────────────────┴──────────────────┘
 </span></code></pre><p>Run the simulation and let&#39;s visualize the biomass dynamic without potential growth:</p><pre><code class="language-julia hljs">sol = sim.solve_prob(; input_obj, p, trait_input);
@@ -63,4 +62,4 @@ total_biomass = vec(sum(species_biomass; dims = :species))
 fig, _ = lines(sol.simp.output_date_num, ustrip.(total_biomass), color = :darkgreen, linewidth = 2;
       axis = (; ylabel = &quot;Aboveground dry biomass [kg ha⁻¹]&quot;,
                 xlabel = &quot;Date [year]&quot;))
-fig</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">[ Info: Zero potential growth!</code></pre><p><img src="../biomass_no_pot_growth.svg" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../how_to_heterogeneous_site_management/">« Heterogenous site or management conditions</a><a class="docs-footer-nextpage" href="../../Modelling_API/main_equations/">Difference equation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Tuesday 6 August 2024 10:00">Tuesday 6 August 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+fig</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">[ Info: Zero potential growth!</code></pre><p><img src="../biomass_no_pot_growth.svg" alt/></p></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../how_to_heterogeneous_site_management/">« Heterogenous site or management conditions</a><a class="docs-footer-nextpage" href="../../Modelling_API/main_equations/">Difference equation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Tuesday 6 August 2024 13:39">Tuesday 6 August 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
