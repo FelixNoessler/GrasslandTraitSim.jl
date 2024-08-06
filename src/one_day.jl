@@ -175,7 +175,7 @@ function one_day!(; t, container)
             @. du_height[x, y, :] = height_gain - height_loss_mowing - height_loss_grazing
 
             # --------------------- water dynamics
-            du_water[x, y] = change_water_reserve(; container, patch_biomass,
+            du_water[x, y] = change_water_reserve(; container, patch_above_biomass,
                 water = u_water[x, y],
                 precipitation = input.precipitation[t],
                 PET = input.PET_sum[t],

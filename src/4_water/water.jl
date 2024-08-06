@@ -104,18 +104,18 @@ If the community weighted mean specific leaf area is high
   how strong a `cwm_sla` that deviates from `α_TR_sla`
   changes the `sla_effect` [-]
 """
-function transpiration(; container, patch_biomass, water, PWP, WHC, PET, LAItot)
+function transpiration(; container, patch_above_biomass, water, PWP, WHC, PET, LAItot)
     @unpack included = container.simp
 
     ###### SLA effect
     sla_effect = 1.0
     if included.sla_transpiration
         @unpack sla = container.traits
-        @unpack α_TR_sla, β_TR_sla = container.p
+        @unpack ϕ_sla, β_TR_sla = container.p
         @unpack relative_sla = container.calc
 
         # community weighted mean specific leaf area
-        relative_sla .= sla .* patch_biomass ./ sum(patch_biomass)
+        relative_sla .= sla .* patch_above_biomass ./ sum(patch_above_biomass)
         cwm_sla = sum(relative_sla)
         sla_effect = min(2.0, max(0.5, (cwm_sla / α_TR_sla) ^ β_TR_sla))  # TODO change in documentation and manusctipt
     end
