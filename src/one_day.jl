@@ -160,7 +160,8 @@ function one_day!(; t, container)
 
             # --------------------- height dynamic
             height_dynamic!(; container, actual_height = patch_height,
-                           above_biomass = patch_above_biomass)
+                              above_biomass = patch_above_biomass,
+                              allocation_above)
             @. du_height[x, y, :] = height_gain - height_loss_mowing - height_loss_grazing
 
             # --------------------- water dynamics
