@@ -64,13 +64,6 @@ function one_day!(; t, container)
         light_competition, Nutred, Waterred, root_invest, allocation_above, above_proportion,
         height_gain, height_loss_mowing, height_loss_grazing = container.calc
 
-    ## -------- clonal growth
-    # TODO
-    # if doy[t] == 250 && npatches > 1 && included.clonalgrowth
-    #     clonalgrowth!(; container)
-    # end
-
-
     ## -------- loop over patches
     for x in Base.OneTo(patch_xdim)
         for y in Base.OneTo(patch_ydim)
@@ -146,25 +139,21 @@ function one_day!(; t, container)
                 end
 
                 # ------------------------------------------ grazing
-                LD = if input.LD_grazing isa Vector
-                    input.LD_grazing[t]
-                else
-                    input.LD_grazing[t, x, y]
-                end
+                if included.grazing
+                    LD = if input.LD_grazing isa Vector
+                        input.LD_grazing[t]
+                    else
+                        input.LD_grazing[t, x, y]
+                    end
 
-                if !isnan(LD)
-                    if included.grazing
+                    if !isnan(LD)
                         grazing!(; container, LD, above_biomass = patch_above_biomass,
-                                 actual_height = patch_height)
+                                   actual_height = patch_height)
                     end
                 end
             end
 
             # -------------- net growth
-            # @. act_growth = 0.0u"kg/ha"
-            # @. defoliation = 0.0u"kg/ha"
-            # @. senescence = 0.0u"kg/ha"
-
             @. du_biomass[x, y, :] = act_growth - senescence - defoliation
             @. du_above_biomass[x, y, :] = allocation_above * act_growth - (1-allocation_above) * senescence - defoliation
             @. du_below_biomass[x, y, :] = (1-allocation_above) * act_growth - allocation_above * senescence
@@ -189,7 +178,6 @@ function one_day!(; t, container)
             output.seasonal_growth[t, x, y] = com.SEA
             output.temperature_reducer[t, x, y] = com.TEMP
             output.seasonal_senescence[t, x, y] = com.SEN_season
-
 
             for s in 1:nspecies
                 output.act_growth[t, x, y, s] = act_growth[s]
