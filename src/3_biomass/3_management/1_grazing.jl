@@ -47,7 +47,6 @@ function grazing!(; container, LD, above_biomass, actual_height)
     relative_lnc .= lnc .* above_biomass ./ sum_biomass
     cwm_lnc = sum(relative_lnc)
     ρ .= (lnc ./ cwm_lnc) .^ β_PAL_lnc
-    # @. ρ = 2.0 / (1.0 + exp(β_PAL_lnc * (cwm_lnc - lnc))) # TODO change documentation
 
     @. height_ρ_biomass = actual_height * ρ * above_biomass
     grazed_share .= height_ρ_biomass ./ sum(height_ρ_biomass)
