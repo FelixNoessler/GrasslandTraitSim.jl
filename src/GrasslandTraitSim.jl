@@ -102,10 +102,12 @@ include("3_biomass/3_management/1_grazing.jl")
 include("3_biomass/3_management/2_mowing.jl")
 include("3_biomass/3_management/3_cut_biomass_for_likelihood.jl")
 
-include("4_water/water.jl")
-include("5_visualization/1_visualization.jl")
+include("4_height/height.jl")
 
-include("height/height.jl")
+include("5_water/water.jl")
+
+include("6_visualization/1_visualization.jl")
+
 
 const ASSETS_DIR = joinpath(@__DIR__, "..", "assets")
 assetpath(files...) = normpath(joinpath(ASSETS_DIR, files...))
