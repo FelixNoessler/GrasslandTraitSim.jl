@@ -57,7 +57,7 @@ function light_competition!(; container, above_biomass, actual_height)
 
         @. heightinfluence = (actual_height / height_cwm) ^ β_height
     end
-    @show heightinfluence
+
     @. lais_heightinfluence = LAIs .* heightinfluence
     light_competition .= lais_heightinfluence ./ sum(lais_heightinfluence)
 
@@ -85,14 +85,19 @@ function plot_height_influence(; θ = nothing, path = nothing)
 
     idx = sortperm(container.traits.height)
     height = ustrip.(container.traits.height)[idx]
+
+
     ymat = ymat[idx, :]
     colorrange = (minimum(height), maximum(height))
-    colormap = :viridis
+
+    mean_val = (mean(height) - minimum(height)) / (maximum(height) - minimum(height) )
+    colormap = Makie.diverging_palette(0, 230; mid=mean_val)
 
     fig = Figure(; size = (700, 400))
     ax = Axis(fig[1, 1];
         ylabel = "Plant height growth factor (heightinfluence)",
-        xlabel = "Influence strength of the plant height (β_height)")
+        xlabel = "Influence strength of the plant height (β_height)",
+        yticks = 0.0:5.0)
 
     for i in Base.OneTo(nspecies)
         lines!(height_strength_exps, ymat[i, :];
@@ -103,10 +108,10 @@ function plot_height_influence(; θ = nothing, path = nothing)
     end
 
     lines!(height_strength_exps, ones(length(height_strength_exps));
-        linewidth = 5,
+        linewidth = 2,
         linestyle = :dash,
         color = :red)
-    vlines!(orig_β_height)
+    # vlines!(orig_β_height)
     Colorbar(fig[1, 2]; colormap, colorrange, label = "Plant height [m]")
 
     if !isnothing(path)
