@@ -218,7 +218,7 @@ root surface area per belowground biomass (`srsa`).
 
 """
 function nutrient_reduction!(; container, nutrients)
-    @unpack included = container.simp
+    @unpack included, nspecies = container.simp
     @unpack Nutred = container.calc
 
     if !included.nutrient_growth_reduction
@@ -271,8 +271,14 @@ function nutrient_reduction!(; container, nutrients)
 
     ###### 3 calculate the nutrient reduction factor
     @. Nutred = max(N_amc, N_rsa)
-    Nutred[nutrients_splitted .<= 0.0] .= 0.0
-    Nutred[nutrients_splitted .>= 1.0] .= 1.0
+
+    for s in 1:nspecies
+        if nutrients_splitted[s] <= 0.0
+            Nutred[s] = 0.0
+        elseif nutrients_splitted[s] >= 1.0
+            Nutred[s] = 1.0
+        end
+    end
 
     return nothing
 end
