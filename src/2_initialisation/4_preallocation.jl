@@ -201,6 +201,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         TS_biomass = Array{T}(undef, nspecies)u"kg / ha",
 
         ## height influence
+        lais_heightinfluence = Array{T}(undef, nspecies),
         heightinfluence = Array{T}(undef, nspecies),
         relative_height = Array{T}(undef, nspecies)u"m",
 

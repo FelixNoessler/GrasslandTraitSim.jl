@@ -35,7 +35,7 @@ if it would not be limited by other factors.
 ![light competition](../img/height_influence.png)
 """
 function light_competition!(; container, above_biomass, actual_height)
-    @unpack heightinfluence, light_competition, LAIs = container.calc
+    @unpack lais_heightinfluence, heightinfluence, light_competition, LAIs = container.calc
     @unpack LAItot = container.calc.com
     @unpack included = container.simp
 
@@ -55,12 +55,11 @@ function light_competition!(; container, above_biomass, actual_height)
         relative_height .= actual_height .* above_biomass ./ total_above_biomass
         height_cwm = sum(relative_height)
 
-        # TODO change documentation
-        # @. heightinfluence = 2.0 / (1.0 + exp(β_height * ustrip(height_cwm - actual_height)))
         @. heightinfluence = (actual_height / height_cwm) ^ β_height
     end
-
-    @. light_competition = LAIs / LAItot * heightinfluence
+    @show heightinfluence
+    @. lais_heightinfluence = LAIs .* heightinfluence
+    light_competition .= lais_heightinfluence ./ sum(lais_heightinfluence)
 
     return nothing
 end
