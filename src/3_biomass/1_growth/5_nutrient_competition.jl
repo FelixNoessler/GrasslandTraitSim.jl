@@ -217,9 +217,11 @@ root surface area per belowground biomass (`srsa`).
 ![Graphical overview of the functional response](../img/N_rsa_default.png)
 
 """
-function nutrient_reduction!(; container, nutrients)
+function nutrient_reduction!(; container, nutrients, total_biomass)
     @unpack included, nspecies = container.simp
     @unpack Nutred = container.calc
+
+    below_ground_competition!(; container, total_biomass)
 
     if !included.nutrient_growth_reduction
         @info "No nutrient reduction!" maxlog=1
@@ -286,13 +288,15 @@ end
 
 function plot_N_amc(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
+    @reset container.simp.included.belowground_competition = false
     container.calc.nutrients_adj_factor .= 1.0
     xs = LinRange(0.0, 1.0, 200)
     ymat = fill(0.0, length(xs), nspecies)
     abp = container.traits.abp
     @. container.calc.above_proportion = abp
     for (i, x) in enumerate(xs)
-        nutrient_reduction!(; container, nutrients = x)
+        nutrient_reduction!(; container, nutrients = x,
+                            total_biomass = fill(50.0u"kg/ha", nspecies))
         ymat[i, :] .= container.calc.N_amc
     end
 
@@ -354,13 +358,15 @@ end
 
 function plot_N_srsa(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
+    @reset container.simp.included.belowground_competition = false
     container.calc.nutrients_adj_factor .= 1.0
     xs = LinRange(0, 1.0, 200)
     ymat = fill(0.0, length(xs), nspecies)
     abp = container.traits.abp
     @. container.calc.above_proportion = abp
     for (i, x) in enumerate(xs)
-        nutrient_reduction!(; container, nutrients = x)
+        nutrient_reduction!(; container, nutrients = x,
+                            total_biomass = fill(50.0u"kg/ha", nspecies))
         ymat[i, :] .= container.calc.N_rsa
     end
 
