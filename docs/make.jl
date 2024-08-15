@@ -56,8 +56,7 @@ makedocs(;
                 "Growth: community adjustment" => "Modelling_API/growth_env_factors.md",
                 "Growth: species-specific adjustment" => "Modelling_API/growth_species_specific.md",
                 "Senescence" => "Modelling_API/senescence.md",
-                "Mowing and grazing" => "Modelling_API/defoliation.md",
-                "Clonal growth" => "Modelling_API/clonalgrowth.md"],
+                "Mowing and grazing" => "Modelling_API/defoliation.md"],
             "Water dynamics" => "Modelling_API/water.md"],
 
         "TOC all functions" => "all_functions.md",

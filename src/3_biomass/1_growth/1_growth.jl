@@ -4,7 +4,6 @@ include("4_light_competition.jl")
 include("5_nutrient_competition.jl")
 include("6_water_competition.jl")
 include("7_root_investment.jl")
-include("8_clonalgrowth.jl")
 
 """
 Calculates the growth of the plant species.
