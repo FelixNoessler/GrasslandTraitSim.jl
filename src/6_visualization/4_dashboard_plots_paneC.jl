@@ -45,7 +45,7 @@ function plot_static_nutrient_reducer(; plot_obj, sol, kwargs...)
     amc = sol.traits.amc
     abp = sol.traits.abp
 
-    xs = LinRange(0.0, 1.0, 20)
+    xs = LinRange(0.001, 0.999, 50)
     ymat_amc = fill(0.0, length(xs), nspecies)
     ymat_rsa = fill(0.0, length(xs), nspecies)
     ymat_both = fill(0.0, length(xs), nspecies)
@@ -54,7 +54,9 @@ function plot_static_nutrient_reducer(; plot_obj, sol, kwargs...)
     @. sol.calc.nutrients_adj_factor = 1.0
 
     for (i, x) in enumerate(xs)
-        nutrient_reduction!(; container = sol, nutrients = x)
+        nutrient_reduction!(; container = sol, nutrients = x,
+                            total_biomass = fill(0.0u"kg/ha", nspecies))
+
         ymat_amc[i, :] .= sol.calc.N_amc
         ymat_rsa[i, :] .= sol.calc.N_rsa
         ymat_both[i, :] .= sol.calc.Nutred
@@ -75,7 +77,7 @@ function plot_static_water_reducer(; plot_obj, sol, kwargs...)
     ax = clear_plotobj_axes(plot_obj, :static_water_reducer)
 
     nspecies = sol.simp.nspecies
-    xs = LinRange(-0.1, 1.1, 200)
+    xs = LinRange(0.001, 0.999, 50)
     ymat = fill(0.0, length(xs), nspecies)
 
     WHC = 1u"mm"

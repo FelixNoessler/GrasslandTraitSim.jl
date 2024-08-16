@@ -205,12 +205,11 @@ function nutrient_reduction!(; container, nutrients, total_biomass)
     @unpack nutrients_splitted, nutrients_adj_factor,
             N_amc, N_rsa, above_proportion = container.calc
     @unpack ϕ_rsa, ϕ_amc, α_namc_05, α_nrsa_05,
-            β_nrsa, β_namc, δ_nrsa, δ_namc, N_max = container.p
+            β_nrsa, β_namc, δ_nrsa, δ_namc = container.p
     @unpack amc, srsa = container.traits
-    @unpack totalN = container.site
 
-    @. nutrients_splitted = totalN / N_max * nutrients_adj_factor
-    @. nutrients_splitted = min(nutrients_splitted, 1.0)
+    # nutrients = totalN/N_max
+    @. nutrients_splitted = nutrients * nutrients_adj_factor
 
     ###### 1 relate the root surface area per total biomass
     ###### to growth reduction at 0.5 of Np = R_05
@@ -416,15 +415,9 @@ function plot_nutrient_adjustment(; θ = nothing, path = nothing)
     lines!(ustrip.(TS_B), nutrients_adj_factor; linestyle = :solid, color = :coral2, linewidth = 2)
 
     hlines!(1; linestyle = :dash, color = :black)
-    text!([100, 100], [0.2, 1.5];
-          text = ["""overcrowding → strong competition,
-                  per plant nutrient availability is low""",
-                  """low biomass density → less competition,
-                  per plant nutrient availability is high"""])
 
     scatter!([ustrip(TSB_max), 0.0], [0.0, nutadj_max])
-    text!([ustrip(TSB_max), 0.0], [0.0, nutadj_max];
-          text = ["TSB_max", "nutadj_max"])
+    text!(ustrip(TSB_max), 0.0; text = "TSB_max")
 
     if !isnothing(path)
         save(path, fig;)

@@ -26,6 +26,7 @@ function initialization(; input_obj, p, prealloc, prealloc_specific, trait_input
     ###### Set some variables that do not vary with time
     senescence_rate!(; container)
     input_WHC_PWP!(; container)
+    input_nutrients!(; container)
 
     ###### Initial conditions
     set_initialconditions!(; container)

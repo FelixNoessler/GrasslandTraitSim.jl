@@ -27,8 +27,8 @@
     ############################# Nutrient competition
     N_max::Qg_kg = F(35.0)u"g/kg"
     TSB_max::Qkg_ha = F(18000.0)u"kg / ha"
-    TSB_k::Qha_kg = F(0.0002)u"ha / kg"
-    nutadj_max::T = F(3.0)
+    TSB_k::Qha_kg = F(0.0003)u"ha / kg"
+    nutadj_max::T = F(1.0)
     α_namc_05::T = F(0.9)
     α_nrsa_05::T = F(0.9)
     β_nrsa::T = F(7.0)
