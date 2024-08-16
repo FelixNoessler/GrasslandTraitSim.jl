@@ -41,7 +41,7 @@ CurrentModule = GrasslandTraitSim
 | `organic`   | ``OM_{xy}``  | Organic matter content [-]        | [`input_WHC_PWP!`](@ref)   |
 | `bulk`      | ``BLK_{xy}`` | Bulk density [g cm⁻³]             | [`input_WHC_PWP!`](@ref)   |
 | `rootdepth` | ``RD_{xy}``  | Mean rooting depth of plants [mm] | [`input_WHC_PWP!`](@ref)   |
-| `totalN`    | ``N_{xy}``   | Total nitrogen [g kg⁻¹]           | [`input_nutrients!`](@ref) |
+| `totalN`    | ``N_{xy}``   | Total nitrogen [g kg⁻¹]           | [`nutrient_reduction!`](@ref) |
 
 ### Derived time invariant site variables
 | Variable         | Symbol                | Description                                  | used in                       |

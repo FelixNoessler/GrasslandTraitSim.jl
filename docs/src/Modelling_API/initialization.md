@@ -41,11 +41,10 @@ The patch specific parameters are:
 
 - water holding capacity `WHC` [mm]
 - permanent wilting point `PWP` [mm]
-- nutrients [-]
+
 
 ```@docs
 input_WHC_PWP!
-input_nutrients!
 ```
 
 ## Set the initial conditions of the state variables

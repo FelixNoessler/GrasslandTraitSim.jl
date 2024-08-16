@@ -28,7 +28,6 @@ function validation_input(;
         plotID,
         nspecies,
         time_step_days = 1,
-        nutheterog = 0.0,
         patch_xdim = 1,
         patch_ydim = 1,
         biomass_stats = nothing,
@@ -222,7 +221,6 @@ function validation_input(;
             npatches = patch_xdim * patch_ydim,
             patch_xdim,
             patch_ydim,
-            nutheterog,
             trait_seed,
             included),
         site = (;

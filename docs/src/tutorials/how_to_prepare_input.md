@@ -40,7 +40,6 @@ simp = (
     patch_xdim = 1, 
     patch_ydim = 1, 
     npatches = 1,
-    nutheterog = 0.0, 
     trait_seed = missing,  
     
     ## which processes to include, see extra tutorial

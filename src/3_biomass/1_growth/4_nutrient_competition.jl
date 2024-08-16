@@ -1,32 +1,4 @@
 @doc raw"""
-Derive a nutrient index from total soil nitrogen.
-
-```math
-\text{nutrients} = \frac{\text{totalN}}{N_\max}
-```
-
-- `totalN`: total nitrogen [g kg⁻¹]
-- `N_max`: maximum total nitrogen [g kg⁻¹]
-- `nutrients`: nutrient index [-]
-"""
-function input_nutrients!(; container)
-    @unpack nutrients = container.patch_variables
-    @unpack totalN = container.site
-    @unpack included = container.simp
-    @unpack N_max = container.p
-
-    #### data from the biodiversity exploratories
-    # mintotalN = 1.2525
-    # N_max = 30.63
-
-    if included.nutrient_growth_reduction
-        @. nutrients = totalN / N_max
-    end
-
-    return nothing
-end
-
-@doc raw"""
 Calculates the similarity between plants concerning their investment
 in fine roots and collaboration with mycorrhiza.
 
@@ -62,7 +34,7 @@ set to zero or one respectively.
 function similarity_matrix!(; container)
     @unpack nspecies = container.simp
     @unpack amc, srsa = container.traits
-    @unpack amc_resid, rsa_above_resid, TS = container.calc
+    @unpack amc_resid, rsa_resid, TS = container.calc
 
     if isone(nspecies)
         TS .= [1.0;;]
@@ -70,12 +42,12 @@ function similarity_matrix!(; container)
     end
 
     amc_resid .= (amc .- mean(amc)) ./ std(amc)
-    rsa_above_resid .= (srsa .- mean(srsa)) ./ std(srsa)
+    rsa_resid .= (srsa .- mean(srsa)) ./ std(srsa)
 
     for i in Base.OneTo(nspecies)
         for u in Base.OneTo(nspecies)
             TS[i, u] = (amc_resid[i] - amc_resid[u]) ^ 2 +
-                       (rsa_above_resid[i] - rsa_above_resid[u]) ^ 2
+                       (rsa_resid[i] - rsa_resid[u]) ^ 2
         end
     end
 
@@ -233,10 +205,11 @@ function nutrient_reduction!(; container, nutrients, total_biomass)
     @unpack nutrients_splitted, nutrients_adj_factor,
             N_amc, N_rsa, above_proportion = container.calc
     @unpack ϕ_rsa, ϕ_amc, α_namc_05, α_nrsa_05,
-            β_nrsa, β_namc, δ_nrsa, δ_namc = container.p
+            β_nrsa, β_namc, δ_nrsa, δ_namc, N_max = container.p
     @unpack amc, srsa = container.traits
+    @unpack totalN = container.site
 
-    @. nutrients_splitted = nutrients * nutrients_adj_factor
+    @. nutrients_splitted = totalN / N_max * nutrients_adj_factor
     @. nutrients_splitted = min(nutrients_splitted, 1.0)
 
     ###### 1 relate the root surface area per total biomass

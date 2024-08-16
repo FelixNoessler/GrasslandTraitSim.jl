@@ -194,7 +194,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         ## helper variables for generation of traits
         traitmat = Matrix{T}(undef, 7, nspecies),
         amc_resid = Array{T}(undef, nspecies),
-        rsa_above_resid = Array{T}(undef, nspecies),
+        rsa_resid = Array{T}(undef, nspecies),
 
         ## below ground competition
         nutrients_adj_factor = Array{T}(undef, nspecies),
