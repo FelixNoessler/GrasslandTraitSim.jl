@@ -9,7 +9,7 @@ import GrasslandTraitSim as sim
 
 ####### create images for the document
 docs_img = "img"
-f(path; show_img = true) = show_img ? nothing : path
+f(path; show_img = false) = show_img ? nothing : path
 
 #### potential growth
 sim.plot_potential_growth_lai_height(; θ, path = f("$docs_img/potential_growth_lai_height.png"))
@@ -39,8 +39,4 @@ sim.plot_mowing(; θ, path = f("$docs_img/mowing.png"))
 sim.plot_grazing(; β_PAL_lnc = 1.0, θ, path = f("$docs_img/grazing_default.png"))
 sim.plot_grazing(; β_PAL_lnc = 2.0, θ, path = f("$docs_img/grazing_2.png"))
 sim.plot_η_GRZ(; θ, path = f("$docs_img/η_GRZ.png"))
-
-##  clonal growth
-sim.plot_clonalgrowth(; θ, path = f("$docs_img/clonalgrowth.png"))
-sim.animate_clonalgrowth(; θ, path = f("$docs_img/clonalgrowth_animation.mp4"))
 ```

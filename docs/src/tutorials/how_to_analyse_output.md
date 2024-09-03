@@ -111,7 +111,7 @@ Similarly, we plot the soil water content over time:
 # we have to first calculate the mean soil water content per site
 soil_water_per_site = dropdims(mean(sol.output.water; dims = (:x, :y)); dims = (:x, :y))
 
-fig, _ = lines(sol.simp.output_date_num, ustrip.(soil_water_per_site), color = :blue, linewidth = 2;
+fig, _ = lines(sol.simp.output_date_num, vec(ustrip.(soil_water_per_site)), color = :blue, linewidth = 2;
       axis = (; ylabel = "Soil water content [mm]", xlabel = "Date [year]"))
 fig
 save("soil_water_content.svg", fig); nothing # hide

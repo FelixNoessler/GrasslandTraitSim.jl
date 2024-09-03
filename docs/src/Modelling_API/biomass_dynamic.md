@@ -26,6 +26,5 @@ flowchart LR
 - [growth processes](@ref "Growth")
 - [senescence](@ref "Senescence") of biomass
 - biomass removal by [mowing and grazing](@ref "Mowing and grazing")
-- once per year and only if more than one patch is simulated: [clonal growth](@ref "Clonal growth")
 
 
