@@ -53,6 +53,7 @@ function plot_static_nutrient_reducer(; plot_obj, sol, kwargs...)
     @. sol.calc.above_proportion = abp
     @. sol.calc.nutrients_adj_factor = 1.0
 
+    @reset sol.simp.included.belowground_competition = false
     for (i, x) in enumerate(xs)
         nutrient_reduction!(; container = sol, nutrients = x,
                             total_biomass = fill(0.0u"kg/ha", nspecies))
@@ -61,6 +62,7 @@ function plot_static_nutrient_reducer(; plot_obj, sol, kwargs...)
         ymat_rsa[i, :] .= sol.calc.N_rsa
         ymat_both[i, :] .= sol.calc.Nutred
     end
+    @reset sol.simp.included.belowground_competition = true
 
     for i in Base.OneTo(nspecies)
         lines!(ax, xs, ymat_amc[:, i]; color = (:darkorange, 0.2))
@@ -123,7 +125,7 @@ function plot_water_reducer(; plot_obj, sol, kwargs...)
                              dims = (:x, :y))
 
     for s in 1:sol.simp.nspecies
-        lines!(ax, sol.simp.mean_input_date_num, water_reducer[:, s];
+        lines!(ax, sol.simp.mean_input_date_num, vec(water_reducer[:, s]);
                color = (:black, 0.2))
     end
 end
@@ -135,7 +137,7 @@ function plot_nutrient_reducer(; plot_obj, sol, kwargs...)
                              dims = (:x, :y))
 
     for s in 1:sol.simp.nspecies
-        lines!(ax, sol.simp.mean_input_date_num, nutrient_reducer[:, s];
+        lines!(ax, sol.simp.mean_input_date_num, vec(nutrient_reducer[:, s]);
                color = (:black, 0.2))
     end
 end
@@ -147,7 +149,7 @@ function plot_root_invest(; plot_obj, sol, kwargs...)
                              dims = (:x, :y))
 
     for s in 1:sol.simp.nspecies
-        lines!(ax, sol.simp.mean_input_date_num, root_invest[:, s];
+        lines!(ax, sol.simp.mean_input_date_num, vec(root_invest[:, s]);
                color = (:black, 0.2))
     end
 end

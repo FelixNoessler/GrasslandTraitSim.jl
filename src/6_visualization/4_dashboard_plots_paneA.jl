@@ -72,12 +72,11 @@ function biomass_plot(; plot_obj, sol, valid_data, kwargs...)
 
         scatter!(ax, t[1:thin:end], cutbiomass_μ[1:thin:end]; color = :orange)
 
-        biomass = ustrip.(valid_data.biomass)
+        biomass = vec(ustrip.(valid_data.biomass))
         num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.biomass, :time)]
 
         # unique_type = unique(valid_data.biomass_type)
         # color_types = [findfirst(t .== unique_type) for t in valid_data.biomass_type]
-
         scatter!(ax, num_t, biomass, color = :black, markersize = 6)
     end
 
@@ -118,7 +117,7 @@ function simulated_aboveground_proportion(; plot_obj, sol, valid_data, kwargs...
     alpha_val = min.(2 .* mean_species_biomass ./ mean_total_biomass, 1)
 
     for s in 1:sol.simp.nspecies
-        lines!(ax, sol.simp.output_date_num, species_above_proportion[:, s],
+        lines!(ax, sol.simp.output_date_num, vec(species_above_proportion[:, s]),
                color = (:grey, alpha_val[s]))
     end
     lines!(ax, sol.simp.output_date_num, vec(above_proportion), color = :orange,
@@ -145,7 +144,7 @@ function simulated_height_plot(; plot_obj, sol, valid_data, kwargs...)
     alpha_val = min.(2 .* mean_species_biomass ./ mean_total_biomass, 1)
 
     for s in 1:sol.simp.nspecies
-        lines!(ax, sol.simp.output_date_num, ustrip.(height)[:, s],
+        lines!(ax, sol.simp.output_date_num, vec(ustrip.(height)[:, s]),
                color = (:grey, alpha_val[s]))
     end
     lines!(ax, sol.simp.output_date_num, ustrip(mean_height), color = :orange)
