@@ -69,15 +69,15 @@ input_objs_14 = sim.load_input(path; plotIDs = [&quot;HEG01&quot;]);
 ## faster than preprocessing:
 # input_obj_14 = sim.validation_input(; plotID = &quot;HEG01&quot;, nspecies = 43, time_step_days = 14);
 
-plot_input_time_steps(input_obj_1, input_objs_14.HEG01)</code></pre><img src="a26ac34f.png" alt="Example block output"/><h2 id="Test-processes-for-different-time-steps"><a class="docs-heading-anchor" href="#Test-processes-for-different-time-steps">Test processes for different time steps</a><a id="Test-processes-for-different-time-steps-1"></a><a class="docs-heading-anchor-permalink" href="#Test-processes-for-different-time-steps" title="Permalink"></a></h2><pre><code class="language- hljs">function calc_total_biomass(included; plotID = &quot;HEG01&quot;)
+plot_input_time_steps(input_obj_1, input_objs_14.HEG01)</code></pre><img src="892e6d56.png" alt="Example block output"/><h2 id="Test-processes-for-different-time-steps"><a class="docs-heading-anchor" href="#Test-processes-for-different-time-steps">Test processes for different time steps</a><a id="Test-processes-for-different-time-steps-1"></a><a class="docs-heading-anchor-permalink" href="#Test-processes-for-different-time-steps" title="Permalink"></a></h2><pre><code class="language-julia hljs">function calc_total_biomass(included; plotID = &quot;HEG01&quot;)
      trait_input = sim.input_traits();
      nspecies = length(trait_input.amc)
      p = sim.SimulationParameter()
      input_obj_1 = sim.validation_input(; plotID, nspecies, time_step_days = 1, included);
-     
+
      path = joinpath(dirname(pathof(sim)), &quot;../assets/data/input/inputs_14_days.jld2&quot;)
      input_obj_14 = sim.load_input(path; plotIDs = [plotID], included)[Symbol(plotID)];
-     
+
      ## faster than preprocessing:
      # input_obj_14 = sim.validation_input(; plotID, nspecies = 71, time_step_days = 14, included);
 
@@ -88,7 +88,7 @@ plot_input_time_steps(input_obj_1, input_objs_14.HEG01)</code></pre><img src="a2
      total_biomass_1 = vec(sum(species_biomass_1; dims = :species))
      species_biomass_14 = dropdims(mean(sol_14.output.biomass; dims = (:x, :y)); dims = (:x, :y))
      total_biomass_14 = vec(sum(species_biomass_14; dims = :species))
-     
+
      return ustrip.(total_biomass_1), ustrip.(total_biomass_14), sol_1.simp.output_date_num, sol_14.simp.output_date_num
 end
 
@@ -121,7 +121,7 @@ Axis(fig[1, 1], ylabel = &quot;Aboveground dry biomass [kg ha⁻¹]&quot;,
 lines!(t1, b1; linestyle = :dash, label = &quot;1 day&quot;)
 lines!(t14, b14; label = &quot;14 days&quot;, color = :red, alpha = 0.5)
 axislegend(&quot;Time step&quot;; position = :rt, framevisible = false)
-fig</code></pre><pre><code class="language-julia hljs">########### Only potential growth
+fig</code></pre><img src="9f53239d.png" alt="Example block output"/><pre><code class="language-julia hljs">########### Only potential growth
 included = (;
             senescence = false,
             senescence_season = false,
@@ -229,7 +229,7 @@ Axis(fig[1, 1], ylabel = &quot;Aboveground dry biomass [kg ha⁻¹]&quot;,
 lines!(t1, b1; label = &quot;1 day&quot;, color = :red, alpha = 0.5)
 lines!(t14, b14; label = &quot;14 days&quot;, linestyle = :dash)
 axislegend(&quot;Time step&quot;; position = :lt, framevisible = false)
-fig</code></pre><img src="5f6a5d63.png" alt="Example block output"/><pre><code class="language- hljs">########### Everything
+fig</code></pre><img src="5f6a5d63.png" alt="Example block output"/><pre><code class="language-julia hljs">########### Everything
 plotID = &quot;HEG01&quot;
 included = (;)
 b1, b14, t1, t14 = calc_total_biomass(included; plotID)
@@ -240,7 +240,7 @@ Axis(fig[1, 1], ylabel = &quot;Aboveground dry biomass [kg ha⁻¹]&quot;,
 lines!(t1, b1; label = &quot;1 day&quot;, color = :red, alpha = 0.5)
 lines!(t14, b14; label = &quot;14 days&quot;, linestyle = :dash)
 axislegend(&quot;Time step&quot;; position = :lt, framevisible = true)
-fig</code></pre><pre><code class="language- hljs">########### Everything
+fig</code></pre><img src="4920a1ae.png" alt="Example block output"/><pre><code class="language-julia hljs">########### Everything
 plotID = &quot;HEG07&quot;
 included = (;)
 b1, b14, t1, t14 = calc_total_biomass(included; plotID)
@@ -251,7 +251,7 @@ Axis(fig[1, 1], ylabel = &quot;Aboveground dry biomass [kg ha⁻¹]&quot;,
 lines!(t1, b1; label = &quot;1 day&quot;, color = :red, alpha = 0.5)
 lines!(t14, b14; label = &quot;14 days&quot;, linestyle = :dash)
 axislegend(&quot;Time step&quot;; position = :lt, framevisible = true)
-fig</code></pre><pre><code class="language- hljs">########### Everything
+fig</code></pre><img src="9102b615.png" alt="Example block output"/><pre><code class="language-julia hljs">########### Everything
 plotID = &quot;HEG08&quot;
 included = (;)
 b1, b14, t1, t14 = calc_total_biomass(included; plotID)
@@ -262,4 +262,4 @@ Axis(fig[1, 1], ylabel = &quot;Aboveground dry biomass [kg ha⁻¹]&quot;,
 lines!(t1, b1; label = &quot;1 day&quot;, color = :red, alpha = 0.5)
 lines!(t14, b14; label = &quot;14 days&quot;, linestyle = :dash)
 axislegend(&quot;Time step&quot;; position = :lt, framevisible = true)
-fig</code></pre></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../variables/">« Visualize model components</a><a class="docs-footer-nextpage" href="../tutorials/how_to_prepare_input/">Prepare input and run simulation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.5.0 on <span class="colophon-date" title="Friday 16 August 2024 18:43">Friday 16 August 2024</span>. Using Julia version 1.10.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
+fig</code></pre><img src="25063b68.png" alt="Example block output"/></article><nav class="docs-footer"><a class="docs-footer-prevpage" href="../variables/">« Visualize model components</a><a class="docs-footer-nextpage" href="../tutorials/how_to_prepare_input/">Prepare input and run simulation »</a><div class="flexbox-break"></div><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="auto">Automatic (OS)</option><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="catppuccin-latte">catppuccin-latte</option><option value="catppuccin-frappe">catppuccin-frappe</option><option value="catppuccin-macchiato">catppuccin-macchiato</option><option value="catppuccin-mocha">catppuccin-mocha</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.6.0 on <span class="colophon-date" title="Tuesday 3 September 2024 10:19">Tuesday 3 September 2024</span>. Using Julia version 1.10.5.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
