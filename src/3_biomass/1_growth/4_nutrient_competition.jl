@@ -152,7 +152,7 @@ function below_ground_competition!(; container, total_biomass)
         return nothing
     end
 
-    @unpack TSB_max, TSB_k, nutadj_max = container.p
+    @unpack TSB_max, nutadj_max = container.p
 
     TS_biomass .= 0.0u"kg/ha"
     for s in 1:nspecies
@@ -163,11 +163,14 @@ function below_ground_competition!(; container, total_biomass)
 
     for i in eachindex(nutrients_adj_factor)
         # TODO change documentation
-        nutrients_adj_factor[i] = nutadj_max * (1 - exp(TSB_k * (TS_biomass[i]  - TSB_max)))
+        # y=a\cdot\exp\left(\frac{\ln\left(\frac{0.5}{a}\right)}{10000}\cdot x\right)
+        nutrients_adj_factor[i] = nutadj_max * exp(log(1/nutadj_max) / TSB_max * TS_biomass[i])
 
-        if nutrients_adj_factor[i] < 0
-            nutrients_adj_factor[i] = 0.0
-        end
+
+        # nutrients_adj_factor[i] = nutadj_max * (1 - exp(TSB_k * (TS_biomass[i]  - TSB_max)))
+        # if nutrients_adj_factor[i] < 0
+        #     nutrients_adj_factor[i] = 0.0
+        # end
     end
 
     return nothing
@@ -402,12 +405,11 @@ end
 
 function plot_nutrient_adjustment(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
-    @unpack TSB_max, TSB_k, nutadj_max = container.p
+    @unpack TSB_max, nutadj_max = container.p
 
-    TS_B = LinRange(0, 1.2 * ustrip(TSB_max), 200)u"kg / ha"
+    TS_B = LinRange(0, 1.5 * ustrip(TSB_max), 200)u"kg / ha"
+    nutrients_adj_factor = @. nutadj_max * exp(log(1/nutadj_max) / TSB_max * TS_B)
 
-    nutrients_adj_factor = @. nutadj_max * (1 - exp(TSB_k * (TS_B  - TSB_max)))
-    nutrients_adj_factor[nutrients_adj_factor .< 0] .= 0.0
 
     fig = Figure()
     Axis(fig[1, 1]; xlabel = "∑ TS ⋅ B [kg ⋅ ha⁻¹]",
@@ -416,8 +418,8 @@ function plot_nutrient_adjustment(; θ = nothing, path = nothing)
 
     hlines!(1; linestyle = :dash, color = :black)
 
-    scatter!([ustrip(TSB_max), 0.0], [0.0, nutadj_max])
-    text!(ustrip(TSB_max), 0.0; text = "TSB_max")
+    scatter!([ustrip(TSB_max), 0.0], [1.0, nutadj_max])
+    text!(ustrip(TSB_max), 1.0; text = "TSB_max")
 
     if !isnothing(path)
         save(path, fig;)

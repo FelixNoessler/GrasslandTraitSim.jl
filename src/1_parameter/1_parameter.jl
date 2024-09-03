@@ -1,5 +1,5 @@
 @kwdef mutable struct SimulationParameter{
-    T, Qkg_MJ, Qkg_ha, Qha_kg, Qm2_g, Qg_m2, Qg_kg, Qha_MJ, QMJ_ha, QC, Qkg}
+    T, Qkg_MJ, Qkg_ha, Qm2_g, Qg_m2, Qg_kg, Qha_MJ, QMJ_ha, QC, Qkg}
 
     ####################################################################################
     ## 1 Mean/reference trait values
@@ -26,13 +26,13 @@
 
     ############################# Nutrient competition
     N_max::Qg_kg = F(35.0)u"g/kg"
-    TSB_max::Qkg_ha = F(18000.0)u"kg / ha"
-    TSB_k::Qha_kg = F(0.0003)u"ha / kg"
-    nutadj_max::T = F(1.0)
-    α_namc_05::T = F(0.9)
-    α_nrsa_05::T = F(0.9)
-    β_nrsa::T = F(7.0)
-    β_namc::T = F(7.0)
+    TSB_max::Qkg_ha = F(40000.0)u"kg / ha"
+    # TSB_k::Qha_kg = F(0.0003)u"ha / kg"
+    nutadj_max::T = F(4.0)
+    α_namc_05::T = F(0.95)
+    α_nrsa_05::T = F(0.95)
+    β_nrsa::T = F(15.0)
+    β_namc::T = F(15.0)
     δ_nrsa::Qg_m2 = F(20.0)u"g / m^2"
     δ_namc::T = F(10.0)
 
