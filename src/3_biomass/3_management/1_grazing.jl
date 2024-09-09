@@ -41,6 +41,7 @@ function grazing!(; container, LD, above_biomass, actual_height)
     biomass_exp = sum_biomass * sum_biomass
     α_GRZ = κ * LD * η_GRZ
     total_grazed = κ * LD * biomass_exp / (α_GRZ * α_GRZ + biomass_exp)
+    container.calc.com.fodder_supply = κ * LD - total_grazed
 
     #################################### share of grazed biomass per species
     ## Palatability ρ
@@ -115,8 +116,8 @@ end
 function plot_η_GRZ(; θ = nothing, path = nothing)
     fig = Figure(; size = (700, 400))
     Axis(fig[1, 1],
-        xlabel = "Total biomass [green dry mass kg ha⁻¹]",
-        ylabel = "Grazed biomass (totgraz)\n[green dry mass kg ha⁻¹]",
+        xlabel = "Total biomass [dry mass kg ha⁻¹]",
+        ylabel = "Grazed biomass (totgraz)\n[dry mass kg ha⁻¹]",
         title = "")
 
     for η_GRZ in [1, 5, 10, 20]

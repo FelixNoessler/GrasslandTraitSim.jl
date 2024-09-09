@@ -192,6 +192,7 @@ function one_day!(; t, container)
             output.seasonal_growth[t, x, y] = com.SEA
             output.temperature_reducer[t, x, y] = com.TEMP
             output.seasonal_senescence[t, x, y] = com.SEN_season
+            output.fodder_supply[t, x, y] = com.fodder_supply
 
             for s in 1:nspecies
                 output.act_growth[t, x, y, s] = act_growth[s]

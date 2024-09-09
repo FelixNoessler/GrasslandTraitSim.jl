@@ -84,12 +84,16 @@ function preallocate_vectors(; input_obj, T = Float64)
         Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim),
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
         name = :seasonal_senescence)
+    fodder_supply = DimArray(
+        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim)u"kg/ha",
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        name = :fodder_supply)
 
     output = (; biomass, above_biomass, below_biomass, water, height,
               mown, grazed, senescence, community_pot_growth, community_height_reducer,
               act_growth, radiation_reducer, seasonal_growth, temperature_reducer,
-              seasonal_senescence, light_growth, water_growth, nutrient_growth,
-              root_invest)
+              seasonal_senescence, fodder_supply, light_growth,
+              water_growth, nutrient_growth, root_invest)
 
     ############# change and state variables
     du_biomass = DimArray(
@@ -255,6 +259,7 @@ end
     SEA::T = F(1.0)
     TEMP::T = F(1.0)
     SEN_season::T = F(1.0)
+    fodder_supply::Qkg_ha = F(0.0) * u"kg/ha"
 end
 
 function preallocate_specific_vectors(; input_obj, T = Float64)
