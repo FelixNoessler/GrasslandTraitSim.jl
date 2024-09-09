@@ -51,11 +51,5 @@ end
 
 function optim_parameter()
     θ = load_optim_result()
-    p = SimulationParameter()
-
-    for k in keys(θ)
-        p[k] = θ[k]
-    end
-
-    return p
+    return SimulationParameter(; θ...)
 end
