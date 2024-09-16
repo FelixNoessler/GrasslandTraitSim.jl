@@ -120,7 +120,7 @@ function one_day!(; t, container)
             grazed .= 0.0u"kg / ha"
             mown .= 0.0u"kg / ha"
 
-            if !iszero(sum(patch_biomass))
+            if !iszero(sum(patch_biomass)) && !iszero(sum(patch_above_biomass))
                 # ------------------------------------------ growth
                 growth!(; t, container,
                     above_biomass = patch_above_biomass,

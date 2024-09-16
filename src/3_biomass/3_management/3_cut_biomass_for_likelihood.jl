@@ -18,7 +18,7 @@ function calc_cut_biomass!(; container)
 
         # --------- proportion of plant height that is mown
         proportion_mown .= max.(species_mean_actual_height .- cutting_height[i] * u"m", 0.0u"m") ./
-        species_mean_actual_height
+        (species_mean_actual_height .+ 0.0001u"m")
 
         species_cut_biomass .= proportion_mown .* species_mean_above_biomass
         cut_biomass[i] = sum(species_cut_biomass)
