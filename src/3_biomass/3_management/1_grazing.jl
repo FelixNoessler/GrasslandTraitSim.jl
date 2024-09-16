@@ -33,23 +33,31 @@ Influence of `α_GRZ`:
 function grazing!(; container, LD, above_biomass, actual_height)
     @unpack lnc = container.traits
     @unpack η_GRZ, β_PAL_lnc, κ = container.p
-    @unpack defoliation, grazed_share, relative_lnc, ρ, grazed,
-            height_ρ_biomass = container.calc
+    @unpack defoliation, grazed_share, relative_lnc, ρ, relative_height, grazed,
+            heightinfluence, height_ρ_biomass = container.calc
+
+    sum_biomass = sum(above_biomass)
 
     #################################### total grazed biomass
-    sum_biomass = sum(above_biomass)
-    biomass_exp = sum_biomass * sum_biomass
-    α_GRZ = κ * LD * η_GRZ
-    total_grazed = κ * LD * biomass_exp / (α_GRZ * α_GRZ + biomass_exp)
+    # biomass_exp = sum_biomass * sum_biomass
+    # α_GRZ = κ * LD * η_GRZ
+    # total_grazed = κ * LD * biomass_exp / (α_GRZ * α_GRZ + biomass_exp)
+
+    total_grazed = κ * LD
     container.calc.com.fodder_supply = κ * LD - total_grazed
 
     #################################### share of grazed biomass per species
     ## Palatability ρ
     relative_lnc .= lnc .* above_biomass ./ sum_biomass
     cwm_lnc = sum(relative_lnc)
-    ρ .= (lnc ./ cwm_lnc) .^ β_PAL_lnc
+    @. ρ = (lnc / cwm_lnc) ^ β_PAL_lnc
 
-    @. height_ρ_biomass = actual_height * ρ * above_biomass
+    β_height_GRZ = 3.0
+    relative_height .= actual_height .* above_biomass ./ sum_biomass
+    cwm_height = sum(relative_height)
+    @. heightinfluence = (actual_height / cwm_height) ^ β_height_GRZ
+
+    @. height_ρ_biomass = heightinfluence * ρ * above_biomass
     grazed_share .= height_ρ_biomass ./ sum(height_ρ_biomass)
 
     #################################### add grazed biomass to defoliation
@@ -126,11 +134,10 @@ function plot_η_GRZ(; θ = nothing, path = nothing)
         LD = 2
         κ = 22
 
-        α_GRZ = κ * LD * η_GRZ
         k_exp = 2
-        y = @. κ * LD * x^k_exp / (α_GRZ^k_exp + x^k_exp)
+        y = @. LD * κ * x^k_exp / ((κ * η_GRZ)^k_exp + x^k_exp)
 
-        lines!(x, y, label = "$α_GRZ",
+        lines!(x, y, label = "$(κ * η_GRZ)",
             linewidth = 3)
     end
 
