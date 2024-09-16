@@ -203,6 +203,13 @@ function load_data(datapath)
     ## time dependent 2006 - 2021
     graz = CSV.read("$datapath/input/grazing.csv",
         DataFrame)
+    supplementary_feeding = CSV.read("$datapath/input/supplementary_feeding.csv",
+        DataFrame)
+
+    ## constant approx coordinates (mainly for selecting calibration / validation sites)
+    coord = CSV.read(
+        "$datapath/input/approx_coordinates.csv",
+        DataFrame)
 
     input_traits = CSV.read("$datapath/input/traits.csv",
         DataFrame)
@@ -218,7 +225,9 @@ function load_data(datapath)
         nut,
         soil,
         mow,
-        graz)
+        graz,
+        supplementary_feeding,
+        coord)
 
     global data = (;
         input,
