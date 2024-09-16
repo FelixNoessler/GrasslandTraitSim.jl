@@ -326,7 +326,9 @@ function prepare_grazing(d::DataFrame)
 
     for row in eachrow(d)
         y = row.year
-        for i in 1:4
+        indeces = "start_graz4" ∈ names(d) ? [1,2,3,4] : [1]
+
+        for i in indeces
             if !ismissing.(row["start_graz$i"])
                 grazing_startdate = row["start_graz$i"]
                 grazing_enddate = row["end_graz$i"]
