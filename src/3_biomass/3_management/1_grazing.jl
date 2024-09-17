@@ -36,28 +36,43 @@ function grazing!(; container, LD, above_biomass, actual_height)
     @unpack defoliation, grazed_share, relative_lnc, ρ, relative_height, grazed,
             heightinfluence, height_ρ_biomass = container.calc
 
-    sum_biomass = sum(above_biomass)
+    min_height = 0.05u"m"
+    height_proportion_feedible = max.(1 .- min_height ./ actual_height, 0)
+
+    feedible_biomass = height_proportion_feedible .* above_biomass
+    sum_feedible_biomass = sum(feedible_biomass)
+
+    if iszero(sum_feedible_biomass)
+        container.calc.com.fodder_supply = κ * LD
+        @. grazed = 0.0u"kg/ha"
+        defoliation .+= grazed
+        return nothing
+    end
 
     #################################### total grazed biomass
     # biomass_exp = sum_biomass * sum_biomass
     # α_GRZ = κ * LD * η_GRZ
     # total_grazed = κ * LD * biomass_exp / (α_GRZ * α_GRZ + biomass_exp)
 
-    total_grazed = κ * LD
+    biomass_squarred = sum_feedible_biomass * sum_feedible_biomass
+    α_GRZ = κ * 5.0 / u"ha"
+    total_grazed = κ * LD * biomass_squarred / (α_GRZ * α_GRZ + biomass_squarred)
+
+    # total_grazed = κ * LD
     container.calc.com.fodder_supply = κ * LD - total_grazed
 
     #################################### share of grazed biomass per species
     ## Palatability ρ
-    relative_lnc .= lnc .* above_biomass ./ sum_biomass
+    relative_lnc .= lnc .* feedible_biomass ./ sum_feedible_biomass
     cwm_lnc = sum(relative_lnc)
     @. ρ = (lnc / cwm_lnc) ^ β_PAL_lnc
 
     β_height_GRZ = 3.0
-    relative_height .= actual_height .* above_biomass ./ sum_biomass
+    relative_height .= actual_height .* feedible_biomass ./ sum_feedible_biomass
     cwm_height = sum(relative_height)
     @. heightinfluence = (actual_height / cwm_height) ^ β_height_GRZ
 
-    @. height_ρ_biomass = heightinfluence * ρ * above_biomass
+    @. height_ρ_biomass = heightinfluence * ρ * feedible_biomass
     grazed_share .= height_ρ_biomass ./ sum(height_ρ_biomass)
 
     #################################### add grazed biomass to defoliation
