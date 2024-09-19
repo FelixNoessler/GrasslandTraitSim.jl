@@ -91,6 +91,11 @@ flowchart LR
 
 ### [Nutrient competition factor](@id below_competition)
 
+
+```@raw html
+<iframe src="../nutrient_adjustment_animation.html" width="750" height="500" scrolling="no"></iframe> 
+```
+
 ```@docs
 below_ground_competition!
 ```
