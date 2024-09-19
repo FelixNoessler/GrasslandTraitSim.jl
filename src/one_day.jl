@@ -176,7 +176,11 @@ function one_day!(; t, container)
                               above_biomass = patch_above_biomass,
                               allocation_above)
             @. du_height[x, y, :] = height_gain - height_loss_mowing - height_loss_grazing
-
+            for s in 1:nspecies
+                if patch_height[s] + du_height[x, y, s] > traits.height[s]
+                    du_height[x, y, s] = traits.height[s] - patch_height[s]
+                end
+            end
             # --------------------- water dynamics
             du_water[x, y] = change_water_reserve(; container, patch_above_biomass,
                 water = u_water[x, y],
