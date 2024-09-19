@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nutrient adjustment factor animation</title>
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/d3-scale-chromatic@2.0.0/dist/d3-scale-chromatic.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+        body, text {
+            font-size: 14px;
+            font-family: "Lato", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+        tr.spaceUnder>td { padding-bottom: 0.7em;}
+    </style>
+</head>
+<body>
+    <table>
+        <col width="100px">
+        <col width="50px">
+        <tr class="spaceUnder">
+            <td>TSBmax</td>
+            <td><span id="TSB_max-value">10000</span></td>
+            <td><input type="range" id="TSB_max" min="5000" max="40000" step="500" value="10000"></td>
+        </tr>
+        <tr>
+            <td>nutadj_max</td>
+            <td><span id="nutadj_max-value">4.0</span></td>
+            <td><input type="range" id="nutadj_max" min="1.0" max="5.0" step="0.1" value="4.0"></td>
+        </tr>
+    </table>
+
+    <svg width="750" height="400"></svg>
+    
+    <script>
+        // Initial parameters
+        let TSB_max = 10000, nutadj_max = 4;
+        
+        
+        let xmax = 40000;
+        
+        // Set up SVG dimensions
+        const margin = { top: 20, right: 60, bottom: 50, left: 70 },
+            width = 700 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+        const svg = d3.select("svg")
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const x = d3.scaleLinear().domain([0, xmax]).range([0, width]);
+        const y = d3.scaleLinear().domain([0, 5]).range([height, 0]);
+
+
+        const xAxis = d3.axisBottom(x);
+        const yAxis = d3.axisLeft(y);
+
+        svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis)
+            .append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", 40)
+            .attr("fill", "#000")
+            .text("Total biomass scaled by trait similarity (∑ TS ⋅ B) [kg ⋅ ha⁻¹]");
+
+        svg.append("g")
+            .call(yAxis)
+            .append("text")
+            .attr("class", "axis-label")
+            .attr("transform", "rotate(-90)")
+            .attr("x", -height / 2)
+            .attr("y", -40)
+            .attr("fill", "#000")
+            .attr("text-anchor", "middle")
+            .text("Nutrient adjustment factor [-]");
+        
+        svg.append("line")
+            .attr("x1", x(0)) 
+            .attr("y1", y(1)) 
+            .attr("x2", x(xmax)) 
+            .attr("y2", y(1)) 
+            .attr("stroke", "black") 
+            .attr("stroke-dasharray", "5,5");
+  
+        const line = d3.line()
+            .x(d => x(d.TS_B))
+            .y(d => y(d.nut_adj));
+
+        // Update parameters and plot
+        function updateParameters() {
+            TSB_max = +d3.select("#TSB_max").property("value");
+            nutadj_max = +d3.select("#nutadj_max").property("value");
+
+            d3.select("#TSB_max-value").text(TSB_max);
+            d3.select("#nutadj_max-value").text(nutadj_max);
+
+            plot();
+        }
+
+        function calculate_nutrient_adjustment(TS_B) {
+            return nutadj_max * Math.exp(Math.log(1/nutadj_max) / TSB_max * TS_B)
+        }
+
+        function plot() {
+            svg.selectAll(".line").remove();
+            svg.selectAll(".dot").remove();
+            
+            // trait_values.forEach(trait => {
+            const data = [];
+            for (let TS_B = 0; TS_B <= xmax; TS_B += 100) {
+                data.push({ TS_B, nut_adj: calculate_nutrient_adjustment(TS_B) });
+            }
+            
+            svg.append("path")
+                .datum(data)
+                .attr("class", "line")
+                .attr("fill", "none")
+                .attr("stroke", "black")
+                .attr("stroke-width", 1.5)
+                .attr("d", line);
+            
+            svg.append("circle")
+                .attr("class", "dot")
+                .attr("cx", x(0))
+                .attr("cy", y(nutadj_max))
+                .attr("r", 5)
+                .attr("fill", "red");
+                
+            svg.append("circle")
+                .attr("class", "dot")
+                .attr("cx", x(TSB_max))
+                .attr("cy", y(1))
+                .attr("r", 5)
+                .attr("fill", "red");
+        }
+
+        // createColorbar();
+        plot();
+
+        // Event listeners for sliders
+        d3.selectAll("input").on("input", updateParameters);
+    </script>
+</body>
+</html>
