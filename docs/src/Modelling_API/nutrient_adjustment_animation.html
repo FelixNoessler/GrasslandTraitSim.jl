@@ -17,14 +17,13 @@
             font-weight: 400;
             font-style: normal;
         }
-        tr.spaceUnder>td { padding-bottom: 0.7em;}
     </style>
 </head>
 <body>
     <table>
         <col width="100px">
         <col width="50px">
-        <tr class="spaceUnder">
+        <tr>
             <td>TSBmax</td>
             <td><span id="TSB_max-value">10000</span></td>
             <td><input type="range" id="TSB_max" min="5000" max="40000" step="500" value="10000"></td>
@@ -39,15 +38,13 @@
     <svg width="750" height="400"></svg>
     
     <script>
-        // Initial parameters
         let TSB_max = 10000, nutadj_max = 4;
-        
-        
         let xmax = 40000;
-        
-        // Set up SVG dimensions
+        let line_data = create_data();
+
+              
         const margin = { top: 20, right: 60, bottom: 50, left: 70 },
-            width = 700 - margin.left - margin.right,
+            width = 650 - margin.left - margin.right,
             height = 400 - margin.top - margin.bottom;
 
         const svg = d3.select("svg")
@@ -93,7 +90,26 @@
         const line = d3.line()
             .x(d => x(d.TS_B))
             .y(d => y(d.nut_adj));
-
+            
+        const path = svg.append("path")
+            .datum(create_data())
+            .attr("fill", "none")
+            .attr("stroke", "black")
+            .attr("stroke-width", 1.5)
+            .attr("d", line);
+        
+        const maxCircle = svg.append("circle")
+            .attr("cx", x(0))
+            .attr("cy", y(nutadj_max))
+            .attr("r", 5)
+            .attr("fill", "red");
+                
+        const oneCircle = svg.append("circle")
+            .attr("cx", x(TSB_max))
+            .attr("cy", y(1))
+            .attr("r", 5)
+            .attr("fill", "red");
+                
         // Update parameters and plot
         function updateParameters() {
             TSB_max = +d3.select("#TSB_max").property("value");
@@ -108,44 +124,36 @@
         function calculate_nutrient_adjustment(TS_B) {
             return nutadj_max * Math.exp(Math.log(1/nutadj_max) / TSB_max * TS_B)
         }
-
-        function plot() {
-            svg.selectAll(".line").remove();
-            svg.selectAll(".dot").remove();
-            
-            // trait_values.forEach(trait => {
+        
+        function create_data() {
             const data = [];
             for (let TS_B = 0; TS_B <= xmax; TS_B += 100) {
                 data.push({ TS_B, nut_adj: calculate_nutrient_adjustment(TS_B) });
             }
-            
-            svg.append("path")
-                .datum(data)
-                .attr("class", "line")
-                .attr("fill", "none")
-                .attr("stroke", "black")
-                .attr("stroke-width", 1.5)
-                .attr("d", line);
-            
-            svg.append("circle")
-                .attr("class", "dot")
-                .attr("cx", x(0))
-                .attr("cy", y(nutadj_max))
-                .attr("r", 5)
-                .attr("fill", "red");
-                
-            svg.append("circle")
-                .attr("class", "dot")
-                .attr("cx", x(TSB_max))
-                .attr("cy", y(1))
-                .attr("r", 5)
-                .attr("fill", "red");
+            return data
         }
 
-        // createColorbar();
+        function plot() {
+            path.datum(create_data())
+                .transition()
+                .duration(500)
+                .attr("d", line);
+            
+            maxCircle
+                .transition()
+                .duration(50)
+                .attr("cx", x(0))
+                .attr("cy", y(nutadj_max));
+                
+            oneCircle
+                .transition()
+                .duration(50)
+                .attr("cx", x(TSB_max))
+                .attr("cy", y(1));
+        }
+
         plot();
 
-        // Event listeners for sliders
         d3.selectAll("input").on("input", updateParameters);
     </script>
 </body>
