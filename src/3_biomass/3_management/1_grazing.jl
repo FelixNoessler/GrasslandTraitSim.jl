@@ -55,7 +55,7 @@ function grazing!(; container, LD, above_biomass, actual_height)
     # total_grazed = κ * LD * biomass_exp / (α_GRZ * α_GRZ + biomass_exp)
 
     biomass_squarred = sum_feedible_biomass * sum_feedible_biomass
-    α_GRZ = κ * 5.0 / u"ha"
+    α_GRZ = κ * η_GRZ / u"ha"
     total_grazed = κ * LD * biomass_squarred / (α_GRZ * α_GRZ + biomass_squarred)
 
     # total_grazed = κ * LD
