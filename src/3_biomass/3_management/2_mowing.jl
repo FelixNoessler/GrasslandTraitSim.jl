@@ -6,7 +6,13 @@ function mowing!(; container, mowing_height, above_biomass, actual_height)
     @unpack defoliation, mown, proportion_mown  = container.calc
 
     # --------- proportion of plant height that is mown
-    proportion_mown .= max.(actual_height .- mowing_height, 0.0u"m") ./ actual_height
+    for i in eachindex(proportion_mown)
+        if actual_height[i] > 0.0u"m"
+            proportion_mown[i] = max.(actual_height[i] .- mowing_height, 0.0u"m") ./ actual_height[i]
+        else
+            proportion_mown[i] = 0.0
+        end
+    end
 
     # --------- add the removed biomass to the defoliation vector
     @. mown = proportion_mown * above_biomass
