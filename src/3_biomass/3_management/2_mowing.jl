@@ -7,8 +7,8 @@ function mowing!(; container, mowing_height, above_biomass, actual_height)
 
     # --------- proportion of plant height that is mown
     for i in eachindex(proportion_mown)
-        if actual_height[i] > 0.0u"m"
-            proportion_mown[i] = max.(actual_height[i] .- mowing_height, 0.0u"m") ./ actual_height[i]
+        if actual_height[i] > mowing_height
+            proportion_mown[i] = (actual_height[i] - mowing_height) / actual_height[i]
         else
             proportion_mown[i] = 0.0
         end
