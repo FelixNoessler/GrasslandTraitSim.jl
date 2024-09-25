@@ -16,19 +16,15 @@ function root_investment!(; container)
     @unpack root_invest_amc, root_invest_srsa,
             root_invest, above_proportion = container.calc
     @unpack amc, srsa = container.traits
-    @unpack κ_maxred_amc, κ_maxred_srsa, δ_namc, δ_nrsa, δ_wrsa, ϕ_amc, ϕ_rsa = container.p
+    @unpack κ_maxred_amc, κ_maxred_srsa, ϕ_amc, ϕ_rsa = container.p
 
     # TODO add to documentation
     if !included.root_invest
         @. root_invest_srsa = 1.0
         @. root_invest_amc = 1.0
     else
-        δ_rsa = (δ_nrsa + δ_wrsa) / 2
-
-        @. root_invest_amc = 1 - κ_maxred_amc /
-            (1 + exp(-δ_namc * ((1 - above_proportion) * amc - ϕ_amc)))
-        @. root_invest_srsa = 1 - κ_maxred_srsa /
-            (1 + exp(-δ_rsa * ((1 - above_proportion) * srsa - ϕ_rsa)))
+        @. root_invest_amc = 1 - κ_maxred_amc + κ_maxred_amc * exp(log(0.5) / ϕ_amc * (1 - above_proportion) * amc)
+        @. root_invest_srsa = 1 - κ_maxred_srsa + κ_maxred_srsa * exp(log(0.5) / ϕ_rsa * (1 - above_proportion) * srsa)
     end
 
     @. root_invest = root_invest_amc * root_invest_srsa
@@ -55,7 +51,7 @@ function plot_root_investment(; θ = nothing, path = nothing)
          ylabel = "Growth reduction due to\ninvestment in mycorrhiza\n← stronger reduction, less reduction →",
          xlabel = "Arbuscular mycorrhizal colonisation rate (amc) [-]",
          limits = (nothing, nothing, -0.05, 1.05))
-    colorrange = (0.0, maximum([p.κ_maxred_amc, p.κ_maxred_srsa, 0.3]))
+    colorrange = (0.0, maximum([p.κ_maxred_amc, p.κ_maxred_srsa, 1.0]))
 
     root_investment!(; container)
     root_investment!(; container=container_line)
