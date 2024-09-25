@@ -126,6 +126,10 @@ nutrient_reduction!
 
 ## Cost for investment into roots and mycorrhiza
 
+```@raw html
+<iframe src="../investment_animation_amc.html" width="750" height="600" scrolling="no"></iframe> 
+```
+
 ```@docs	
 root_investment!
 ```
