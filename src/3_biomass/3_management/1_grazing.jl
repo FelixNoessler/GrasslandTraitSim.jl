@@ -50,13 +50,13 @@ function grazing!(; container, LD, above_biomass, actual_height)
     end
 
     #################################### total grazed biomass
-    # biomass_exp = sum_biomass * sum_biomass
-    # α_GRZ = κ * LD * η_GRZ
-    # total_grazed = κ * LD * biomass_exp / (α_GRZ * α_GRZ + biomass_exp)
-
     biomass_squarred = sum_feedible_biomass * sum_feedible_biomass
-    α_GRZ = κ * η_GRZ / u"ha"
+    α_GRZ = κ * LD * η_GRZ
     total_grazed = κ * LD * biomass_squarred / (α_GRZ * α_GRZ + biomass_squarred)
+
+    # biomass_squarred = sum_feedible_biomass * sum_feedible_biomass
+    # α_GRZ = κ * η_GRZ / u"ha"
+    # total_grazed = κ * LD * biomass_squarred / (α_GRZ * α_GRZ + biomass_squarred)
 
     # total_grazed = κ * LD
     container.calc.com.fodder_supply = κ * LD - total_grazed
