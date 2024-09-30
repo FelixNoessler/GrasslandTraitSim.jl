@@ -247,7 +247,7 @@ function nutrient_reduction!(; container, nutrients, total_biomass)
 
 
     ###### 3 calculate the nutrient reduction factor
-    @. Nutred = max(N_amc, N_rsa)
+    @. Nutred = N_amc * N_rsa
 
     for s in 1:nspecies
         if nutrients_splitted[s] <= 0.0
