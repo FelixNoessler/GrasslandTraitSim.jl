@@ -32,7 +32,7 @@ Influence of `α_GRZ`:
 """
 function grazing!(; container, LD, above_biomass, actual_height)
     @unpack lnc = container.traits
-    @unpack η_GRZ, β_PAL_lnc, κ = container.p
+    @unpack η_GRZ, β_PAL_lnc, β_height_GRZ, κ = container.p
     @unpack defoliation, grazed_share, relative_lnc, ρ, relative_height, grazed,
             heightinfluence, height_ρ_biomass = container.calc
 
@@ -67,7 +67,7 @@ function grazing!(; container, LD, above_biomass, actual_height)
     cwm_lnc = sum(relative_lnc)
     @. ρ = (lnc / cwm_lnc) ^ β_PAL_lnc
 
-    β_height_GRZ = 3.0
+    ## Grazers feed more on tall plants
     relative_height .= actual_height .* feedible_biomass ./ sum_feedible_biomass
     cwm_height = sum(relative_height)
     @. heightinfluence = (actual_height / cwm_height) ^ β_height_GRZ
