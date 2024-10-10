@@ -162,15 +162,7 @@ function below_ground_competition!(; container, total_biomass)
     end
 
     for i in eachindex(nutrients_adj_factor)
-        # TODO change documentation
-        # y=a\cdot\exp\left(\frac{\ln\left(\frac{0.5}{a}\right)}{10000}\cdot x\right)
         nutrients_adj_factor[i] = nutadj_max * exp(log(1/nutadj_max) / TSB_max * TS_biomass[i])
-
-
-        # nutrients_adj_factor[i] = nutadj_max * (1 - exp(TSB_k * (TS_biomass[i]  - TSB_max)))
-        # if nutrients_adj_factor[i] < 0
-        #     nutrients_adj_factor[i] = 0.0
-        # end
     end
 
     return nothing

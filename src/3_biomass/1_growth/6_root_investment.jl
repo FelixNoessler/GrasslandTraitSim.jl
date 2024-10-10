@@ -18,7 +18,6 @@ function root_investment!(; container)
     @unpack amc, srsa = container.traits
     @unpack κ_maxred_amc, κ_maxred_srsa, ϕ_amc, ϕ_rsa = container.p
 
-    # TODO add to documentation
     if !included.root_invest
         @. root_invest_srsa = 1.0
         @. root_invest_amc = 1.0

@@ -24,6 +24,7 @@ bib = CitationBibliography("docs/src/lit.bib"; style = :numeric)
 
 # for prettyurls you need locally a live server
 makedocs(;
+    draft = false,
     warnonly  = true,
     plugins = [bib],
     sitename = "GrasslandTraitSim.jl",
