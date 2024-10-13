@@ -45,6 +45,33 @@ save("biomass.svg", fig); nothing # hide
 
 ![](biomass.svg)
 
+
+## Height of the community
+
+We can also look at the simulated height of each species:
+
+```@example output
+sol.output.height
+```
+
+We calculate the height of the community by weighting the height of the species by their proportion of biomass on the total biomass:
+
+```@example output
+species_biomass = dropdims(mean(sol.output.biomass; dims = (:x, :y)); dims = (:x, :y))
+total_biomass = vec(sum(species_biomass; dims = :species))
+species_height = dropdims(mean(sol.output.height; dims = (:x, :y)); dims = (:x, :y))
+community_height = vec(sum(species_height .* species_biomass ./ total_biomass; dims = :species))
+
+fig, _ = lines(sol.simp.output_date_num, ustrip.(community_height),
+                color = :seagreen, linewidth = 2;
+    axis = (; ylabel = "Community height [m]",
+                xlabel = "Date [year]"))
+fig
+save("height.svg", fig); nothing # hide
+```
+
+![](height.svg)
+
 ## Share of each species
 
 We can look at the share of each species over time:
