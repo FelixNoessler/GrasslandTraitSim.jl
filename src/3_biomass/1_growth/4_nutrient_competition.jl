@@ -145,6 +145,7 @@ and the root surface area devided by the above ground biomass (`srsa`).
 function below_ground_competition!(; container, total_biomass)
     @unpack nutrients_adj_factor, TS_biomass, TS = container.calc
     @unpack included, nspecies = container.simp
+    @unpack TS_influence = container.p
 
     if !included.belowground_competition
         @info "No below ground competition for resources!" maxlog=1
@@ -157,7 +158,8 @@ function below_ground_competition!(; container, total_biomass)
     TS_biomass .= 0.0u"kg/ha"
     for s in 1:nspecies
         for i in 1:nspecies
-            TS_biomass[s] += TS[s, i] * total_biomass[i]
+            # TODO !!!!!!!!!
+            TS_biomass[s] += TS[s, i] ^ TS_influence * total_biomass[i]
         end
     end
 
