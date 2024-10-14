@@ -47,7 +47,7 @@ function DocStringExtensions.format(abbrv::MyNewFields, buf, doc)
         "**Environmental and seasonal growth adjustment**",
         "**Senescence**",
         "**Management**",
-        "**Clonal growth**",
+        "**Another parameter group**",
         "**Water dynamics**",
     ]
 

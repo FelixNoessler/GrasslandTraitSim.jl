@@ -235,9 +235,6 @@ function preallocate_vectors(; input_obj, T = Float64)
         mown = Array{T}(undef, nspecies)u"kg / ha",
         grazed = Array{T}(undef, nspecies)u"kg / ha",
 
-        ## clonal growth
-        clonalgrowth = Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
-
         ## sla transpiration effect
         relative_sla = Array{T}(undef, nspecies)u"m^2 / g",
 

@@ -366,7 +366,6 @@ function create_included(included_prep = (;);)
         senescence_season = true,   # TODO
         senescence_sla = true,
         potential_growth = true,
-        clonalgrowth = true,
         mowing = true,
         grazing = true,
         lowbiomass_avoidance = true,

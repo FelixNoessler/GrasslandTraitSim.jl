@@ -10,7 +10,6 @@ flowchart LR
     A[growth] --> B[change in biomass of one day]
     C[senescence] --> B
     D[mowing, grazing] --> B
-    E["clonal growth\n(once per year)"] --> B
     B --update--> K[state: biomass]
     K --+ one day--> B
 </pre>

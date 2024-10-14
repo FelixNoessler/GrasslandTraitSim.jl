@@ -55,9 +55,6 @@ W_{t+1xy} = W_{txy} + P_{txy} - AET_{txy} - R_{txy}
 
 ## Main procedure (in the following order)
 
-if npatches > 1
-
-- [clonal growth](@ref clonalgrowth!) at day of the year = 250
 
 loop over patches:
 
