@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neg denstity dependence in senescence</title>
+    
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="https://unpkg.com/d3-scale-chromatic@2.0.0/dist/d3-scale-chromatic.min.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
+        body, text {
+            font-size: 14px;
+            font-family: "Lato", sans-serif;
+            font-weight: 400;
+            font-style: normal;
+        }
+    </style>
+</head>
+<body>
+    <table>
+        <col width="160px">
+        <col width="50px">
+        <tr>
+            <td>maximal increase</td>      
+            <td><span id="senadj_max-value">4.0</span></td>
+            <td><input type="range" id="senadj_max" min="1.0" max="10.0" step="0.1" value="4.0"></td>
+        </tr>
+        <tr>
+            <td>Biomass at half increase of senescences</td>
+            <td><span id="B_half-value">3000</span></td>
+            <td><input type="range" id="B_half" min="500" max="10000" step="50" value="3000"></td>
+        </tr>
+    </table>
+
+    <svg width="750" height="400"></svg>
+    
+    <script>
+        let B_half = 3000, senadj_max = 4;
+        let xmax = 10000;
+        let line_data = create_data();
+
+        const margin = { top: 20, right: 60, bottom: 50, left: 70 },
+            width = 650 - margin.left - margin.right,
+            height = 400 - margin.top - margin.bottom;
+
+        const svg = d3.select("svg")
+            .append("g")
+            .attr("transform", `translate(${margin.left},${margin.top})`);
+
+        const x = d3.scaleLinear().domain([0, xmax]).range([0, width]);
+        const y = d3.scaleLinear().domain([0, 10]).range([height, 0]);
+
+
+        const xAxis = d3.axisBottom(x);
+        const yAxis = d3.axisLeft(y);
+
+        svg.append("g")
+            .attr("transform", `translate(0,${height})`)
+            .call(xAxis)
+            .append("text")
+            .attr("class", "axis-label")
+            .attr("x", width / 2)
+            .attr("y", 40)
+            .attr("fill", "#000")
+            .text("Biomass of species [kg ⋅ ha⁻¹]");
+
+        svg.append("g")
+            .call(yAxis)
+            .append("text")
+            .attr("class", "axis-label")
+            .attr("transform", "rotate(-90)")
+            .attr("x", -height / 2)
+            .attr("y", -40)
+            .attr("fill", "#000")
+            .attr("text-anchor", "middle")
+            .text("Senescence adjustment factor [-]");
+        
+        svg.append("line")
+            .attr("x1", x(0)) 
+            .attr("y1", y(1)) 
+            .attr("x2", x(xmax)) 
+            .attr("y2", y(1)) 
+            .attr("stroke", "black") 
+            .attr("stroke-dasharray", "5,5");
+  
+        const line = d3.line()
+            .x(d => x(d.B))
+            .y(d => y(d.sen_adj));
+            
+        const path = svg.append("path")
+            .datum(create_data())
+            .attr("fill", "none")
+            .attr("stroke", "black")
+            .attr("stroke-width", 1.5)
+            .attr("d", line);
+        
+        const upperLine = svg.append("line")
+            .attr("x1", x(0)) 
+            .attr("y1", y(senadj_max)) 
+            .attr("x2", x(xmax)) 
+            .attr("y2", y(senadj_max)) 
+            .attr("stroke", "black") 
+            .attr("stroke-dasharray", "5,5");
+                
+        const oneCircle = svg.append("circle")
+            .attr("cx", x(B_half))
+            .attr("cy", y(1))
+            .attr("r", 5)
+            .attr("fill", "red");
+                
+        // Update parameters and plot
+        function updateParameters() {
+            B_half = +d3.select("#B_half").property("value");
+            senadj_max = +d3.select("#senadj_max").property("value");
+
+            d3.select("#B_half-value").text(B_half);
+            d3.select("#senadj_max-value").text(senadj_max);
+
+            plot();
+        }
+
+        function calculate_senescence_adjustment(B) {
+            return Math.max(1, senadj_max*(1-Math.exp(-Math.log(2)/B_half * B)));
+        }
+        
+        function create_data() {
+            const data = [];
+            for (let B = 0; B <= xmax; B += 10) {
+                data.push({ B, sen_adj: calculate_senescence_adjustment(B) });
+            }
+            return data
+        }
+
+        function plot() {
+            path.datum(create_data())
+                .transition()
+                .duration(500)
+                .attr("d", line);
+            
+            upperLine
+                .transition()
+                .duration(50)
+                .attr("y1", y(senadj_max))
+                .attr("y2", y(senadj_max));
+                
+            oneCircle
+                .transition()
+                .duration(50)
+                .attr("cx", x(B_half))
+                .attr("cy", y(senadj_max/2));
+        }
+
+        plot();
+
+        d3.selectAll("input").on("input", updateParameters);
+    </script>
+</body>
+</html>

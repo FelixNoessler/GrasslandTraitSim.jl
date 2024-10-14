@@ -17,7 +17,15 @@ function senescence!(; container, ST, total_biomass)
         1.0
     end
 
-    @. senescence = (1 - (1 - μ * com.SEN_season) ^ time_step_days.value) * total_biomass
+    ## TODO !!!!!!!!
+    senadj_max = 1
+    B_half = 1000u"kg/ha"
+    sen_adj = @. senadj_max * (1 - exp(-log(2)/B_half * total_biomass))
+    for i in eachindex(sen_adj)
+        sen_adj[i] = max(1, sen_adj[i])
+    end
+
+    @. senescence = (1 - (1 - μ * com.SEN_season * sen_adj) ^ time_step_days.value) * total_biomass
 
     return nothing
 end
