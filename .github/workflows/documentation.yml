@@ -4,30 +4,39 @@ on:
   push:
     branches:
       - master
-    tags: '*'
+    tags: ['*']
   pull_request:
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+  statuses: write
 
 jobs:
   build-documentation:
-    permissions:
-      actions: write
-      contents: write
+
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
       - name: Setup r2u
         uses: eddelbuettel/github-actions/r2u-setup@master
       - name: R Package Dependencies
         run: R -q -e 'install.packages("fundiversity")'
-      - uses: julia-actions/setup-julia@v2
-      - uses: julia-actions/cache@v1
-      - name: Install dependencies
-        run: julia --project=docs/ -e '
-          import Pkg;
-          Pkg.develop(path=".");
-          Pkg.instantiate();'
-      - name: Build and deploy documentation 
+      - name: Setup Julia
+        uses: julia-actions/setup-julia@v1
+      - name: Pull Julia cache
+        uses: julia-actions/cache@v1
+      - name: Install documentation dependencies
+        run: julia --project=docs -e 'using Pkg; pkg"dev ."; Pkg.instantiate(); Pkg.precompile(); Pkg.status()'
+      # Creating new mds from src
+      - name: Build and deploy documentation
+        uses: julia-actions/julia-docdeploy@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-        run: julia --project=docs/ docs/make.jl
+          JULIA_DEBUG: "Documenter"
+          DATADEPS_ALWAYS_ACCEPT: true

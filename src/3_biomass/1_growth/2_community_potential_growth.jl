@@ -1,35 +1,5 @@
-@doc raw"""
+"""
 Calculate the total potential growth of the plant community.
-
-```math
-\begin{align*}
-G_{pot, txy} &= PAR_{txy} \cdot RUE_{max} \cdot fPARi_{txy} \\
-fPARi_{txy} &= \left(1 - \exp\left(-k \cdot LAI_{tot, txy}\right)\right) \cdot
-    \frac{1}
-    {1 + \exp\left(\beta_{comH} \cdot \left(\alpha_{comH} - H_{cwm, txy}\right)\right)}
-\end{align*}
-```
-
-Parameter, see also [`SimulationParameter`](@ref):
-- ``RUE_{max}`` (`RUE_max`) maximum radiation use efficiency [kg MJ⁻¹]
-- ``k`` (`k`) extinction coefficient [-]
-- ``\alpha_{height, lai}`` (`self_shading_severity`) is the community weighted mean height, where the community height growth reducer is 0.5 [m]
-- ``\beta_{comH}`` (`β_com_height`) is the slope of the logistic function that relates the community weighted mean height to the community height growth reducer [m⁻¹]
-
-Variables:
-- ``PAR_{txy}`` (`PAR`) photosynthetically active radiation [MJ ha⁻¹]
-- ``LAI_{tot, txy}`` (`LAItot`) total leaf area index, see [`calculate_LAI!`](@ref) [-]
-
-Output:
-- ``G_{pot; txy}`` (`potgrowth_total`) total potential growth of the plant community [kg ha⁻¹]
-
-Note:
-The community height growth reduction factor is the second part of the ``fPARi_{txy}`` equation.
-
-![](../img/potential_growth_lai_height.png)
-![](../img/potential_growth_height_lai.png)
-![](../img/potential_growth_height.png)
-![](../img/community_height_influence.png)
 """
 function potential_growth!(; container, above_biomass, actual_height, PAR)
     @unpack included = container.simp
@@ -66,30 +36,8 @@ function potential_growth!(; container, above_biomass, actual_height, PAR)
     return nothing
 end
 
-@doc raw"""
+"""
 Calculate the leaf area index of all species.
-
-```math
-\begin{align}
-LAI_{txys} &= B_{txys} \cdot SLA_s \cdot \frac{LBP_s}{ABP_s} \\
-LAI_{tot, txy} &= \sum_{s=1}^{S} LAI_{txys}
-\end{align}
-```
-
-Variables:
-- ``B_{txys}`` (`biomass`) biomass of each species  [kg ha⁻¹]
-- ``SLA_s`` (`sla`) specific leaf area [m² g⁻¹]
-- ``LBP_s`` (`lbp`) leaf biomass per plant biomass [-]
-- ``ABP_s`` (`abp`) aboveground biomass per plant biomass [-]
-
-There is a unit conversion from the ``SLA_s`` and the biomass ``B_{txys}``
-to the unitless ``LAI_{txys}`` involved.
-
-Output:
-- ``LAI_{txys}`` (`LAIs`) leaf area index of each species [-]
-- ``LAI_{tot, txy}`` (`LAItot`) total leaf area index of the plant community [-]
-
-![](../img/lai_traits.png)
 """
 function calculate_LAI!(; container, above_biomass)
     @unpack LAIs, com = container.calc
@@ -196,8 +144,8 @@ end
 ################################################################
 # Plots for leaf area index
 ################################################################
-function plot_lai_traits(; θ = nothing, path = nothing)
-    nspecies, container = create_container_for_plotting(; θ)
+function plot_lai_traits(; path = nothing)
+    nspecies, container = create_container_for_plotting(; θ = nothing)
     above_biomass = container.u.u_above_biomass[1, 1, :]
 
     potential_growth!(; container, above_biomass, actual_height = container.traits.height,
@@ -223,7 +171,7 @@ function plot_lai_traits(; θ = nothing, path = nothing)
         display(fig)
     end
 
-    return nothing
+    return fig
 end
 
 ################################################################
