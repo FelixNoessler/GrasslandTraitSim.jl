@@ -8,4 +8,4 @@ assets_path = "docs/src/assets/"
 [file[1] == '.' ? "" : rm("$(assets_path)$file") for file in readdir(assets_path)]
 
 rm("docs/build/", recursive = true)
-rm("docs/src/index.md")
+rm("docs/src/basics.md")
