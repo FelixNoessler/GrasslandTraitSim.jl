@@ -32,11 +32,12 @@ makedocs(;
     sitename = "GrasslandTraitSim.jl",
     modules = [GrasslandTraitSim],
     authors="Felix Nößler",
-    repo="https://github.com/FelixNoessler/GrasslandTraitSim.jl",
+    source = "src",
+    build = "build",
     format = MarkdownVitepress(;
-        repo = "https://github.com/FelixNoessler/GrasslandTraitSim.jl",
+        repo = "github.com/FelixNoessler/GrasslandTraitSim.jl",
         devurl = "dev",
-        deploy_url = "FelixNoessler.github.io/GrasslandTraitSim.jl",
+        devbranch = "master",
         # md_output_path = ".",
         # build_vitepress = false
     ),
@@ -72,4 +73,6 @@ makedocs(;
         "References & Acknowledgements" => "references.md"])
 
 deploydocs(repo = "github.com/FelixNoessler/GrasslandTraitSim.jl",
-           devbranch="master",)
+           devbranch="master",
+           branch = "gh-pages",
+           target = "build")
