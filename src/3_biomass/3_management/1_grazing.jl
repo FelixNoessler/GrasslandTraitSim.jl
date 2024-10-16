@@ -20,15 +20,6 @@ a &= \frac{1}{\text{α_GRZ}^2 \cdot h} \\
   dependent on nitrogen per leaf mass (LNCM) [-]
 - `α_GRZ` is the half-saturation constant [kg ha⁻¹]
 - equation partly based on [Moulin2021](@cite)
-
-- `β_PAL_lnc` = 1.5
-![](../img/grazing_default.png)
-
-- `β_PAL_lnc` = 5
-![](../img/grazing_2.png)
-
-Influence of `α_GRZ`:
-![](../img/η_GRZ.png)
 """
 function grazing!(; container, LD, above_biomass, actual_height)
     @unpack lnc = container.traits

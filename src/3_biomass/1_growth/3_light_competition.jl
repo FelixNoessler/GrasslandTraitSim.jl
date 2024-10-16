@@ -31,8 +31,6 @@ parameter ``\beta_H``.
 
 The potential height refers to the height that the plant would reach
 if it would not be limited by other factors.
-
-![light competition](../img/height_influence.png)
 """
 function light_competition!(; container, above_biomass, actual_height)
     @unpack lais_heightinfluence, heightinfluence, light_competition, LAIs = container.calc

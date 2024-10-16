@@ -1,3 +1,6 @@
+"""
+Parameter of the GrasslandTraitSim.jl model
+"""
 @kwdef mutable struct SimulationParameter{
     T, Qkg_MJ, Qkg_ha, Qm2_g, Qg_m2, Qg_kg, Qha_MJ, QMJ_ha, QC, Qkg}
 

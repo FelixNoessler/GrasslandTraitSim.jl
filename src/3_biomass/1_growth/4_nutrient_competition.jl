@@ -139,8 +139,6 @@ and the root surface area devided by the above ground biomass (`srsa`).
 - `B` is the biomass vector, $B \in [0, ∞]^{N}$ [kg ha⁻¹]
 - `β_TSB` is the exponent of the below ground
   competition factor [-]
-
-![](../img/nut_adjustment.png)
 """
 function below_ground_competition!(; container, total_biomass)
     @unpack nutrients_adj_factor, TS_biomass, TS = container.calc
@@ -178,13 +176,8 @@ root surface area per belowground biomass.
 Reduction of growth due to stronger nutrient stress for lower
 arbuscular mycorrhizal colonisation (`AMC`).
 
-![Graphical overview of the AMC functional response](../img/N_amc_default.png)
-
 Reduction of growth due to stronger nutrient stress for lower specific
 root surface area per belowground biomass (`srsa`).
-
-![Graphical overview of the functional response](../img/N_rsa_default.png)
-
 """
 function nutrient_reduction!(; container, nutrients, total_biomass)
     @unpack included, nspecies = container.simp

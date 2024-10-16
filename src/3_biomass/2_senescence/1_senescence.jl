@@ -69,8 +69,6 @@ SEN_{max}  & \text{if}\;\; ST > Ψ_2
 - ``Ψ₁=775``  [$°C$]
 - ``Ψ₂=3000`` [$°C$]
 - ``SEN_{max}=3``
-
-![Seasonal component death rate](../img/seasonal_factor_senescence.png)
 """
 function seasonal_component_senescence(; container, ST,)
     @unpack Ψ₁, Ψ₂, SEN_max = container.p

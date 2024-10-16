@@ -8,8 +8,6 @@ Investment into root and mycorriza
 invest &= \exp(\kappa\_{red, amc} \cdot acm) \cdot abp \\
 \end{align}
 ```
-
-![](../img/root_investment.png)
 """
 function root_investment!(; container)
     @unpack included = container.simp

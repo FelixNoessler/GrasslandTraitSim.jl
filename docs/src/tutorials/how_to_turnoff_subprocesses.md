@@ -37,7 +37,4 @@ fig, _ = lines(sol.simp.output_date_num, ustrip.(total_biomass), color = :darkgr
       axis = (; ylabel = "Aboveground dry biomass [kg ha⁻¹]", 
                 xlabel = "Date [year]"))
 fig
-save("biomass_no_pot_growth.svg", fig); nothing # hide
 ```
-
-![](biomass_no_pot_growth.svg)

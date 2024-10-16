@@ -1,6 +1,5 @@
 @doc raw"""
-Influence of mowing for plant species with different heights ($height$):
-![Image of mowing effect](../img/mowing.png)
+Influence of mowing for plant species with different heights
 """
 function mowing!(; container, mowing_height, above_biomass, actual_height)
     @unpack defoliation, mown, proportion_mown  = container.calc

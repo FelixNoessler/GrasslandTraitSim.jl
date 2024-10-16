@@ -5,9 +5,6 @@ per belowground biomass.
 
 Reduction of growth due to stronger water stress for plants with
 lower specific root surface area per above ground biomass (`srsa`).
-
-![Graphical overview of the functional response](../img/W_rsa_default.png)
-
 """
 function water_reduction!(; container, W, PWP, WHC)
     @unpack included = container.simp
