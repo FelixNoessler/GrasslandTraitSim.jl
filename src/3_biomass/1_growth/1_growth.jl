@@ -7,11 +7,6 @@ include("7_community_growth_reducers.jl")
 
 """
 Calculates the growth of the plant species.
-
-**The growth of the plants is modelled by...**
-- [Potential growth of the community](@ref)
-- [Community growth adjustment by environmental and seasonal factors](@ref)
-- [Species-specific growth adjustment](@ref)
 """
 function growth!(; t, container, above_biomass, total_biomass, actual_height, W, nutrients, WHC, PWP)
     @unpack input = container

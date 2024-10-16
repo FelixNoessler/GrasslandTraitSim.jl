@@ -124,11 +124,14 @@ export function nutrientStressRSAPlot(){
     const trait_values = [0.05, 0.10, 0.15, 0.20, 0.25]; // rsa
 
     // Set up SVG dimensions
-    const margin = { top: 20, right: 60, bottom: 50, left: 70 },
-        width = 600 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+    const svg_width = 600, svg_height = 400;
+    const margin = { top: 20, right: 110, bottom: 50, left: 70 },
+        width = svg_width - margin.left - margin.right,
+        height = svg_height - margin.top - margin.bottom;
 
     const svg = d3.select("#nutrient_rsa_graph")
+        .attr("width", svg_width)
+        .attr("height", svg_height)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -278,12 +281,15 @@ export function nutrientStressAMCPlot(){
     let β_R = 7, δ_R = 8, ϕ_trait = 0.2, ɑ_R_05 = 0.9;
     const trait_values = [0.0, 0.10, 0.2, 0.30, 0.4]; // amc
 
-        // Set up SVG dimensions
-        const margin = { top: 20, right: 60, bottom: 50, left: 70 },
-        width = 600 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+    // Set up SVG dimensions
+    const svg_width = 600, svg_height = 400;
+    const margin = { top: 20, right: 110, bottom: 50, left: 70 },
+          width = svg_width - margin.left - margin.right,
+          height = svg_height - margin.top - margin.bottom;
 
     const svg = d3.select("#nutrient_amc_graph")
+        .attr("width", svg_width)
+        .attr("height", svg_height)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 

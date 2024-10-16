@@ -28,11 +28,13 @@ click C "growth_species_specific" "Go"
 click L "growth_env_factors#Radiation-influence" "Go"
 click M "growth_env_factors#Temperature-influence" "Go"
 click N "growth_env_factors#Seasonal-effect" "Go"
-click F "growth_species_specific#Light-competition" "Go"
-click H "growth_species_specific#Water-stress" "Go"
-click I "growth_species_specific#Nutrient-stress" "Go"
-click P "growth_species_specific#Cost-for-investment-into-roots-and-mycorrhiza" "Go"
+click F "growth_species_specific_light" "Go"
+click H "growth_species_specific_water" "Go"
+click I "growth_species_specific_nutrients" "Go"
+click P "growth_species_specific_roots" "Go"
 ```
+
+## API
 
 ```@docs
 growth!

@@ -61,6 +61,10 @@ makedocs(;
                 "Growth: potential growth" => "model/plant/growth_potential_growth.md",
                 "Growth: community adjustment" => "model/plant/growth_env_factors.md",
                 "Growth: species-specific adjustment" => "model/plant/growth_species_specific.md",
+                "- for light" => "model/plant/growth_species_specific_light.md",
+                "- for soil water" => "model/plant/growth_species_specific_water.md",
+                "- for nutrients" => "model/plant/growth_species_specific_nutrients.md",
+                "- for investment into roots" => "model/plant/growth_species_specific_roots.md",
                 "Senescence" => "model/plant/senescence.md",
                 "Mowing and grazing" => "model/plant/mowing_grazing.md"],
             "Soil water dynamics" => [

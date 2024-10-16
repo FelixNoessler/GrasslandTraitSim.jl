@@ -4,20 +4,24 @@ CurrentModule=GrasslandTraitSim
 
 # Mowing and grazing
 
-Biomass is removed by...
-- 🚜 [mowing](@ref "Mowing")
-- 🐄 [grazing](@ref "Grazing")
+```mermaid
+flowchart LR
+    A[Mowing] --> C[Biomass removal and height reduction]
+    B[Grazing] --> C 
 
-----
+click A "mowing_grazing#mowing" "Go"
+click B "mowing_grazing#grazing" "Go"
+```
+
 ## Mowing
-
+### Visualization
+### API
 ```@docs
 mowing!
 ```
 
-----
 ## Grazing
-
+### Visualization
 ```@raw html
 <script setup>
     import { onMounted } from 'vue';
@@ -53,6 +57,7 @@ mowing!
 <svg width="600" height="400" id="grazing_graph"></svg> 
 ```
 
+### API
 ```@docs
 grazing!
 ```
