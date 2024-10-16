@@ -1,3 +1,7 @@
 build/
 site/
-/Manifest.toml
+Manifest.toml
+node_modules
+src/.vitepress/cache
+src/.vitepress/dist
+package-lock.json

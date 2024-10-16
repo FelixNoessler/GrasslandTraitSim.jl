@@ -5,13 +5,14 @@
 # include("docs/make.jl")
 ## to clean everything for commits/push:
 # include("docs/clean_local_doc.jl")
+# using DocumenterVitepress; DocumenterVitepress.dev_docs("build", md_output_path = "")
 
-using Documenter
+using Documenter, DocumenterVitepress
 using DocumenterCitations
 using GrasslandTraitSim
 
 ####### Copy files to docs folder
-cp("README.md", "docs/src/index.md"; force = true)
+cp("README.md", "docs/src/basics.md"; force = true)
 cp("assets/ECEM_2023_presentation.pdf",
    "docs/src/assets/ECEM_2023_presentation.pdf"; force = true)
 cp("assets/Assembly_2024_presentation.pdf",
@@ -26,43 +27,49 @@ bib = CitationBibliography("docs/src/lit.bib"; style = :numeric)
 makedocs(;
     draft = false,
     warnonly  = true,
+    # clean = false,
     plugins = [bib],
     sitename = "GrasslandTraitSim.jl",
     modules = [GrasslandTraitSim],
-    format = Documenter.HTML(;
-        canonical = "https://FelixNoessler.github.io/GrasslandTraitSim.jl",
-        edit_link = "master",
-        prettyurls = true,
-        mathengine = MathJax3()
+    authors="Felix Nößler",
+    repo="https://github.com/FelixNoessler/GrasslandTraitSim.jl",
+    format = MarkdownVitepress(;
+        repo = "https://github.com/FelixNoessler/GrasslandTraitSim.jl",
+        devurl = "dev",
+        deploy_url = "FelixNoessler.github.io/GrasslandTraitSim.jl",
+        # md_output_path = ".",
+        # build_vitepress = false
     ),
     pages = [
         "Home" => "index.md",
-        "Model input and output" => "model_io.md",
-        "Parameter" => "parameter.md",
-        "Dashboard" => "dashboard.md",
-        "Visualize model components" => "variables.md",
-        "Time step" => "time_step.md",
+        "Getting Started" => "basics.md",
         "Tutorials" => [
             "Prepare input and run simulation" => "tutorials/how_to_prepare_input.md",
             "Analyse model output" => "tutorials/how_to_analyse_output.md",
             "Heterogenous site or management conditions" => "tutorials/how_to_heterogeneous_site_management.md",
             "Turn-off subprocesses" => "tutorials/how_to_turnoff_subprocesses.md",],
         "Model description" => [
-            "Difference equation" => "Modelling_API/main_equations.md",
-            "Initialization" => "Modelling_API/initialization.md",
-            "Biomass dynamic" => [
-                "Overview" => "Modelling_API/biomass_dynamic.md",
-                "Growth: overview" => "Modelling_API/growth.md",
-                "Growth: potential growth" => "Modelling_API/growth_potential_growth.md",
-                "Growth: community adjustment" => "Modelling_API/growth_env_factors.md",
-                "Growth: species-specific adjustment" => "Modelling_API/growth_species_specific.md",
-                "Senescence" => "Modelling_API/senescence.md",
-                "Mowing and grazing" => "Modelling_API/defoliation.md"],
-            "Water dynamics" => "Modelling_API/water.md"],
-
-        "TOC all functions" => "all_functions.md",
-        "Create all figures in documentation" => "create_all_doc_figures.md",
-        "References & Acknowledgements" => "References.md"])
+            "Model input and output" => "model/inputs_outputs.md",
+            "Parameter" => "model/parameter.md",
+            "Time step" => "model/time_step.md",
+            "Difference equation" => "model/main_equations.md",
+            "Initialization" => "model/initialization.md",
+            "Plant dynamics" => [
+                "Overview" => "model/plant/index.md",
+                "Growth: overview" => "model/plant/growth.md",
+                "Growth: potential growth" => "model/plant/growth_potential_growth.md",
+                "Growth: community adjustment" => "model/plant/growth_env_factors.md",
+                "Growth: species-specific adjustment" => "model/plant/growth_species_specific.md",
+                "Senescence" => "model/plant/senescence.md",
+                "Mowing and grazing" => "model/plant/mowing_grazing.md"],
+            "Soil water dynamics" => [
+                "Dynamics" => "model/water/index.md"
+        ]],
+        "Visualization" => [
+            "Dashboard" => "viz/dashboard.md",
+            "Visualize model components" => "viz/variables.md",
+            "Create all figures in documentation" => "viz/create_all_doc_figures.md",],
+        "References & Acknowledgements" => "references.md"])
 
 deploydocs(repo = "github.com/FelixNoessler/GrasslandTraitSim.jl",
            devbranch="master",)

@@ -8,15 +8,15 @@ import GrasslandTraitSim as sim
 θ = sim.load_optim_result()
 
 ####### create images for the document
-docs_img = "img"
+docs_img = "../img"
 f(path; show_img = false) = show_img ? nothing : path
 
 #### potential growth
-sim.plot_potential_growth_lai_height(; θ, path = f("$docs_img/potential_growth_lai_height.png"))
-sim.plot_potential_growth_height_lai(; θ, path = f("$docs_img/potential_growth_height_lai.png"))
-sim.plot_potential_growth_height(; θ, path = f("$docs_img/potential_growth_height.png"))
-sim.plot_lai_traits(; θ, path = f("$docs_img/lai_traits.png"))
-sim.plot_community_height_influence(; θ, path = f("$docs_img/community_height_influence.png"))
+# sim.plot_potential_growth_lai_height(; θ, path = f("$docs_img/potential_growth_lai_height.png"))
+# sim.plot_potential_growth_height_lai(; θ, path = f("$docs_img/potential_growth_height_lai.png"))
+# sim.plot_potential_growth_height(; θ, path = f("$docs_img/potential_growth_height.png"))
+# sim.plot_lai_traits(; θ, path = f("$docs_img/lai_traits.png"))
+# sim.plot_community_height_influence(; θ, path = f("$docs_img/community_height_influence.png"))
 
 #### transfer functions
 sim.plot_W_srsa(; θ, path = f("$docs_img/W_rsa_default.png"))
