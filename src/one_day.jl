@@ -12,57 +12,7 @@ function input_nutrients!(; container)
 end
 
 """
-Calculate differences of all state variables for one day.
-
-## Biomass change during one day
-
-```math
-B_{t+1xys} = B_{txys} + G_{act, txys} - S_{txys} - M_{txys}
-```
-
-- ``B_{txys}`` biomass of species ``s`` at time ``t`` and patch ``xy`` [kg ha⁻¹]
-    - output is stored in `output.biomass```_{txys}``, current state in
-        `u.u_biomass```_{xys}``, change of biomass in `u.du_biomass```_{xys}``
-- ``G_{act, txys}`` actual growth of species ``s`` at time ``t`` and patch ``xy`` [kg ha⁻¹]
-    - `calc.act_growth```_{s}`` is then directly added to `u.du_biomass` for each patch
-- ``S_{txys}`` senescence of species ``s`` at patch ``xy`` [kg ha⁻¹]
-    - `calc.senescence```_{s}`` is then directly added to `u.du_biomass` for each patch
-- ``M_{txys}`` defoliation due to management of species ``s`` at time ``t`` at patch
-    ``xy`` [kg ha⁻¹]
-    - `calc.defoliation```_{s}`` is then directly added to `u.du_biomass` for each patch
-
-> **Note:** for an overview of all biomass processes, see [Biomass dynamics](@ref)
-
-## Soil water change during one day
-
-```math
-W_{t+1xy} = W_{txy} + P_{txy} - AET_{txy} - R_{txy}
-```
-
-- ``W_{txy}``: soil water content at time ``t`` at patch ``xy`` [mm]
-    - output is stored in `output.water```_{txy}``, current state in `u.u_water```_{xy}``,
-        change of water in `u.du_water```_{xy}``
-- ``P_{txy}``: precipitation at time ``t`` at patch ``xy`` [mm]
-    - `input.precipitation```_{txy}``
-- ``AET_{txy}``: actual evapotranspiration at time ``t`` at patch ``xy`` [mm]
-    - `AET` in [`change_water_reserve`](@ref)
-- ``R_{txy}``: surface run-off and drainage of water from the soil at time ``t``
-    at patch ``xy`` [mm]
-    - `drain` in [`change_water_reserve`](@ref)
-
-
-> **Note:** for more details see [`change_water_reserve`](@ref)
-
-## Main procedure (in the following order)
-
-
-loop over patches:
-
-- set very low or negative biomass (< 1e-30 kg ha⁻¹) to zero
-- defoliation ([mowing](@ref mowing!), [grazing](@ref grazing!))
-- [growth](@ref growth!)
-- [senescence](@ref senescence!)
-- [soil water dynamics](@ref change_water_reserve)
+Calculate differences of all state variables for one time step (one day).
 """
 function one_day!(; t, container)
     @unpack input, output, traits = container
