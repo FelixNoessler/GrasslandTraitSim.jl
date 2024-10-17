@@ -4,7 +4,7 @@ export function nutrientAdjustmentPlot(){
     let TSB_max = 10000, nutadj_max = 4;
     let xmax = 40000;
      
-    const margin = { top: 20, right: 60, bottom: 50, left: 70 },
+    const margin = { top: 25, right: 60, bottom: 50, left: 70 },
         width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
     
