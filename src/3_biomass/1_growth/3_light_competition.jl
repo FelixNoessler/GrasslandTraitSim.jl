@@ -1,36 +1,6 @@
-@doc raw"""
+"""
 Calculate the distribution of potential growth to each species based on share of the leaf
 area index and the height of each species.
-
-```math
-\begin{align*}
-LIG_{txys} &= \frac{LAI_{txys}}{LAI_{tot, txy}} \cdot \left(\frac{H_s}{H_{cwm, txy}} \right) ^ {\beta_H} \\
-H_{cwm, txy} &= \sum_{s=1}^{S}\frac{B_{txys}}{B_{tot, txy}} \cdot H_s
-\end{align*}
-```
-
-Parameter, see also [`SimulationParameter`](@ref):
-- ``\beta_H`` (`β_height`) controls how strongly taller plants gets more light for growth [-]
-
-Variables:
-- ``LAI_{txys}`` (`LAI`) leaf area index of species `s` at time `t` and patch `xy` [-]
-- ``LAI_{tot, txy}`` (`LAItot`) total leaf area index, see [`calculate_LAI!`](@ref) [-]
-- ``B_{txys}`` (`biomass`)biomass of each species [kg ha⁻¹]
-- ``H_s`` (`height`) potential plant height [m]
-- ``H_{cwm, txy}`` (`height_cwm`) community weighted mean height [m]
-
-Output:
-- ``LIG_{txys}`` (`light_competition`) light competition factor,
-  distributes total potential growth to each species [-]
-
-
-Taller plants get more light and can therefore growth more than smaller plants.
-This is modelled by the influence of the potential height in relation to the community
-weighted mean potential height. The strenght of this relationship is modelled with the
-parameter ``\beta_H``.
-
-The potential height refers to the height that the plant would reach
-if it would not be limited by other factors.
 """
 function light_competition!(; container, above_biomass, actual_height)
     @unpack lais_heightinfluence, heightinfluence, light_competition, LAIs = container.calc
