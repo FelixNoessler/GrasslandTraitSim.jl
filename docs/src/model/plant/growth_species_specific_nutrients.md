@@ -118,19 +118,24 @@ The species differ in the response to nutrient availability by different proport
     </colgroup>
     <tbody>
         <tr>
-            <td>mean response at \(N_p = 0.5\) \(\;\alpha_{namc,05}\;\)<br>see red dot (strong to weak growth reduction)</td>
+            <td>mean response at (Np = 0.5) (α_NAMC05)<br>see red dot (strong to weak growth reduction)</td>
             <td><span id="ɑ_AMC_05-value">0.9</span></td>
             <td><input type="range" id="ɑ_AMC_05" min="0.1" max="0.999" step="0.001" value="0.9" class="input_nutrient_amc_graph"></td>
         </tr>
         <tr>
-            <td>difference between species \(\;\delta_{namc}\;\) <br>(no to strong difference)</td>
+            <td>difference between species (δ_NAMC) <br>(no to strong difference)</td>
             <td><span id="δ_AMC-value">10</span></td>
             <td><input type="range" id="δ_AMC" min="0.1" max="15.0" step="0.1" value="8" class="input_nutrient_amc_graph"></td>
         </tr>
         <tr>
-            <td>slope of response  \(\beta_{namc}\)</td>
+            <td>slope of response (β_NAMC)</td>
             <td><span id="β_AMC-value">7</span></td>
             <td><input type="range" id="β_AMC" min="3" max="10" step="0.1" value="7" class="input_nutrient_amc_graph"></td>
+        </tr>
+        <tr>
+            <td>reference trait value (ϕ_AMC)</td>
+            <td><span id="phi_AMC-value">0.2</span></td>
+            <td><input type="range" id="phi_AMC" min="0.0" max="0.4" step="0.1" value="0.2" class="input_nutrient_amc_graph"></td>
         </tr>
     </tbody>
 </table>

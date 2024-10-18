@@ -147,7 +147,7 @@ export function nutrientStressRSAPlot(){
         .attr("x", width / 2)
         .attr("y", 40)
         .attr("fill", "#000")
-        .text("Plant available nutrients (N_p) [-]");
+        .text("Plant available nutrients (Nₚ) [-]");
 
     svg.append("g")
         .call(yAxis)
@@ -266,13 +266,10 @@ export function nutrientStressRSAPlot(){
     createColorbar();
     updatePlot();
 
-    // Event listeners for sliders
     d3.selectAll(".input_nutrient_rsa_graph").on("input", updatePlot);
 }
 
 export function nutrientStressAMCPlot(){
-    // Initial parameters
-    let β_R = 7, δ_R = 8, ϕ_trait = 0.2, ɑ_R_05 = 0.9;
     const trait_values = [0.0, 0.10, 0.2, 0.30, 0.4]; // amc
 
     // Set up SVG dimensions
@@ -289,7 +286,7 @@ export function nutrientStressAMCPlot(){
 
     const x = d3.scaleLinear().domain([0, 1]).range([0, width]);
     const y = d3.scaleLinear().domain([0, 1]).range([height, 0]);
-    const color = d3.scaleSequential(d3.interpolateViridis).domain([0.05, 0.25]);
+    const color = d3.scaleSequential(d3.interpolateViridis).domain([0.0, 0.4]);
 
     const xAxis = d3.axisBottom(x);
     const yAxis = d3.axisLeft(y);
@@ -302,7 +299,7 @@ export function nutrientStressAMCPlot(){
         .attr("x", width / 2)
         .attr("y", 40)
         .attr("fill", "#000")
-        .text("Plant available nutrients (N_p) [-]");
+        .text("Plant available nutrients (Nₚ) [-]");
 
     svg.append("g")
         .call(yAxis)
@@ -319,34 +316,31 @@ export function nutrientStressAMCPlot(){
         .x(d => x(d.R))
         .y(d => y(d.Reducer));
 
-    // Update parameters and plot
-    function updateParameters() {
-        β_R = +d3.select("#β_AMC").property("value");
-        δ_R = +d3.select("#δ_AMC").property("value");
-        ɑ_R_05 = +d3.select("#ɑ_AMC_05").property("value");
-
-        d3.select("#β_AMC-value").text(β_R);
-        d3.select("#δ_AMC-value").text(δ_R);
-        d3.select("#ɑ_AMC_05-value").text(ɑ_R_05);
-
-        plot();
-    }
-
-    function calculateGrowthReduction(R, trait_values) {
+    function calculateGrowthReduction(β_R, δ_R, ɑ_R_05, ϕ_trait, R, trait_values) {
         const x0_R_05 = ϕ_trait + 1 / δ_R * Math.log((1 - ɑ_R_05) / ɑ_R_05);
         const R_05 = 1 / (1 + Math.exp(-δ_R * (trait_values - x0_R_05)));
         const x0 = Math.log((1 - R_05) / R_05) / β_R + 0.5;
         return 1 / (1 + Math.exp(-β_R * (R - x0)));
     }
 
-    function plot() {
+    function updatePlot() {
+        let β_R = +d3.select("#β_AMC").property("value");
+        let δ_R = +d3.select("#δ_AMC").property("value");
+        let ɑ_R_05 = +d3.select("#ɑ_AMC_05").property("value");
+        let ϕ_trait = +d3.select("#phi_AMC").property("value");
+
+        d3.select("#β_AMC-value").text(β_R);
+        d3.select("#δ_AMC-value").text(δ_R);
+        d3.select("#ɑ_AMC_05-value").text(ɑ_R_05);
+        d3.select("#phi_AMC-value").text(ϕ_trait);
+
         svg.selectAll(".line").remove();
         svg.selectAll(".dot").remove();
         
         trait_values.forEach(trait => {
             const data = [];
             for (let R = 0; R <= 1; R += 0.01) {
-                data.push({ R, Reducer: calculateGrowthReduction(R, trait) });
+                data.push({ R, Reducer: calculateGrowthReduction(β_R, δ_R, ɑ_R_05, ϕ_trait, R, trait) });
             }
 
             svg.append("path")
@@ -371,7 +365,7 @@ export function nutrientStressAMCPlot(){
         const colorbarWidth = 20;
         const colorScale = d3.scaleLinear()
             .domain([0, colorbarHeight])
-            .range([0.05, 0.25]);
+            .range([0.0, 0.4]);
 
         if (svg.selectAll(".colorbar").empty()) {
             const defs = svg.append("defs");
@@ -398,7 +392,7 @@ export function nutrientStressAMCPlot(){
                 .attr("class", "colorbar");
 
             const colorbarScale = d3.scaleLinear()
-                .domain([0.05, 0.25])
+                .domain([0.0, 0.4])
                 .range([(height - colorbarHeight) / 2 + colorbarHeight, (height - colorbarHeight) / 2]);
 
             const colorbarAxis = d3.axisRight(colorbarScale)
@@ -430,8 +424,7 @@ export function nutrientStressAMCPlot(){
     }
 
     createColorbar();
-    plot();
+    updatePlot();
 
-    // Event listeners for sliders
-    d3.selectAll(".input_nutrient_amc_graph").on("input", updateParameters);   
+    d3.selectAll(".input_nutrient_amc_graph").on("input", updatePlot);   
 }
