@@ -11,15 +11,6 @@ using Documenter, DocumenterVitepress
 using DocumenterCitations
 using GrasslandTraitSim
 
-####### Copy files to docs folder
-cp("README.md", "docs/src/basics.md"; force = true)
-cp("assets/ECEM_2023_presentation.pdf",
-   "docs/src/assets/ECEM_2023_presentation.pdf"; force = true)
-cp("assets/Assembly_2024_presentation.pdf",
-   "docs/src/assets/Assembly_2024_presentation.pdf"; force = true)
-cp("assets/biomass_dynamic_overview.png",
-   "docs/src/assets/biomass_dynamic_overview.png"; force = true)
-
 ####### Create Bilbiography
 bib = CitationBibliography("docs/src/lit.bib"; style = :numeric)
 
@@ -50,10 +41,10 @@ makedocs(;
             "Heterogenous site or management conditions" => "tutorials/how_to_heterogeneous_site_management.md",
             "Turn-off subprocesses" => "tutorials/how_to_turnoff_subprocesses.md",],
         "Model description" => [
+            "Overview" => "model/index.md",
             "Model input and output" => "model/inputs_outputs.md",
             "Parameter" => "model/parameter.md",
             "Time step" => "model/time_step.md",
-            "Difference equation" => "model/main_equations.md",
             "Initialization" => "model/initialization.md",
             "Plant dynamics" => [
                 "Overview" => "model/plant/index.md",

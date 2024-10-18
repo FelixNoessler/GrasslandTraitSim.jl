@@ -41,8 +41,8 @@ export default withMermaid(defineConfig({
       { icon: 'github', link: 'REPLACE_ME_DOCUMENTER_VITEPRESS' }
     ],
     footer: {
-      message: 'Released under the GPL-3.0 license.',
-      copyright: `© Copyright Felix Nößler 2022 - ${new Date().getUTCFullYear()}.`
+      message: 'Released under the <a href="https://github.com/FelixNoessler/GrasslandTraitSim.jl/blob/master/LICENSE">GPL-3.0 license.</a>',
+      copyright: `© Copyright  <a href="https://github.com/FelixNoessler/">Felix Nößler</a> 2022 - ${new Date().getUTCFullYear()}.`
     }
   }})
 )
