@@ -72,8 +72,7 @@ makedocs(;
         ]],
         "Visualization" => [
             "Dashboard" => "viz/dashboard.md",
-            "Visualize model components" => "viz/variables.md",
-            "Create all figures in documentation" => "viz/create_all_doc_figures.md",],
+            "Visualize model components" => "viz/variables.md",],
         "References & Acknowledgements" => "references.md"])
 
 deploydocs(repo = "github.com/FelixNoessler/GrasslandTraitSim.jl",
