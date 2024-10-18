@@ -4,11 +4,14 @@ export function rootCostsPlot(){
     let κ_maxred_amc = 0.2, ϕ_amc = 0.2;
     let xmax = 0.5;
     
-    const margin = { top: 20, right: 60, bottom: 50, left: 70 },
-        width = 600 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
-    
+    const svg_width = 700, svg_height = 400;
+    const margin = { top: 25, right: 110, bottom: 50, left: 70 },
+        width = svg_width - margin.left - margin.right,
+        height = svg_height - margin.top - margin.bottom;
+
     const svg = d3.select("#root_cost_graph")
+        .attr("width", svg_width)
+        .attr("height", svg_height)
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
     

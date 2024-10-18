@@ -21,23 +21,22 @@ CurrentModule=GrasslandTraitSim
 flowchart LR
     S[↓ nutrient stress] 
     N[nutrient index]
-    R[trait: root surface area /\n belowground biomass]
+    R[trait: root surface area / belowground biomass]
     A[trait: arbuscular mycorrhizal colonisation]
     K[nutrient adjustment]
     L[plant available nutrients]
-
+    B[biomass] 
+    T[trait similarity]
+    
     N --> L
     K --> L
     L --> S
     R --> S
-    A --> S;
-
-    B[biomass] 
-    T[trait similarity of\n root surface area / aboveground biomass\nand arbuscular mycorrhizal colonisation]
-
-
-    T -->|species with similar\ntraits compete more\nstrongly for the same resources| K
-    B --> K;
+    R --> T
+    A --> S
+    A --> T
+    T --> K
+    B --> K
 ```
 
 ## [Nutrient competition factor](@id below_competition)
@@ -85,19 +84,24 @@ The species differ in the response to nutrient availability by different proport
     </colgroup>
     <tbody>
     <tr>
-        <td>mean response at \(N_p = 0.5\) \(\;\alpha_{nrsa,05}\;\)<br>see red dot (strong to weak growth reduction)</td>
+        <td>mean response at Np = 0.5 (α_NRSA05)<br>see red dot (strong to weak growth reduction)</td>
         <td><span id="ɑ_RSA_05-value">0.9</span></td>
         <td><input type="range" id="ɑ_RSA_05" min="0.1" max="0.999" step="0.001" value="0.9" class="input_nutrient_rsa_graph"></td>
     </tr>
     <tr>
-        <td>difference between species \(\;\delta_{nrsa}\;\) <br>(no to strong difference)</td>
+        <td>difference between species (δ_NRSA) <br>(no to strong difference)</td>
         <td><span id="δ_RSA-value">10</span></td>
         <td><input type="range" id="δ_RSA" min="0.1" max="25.0" step="0.1" value="10" class="input_nutrient_rsa_graph"></td>
     </tr>
     <tr>
-        <td>slope of response  \(\beta_{nrsa}\)</td>
+        <td>slope of response (β_NRSA)</td>
         <td><span id="β_RSA-value">7</span></td>
         <td><input type="range" id="β_RSA" min="3" max="10" step="0.1" value="7" class="input_nutrient_rsa_graph"></td>
+    </tr>
+    <tr>
+        <td>reference trait value (ϕ_RSA)</td>
+        <td><span id="phi_RSA-value">0.15</span></td>
+        <td><input type="range" id="phi_RSA" min="0.05" max="0.25" step="0.05" value="0.15" class="input_nutrient_rsa_graph"></td>
     </tr>
     </tbody>
 </table>

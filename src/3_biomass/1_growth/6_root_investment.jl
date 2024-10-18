@@ -1,13 +1,5 @@
-@doc raw"""
-
-Investment into root and mycorriza
-
-
-```math
-\begin{align}
-invest &= \exp(\kappa\_{red, amc} \cdot acm) \cdot abp \\
-\end{align}
-```
+"""
+Growth reducer due to cost of investment in roots and mycorriza.
 """
 function root_investment!(; container)
     @unpack included = container.simp

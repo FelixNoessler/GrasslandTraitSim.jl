@@ -119,12 +119,9 @@ export function nutrientAdjustmentPlot(){
 }
 
 export function nutrientStressRSAPlot(){
-    // Initial parameters
-    let β_R = 7, δ_R = 20, ϕ_trait = 0.15, ɑ_R_05 = 0.9;
     const trait_values = [0.05, 0.10, 0.15, 0.20, 0.25]; // rsa
 
-    // Set up SVG dimensions
-    const svg_width = 600, svg_height = 400;
+    const svg_width = 700, svg_height = 400;
     const margin = { top: 20, right: 110, bottom: 50, left: 70 },
         width = svg_width - margin.left - margin.right,
         height = svg_height - margin.top - margin.bottom;
@@ -167,34 +164,31 @@ export function nutrientStressRSAPlot(){
         .x(d => x(d.R))
         .y(d => y(d.Reducer));
 
-    // Update parameters and plot
-    function updateParameters() {
-        β_R = +d3.select("#β_RSA").property("value");
-        δ_R = +d3.select("#δ_RSA").property("value");
-        ɑ_R_05 = +d3.select("#ɑ_RSA_05").property("value");
-
-        d3.select("#β_RSA-value").text(β_R);
-        d3.select("#δ_RSA-value").text(δ_R);
-        d3.select("#ɑ_RSA_05-value").text(ɑ_R_05);
-
-        plot();
-    }
-
-    function calculateGrowthReduction(R, trait_values) {
+    function calculateGrowthReduction(β_R, δ_R, ɑ_R_05, ϕ_trait, R, trait_values) {
         const x0_R_05 = ϕ_trait + 1 / δ_R * Math.log((1 - ɑ_R_05) / ɑ_R_05);
         const R_05 = 1 / (1 + Math.exp(-δ_R * (trait_values - x0_R_05)));
         const x0 = Math.log((1 - R_05) / R_05) / β_R + 0.5;
         return 1 / (1 + Math.exp(-β_R * (R - x0)));
     }
 
-    function plot() {
+    function updatePlot() {
+        let β_R = +d3.select("#β_RSA").property("value");
+        let δ_R = +d3.select("#δ_RSA").property("value");
+        let ɑ_R_05 = +d3.select("#ɑ_RSA_05").property("value");
+        let ϕ_trait = +d3.select("#phi_RSA").property("value");
+
+        d3.select("#β_RSA-value").text(β_R);
+        d3.select("#δ_RSA-value").text(δ_R);
+        d3.select("#ɑ_RSA_05-value").text(ɑ_R_05);
+        d3.select("#phi_RSA-value").text(ϕ_trait);        
+        
         svg.selectAll(".line").remove();
         svg.selectAll(".dot").remove();
         
         trait_values.forEach(trait => {
             const data = [];
             for (let R = 0; R <= 1; R += 0.01) {
-                data.push({ R, Reducer: calculateGrowthReduction(R, trait) });
+                data.push({ R : R, Reducer: calculateGrowthReduction(β_R, δ_R, ɑ_R_05, ϕ_trait, R, trait) });
             }
 
             svg.append("path")
@@ -270,10 +264,10 @@ export function nutrientStressRSAPlot(){
     }
 
     createColorbar();
-    plot();
+    updatePlot();
 
     // Event listeners for sliders
-    d3.selectAll(".input_nutrient_rsa_graph").on("input", updateParameters);
+    d3.selectAll(".input_nutrient_rsa_graph").on("input", updatePlot);
 }
 
 export function nutrientStressAMCPlot(){

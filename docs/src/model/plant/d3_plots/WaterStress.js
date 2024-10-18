@@ -1,5 +1,86 @@
 import * as d3 from 'd3';
 
+export function plantAvailableWaterPlot() {
+    const svg_width = 700, svg_height = 400;
+    const margin = { top: 10, right: 110, bottom: 50, left: 70 },
+        width = svg_width - margin.left - margin.right,
+        height = svg_height - margin.top - margin.bottom;
+
+    const svg = d3.select("#plant_av_water_graph")
+        .attr("width", svg_width)
+        .attr("height", svg_height)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+    const max_x = 200;
+    const max_y = 1;
+    const x = d3.scaleLinear().range([0, width]).domain([0, max_x]); 
+    const y = d3.scaleLinear().range([height, 0]).domain([-0.02, max_y]); 
+
+    svg.append("g")
+        .attr("class", "x-axis")
+        .attr("transform", `translate(0, ${height})`)
+        .call(d3.axisBottom(x));
+
+    svg.append("g")
+        .attr("class", "y-axis")
+        .call(d3.axisLeft(y));
+
+    svg.append("text")
+        .attr("class", "x-label")
+        .attr("x", width / 2)
+        .attr("y", height + 40)
+        .attr("text-anchor", "middle")
+        .text("Soil water content in the rooting zone (W) [mm]");
+
+    svg.append("text")
+        .attr("class", "y-label")
+        .attr("x", -height / 2)
+        .attr("y", -40)
+        .attr("transform", "rotate(-90)")
+        .attr("text-anchor", "middle")
+        .text("Plant available water (Wₚ) [-]");
+    
+    function calcData(PWP, WHC) {
+        const data = [];
+        for (let W = 0; W <= max_x; W += max_x/200) {
+            data.push({ 
+                W: W, 
+                Wp: Math.max(Math.min((W - PWP) / (WHC - PWP), 1.0), 0.0),
+            });
+        }
+        return data
+    }
+
+    const line = d3.line()
+        .x(d => x(d.W))
+        .y(d => y(d.Wp));
+        
+    const path = svg.append("path")
+        .attr("class", "line")
+        .attr("fill", "none")
+        .attr("stroke", "steelblue")
+        .attr("stroke-width", 2);
+    
+    function updatePlot() {
+        let PWP = +d3.select("#PWP").property("value");
+        let WHC = +d3.select("#WHC").property("value");
+        d3.select("#PWP-value").text(PWP);
+        d3.select("#WHC-value").text(WHC);
+        
+        if (WHC > PWP) {
+            let data = calcData(PWP, WHC);
+            path.datum(data).attr("d", line);
+        } else {
+            path.datum([]).attr("d", line);
+        }
+    }
+
+    d3.selectAll(".plant_av_water_input").on("input", updatePlot);
+    updatePlot();
+}
+
+
 export function waterStressPlot() {
     // Initial parameters
     let β_R = 7, δ_R = 20, ϕ_trait = 0.15, ɑ_R_05 = 0.9;
@@ -32,7 +113,7 @@ export function waterStressPlot() {
         .attr("x", width / 2)
         .attr("y", 40)
         .attr("fill", "#000")
-        .text("Plant available soil water (W_sc) [-]");
+        .text("Plant available water (Wₚ) [-]");
 
     svg.append("g")
         .call(yAxis)
@@ -43,7 +124,7 @@ export function waterStressPlot() {
         .attr("y", -40)
         .attr("fill", "#000")
         .attr("text-anchor", "middle")
-        .text("Water growth reducer based on RSA (W_rsa) [-]");
+        .text("Water growth reducer based on RSA (WAT) [-]");
 
     const line = d3.line()
         .x(d => x(d.R))
@@ -148,7 +229,7 @@ export function waterStressPlot() {
                 .attr("x", width + 10 + colorbarWidth + 10)
                 .attr("y", (height - colorbarHeight) / 2 + colorbarHeight / 3)
                 .attr("fill", "#000")
-                .text("Root surface area per total biomass [m² g⁻¹]")
+                .text("Root surface area per total biomass (TRSA) [m² g⁻¹]")
                 .attr("class", "colorbar-label")
                 .attr("text-anchor", "middle")
                 .attr("transform", `rotate(90, ${width + 10 + colorbarWidth + 10}, ${(height - colorbarHeight) / 2 + colorbarHeight / 2})`);
