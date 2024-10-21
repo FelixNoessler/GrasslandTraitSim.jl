@@ -1,6 +1,5 @@
-@doc raw"""
+"""
 Calculate the biomass that dies due to senescence.
-
 """
 function senescence!(; container, ST, total_biomass)
     @unpack senescence, μ, com = container.calc
@@ -23,7 +22,7 @@ function senescence!(; container, ST, total_biomass)
 end
 
 """
-Intialize the basic senescence rate based on the specific leaf area
+Intialize the basic senescence rate based on the specific leaf area.
 """
 function senescence_rate!(; container)
     @unpack included = container.simp
@@ -51,24 +50,8 @@ function senescence_rate!(; container)
 end
 
 
-@doc raw"""
+"""
 Seasonal factor for the senescence rate.
-
-```math
-\begin{align*}
-SEN &=
-\begin{cases}
-1  & \text{if} \;\; ST < Ψ_1 \\
-1+(SEN_{max} - 1) \frac{ST - Ψ_1}{Ψ_2 - Ψ_1} & \text{if}\;\; Ψ_1 < ST < Ψ_2 \\
-SEN_{max}  & \text{if}\;\; ST > Ψ_2
-\end{cases} \\ \\
-\end{align*}
-```
-
-- ``ST`` annual cumulative temperature [$°C$]
-- ``Ψ₁=775``  [$°C$]
-- ``Ψ₂=3000`` [$°C$]
-- ``SEN_{max}=3``
 """
 function seasonal_component_senescence(; container, ST,)
     @unpack Ψ₁, Ψ₂, SEN_max = container.p
