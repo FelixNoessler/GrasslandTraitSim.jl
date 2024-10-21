@@ -10,6 +10,14 @@ The main function to solve the difference equations and get the solution with al
 solve_prob
 ```
 
+## Initialization
+
+```@docs
+initialization
+set_initialconditions!
+random_traits!
+```
+
 ## Main loop
 
 ```@docs	

@@ -135,10 +135,12 @@ export function waterStressPlot() {
         β_R = +d3.select("#β_R").property("value");
         δ_R = +d3.select("#δ_R").property("value");
         ɑ_R_05 = +d3.select("#ɑ_R_05").property("value");
+        ϕ_trait = +d3.select("#phi_RSA").property("value");
 
         d3.select("#β_R-value").text(β_R);
         d3.select("#δ_R-value").text(δ_R);
         d3.select("#ɑ_R_05-value").text(ɑ_R_05);
+        d3.select("#phi_RSA-value").text(ϕ_trait);
 
         plot();
     }

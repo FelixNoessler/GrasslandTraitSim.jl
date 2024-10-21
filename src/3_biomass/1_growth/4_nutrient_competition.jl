@@ -1,35 +1,6 @@
-@doc raw"""
+"""
 Calculates the similarity between plants concerning their investment
 in fine roots and collaboration with mycorrhiza.
-
-The trait similarity is build with the traits root surface area per
-belowground biomass (`srsa`) and the arbuscular mycorrhizal
-colonisation rate (`amc`).
-
-Standardized residuals are calculated for both traits:
-```math
-\text{amc_resid} =
-```
-
-The trait similarity between plant species $i$ and
-plant species $u$ for $T$ traits is calculated as follows:
-```math
-\text{trait_similarity}_{i,u} =
-    1-\frac{\sum_{t=1}^{t=T}
-        |\text{scaled_trait}_{t,i} - \text{scaled_trait}_{t,u}|}{T}
-```
-
-To give each functional trait an equal influence,
-the trait values have been scaled by the 5 % ($Q_{0.05, t}$)
-and 95 % quantile ($Q_{0.95, t}$) of trait values of 100 plant species:
-```math
-\text{scaled_trait}_{t,i} =
-    \frac{\text{trait}_{t,i} - Q_{0.05, t}}
-    {Q_{0.95, t} - Q_{0.05, t}}
-```
-
-If the rescaled trait values were below zero or above one, the values were
-set to zero or one respectively.
 """
 function similarity_matrix!(; container)
     @unpack nspecies = container.simp
@@ -56,91 +27,10 @@ function similarity_matrix!(; container)
     return nothing
 end
 
-@doc raw"""
-Models the density-dependent competiton for nutrients between plants.
-
-Plant available nutrients are reduced if a large biomass of plant
-species with similar root surface area per belowground biomass (`srsa`)
-and arbuscular mycorrhizal colonisation (`amc`) is already present.
-
-We define for $N$ species the trait similarity matrix $TS \in [0,1]^{N \times N}$ with
-trait similarities between the species $i$ and $j$ ($ts_{i,j}$),
-where $ts_{i,j} = ts_{j,i}$ and $ts_{i,i} = 1$:
-```math
-TS =
-\begin{bmatrix}
-    ts_{1,1} & ts_{1,2} & \dots &  & ts_{1,N} \\
-    ts_{2,1} & ts_{2,2} &  & \\
-    \vdots &  & \ddots &  & \\
-    ts_{N,1} & & & & ts_{N,N} \\
-\end{bmatrix}
-= \begin{bmatrix}
-    1 & ts_{1,2} & \dots &  & ts_{1,N} \\
-    ts_{2,1} & 1 &  & \\
-    \vdots &  & \ddots &  & \\
-    ts_{N,1} & & & & 1 \\
-\end{bmatrix}
-```
-
-and the biomass vector $B \in [0\,\text{kg ha⁻¹}, ∞\,\text{kg ha⁻¹}]^N$ with the biomass
-of each plant species $b$:
-```math
-B =
-\begin{bmatrix}
-    b_1 \\
-    b_2 \\
-    \vdots \\
-    b_N \\
-\end{bmatrix}
-```
-
-Then, we multiply the trait similarity matrix $TS$ with the biomass vector $B$:
-```math
-TS \cdot B =
-\begin{bmatrix}
-    1 & ts_{1,2} & \dots &  & ts_{1,N} \\
-    ts_{2,1} & 1 &  & \\
-    \vdots &  & \ddots &  & \\
-    ts_{N,1} & & & & 1 \\
-\end{bmatrix} \cdot
-\begin{bmatrix}
-    b_1 \\
-    b_2 \\
-    \vdots \\
-    b_N \\
-\end{bmatrix} =
-\begin{bmatrix}
-    1 \cdot b_1 + ts_{1,2} \cdot b_2 + \dots + ts_{1,N} \cdot b_N \\
-    ts_{2,1} \cdot b_1 + 1 \cdot b_2 + \dots + ts_{2,N} \cdot b_N \\
-    \vdots \\
-    ts_{N,1} \cdot b_1 + ts_{N,2} \cdot b_2 + \dots + 1 \cdot b_N \\
-\end{bmatrix}
-```
-
-The factors are then calculated as follows:
-```math
-\text{nutrients_adj_factor} =
-    \left(\frac{TS \cdot B}{\text{α_TSB}}\right) ^
-    {- \text{β_TSB}} \\
-```
-
-The reduction factors control the density and increases the "functional dispersion"
-of the root surface area per belowground biomass and the arbuscular
-mycorrhizal colonisation.
-
-The `TS` matrix is computed before the start of the simulation
-([calculation of trait similarity](@ref similarity_matrix!))
-and includes the traits arbuscular mycorrhizal colonisation rate (`amc`)
-and the root surface area devided by the above ground biomass (`srsa`).
-
-- `nutrients_adj_factor` is the factor that adjusts the
-  plant available nutrients [-]
-- `TS` is the trait similarity matrix, $TS \in [0,1]^{N \times N}$ [-]
-- `B` is the biomass vector, $B \in [0, ∞]^{N}$ [kg ha⁻¹]
-- `β_TSB` is the exponent of the below ground
-  competition factor [-]
 """
-function below_ground_competition!(; container, total_biomass)
+Models the density-dependent competiton for nutrients between plants.
+"""
+function nutrient_competition!(; container, total_biomass)
     @unpack nutrients_adj_factor, TS_biomass, TS = container.calc
     @unpack included, nspecies = container.simp
     @unpack TS_influence = container.p
@@ -172,18 +62,12 @@ end
 Reduction of growth based on plant available nutrients and
 the traits arbuscular mycorrhizal colonisation and
 root surface area per belowground biomass.
-
-Reduction of growth due to stronger nutrient stress for lower
-arbuscular mycorrhizal colonisation (`AMC`).
-
-Reduction of growth due to stronger nutrient stress for lower specific
-root surface area per belowground biomass (`srsa`).
 """
 function nutrient_reduction!(; container, nutrients, total_biomass)
     @unpack included, nspecies = container.simp
     @unpack Nutred = container.calc
 
-    below_ground_competition!(; container, total_biomass)
+    nutrient_competition!(; container, total_biomass)
 
     if !included.nutrient_growth_reduction
         @info "No nutrient reduction!" maxlog=1

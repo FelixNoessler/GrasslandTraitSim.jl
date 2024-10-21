@@ -23,7 +23,8 @@ included = (;
 
 trait_input = sim.input_traits()
 input_obj = sim.validation_input(; included, plotID = "HEG01", nspecies = length(trait_input.amc));
-p = sim.SimulationParameter()
+p = sim.SimulationParameter();
+nothing # hide
 ```
 
 Run the simulation and let's visualize the biomass dynamic without potential growth:

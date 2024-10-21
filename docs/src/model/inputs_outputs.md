@@ -24,10 +24,10 @@ CurrentModule = GrasslandTraitSim
 ### Traits of the plant species
 | Variable    | Symbol    |Description                                       | used in                                                                                        |
 | ----------- | --------- | ------------------------------------------------ | ---------------------------------------------------------------------------------------------- |
-| `amc`       | ``AMC_s`` | Arbuscular mycorrhizal colonisation rate [-]     | [`below_ground_competition!`](@ref), [`nutrient_reduction!`](@ref)                             |
+| `amc`       | ``AMC_s`` | Arbuscular mycorrhizal colonisation rate [-]     | [`nutrient_competition!`](@ref), [`nutrient_reduction!`](@ref)                             |
 | `sla`       | ``SLA_s`` | Specific leaf area [m² g⁻¹]                      | [`water_reduction!`](@ref), [`calculate_LAI!`](@ref), [`senescence!`](@ref)                    |
 | `height`    | ``H_s``   | Plant height [m]                                 | [`potential_growth!`](@ref), [`light_competition!`](@ref), [`mowing!`](@ref)                   |
-| `rsa`       | ``RSA_s`` | Root surface area / aboveground biomass [m² g⁻¹] | [`below_ground_competition!`](@ref), [`water_reduction!`](@ref), [`nutrient_reduction!`](@ref) |
+| `rsa`       | ``RSA_s`` | Root surface area / aboveground biomass [m² g⁻¹] | [`nutrient_competition!`](@ref), [`water_reduction!`](@ref), [`nutrient_reduction!`](@ref) |
 | `abp`       | ``ABP_s`` | Aboveground biomass / total biomass [-]          | [`calculate_LAI!`](@ref)                                                                       |
 | `lbp`       | ``LBP_s`` | Leaf mass / total biomass [-]                    | [`calculate_LAI!`](@ref)                                                                       |
 | `lnc`       | ``LNC_s`` | Leaf nitrogen content per leaf mass [mg g⁻¹]     | [`grazing!`](@ref)                                                                             |

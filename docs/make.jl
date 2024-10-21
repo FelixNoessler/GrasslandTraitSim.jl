@@ -44,8 +44,6 @@ makedocs(;
             "Overview" => "model/index.md",
             "Model input and output" => "model/inputs_outputs.md",
             "Parameter" => "model/parameter.md",
-            "Time step" => "model/time_step.md",
-            "Initialization" => "model/initialization.md",
             "Plant dynamics" => [
                 "Overview" => "model/plant/index.md",
                 "Growth: overview" => "model/plant/growth.md",
@@ -63,8 +61,9 @@ makedocs(;
         ]],
         "Visualization" => [
             "Dashboard" => "viz/dashboard.md",
-            "Visualize model components" => "viz/variables.md",],
-        "References & Acknowledgements" => "references.md"])
+            "Visualize model components" => "viz/variables.md",
+            "Varying the time step" => "viz/time_step.md",],
+        "References" => "references.md"])
 
 deploydocs(repo = "github.com/FelixNoessler/GrasslandTraitSim.jl",
            devbranch="master",

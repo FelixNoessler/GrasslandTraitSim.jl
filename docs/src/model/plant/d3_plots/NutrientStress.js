@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 export function nutrientAdjustmentPlot(){
-    let TSB_max = 10000, nutadj_max = 4;
+    let α_TSB = 10000, D_max = 4;
     let xmax = 40000;
      
     const margin = { top: 25, right: 60, bottom: 50, left: 70 },
@@ -13,7 +13,7 @@ export function nutrientAdjustmentPlot(){
         .attr("transform", `translate(${margin.left},${margin.top})`);
     
     const x = d3.scaleLinear().domain([0, xmax]).range([0, width]);
-    const y = d3.scaleLinear().domain([0, 5]).range([height, 0]);
+    const y = d3.scaleLinear().domain([0, 10]).range([height, 0]);
     
     
     const xAxis = d3.axisBottom(x);
@@ -38,7 +38,7 @@ export function nutrientAdjustmentPlot(){
         .attr("y", -40)
         .attr("fill", "#000")
         .attr("text-anchor", "middle")
-        .text("Nutrient adjustment factor [-]");
+        .text("Nutrient adjustment factor (D) [-]");
     
     svg.append("line")
         .attr("x1", x(0)) 
@@ -61,29 +61,29 @@ export function nutrientAdjustmentPlot(){
     
     const maxCircle = svg.append("circle")
         .attr("cx", x(0))
-        .attr("cy", y(nutadj_max))
+        .attr("cy", y(D_max))
         .attr("r", 5)
         .attr("fill", "red");
             
     const oneCircle = svg.append("circle")
-        .attr("cx", x(TSB_max))
+        .attr("cx", x(α_TSB))
         .attr("cy", y(1))
         .attr("r", 5)
         .attr("fill", "red");
             
     // Update parameters and plot
     function updateParameters() {
-        TSB_max = +d3.select("#TSB_max").property("value");
-        nutadj_max = +d3.select("#nutadj_max").property("value");
+        α_TSB = +d3.select("#α_TSB").property("value");
+        D_max = +d3.select("#D_max").property("value");
     
-        d3.select("#TSB_max-value").text(TSB_max);
-        d3.select("#nutadj_max-value").text(nutadj_max);
+        d3.select("#α_TSB-value").text(α_TSB);
+        d3.select("#D_max-value").text(D_max);
     
         plot();
     }
     
     function calculate_nutrient_adjustment(TS_B) {
-        return nutadj_max * Math.exp(Math.log(1/nutadj_max) / TSB_max * TS_B)
+        return D_max * Math.exp(Math.log(1/D_max) / α_TSB * TS_B)
     }
     
     function create_data() {
@@ -104,12 +104,12 @@ export function nutrientAdjustmentPlot(){
             .transition()
             .duration(50)
             .attr("cx", x(0))
-            .attr("cy", y(nutadj_max));
+            .attr("cy", y(D_max));
             
         oneCircle
             .transition()
             .duration(50)
-            .attr("cx", x(TSB_max))
+            .attr("cx", x(α_TSB))
             .attr("cy", y(1));
     }
     
@@ -158,7 +158,7 @@ export function nutrientStressRSAPlot(){
         .attr("y", -40)
         .attr("fill", "#000")
         .attr("text-anchor", "middle")
-        .text("Nutrient growth reducer based on RSA (N_rsa) [-]");
+        .text("Nutrient growth reducer based on RSA (NUT_rsa) [-]");
 
     const line = d3.line()
         .x(d => x(d.R))
@@ -310,7 +310,7 @@ export function nutrientStressAMCPlot(){
         .attr("y", -40)
         .attr("fill", "#000")
         .attr("text-anchor", "middle")
-        .text("Nutrient growth reducer based on AMC (N_amc) [-]");
+        .text("Nutrient growth reducer based on AMC (NUT_amc) [-]");
 
     const line = d3.line()
         .x(d => x(d.R))

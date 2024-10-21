@@ -19,4 +19,5 @@ flowchart LR
 change_water_reserve
 transpiration
 evaporation
+input_WHC_PWP!
 ```

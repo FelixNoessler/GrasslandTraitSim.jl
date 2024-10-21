@@ -48,10 +48,10 @@ The water stress growth reducer ``WAT_{txys}`` [-] is defined as:
 
 == Parameter
 
-- ``\phi_{RSA}`` [m² g⁻¹]
-- ``\beta_{W,RSA}`` [-]
-- ``\alpha_{W,RSA,05}`` [-]
-- ``\delta_{W,RSA}`` [g m⁻²]
+- ``\phi_{RSA}`` reference trait value [m² g⁻¹]
+- ``\beta_{W,RSA}`` slope of response function [-]
+- ``\alpha_{W,RSA,05}`` response at ``W_{p, txy} = 0.5`` for species with the reference trait value[-]
+- ``\delta_{W,RSA}`` scales the difference in the growth reducer between species [g m⁻²]
 see also [`SimulationParameter`](@ref)
 
 == Variables
@@ -111,7 +111,7 @@ morphological traits:
     </colgroup>
     <tbody>
     <tr>
-        <td>mean response at Wₚ= 0.5 (α_WRSA05) <br>see red dot (strong to weak growth reduction)</td>
+        <td>response at Wₚ = 0.5 for species with the reference trait value (α_WRSA05) <br>(strong to weak growth reduction)</td>
         <td><span id="ɑ_R_05-value">0.9</span></td>
         <td><input type="range" id="ɑ_R_05" min="0.1" max="0.999" step="0.001" value="0.9" class="input_water_stress_graph"></td>
     </tr>
@@ -124,6 +124,11 @@ morphological traits:
         <td>slope of response (β_WRSA)</td>
         <td><span id="β_R-value">7</span></td>
         <td><input type="range" id="β_R" min="3" max="10" step="0.1" value="7" class="input_water_stress_graph"></td>
+    </tr>
+    <tr>
+        <td>reference trait value (ϕ_RSA)</td>
+        <td><span id="phi_RSA-value">0.15</span></td>
+        <td><input type="range" id="phi_RSA" min="0.05" max="0.25" step="0.05" value="0.15" class="input_water_stress_graph"></td>
     </tr>
     </tbody>
 </table>

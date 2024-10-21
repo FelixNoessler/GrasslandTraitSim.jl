@@ -200,8 +200,11 @@ see also [`SimulationParameter`](@ref)
 == Variables
 
 inputs:
-- ``ST_{txy}`` yearly cumulative mean air temperature [°C]
+
 - ``T_{txy}`` mean air temperature [°C]
+
+intermediate variables:
+- ``ST_{txy}`` yearly cumulative mean air temperature [°C]
 
 :::
 
