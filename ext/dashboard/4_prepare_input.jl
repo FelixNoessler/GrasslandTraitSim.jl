@@ -7,10 +7,10 @@ function prepare_input(; plot_obj, posterior, biomass_stats = nothing)
 
     input_obj = if time_step_days == 14
         path = assetpath("data/input/inputs_14_days.jld2")
-        load_input(path; included,
+        gts.load_input(path; included,
                    plotIDs = [plotID])[Symbol(plotID)]
     else
-        validation_input(; plotID, nspecies = 71, included, biomass_stats,
+        gts.validation_input(; plotID, nspecies = 71, included, biomass_stats,
                                     time_step_days)
     end
     # ------------- parameter values
@@ -23,7 +23,7 @@ function prepare_input(; plot_obj, posterior, biomass_stats = nothing)
         p = add_to_p(θ)
 
     elseif samplingtype == :fixed
-        p = SimulationParameter()
+        p = gts.SimulationParameter()
         for (i, k) in enumerate(plot_obj.obs.parameter_keys)
             p[k] = parse(Float64, plot_obj.obs.tb_p[i].stored_string[]) * unit(p[k])
         end

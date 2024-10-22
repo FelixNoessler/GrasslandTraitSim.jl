@@ -35,7 +35,7 @@ function dashboard_layout(; variable_p)
     ##############################################################################
     Label(sim_layout[1, 1:2], "Turn off parts of the model";
         halign = :left, font = :bold, fontsize = 16)
-    input_obj = validation_input(; plotID = "HEG01", nspecies = 1)
+    input_obj = gts.validation_input(; plotID = "HEG01", nspecies = 1)
     included_symbols = keys(input_obj.simp.included)
     is_included = collect(values(input_obj.simp.included))
     labels = String.(included_symbols)
@@ -148,7 +148,7 @@ function dashboard_layout(; variable_p)
     ##############################################################################
     preset_button = Button(righttop_layout[1, 1]; label = "reset parameter")
 
-    p = SimulationParameter()
+    p = gts.SimulationParameter()
     parameter_keys = collect(keys(p))
     for k in keys(variable_p)
         p[k] = variable_p[k]

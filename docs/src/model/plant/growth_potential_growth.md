@@ -104,10 +104,44 @@ morphological traits:
 
 - Influence of specific leaf area and aboveground biomass proportion on the leaf area index 
 
-```@example 
-import GrasslandTraitSim as sim
-sim.plot_lai_traits()
+
+```@raw html
+<details>
+<summary>show code</summary>
 ```
+
+```@example
+import GrasslandTraitSim as sim
+using CairoMakie
+using Unitful
+
+let
+    nspecies, container = sim.create_container_for_plotting()
+    sim.calculate_LAI!(; container, above_biomass = container.u.u_above_biomass[1, 1, :])
+
+    idx = sortperm(container.traits.sla)
+    LAIs_sorted = ustrip.(container.calc.LAIs[idx])
+    sla = ustrip.(container.traits.sla[idx])
+
+    abp = (container.traits.abp)[idx]
+    colorrange = (minimum(abp), maximum(abp))
+    colormap = :viridis
+
+    fig = Figure()
+    ax = Axis(fig[1, 1]; xlabel = "Specific leaf area [m² g⁻¹]", ylabel = "Leaf area index [-]", title = "")
+    sc = scatter!(sla, LAIs_sorted, color = abp, colormap = colormap)
+    Colorbar(fig[1,2], sc; label = "Aboveground biomass per total biomass")
+    
+    fig
+    save("sla_lai.png", fig); nothing # hide
+end
+```
+
+```@raw html
+</details>
+```
+
+![](sla_lai.png)
 
 ## API
 

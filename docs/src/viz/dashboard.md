@@ -2,7 +2,7 @@
 
 The dashboard can be used to graphically check the calibration results. It shows the simulated total biomass, soil water content and the simulated community weighted mean traits for all grassland plots of the Biodiversity Exploratories.
 
-`GLMakie.jl` is used instead of `CairoMakie.jl` to make use of interactive features. What can be done:
+`GLMakie.jl` is used instead of `CairoMakie.jl` to take advantage of interactive features and must be loaded explicitly. What can be done:
 
 - see simulation results for different grassland plots of the Biodiversity Exploratories with the `plotID`
 - sample parameter values from the prior and in the future also from the posterior
@@ -22,6 +22,9 @@ using GLMakie
 GLMakie.activate!()
 
 sim.dashboard()
+
+# note: if you want to switch back to CairoMakie
+# using CairoMakie; CairoMakie.activate!()
 ```
 
 ```@raw html
@@ -31,9 +34,9 @@ sim.dashboard()
 
 ```@example
 import GrasslandTraitSim as sim
-using CairoMakie
-
+using GLMakie
 sim.dashboard(; variable_p = sim.load_optim_result(), path = "dashboard.png")
+using CairoMakie; CairoMakie.activate!() # hide
 ```
 
 ```@raw html

@@ -30,11 +30,16 @@ jobs:
         uses: julia-actions/setup-julia@v1
       - name: Pull Julia cache
         uses: julia-actions/cache@v1
+      - name: Install binary dependencies
+        run: sudo apt-get update && sudo apt-get install -y xorg-dev mesa-utils xvfb libgl1 freeglut3-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxext-dev
       - name: Install documentation dependencies
-        run: julia --project=docs -e 'import Pkg; Pkg.develop(path="."); Pkg.instantiate(); Pkg.precompile(); Pkg.status()'
-      # Creating new mds from src
+        run: >
+          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24'
+          julia --project=docs -e 'import Pkg; Pkg.develop(path="."); Pkg.instantiate(); Pkg.precompile(); Pkg.status()'
       - name: Build and deploy documentation
-        uses: julia-actions/julia-docdeploy@v1
+        run: >
+          DISPLAY=:0 xvfb-run -s '-screen 0 1024x768x24'
+          julia --project=docs --color=yes docs/make.jl
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}

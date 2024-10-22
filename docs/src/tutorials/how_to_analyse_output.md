@@ -113,8 +113,8 @@ begin
              label = "Specific leaf area [m² g⁻¹]")
 
     fig
+    save("share_biomass.png", fig); nothing # hide
 end
-save("share_biomass.png", fig); nothing # hide
 ```
 
 ```@raw html
@@ -173,8 +173,8 @@ begin
     [rowgap!(fig.layout, i, 5) for i in 1:length(traits)-1]
     
     fig
+    save("traits_time.svg", fig); nothing # hide
 end
-save("traits_time.svg", fig); nothing # hide
 ```
 
 ```@raw html
@@ -209,8 +209,8 @@ begin
       Axis(fig[2,1]; ylabel = "Cummulative mown\nbiomass [kg ha⁻¹]", xlabel = "Date [year]")
       lines!(sol.simp.mean_input_date_num, ustrip.(vec(cum_mown)), color = :black, linewidth = 2;)
       fig
+      save("grazed_mown.svg", fig); nothing # hide
 end
-save("grazed_mown.svg", fig); nothing # hide
 ```
 
 ```@raw html
@@ -299,8 +299,8 @@ begin
     lines!(sol.simp.output_date_num[1:tstep:end], feve_R)
 
     fig
+    save("fun_diversity.svg", fig); nothing # hide
 end
-save("fun_diversity.svg", fig); nothing # hide
 ```
 
 ```@raw html
@@ -337,8 +337,8 @@ begin
     Axis(fig[2,1]; ylabel = "Simpson index", xlabel = "Date [year]")
     lines!(sol.simp.output_date_num, simpson, color = :black, linewidth = 2;)
     fig
+    save("shannon_simpson.svg", fig); nothing # hide
 end
-save("shannon_simpson.svg", fig); nothing # hide
 ```
 
 ```@raw html

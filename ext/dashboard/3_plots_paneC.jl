@@ -55,7 +55,7 @@ function plot_static_nutrient_reducer(; plot_obj, sol, kwargs...)
 
     @reset sol.simp.included.belowground_competition = false
     for (i, x) in enumerate(xs)
-        nutrient_reduction!(; container = sol, nutrients = x,
+        gts.nutrient_reduction!(; container = sol, nutrients = x,
                             total_biomass = fill(0.0u"kg/ha", nspecies))
 
         ymat_amc[i, :] .= sol.calc.N_amc
@@ -91,7 +91,7 @@ function plot_static_water_reducer(; plot_obj, sol, kwargs...)
     @. sol.calc.above_proportion = above_biomass / total_biomass
 
     for (i, x) in enumerate(xs)
-        water_reduction!(; container = sol, W = x * u"mm", PWP, WHC)
+        gts.water_reduction!(; container = sol, W = x * u"mm", PWP, WHC)
         ymat[i, :] .= sol.calc.Waterred
     end
 

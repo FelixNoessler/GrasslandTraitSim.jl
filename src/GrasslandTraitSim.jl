@@ -3,24 +3,18 @@ module GrasslandTraitSim
 import CSV
 import Dates
 import Random
-import CairoMakie: Makie
 
 using Accessors
-using CairoMakie
 using DataFrames
 using DataFramesMeta
 using DimensionalData
 using Distributions
 using DocStringExtensions
-using ForwardDiff
-using LinearAlgebra
 using JLD2
-using Printf
+using LinearAlgebra
+using PrettyTables
 using Statistics
 using StatsBase
-using PrettyTables
-using TimeSeries
-using TransformVariables
 using Unitful
 using UnPack
 
@@ -106,30 +100,16 @@ include("4_height/height.jl")
 
 include("5_water/water.jl")
 
-include("6_visualization/1_visualization.jl")
-
 
 const ASSETS_DIR = joinpath(@__DIR__, "..", "assets")
 assetpath(files...) = normpath(joinpath(ASSETS_DIR, files...))
 
 function __init__()
-    @info "Loading grassland data from the Biodiversity Exploratories"
     datapath = assetpath("data")
     load_gm(datapath)
     load_data(datapath)
 
-    set_global_theme()
-
     return nothing
-end
-
-makie_theme = Theme(fontsize = 18,
-    Axis = (xgridvisible = false, ygridvisible = false,
-        topspinevisible = false, rightspinevisible = false),
-    GLMakie = (title = "Grassland Simulation",
-        focus_on_show = true))
-function set_global_theme(; theme = makie_theme)
-    set_theme!(makie_theme)
 end
 
 function load_data(datapath)
@@ -236,5 +216,53 @@ function load_data(datapath)
     return nothing
 end
 
+
+function create_container_for_plotting(; nspecies = nothing, param = (;), θ = nothing, kwargs...)
+    trait_input = if isnothing(nspecies)
+        input_traits()
+    else
+        nothing
+    end
+
+    if isnothing(nspecies)
+        nspecies = length(trait_input.amc)
+    end
+
+    input_obj = validation_input(;
+        plotID = "HEG01", nspecies, kwargs...)
+    p = SimulationParameter(;)
+
+    if !isnothing(θ)
+        for k in keys(θ)
+                p[k] = θ[k]
+            end
+        end
+
+    if !isnothing(param) && !isempty(param)
+        for k in keys(param)
+            p[k] = param[k]
+        end
+    end
+
+    prealloc = preallocate_vectors(; input_obj);
+    prealloc_specific = preallocate_specific_vectors(; input_obj);
+    container = initialization(; input_obj, p, prealloc, prealloc_specific,
+                                   trait_input)
+
+    return nspecies, container
+end
+
+function load_optim_result()
+    return load(assetpath("data/optim.jld2"), "θ");
+end
+
+
+function optim_parameter()
+    θ = load_optim_result()
+    return SimulationParameter(; θ...)
+end
+
+# see extension for the implementation
+function dashboard end
 
 end

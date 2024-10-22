@@ -278,11 +278,7 @@ end
 function prepare_mowing(d::DataFrame)
     startyear = minimum(d.year)
     endyear = maximum(d.year)
-
     days = Dates.Date(startyear):Dates.lastdayofyear(Dates.Date(endyear))
-    t = TimeArray((date = days,
-            index = 1:length(days)),
-        timestamp = :date)
 
     cutheights = d.CutHeight_cm1[.!ismissing.(d.CutHeight_cm1)]
     mean_cutheight = 7.0
@@ -303,8 +299,7 @@ function prepare_mowing(d::DataFrame)
                     cH = mean_cutheight
                 end
 
-                index = values(t[mowing_date].index)[1]
-                cutHeight_vec[index] = cH
+                cutHeight_vec[findfirst(mowing_date .== days)] = cH
             end
         end
     end
@@ -315,11 +310,7 @@ end
 function prepare_grazing(d::DataFrame)
     startyear = minimum(d.year)
     endyear = maximum(d.year)
-
     days = Dates.Date(startyear):Dates.lastdayofyear(Dates.Date(endyear))
-    t = TimeArray((date = days,
-            index = 1:length(days)),
-        timestamp = :date)
 
     grazing_vec = Array{Float64}(undef, length(days))
     grazing_vec .= NaN
@@ -337,8 +328,8 @@ function prepare_grazing(d::DataFrame)
                     grazing_enddate = days[end]
                 end
 
-                start_index = values(t[grazing_startdate].index)[1]
-                end_index = values(t[grazing_enddate].index)[1]
+                start_index = findfirst(grazing_startdate .== days)
+                end_index = findfirst(grazing_enddate .== days)
                 grazing_vec[start_index:end_index] .= grazing_intensity
             end
         end
