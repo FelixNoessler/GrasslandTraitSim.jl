@@ -1,10 +1,10 @@
-# Plant dynamics
+# Plant biomass dynamics
 
 Click on a process to view detailed documentation:
 
 ```mermaid
 flowchart LR
-    A[Growth] --> B[Change in biomass and height in one day]
+    A[Growth] --> B[Change in biomass and height during one time step]
     C[Senescence] --> B
     D[Mowing and grazing] --> B
 

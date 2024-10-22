@@ -51,18 +51,21 @@ makedocs(;
             "Overview" => "model/index.md",
             "Model input and output" => "model/inputs_outputs.md",
             "Parameter" => "model/parameter.md",
-            "Plant dynamics" => [
-                "Overview" => "model/plant/index.md",
-                "Growth: overview" => "model/plant/growth.md",
-                "Growth: potential growth" => "model/plant/growth_potential_growth.md",
-                "Growth: community adjustment" => "model/plant/growth_env_factors.md",
-                "Growth: species-specific adjustment" => "model/plant/growth_species_specific.md",
-                "- for light" => "model/plant/growth_species_specific_light.md",
-                "- for soil water" => "model/plant/growth_species_specific_water.md",
-                "- for nutrients" => "model/plant/growth_species_specific_nutrients.md",
-                "- for investment into roots" => "model/plant/growth_species_specific_roots.md",
-                "Senescence" => "model/plant/senescence.md",
-                "Mowing and grazing" => "model/plant/mowing_grazing.md"],
+            "Plant biomass dynamics" => [
+                "Overview" => "model/biomass/index.md",
+                "Growth: overview" => "model/biomass/growth.md",
+                "Growth: potential growth" => "model/biomass/growth_potential_growth.md",
+                "Growth: community adjustment" => "model/biomass/growth_env_factors.md",
+                "Growth: species-specific adjustment" => "model/biomass/growth_species_specific.md",
+                "- for light" => "model/biomass/growth_species_specific_light.md",
+                "- for soil water" => "model/biomass/growth_species_specific_water.md",
+                "- for nutrients" => "model/biomass/growth_species_specific_nutrients.md",
+                "- for investment into roots" => "model/biomass/growth_species_specific_roots.md",
+                "Senescence" => "model/biomass/senescence.md",
+                "Mowing and grazing" => "model/biomass/mowing_grazing.md"],
+            "Plant height dynamics" => [
+                "Dynamics" => "model/height/index.md"
+            ],
             "Soil water dynamics" => [
                 "Dynamics" => "model/water/index.md"
         ]],

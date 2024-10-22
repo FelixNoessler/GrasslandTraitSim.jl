@@ -222,6 +222,8 @@ end
 
 ## Functional diversity indices
 
+We use the R-package `fundiversity` to compute the functional diversity indices. We run the R-code from Julia using the Julia package `RCall.jl`.
+
 ```@raw html
 <details><summary>show code</summary>
 ```

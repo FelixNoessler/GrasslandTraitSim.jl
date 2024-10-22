@@ -1,25 +1,5 @@
-@doc raw"""
-```math
-\begin{align}
-\rho &= \left(\frac{LNCM}{LNCM_{cwm]}}\right) ^ {\text{β_PAL_lnc}} \\
-μₘₐₓ &= κ \cdot \text{LD} \\
-h &= \frac{1}{μₘₐₓ} \\
-a &= \frac{1}{\text{α_GRZ}^2 \cdot h} \\
-\text{totgraz} &= \frac{a \cdot (\sum \text{biomass})^2}
-                    {1 + a\cdot h\cdot (\sum \text{biomass})^2} \\
-\text{share} &= \frac{
-    \rho \cdot \text{biomass}}
-    {\sum \left[ \rho \cdot \text{biomass} \right]} \\
-\text{graz} &= \text{share} \cdot \text{totgraz}
-\end{align}
-```
-
-- `LD` daily livestock density [livestock units ha⁻¹]
-- `κ` daily consumption of one livestock unit [kg], follows [Gillet2008](@cite)
-- `ρ` palatability,
-  dependent on nitrogen per leaf mass (LNCM) [-]
-- `α_GRZ` is the half-saturation constant [kg ha⁻¹]
-- equation partly based on [Moulin2021](@cite)
+"""
+Simulates the removal of biomass by grazing for each species.
 """
 function grazing!(; container, LD, above_biomass, actual_height)
     @unpack lnc = container.traits

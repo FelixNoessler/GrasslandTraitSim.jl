@@ -1,3 +1,6 @@
+"""
+Caculates the change in the plant height of each species during one time step.
+"""
 function height_dynamic!(; container, actual_height, above_biomass, allocation_above)
     @unpack height = container.traits
     @unpack mown, grazed, act_growth,

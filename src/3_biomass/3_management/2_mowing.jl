@@ -1,5 +1,5 @@
-@doc raw"""
-Influence of mowing for plant species with different heights
+"""
+Simulate the mown biomass of each plant species.
 """
 function mowing!(; container, mowing_height, above_biomass, actual_height)
     @unpack defoliation, mown, proportion_mown  = container.calc

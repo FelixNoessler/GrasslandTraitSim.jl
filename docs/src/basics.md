@@ -2,11 +2,13 @@
 
 `GrasslandTraitSim.jl` is a Julia package for simulating plant dynamics in managed grasslands.
 
-Author: [Felix Nößler](https://github.com/FelixNoessler/) 
+Author: [Felix Nößler](https://github.com/FelixNoessler/).
 ```@raw html 
 <br/>
 ```
 Licence: [GPL-3.0](https://github.com/FelixNoessler/GrasslandTraitSim.jl/blob/master/LICENSE)
+
+Please contact me if you have any questions about using the model or if you would like to collaborate. You can find my email address [here](https://veilmail.io/felix-noessler).
 
 ## Installation
 
@@ -15,8 +17,14 @@ Licence: [GPL-3.0](https://github.com/FelixNoessler/GrasslandTraitSim.jl/blob/ma
 
 ```julia
 import Pkg
-Pkg.add(url="https://github.com/felixnoessler/GrasslandTraitSim.jl")
+Pkg.add("GrasslandTraitSim")
 ```
+
+For the tutorials you will also need several other Julia packages:
+```julia
+Pkg.add(["CairoMakie", "GLMakie", "Unitful", "Statistics"])
+```
+
 
 ## Run simulations
 
