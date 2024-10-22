@@ -7,14 +7,21 @@
 # include("docs/clean_local_doc.jl")
 # using DocumenterVitepress; DocumenterVitepress.dev_docs("build", md_output_path = "")
 
+using CairoMakie
 using Documenter, DocumenterVitepress
 using DocumenterCitations
 using GrasslandTraitSim
 
-####### Create Bilbiography
+####### Set theme for all plots in documentation
+makie_theme = Theme(fontsize = 18,
+    Axis = (xgridvisible = false, ygridvisible = false,
+        topspinevisible = false, rightspinevisible = false))
+set_theme!(makie_theme)
+
+####### Create bilbiography
 bib = CitationBibliography("docs/src/lit.bib"; style = :numeric)
 
-# for prettyurls you need locally a live server
+####### Create documentation
 makedocs(;
     draft = false,
     warnonly  = true,
