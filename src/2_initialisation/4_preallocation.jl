@@ -323,19 +323,17 @@ function PreallocCache()
 end
 
 function get_buffer(buffer::PreallocCache, T, id; input_obj)
-    if T <: ForwardDiff.Dual
-        if isnothing(buffer.diff[id])
-            buffer.diff[id] = preallocate_vectors(; input_obj, T)
-        end
-
-        return buffer.diff[id]
-
-    elseif T <: Float64
+    if T <: Float64
         if isnothing(buffer.normal[id])
             buffer.normal[id] = preallocate_vectors(; input_obj, T)
         end
-
         return buffer.normal[id]
+
+    elseif T <: ForwardDiff.Dual
+        if isnothing(buffer.diff[id])
+            buffer.diff[id] = preallocate_vectors(; input_obj, T)
+        end
+        return buffer.diff[id]
     end
 end
 
@@ -351,18 +349,16 @@ function PreallocPlotCache(nplots)
 end
 
 function get_buffer(buffer::PreallocPlotCache, T, threadid, plotnum; input_obj)
-    if T <: ForwardDiff.Dual
-        if isnothing(buffer.diff[threadid, plotnum])
-            buffer.diff[threadid, plotnum] = preallocate_specific_vectors(; input_obj, T)
-        end
-
-        return buffer.diff[threadid, plotnum]
-
-    elseif T <: Float64
+    if T <: Float64
         if isnothing(buffer.normal[threadid, plotnum])
             buffer.normal[threadid, plotnum] = preallocate_specific_vectors(; input_obj, T)
         end
-
         return buffer.normal[threadid, plotnum]
+
+    elseif T <: ForwardDiff.Dual
+        if isnothing(buffer.diff[threadid, plotnum])
+            buffer.diff[threadid, plotnum] = preallocate_specific_vectors(; input_obj, T)
+        end
+        return buffer.diff[threadid, plotnum]
     end
 end
