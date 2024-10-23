@@ -45,11 +45,6 @@ simp = (
     ## which processes to include, see extra tutorial
     ## empty tuple means, that everything is included
     included = sim.create_included(),
-    
-    ## include parameter for likelihood calculation?
-    ## again empty tuple means that everything is included
-    ## here we say that don't need the parameters for the likelihood
-    likelihood_included = (; biomass = false, trait = false)
 )
 
 nothing # hide
