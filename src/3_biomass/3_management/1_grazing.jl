@@ -5,12 +5,16 @@ function grazing!(; container, LD, above_biomass, actual_height)
     @unpack lnc = container.traits
     @unpack η_GRZ, β_PAL_lnc, β_height_GRZ, κ = container.p
     @unpack defoliation, grazed_share, relative_lnc, ρ, relative_height, grazed,
-            heightinfluence, height_ρ_biomass = container.calc
+            heightinfluence, height_ρ_biomass, feedible_biomass = container.calc
+    @unpack nspecies = container.simp
 
     min_height = 0.05u"m"
-    height_proportion_feedible = max.(1 .- min_height ./ actual_height, 0)
 
-    feedible_biomass = height_proportion_feedible .* above_biomass
+    for s in 1:nspecies
+        height_proportion_feedible = max(1 - min_height / actual_height[s], 0.0)
+        feedible_biomass[s] = height_proportion_feedible * above_biomass[s]
+    end
+
     sum_feedible_biomass = sum(feedible_biomass)
 
     if iszero(sum_feedible_biomass)
@@ -25,11 +29,6 @@ function grazing!(; container, LD, above_biomass, actual_height)
     α_GRZ = κ * LD * η_GRZ
     total_grazed = κ * LD * biomass_squarred / (α_GRZ * α_GRZ + biomass_squarred)
 
-    # biomass_squarred = sum_feedible_biomass * sum_feedible_biomass
-    # α_GRZ = κ * η_GRZ / u"ha"
-    # total_grazed = κ * LD * biomass_squarred / (α_GRZ * α_GRZ + biomass_squarred)
-
-    # total_grazed = κ * LD
     container.calc.com.fodder_supply = κ * LD - total_grazed
 
     #################################### share of grazed biomass per species
