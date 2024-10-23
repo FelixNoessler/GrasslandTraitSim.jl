@@ -354,12 +354,11 @@ end
 function create_included(included_prep = (;);)
     included = (;
         senescence = true,
-        senescence_season = true,  
+        senescence_season = true,
         senescence_sla = true,
         potential_growth = true,
         mowing = true,
         grazing = true,
-        lowbiomass_avoidance = true,
         belowground_competition = true,
         community_self_shading = true,
         height_competition = true,
@@ -367,7 +366,7 @@ function create_included(included_prep = (;);)
         nutrient_growth_reduction = true,
         root_invest = true,
         temperature_growth_reduction = true,
-        seasonal_growth_adjustment = true,   
+        seasonal_growth_adjustment = true,
         radiation_growth_reduction = true)
 
     for k in keys(included_prep)
