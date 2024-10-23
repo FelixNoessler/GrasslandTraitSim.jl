@@ -1,13 +1,13 @@
 """
 Simulates the change of the soil water content in the rooting zone within one time step.
 """
-function change_water_reserve(; container, patch_above_biomass, water, precipitation,
+function change_water_reserve(; container, water, precipitation,
                               PET, WHC, PWP)
     @unpack LAItot = container.calc.com
 
     # -------- Evapotranspiration
     AEv = evaporation(; water, WHC, PET, LAItot)
-    ATr = transpiration(; container, patch_above_biomass, water, PWP, WHC, PET, LAItot)
+    ATr = transpiration(; container, water, PWP, WHC, PET, LAItot)
     AET = min(water, ATr + AEv)
 
     # -------- Drainage
@@ -23,26 +23,11 @@ end
 """
 Simulates transpiration from the vegetation.
 """
-function transpiration(; container, patch_above_biomass, water, PWP, WHC, PET, LAItot)
-    @unpack included = container.simp
+function transpiration(; container, water, PWP, WHC, PET, LAItot)
+    ### plant available water
+    Wp = max(0.0, (water - PWP) / (WHC - PWP))
 
-    ###### SLA effect
-    sla_effect = 1.0
-    if included.sla_transpiration
-        @unpack sla = container.traits
-        @unpack ϕ_sla, β_TR_sla = container.p
-        @unpack relative_sla = container.calc
-
-        # community weighted mean specific leaf area
-        relative_sla .= sla .* patch_above_biomass ./ sum(patch_above_biomass)
-        cwm_sla = sum(relative_sla)
-        sla_effect = min(2.0, max(0.5, (cwm_sla / ϕ_sla) ^ β_TR_sla))  # TODO change in documentation and manusctipt
-    end
-
-    ####### plant available water:
-    W = max(0.0, (water - PWP) / (WHC - PWP))
-
-    return W * PET * sla_effect * LAItot / 3 # TODO
+    return Wp * PET  * LAItot / 3
 end
 
 """

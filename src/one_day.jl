@@ -129,7 +129,7 @@ function one_day!(; t, container)
                 end
             end
             # --------------------- water dynamics
-            du_water[x, y] = change_water_reserve(; container, patch_above_biomass,
+            du_water[x, y] = change_water_reserve(; container,
                 water = u_water[x, y],
                 precipitation = input.precipitation[t],
                 PET = input.PET_sum[t],
