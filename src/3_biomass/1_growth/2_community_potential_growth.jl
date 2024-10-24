@@ -31,7 +31,7 @@ function potential_growth!(; container, above_biomass, actual_height, PAR)
     end
 
     @unpack RUE_max, k = container.p
-    com.potgrowth_total = PAR * RUE_max * com.self_shading
+    com.potgrowth_total = PAR * RUE_max * (1 - exp(-k * com.LAItot)) * com.self_shading
 
     return nothing
 end

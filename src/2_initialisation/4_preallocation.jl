@@ -1,4 +1,4 @@
-function preallocate_vectors(; input_obj, T = Float64, max_height = 1.5u"m", Δheightlayer = 0.025u"m")
+function preallocate_vectors(; input_obj, T = Float64)
     @unpack output_date, mean_input_date, included, nspecies,
             patch_xdim, patch_ydim, ntimesteps = input_obj.simp
     @unpack initbiomass = input_obj.site
@@ -168,8 +168,6 @@ function preallocate_vectors(; input_obj, T = Float64, max_height = 1.5u"m", Δh
 
     global F = T
 
-    nheight_layers = ceil(Int64, max_height / Δheightlayer)
-
     calc = (;
         com = CommunityLevel(),
 
@@ -206,6 +204,10 @@ function preallocate_vectors(; input_obj, T = Float64, max_height = 1.5u"m", Δh
         nutrients_adj_factor = Array{T}(undef, nspecies),
         TS_biomass = Array{T}(undef, nspecies)u"kg / ha",
 
+        ## height influence
+        lais_heightinfluence = Array{T}(undef, nspecies),
+        heightinfluence = Array{T}(undef, nspecies),
+        relative_height = Array{T}(undef, nspecies)u"m",
 
         # leaf nitrogen (palatability) --> grazing
         relative_lnc = Array{T}(undef, nspecies)u"mg/g",
@@ -227,11 +229,9 @@ function preallocate_vectors(; input_obj, T = Float64, max_height = 1.5u"m", Δh
         Waterred = Array{T}(undef, nspecies),
 
         ## mowing and grazing
+        feedible_biomass = Array{T}(undef, nspecies)u"kg / ha",
         mown_height = Array{T}(undef, nspecies)u"m",
         proportion_mown = Array{T}(undef, nspecies),
-        feedible_biomass = Array{T}(undef, nspecies)u"kg / ha",
-        heightinfluence = Array{T}(undef, nspecies),
-        relative_height = Array{T}(undef, nspecies)u"m",
         grazed_share = Array{T}(undef, nspecies),
         mown = Array{T}(undef, nspecies)u"kg / ha",
         grazed = Array{T}(undef, nspecies)u"kg / ha",
@@ -242,16 +242,7 @@ function preallocate_vectors(; input_obj, T = Float64, max_height = 1.5u"m", Δh
         ## based on traits
         μ = Array{T}(undef, nspecies),
         μ_sla = Array{T}(undef, nspecies),
-        TS = Array{T}(undef, nspecies, nspecies),
-
-        ## height layers
-        min_height_layer = collect(0.0u"m":Δheightlayer:nheight_layers*Δheightlayer-Δheightlayer),
-        max_height_layer = collect(Δheightlayer:Δheightlayer:nheight_layers*Δheightlayer),
-        LAIs_layer = Array{T}(undef, nspecies, nheight_layers),
-        LAItot_layer = Array{T}(undef, nheight_layers),
-        cumLAItot_above = Array{T}(undef, nheight_layers),
-        Intensity_layer = Array{T}(undef, nheight_layers),
-        fPAR_layer = Array{T}(undef, nspecies, nheight_layers))
+        TS = Array{T}(undef, nspecies, nspecies))
 
     global F = Float64
 

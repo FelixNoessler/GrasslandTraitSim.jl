@@ -17,6 +17,7 @@ Parameter of the GrasslandTraitSim.jl model
     RUE_max::Qkg_MJ = F(3 / 1000)u"kg / MJ"
     k::T = F(0.6)
     self_shading_severity::T = F(0.75)
+    β_height::T = F(0.5)
 
     ####################################################################################
     ## 3 Belowground competition
