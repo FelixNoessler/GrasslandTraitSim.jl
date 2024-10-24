@@ -18,16 +18,16 @@ function potential_growth!(; container, above_biomass, actual_height, PAR)
         com.self_shading = 1.0
     else
         @unpack relative_height = container.calc
-        @unpack self_shading_severity = container.p
+        @unpack α_LIE_comH = container.p
 
         ## community weighted mean height
         relative_height .= above_biomass ./ sum(above_biomass) .* actual_height
         cwm_height = sum(relative_height)
 
-        # self_shading_severity is the growth reduction factor ∈ [0, 1]
+        # α_LIE_comH is the growth reduction factor ∈ [0, 1]
         # at a community weighted mean height of 0.2 m
         # 0.4 means that the growth is reduced by 60 % with a community weighted mean height of 0.2 m
-        com.self_shading = exp(log(self_shading_severity)*0.2u"m" / cwm_height)
+        com.self_shading = exp(log(α_LIE_comH)*0.2u"m" / cwm_height)
     end
 
     @unpack γ_RUEmax, γ_k = container.p
