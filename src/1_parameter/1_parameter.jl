@@ -48,10 +48,10 @@ Parameter of the GrasslandTraitSim.jl model
     ####################################################################################
     γ₁::Qha_MJ = F(4.45e-6)u"ha / MJ"
     γ₂::QMJ_ha = F(50000.0)u"MJ / ha"
-    T₀::QC = F(4.0)u"°C"
-    T₁::QC = F(10.0)u"°C"
-    T₂::QC = F(20.0)u"°C"
-    T₃::QC = F(35.0)u"°C"
+    ω_TEMP_T1::QC = F(4.0)u"°C"
+    ω_TEMP_T2::QC = F(10.0)u"°C"
+    ω_TEMP_T3::QC = F(20.0)u"°C"
+    ω_TEMP_T4::QC = F(35.0)u"°C"
     ST₁::QC = F(775.0)u"°C"
     ST₂::QC = F(1450.0)u"°C"
     SEA_min::T = F(0.7)

@@ -30,16 +30,16 @@ function temperature_reduction!(; container, T)
         return nothing
     end
 
-    @unpack T₀, T₁, T₂, T₃ = container.p
+    @unpack ω_TEMP_T1, ω_TEMP_T2, ω_TEMP_T3, ω_TEMP_T4 = container.p
 
-    if T < T₀
+    if T < ω_TEMP_T1
         com.TEMP = 0.0
-    elseif T < T₁
-        com.TEMP = (T - T₀) / (T₁ - T₀)
-    elseif T < T₂
+    elseif T < ω_TEMP_T2
+        com.TEMP = (T - ω_TEMP_T1) / (ω_TEMP_T2 - ω_TEMP_T1)
+    elseif T < ω_TEMP_T3
         com.TEMP = 1.0
-    elseif T < T₃
-        com.TEMP = (T₃ - T) / (T₃ - T₂)
+    elseif T < ω_TEMP_T4
+        com.TEMP = (ω_TEMP_T4 - T) / (ω_TEMP_T4 - ω_TEMP_T3)
     else
         com.TEMP = 0.0
     end
