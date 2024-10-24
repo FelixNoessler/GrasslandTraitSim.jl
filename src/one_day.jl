@@ -2,10 +2,10 @@ function input_nutrients!(; container)
     @unpack nutrients = container.patch_variables
     @unpack totalN = container.site
     @unpack included = container.simp
-    @unpack N_max = container.p
+    @unpack α_NUT_Nmax = container.p
 
     if included.nutrient_growth_reduction
-        @. nutrients = totalN / N_max
+        @. nutrients = totalN / α_NUT_Nmax
     end
 
     return nothing

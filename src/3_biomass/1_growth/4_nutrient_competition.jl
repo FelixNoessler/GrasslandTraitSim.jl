@@ -33,7 +33,6 @@ Models the density-dependent competiton for nutrients between plants.
 function nutrient_competition!(; container, total_biomass)
     @unpack nutrients_adj_factor, TS_biomass, TS = container.calc
     @unpack included, nspecies = container.simp
-    @unpack TS_influence = container.p
 
     if !included.belowground_competition
         @info "No below ground competition for resources!" maxlog=1
@@ -41,18 +40,17 @@ function nutrient_competition!(; container, total_biomass)
         return nothing
     end
 
-    @unpack TSB_max, nutadj_max = container.p
+    @unpack α_NUT_TSB, α_NUT_maxadj = container.p
 
     TS_biomass .= 0.0u"kg/ha"
     for s in 1:nspecies
         for i in 1:nspecies
-            # TODO !!!!!!!!!
-            TS_biomass[s] += TS[s, i] ^ TS_influence * total_biomass[i]
+            TS_biomass[s] += TS[s, i] * total_biomass[i]
         end
     end
 
     for i in eachindex(nutrients_adj_factor)
-        nutrients_adj_factor[i] = nutadj_max * exp(log(1/nutadj_max) / TSB_max * TS_biomass[i])
+        nutrients_adj_factor[i] = α_NUT_maxadj * exp(log(1/α_NUT_maxadj) / α_NUT_TSB * TS_biomass[i])
     end
 
     return nothing
@@ -78,43 +76,42 @@ function nutrient_reduction!(; container, nutrients, total_biomass)
     @unpack R_05, x0 = container.transfer_function
     @unpack nutrients_splitted, nutrients_adj_factor,
             N_amc, N_rsa, above_proportion = container.calc
-    @unpack ϕ_rsa, ϕ_amc, α_namc_05, α_nrsa_05,
-            β_nrsa, β_namc, δ_nrsa, δ_namc = container.p
+    @unpack ϕ_rsa, ϕ_amc, α_NUT_amc05, α_NUT_rsa05,
+            β_NUT_rsa, β_NUT_amc, δ_NUT_rsa, δ_NUT_amc = container.p
     @unpack amc, srsa = container.traits
 
-    # nutrients = totalN/N_max
     @. nutrients_splitted = nutrients * nutrients_adj_factor
 
     ###### 1 relate the root surface area per total biomass
     ###### to growth reduction at 0.5 of Np = R_05
     ## inflection of logistic function ∈ [0, 1]
-    x0_R_05 = ϕ_rsa + 1 / δ_nrsa * log((1 - α_nrsa_05) / α_nrsa_05)
+    x0_R_05 = ϕ_rsa + 1 / δ_NUT_rsa * log((1 - α_NUT_rsa05) / α_NUT_rsa05)
 
     ## growth reduction at 0.5 of Np ∈ [0, 1]
-    @. R_05 = 1 / (1 + exp(-δ_nrsa * ((1 - above_proportion) * srsa - x0_R_05)))
+    @. R_05 = 1 / (1 + exp(-δ_NUT_rsa * ((1 - above_proportion) * srsa - x0_R_05)))
 
     ###### growth reduction due to nutrient stress for different Np
     ## inflection point of logistic function ∈ [0, ∞]
-    @. x0 = log((1 - R_05)/ R_05) / β_nrsa + 0.5
+    @. x0 = log((1 - R_05)/ R_05) / β_NUT_rsa + 0.5
 
     ## growth reduction
-    @. N_rsa = 1 / (1 + exp(-β_nrsa * (nutrients_splitted - x0)))
+    @. N_rsa = 1 / (1 + exp(-β_NUT_rsa * (nutrients_splitted - x0)))
 
 
     ###### 2 relate the arbuscular mycorrhizal colonisation
     ###### to growth reduction at 0.5 of Np = R_05
     ## inflection of logistic function ∈ [0, 1]
-    x0_R_05 = ϕ_amc + 1 / δ_namc * log((1 - α_namc_05) / α_namc_05)
+    x0_R_05 = ϕ_amc + 1 / δ_NUT_amc * log((1 - α_NUT_amc05) / α_NUT_amc05)
 
     ## growth reduction at 0.5 of Np ∈ [0, 1]
-    @. R_05 = 1 / (1 + exp(-δ_namc * ((1 - above_proportion) * amc - x0_R_05)))
+    @. R_05 = 1 / (1 + exp(-δ_NUT_amc * ((1 - above_proportion) * amc - x0_R_05)))
 
     ###### growth reduction due to nutrient stress for different Np
     ## inflection point of logistic function ∈ [0, ∞]
-    @. x0 = log((1 - R_05)/ R_05) / β_namc + 0.5
+    @. x0 = log((1 - R_05)/ R_05) / β_NUT_amc + 0.5
 
     ## growth reduction
-    @. N_amc = 1 / (1 + exp(-β_namc * (nutrients_splitted - x0)))
+    @. N_amc = 1 / (1 + exp(-β_NUT_amc * (nutrients_splitted - x0)))
 
 
     ###### 3 calculate the nutrient reduction factor
@@ -146,11 +143,11 @@ function plot_N_amc(; θ = nothing, path = nothing)
         ymat[i, :] .= container.calc.N_amc
     end
 
-    @unpack δ_namc, α_namc_05, ϕ_amc = container.p
+    @unpack δ_NUT_amc, α_NUT_amc05, ϕ_amc = container.p
     @unpack amc = container.traits
     @unpack above_proportion = container.calc
-    x0_R_05 = ϕ_amc + 1 / δ_namc * log((1 - α_namc_05) / α_namc_05)
-    R_05 = @. 1 / (1 + exp(-δ_namc * ((1 - above_proportion) * amc - x0_R_05)))
+    x0_R_05 = ϕ_amc + 1 / δ_NUT_amc * log((1 - α_NUT_amc05) / α_NUT_amc05)
+    R_05 = @. 1 / (1 + exp(-δ_NUT_amc * ((1 - above_proportion) * amc - x0_R_05)))
 
     amc = container.traits.amc
     amc_total = (1 .- abp) .* amc
@@ -172,7 +169,7 @@ function plot_N_amc(; θ = nothing, path = nothing)
             color = amc_total[i],
             colorrange)
     end
-    scatter!([0.5], [container.p.α_namc_05];
+    scatter!([0.5], [container.p.α_NUT_amc05];
         markersize = 15,
         color = :red)
 
@@ -183,7 +180,7 @@ function plot_N_amc(; θ = nothing, path = nothing)
         marker = :x,
         color = amc_total,
         colorrange)
-    scatter!([ustrip(container.p.ϕ_amc)], [container.p.α_namc_05];
+    scatter!([ustrip(container.p.ϕ_amc)], [container.p.α_NUT_amc05];
         markersize = 15,
         color = :red)
 
@@ -216,11 +213,11 @@ function plot_N_srsa(; θ = nothing, path = nothing)
         ymat[i, :] .= container.calc.N_rsa
     end
 
-    @unpack δ_nrsa, α_nrsa_05, ϕ_rsa = container.p
+    @unpack δ_NUT_rsa, α_NUT_rsa05, ϕ_rsa = container.p
     @unpack srsa = container.traits
     @unpack above_proportion = container.calc
-    x0_R_05 = ϕ_rsa + 1 / δ_nrsa * log((1 - α_nrsa_05) / α_nrsa_05)
-    R_05 = @. 1 / (1 + exp(-δ_nrsa * ((1 - above_proportion) * srsa - x0_R_05)))
+    x0_R_05 = ϕ_rsa + 1 / δ_NUT_rsa * log((1 - α_NUT_rsa05) / α_NUT_rsa05)
+    R_05 = @. 1 / (1 + exp(-δ_NUT_rsa * ((1 - above_proportion) * srsa - x0_R_05)))
 
     srsa = ustrip.(container.traits.srsa)
     rsa_total = (1 .- abp) .* srsa
@@ -241,7 +238,7 @@ function plot_N_srsa(; θ = nothing, path = nothing)
             color = rsa_total[i],
             colorrange)
     end
-    scatter!([0.5], [container.p.α_nrsa_05];
+    scatter!([0.5], [container.p.α_NUT_rsa05];
         markersize = 15,
         color = :red)
 
@@ -253,7 +250,7 @@ function plot_N_srsa(; θ = nothing, path = nothing)
         marker = :x,
         color = rsa_total,
         colorrange)
-    scatter!([ustrip(container.p.ϕ_rsa)], [container.p.α_nrsa_05];
+    scatter!([ustrip(container.p.ϕ_rsa)], [container.p.α_NUT_rsa05];
         markersize = 15,
         color = :red)
 
@@ -276,10 +273,10 @@ end
 
 function plot_nutrient_adjustment(; θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
-    @unpack TSB_max, nutadj_max = container.p
+    @unpack α_NUT_TSB, α_NUT_maxadj = container.p
 
-    TS_B = LinRange(0, 1.5 * ustrip(TSB_max), 200)u"kg / ha"
-    nutrients_adj_factor = @. nutadj_max * exp(log(1/nutadj_max) / TSB_max * TS_B)
+    TS_B = LinRange(0, 1.5 * ustrip(α_NUT_TSB), 200)u"kg / ha"
+    nutrients_adj_factor = @. α_NUT_maxadj * exp(log(1/α_NUT_maxadj) / α_NUT_TSB * TS_B)
 
 
     fig = Figure()
@@ -289,8 +286,8 @@ function plot_nutrient_adjustment(; θ = nothing, path = nothing)
 
     hlines!(1; linestyle = :dash, color = :black)
 
-    scatter!([ustrip(TSB_max), 0.0], [1.0, nutadj_max])
-    text!(ustrip(TSB_max), 1.0; text = "TSB_max")
+    scatter!([ustrip(α_NUT_TSB), 0.0], [1.0, α_NUT_maxadj])
+    text!(ustrip(α_NUT_TSB), 1.0; text = "α_NUT_TSB")
 
     if !isnothing(path)
         save(path, fig;)

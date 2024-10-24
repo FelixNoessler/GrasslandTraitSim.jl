@@ -136,12 +136,12 @@ morphological traits:
         <td><input type="range" id="ɑ_RSA_05" min="0.1" max="0.999" step="0.001" value="0.9" class="input_nutrient_rsa_graph"></td>
     </tr>
     <tr>
-        <td>difference between species (δ_NRSA) <br>(no to strong difference)</td>
+        <td>difference between species (δ_NUT_rsa) <br>(no to strong difference)</td>
         <td><span id="δ_RSA-value">10</span></td>
         <td><input type="range" id="δ_RSA" min="0.1" max="25.0" step="0.1" value="10" class="input_nutrient_rsa_graph"></td>
     </tr>
     <tr>
-        <td>slope of response (β_NRSA)</td>
+        <td>slope of response (β_NUT_rsa)</td>
         <td><span id="β_RSA-value">7</span></td>
         <td><input type="range" id="β_RSA" min="3" max="10" step="0.1" value="7" class="input_nutrient_rsa_graph"></td>
     </tr>
@@ -171,12 +171,12 @@ morphological traits:
             <td><input type="range" id="ɑ_AMC_05" min="0.1" max="0.999" step="0.001" value="0.9" class="input_nutrient_amc_graph"></td>
         </tr>
         <tr>
-            <td>difference between species (δ_NAMC) <br>(no to strong difference)</td>
+            <td>difference between species (δ_NUT_amc) <br>(no to strong difference)</td>
             <td><span id="δ_AMC-value">10</span></td>
             <td><input type="range" id="δ_AMC" min="0.1" max="15.0" step="0.1" value="8" class="input_nutrient_amc_graph"></td>
         </tr>
         <tr>
-            <td>slope of response (β_NAMC)</td>
+            <td>slope of response (β_NUT_amc)</td>
             <td><span id="β_AMC-value">7</span></td>
             <td><input type="range" id="β_AMC" min="3" max="10" step="0.1" value="7" class="input_nutrient_amc_graph"></td>
         </tr>

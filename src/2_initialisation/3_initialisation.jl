@@ -24,9 +24,9 @@ function initialization(; input_obj, p, prealloc, prealloc_specific, trait_input
     ###### Initial conditions
     set_initialconditions!(; container)
 
-    if p.δ_namc <= 0.0 throw(DomainError(p.δ_namc, "δ_namc must be larger than one")) end
-    if p.δ_nrsa <= 0.0u"g/m^2" throw(DomainError(p.δ_nrsa, "δ_nrsa must be larger than one")) end
-    if p.δ_wrsa <= 0.0u"g/m^2" throw(DomainError(p.δ_wrsa, "δ_wrsa must be larger than one")) end
+    if p.δ_NUT_amc <= 0.0 throw(DomainError(p.δ_NUT_amc, "δ_NUT_amc must be larger than zero")) end
+    if p.δ_NUT_rsa <= 0.0u"g/m^2" throw(DomainError(p.δ_NUT_rsa, "δ_NUT_rsa must be larger than zero")) end
+    if p.δ_wrsa <= 0.0u"g/m^2" throw(DomainError(p.δ_wrsa, "δ_wrsa must be larger than zero")) end
 
     return container
 end

@@ -28,16 +28,15 @@ Parameter of the GrasslandTraitSim.jl model
     δ_wrsa::Qg_m2 = F(20.0)u"g / m^2"
 
     ############################# Nutrient competition
-    N_max::Qg_kg = F(35.0)u"g/kg"
-    TSB_max::Qkg_ha = F(40000.0)u"kg / ha"
-    TS_influence::T = F(1.0)
-    nutadj_max::T = F(4.0)
-    α_namc_05::T = F(0.95)
-    α_nrsa_05::T = F(0.95)
-    β_nrsa::T = F(15.0)
-    β_namc::T = F(15.0)
-    δ_nrsa::Qg_m2 = F(20.0)u"g / m^2"
-    δ_namc::T = F(10.0)
+    α_NUT_Nmax::Qg_kg = F(35.0)u"g/kg"
+    α_NUT_TSB::Qkg_ha = F(40000.0)u"kg / ha"
+    α_NUT_maxadj::T = F(4.0)
+    α_NUT_amc05::T = F(0.95)
+    α_NUT_rsa05::T = F(0.95)
+    β_NUT_rsa::T = F(15.0)
+    β_NUT_amc::T = F(15.0)
+    δ_NUT_rsa::Qg_m2 = F(20.0)u"g / m^2"
+    δ_NUT_amc::T = F(10.0)
 
     ############################# Root investment
     κ_ROOT_amc::T = F(0.02)

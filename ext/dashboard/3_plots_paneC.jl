@@ -39,8 +39,8 @@ function plot_static_nutrient_reducer(; plot_obj, sol, kwargs...)
 
     real_nutrients = mean(sol.patch_variables.nutrients; dims = (:x, :y))[1, 1]
     nspecies = sol.simp.nspecies
-    δ_namc = sol.p.δ_namc
-    δ_nrsa = sol.p.δ_nrsa
+    δ_NUT_amc = sol.p.δ_NUT_amc
+    δ_NUT_rsa = sol.p.δ_NUT_rsa
     srsa = sol.traits.srsa
     amc = sol.traits.amc
     abp = sol.traits.abp
