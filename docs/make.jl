@@ -49,7 +49,7 @@ makedocs(;
             "Turn-off subprocesses" => "tutorials/how_to_turnoff_subprocesses.md",],
         "Model description" => [
             "Overview" => "model/index.md",
-            "Model input and output" => "model/inputs_outputs.md",
+            "Model inputs" => "model/inputs.md",
             "Parameter" => "model/parameter.md",
             "Plant biomass dynamics" => [
                 "Overview" => "model/biomass/index.md",

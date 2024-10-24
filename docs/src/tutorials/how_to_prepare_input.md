@@ -4,7 +4,7 @@ CurrentModule = GrasslandTraitSim
 
 # How to prepare the input data to start a simulation
 
-Which input is needed (see also [here](@ref "Model inputs and outputs")):
+Which input is needed (see also [here](@ref "Model inputs")):
 - daily climatic variables (PET, PAR, temperature, precipitation)
 - daily management variables (mowing, livestock density)
 - soil properties (texture, organic matter, bulk density, root depth)
@@ -55,7 +55,7 @@ nothing # hide
 
 All climatic variables are here set to one to avoid complex data wrangling.
 
-For an explanation of the variables, see [here](@ref climate_input).
+For an explanation of the variables, see [here](@ref "Daily abiotic conditions").
 
 ```@example input_creation
 # --------------- PAR [MJ ha⁻¹]
@@ -89,7 +89,7 @@ If you want, you can vary the mowing height and the grazing intensity
 for each event. If the site was not mowed or grazed in a year, set the
 variable to `NaN`.
 
-For an explanation of the variables, see [here](@ref management_input).
+For an explanation of the variables, see [here](@ref "Daily management variables").
 
 ```@example input_creation
 # --------------- mowing height [m], NaN if no mowing
@@ -116,7 +116,7 @@ nothing # hide
 
 ## Site variables 
 
-For an explanation of the variables, see [here](@ref site_input).
+For an explanation of the variables, see [here](@ref "Raw time invariant site variables").
 
 ```@example input_creation
 site_tuple = (;
