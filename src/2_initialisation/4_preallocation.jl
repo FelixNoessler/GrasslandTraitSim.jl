@@ -186,7 +186,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         allocation_above = Array{T}(undef, nspecies),
         above_proportion = Array{T}(undef, nspecies),
 
-        ## cutted biomass
+        ## cut biomass
         species_mean_above_biomass = Array{T}(undef, nspecies)u"kg / ha",
         species_mean_actual_height = Array{T}(undef, nspecies)u"m",
         species_cut_biomass = Array{T}(undef, nspecies)u"kg / ha",
@@ -203,6 +203,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         ## below ground competition
         nutrients_adj_factor = Array{T}(undef, nspecies),
         TS_biomass = Array{T}(undef, nspecies)u"kg / ha",
+        TS = Array{T}(undef, nspecies, nspecies),
 
         ## height influence
         lais_heightinfluence = Array{T}(undef, nspecies),
@@ -236,13 +237,10 @@ function preallocate_vectors(; input_obj, T = Float64)
         mown = Array{T}(undef, nspecies)u"kg / ha",
         grazed = Array{T}(undef, nspecies)u"kg / ha",
 
-        ## sla transpiration effect
-        relative_sla = Array{T}(undef, nspecies)u"m^2 / g",
-
-        ## based on traits
-        μ = Array{T}(undef, nspecies),
-        μ_sla = Array{T}(undef, nspecies),
-        TS = Array{T}(undef, nspecies, nspecies))
+        ## senescence
+        senescence_rate = Array{T}(undef, nspecies),
+        senescence_sla = Array{T}(undef, nspecies),
+    )
 
     global F = Float64
 

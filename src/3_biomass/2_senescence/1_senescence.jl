@@ -2,7 +2,7 @@
 Calculate the biomass that dies due to senescence.
 """
 function senescence!(; container, ST, total_biomass)
-    @unpack senescence, μ, com = container.calc
+    @unpack senescence, senescence_rate, com = container.calc
     @unpack included, time_step_days = container.simp
 
     if !included.senescence
@@ -16,7 +16,7 @@ function senescence!(; container, ST, total_biomass)
         1.0
     end
 
-    @. senescence = (1 - (1 - μ * com.SEN_season) ^ time_step_days.value) * total_biomass
+    @. senescence = (1 - (1 - senescence_rate * com.SEN_season) ^ time_step_days.value) * total_biomass
 
     return nothing
 end
@@ -26,26 +26,26 @@ Intialize the basic senescence rate based on the specific leaf area.
 """
 function senescence_rate!(; container)
     @unpack included = container.simp
-    @unpack μ, μ_sla =  container.calc
+    @unpack μ, senescence_sla =  container.calc
 
     if !included.senescence
-        @. μ = 0.0
+        @. senescence_rate = 0.0
         return nothing
     end
 
     if included.senescence_sla
-        @unpack β_sen_sla, ϕ_sla = container.p
+        @unpack β_SEN_sla, ϕ_sla = container.p
         @unpack sla = container.traits
-        @. μ_sla = (sla / ϕ_sla) ^ β_sen_sla
+        @. senescence_sla = (sla / ϕ_sla) ^ β_SEN_sla
     else
-        @. μ_sla = 1.0
+        @. senescence_sla = 1.0
     end
 
-    @unpack α_sen_month = container.p
+    @unpack α_SEN_month = container.p
     days_per_month = 30.44
-    senescence_per_day = 1 - (1 - α_sen_month) ^ (1 / days_per_month)
+    senescence_per_day = 1 - (1 - α_SEN_month) ^ (1 / days_per_month)
 
-    @. μ  = senescence_per_day * μ_sla # TODO
+    @. senescence_rate  = senescence_per_day * senescence_sla
     return nothing
 end
 
@@ -54,10 +54,10 @@ end
 Seasonal factor for the senescence rate.
 """
 function seasonal_component_senescence(; container, ST,)
-    @unpack Ψ₁, Ψ₂, SEN_max = container.p
+    @unpack Ψ_ST1, Ψ_ST2, Ψ_SENmax = container.p
 
-    lin_increase(ST) = 1 + (SEN_max - 1) * (ST - Ψ₁) / (Ψ₂ - Ψ₁)
-    SEN = ST < Ψ₁ ? 1 : ST < Ψ₂ ? lin_increase(ST) : SEN_max
+    lin_increase = ST -> 1 + (Ψ_SENmax - 1) * (ST - Ψ_ST1) / (Ψ_ST2 - Ψ_ST1)
+    SEN = ST < Ψ_ST1 ? 1 : ST < Ψ_ST2 ? lin_increase(ST) : Ψ_SENmax
 
     return SEN
 end
