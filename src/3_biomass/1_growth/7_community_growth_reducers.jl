@@ -11,8 +11,8 @@ function radiation_reduction!(; container, PAR)
         return nothing
     end
 
-    @unpack γ₁, γ₂ = container.p
-    com.RAD = max(min(1.0, 1.0 − γ₁ * (PAR − γ₂)), 0.0)
+    @unpack γ_RAD1, γ_RAD2 = container.p
+    com.RAD = max(min(1.0, 1.0 − γ_RAD1 * (PAR − γ_RAD2)), 0.0)
 
     return nothing
 end

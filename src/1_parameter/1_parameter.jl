@@ -46,8 +46,8 @@ Parameter of the GrasslandTraitSim.jl model
     ####################################################################################
     ## 4 Environmental and seasonal growth adjustment
     ####################################################################################
-    γ₁::Qha_MJ = F(4.45e-6)u"ha / MJ"
-    γ₂::QMJ_ha = F(50000.0)u"MJ / ha"
+    γ_RAD1::Qha_MJ = F(4.45e-6)u"ha / MJ"
+    γ_RAD2::QMJ_ha = F(50000.0)u"MJ / ha"
     ω_TEMP_T1::QC = F(4.0)u"°C"
     ω_TEMP_T2::QC = F(10.0)u"°C"
     ω_TEMP_T3::QC = F(20.0)u"°C"
