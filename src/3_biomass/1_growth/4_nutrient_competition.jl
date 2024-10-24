@@ -1,3 +1,16 @@
+function input_nutrients!(; container)
+    @unpack nutrients = container.patch_variables
+    @unpack totalN = container.site
+    @unpack included = container.simp
+    @unpack α_NUT_Nmax = container.p
+
+    if included.nutrient_growth_reduction
+        @. nutrients = totalN / α_NUT_Nmax
+    end
+
+    return nothing
+end
+
 """
 Calculates the similarity between plants concerning their investment
 in fine roots and collaboration with mycorrhiza.

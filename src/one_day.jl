@@ -1,16 +1,3 @@
-function input_nutrients!(; container)
-    @unpack nutrients = container.patch_variables
-    @unpack totalN = container.site
-    @unpack included = container.simp
-    @unpack α_NUT_Nmax = container.p
-
-    if included.nutrient_growth_reduction
-        @. nutrients = totalN / α_NUT_Nmax
-    end
-
-    return nothing
-end
-
 """
 Calculate differences of all state variables for one time step (one day).
 """
