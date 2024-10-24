@@ -24,9 +24,9 @@ end
 """
 Intialize the basic senescence rate based on the specific leaf area.
 """
-function senescence_rate!(; container)
+function initialize_senescence_rate!(; container)
     @unpack included = container.simp
-    @unpack μ, senescence_sla =  container.calc
+    @unpack senescence_rate, senescence_sla =  container.calc
 
     if !included.senescence
         @. senescence_rate = 0.0
@@ -113,7 +113,7 @@ function plot_senescence_rate(; θ = nothing, path = nothing)
 
     for i in eachindex(β_sen_sla_values)
         p.β_sen_sla = β_sen_sla_values[i]
-        senescence_rate!(; container)
+        initialize_senescence_rate!(; container)
         @. ymat[i, :] = container.calc.μ
     end
 

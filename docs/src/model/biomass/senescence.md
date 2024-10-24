@@ -125,6 +125,6 @@ morphological traits:
 
 ```@docs
 senescence!
-senescence_rate!
+initialize_senescence_rate!
 seasonal_component_senescence
 ```
