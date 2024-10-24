@@ -54,10 +54,10 @@ end
 Seasonal factor for the senescence rate.
 """
 function seasonal_component_senescence(; container, ST,)
-    @unpack Ψ_ST1, Ψ_ST2, Ψ_SENmax = container.p
+    @unpack ψ_SEN_ST1, ψ_SEN_ST2, ψ_SENmax = container.p
 
-    lin_increase = ST -> 1 + (Ψ_SENmax - 1) * (ST - Ψ_ST1) / (Ψ_ST2 - Ψ_ST1)
-    SEN = ST < Ψ_ST1 ? 1 : ST < Ψ_ST2 ? lin_increase(ST) : Ψ_SENmax
+    lin_increase = ST -> 1 + (ψ_SENmax - 1) * (ST - ψ_SEN_ST1) / (ψ_SEN_ST2 - ψ_SEN_ST1)
+    SEN = ST < ψ_SEN_ST1 ? 1 : ST < ψ_SEN_ST2 ? lin_increase(ST) : ψ_SENmax
 
     return SEN
 end
