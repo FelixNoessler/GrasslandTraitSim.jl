@@ -3,13 +3,13 @@ Simulates the removal of biomass by grazing for each species.
 """
 function grazing!(; container, LD, above_biomass, actual_height)
     @unpack lnc = container.traits
-    @unpack η_GRZ, β_PAL_lnc, β_height_GRZ, κ_GRZ, ϵ_GRZ_minheight = container.p
+    @unpack η_GRZ, β_PAL_lnc, β_height_GRZ, κ_GRZ, ϵ_GRZ_minH = container.p
     @unpack defoliation, grazed_share, relative_lnc, lncinfluence, relative_height, grazed,
             heightinfluence, biomass_scaled, feedible_biomass = container.calc
     @unpack nspecies = container.simp
 
     for s in 1:nspecies
-        height_proportion_feedible = max(1 - ϵ_GRZ_minheight / actual_height[s], 0.0)
+        height_proportion_feedible = max(1 - ϵ_GRZ_minH / actual_height[s], 0.0)
         feedible_biomass[s] = height_proportion_feedible * above_biomass[s]
     end
 
