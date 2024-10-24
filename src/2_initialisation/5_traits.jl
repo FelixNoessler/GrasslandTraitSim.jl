@@ -11,30 +11,6 @@ end
 
 """
 Generate random traits for the simulation.
-
-The traits are generated using a bivariate Gaussian mixture model
-with full covariance matrices. For each species
-either the first or the second Gaussian distribution is used to
-generate the log/logit-transformed traits. The traits are then backtransformed
-to the original scale and the units are added. If the proportion of the leaf mass
-of the total plant mass (`lbp`) is larger than 0.95 % of the proportion of the
-aboveground mass of the total mass (`abp`), `lbp` is set to 0.95 % of `abp`.
-
-The Gaussian mixture model was fitted to the data with the function
-`BayesianGaussianMixture` of [scikit-learn](@cite).
-
-Overview of the traits:
-
-| trait       | unit   | description                               | transformation |
-| ----------- | ------ | ----------------------------------------- | -------------- |
-| `sla`       | m² g⁻¹ | specific   leaf area                      | log            |
-| `height`    | m      | plant height                              | log            |
-| `lnc`      | mg g⁻¹ | leaf nitrogen content per leaf dry mass   | log            |
-| `srsa` | m² g⁻¹ | root surface area per aboveground biomass | log            |
-| `amc`       | -      | arbuscular mycorrhizal colonisation rate  | logit          |
-| `abp`      | -      | aboveground dry mass per plant dry mass   | logit          |
-| `lbp`      | -      | leaf dry mass per plant dry mass          | logit          |
-
 """
 function random_traits!(; container)
     @unpack trait_seed, nspecies = container.simp

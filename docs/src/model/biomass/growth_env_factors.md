@@ -23,14 +23,21 @@ CurrentModule=GrasslandTraitSim
 The functions limit the growth of all plant species without any species-specific reduction:
 ```mermaid
 flowchart LR
-    B[[community adjustment by environmental and seasonal factors]]
-    L[↓ radiation] -.-> B
-    M[↓ temperature] -.-> B
-    N[⇅ seasonal factor] -.-> B
+    B[[community adjustment by environmental and seasonal factors ENV]]
+    L[↓ radiation RAD] -.-> B
+    M[↓ temperature TEMP] -.-> B
+    N[⇅ seasonal factor SEA] -.-> B
 click L "growth_env_factors#Radiation-influence" "Go"
 click M "growth_env_factors#Temperature-influence" "Go"
 click N "growth_env_factors#Seasonal-effect" "Go"
 ```
+
+The growth is adjusted for environmental and seasonal factors ``ENV_{txy}`` [-] that apply in the same way to all species:
+```math
+ENV_{txy} = RAD_{txy} \cdot TEMP_{txy} \cdot SEA_{txy}
+```
+with the radiation ``RAD_{txy}`` [-], temperature ``TEMP_{txy}`` [-], and seasonal ``SEA_{txy}`` [-] growth adjustment factors.
+
 
 ## Radiation influence
 

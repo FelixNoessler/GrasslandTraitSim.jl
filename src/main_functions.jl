@@ -1,12 +1,6 @@
 """
 Solve the model for one site.
 
-Intialize the parameters, the state variables and the output vectors
-(see [`initialization`](@ref)).
-
-In addition some vectors are preallocated to avoid allocations in the main loop.
-Then, run the main loop and store the results with all parameters in a container.
-
 All input variables are explained in a tutorial:
 [How to prepare the input data to start a simulation](@ref)
 
@@ -33,10 +27,8 @@ function solve_prob(; input_obj, p, prealloc = nothing, prealloc_specific = noth
 end
 
 """
-Run the main loop for all days.
-
-Calls the function [`one_day!`](@ref) for each day and set the
-calculated density differences to the output variables.
+Run the main loop for all days. Calls the function [`one_day!`](@ref) for each day
+and set the calculated density differences to the output variables.
 """
 function main_loop!(; container)
     @unpack u_biomass, u_above_biomass, u_below_biomass, u_water, u_height,

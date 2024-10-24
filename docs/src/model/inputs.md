@@ -22,11 +22,11 @@ Here you find all inputs needed to start a simulation. You can click on the link
 | ``LD_{txy}``  | Grazing intensity measured in livestock units, `NaN` means no grazing [LD ha⁻¹] | [`grazing!`](@ref) |
 
 ## Morphological traits of the plant species
-| Symbol    |Description                                       | used in                                                                                    |
-| --------- | ------------------------------------------------ | -------------------------------------------------------------------------------------------|
+| Symbol    | Description                                      | used in                                                                                    |
+| --------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------ |
 | ``AMC_s`` | Arbuscular mycorrhizal colonisation rate [-]     | [`nutrient_competition!`](@ref), [`nutrient_reduction!`](@ref)                             |
 | ``SLA_s`` | Specific leaf area [m² g⁻¹]                      | [`water_reduction!`](@ref), [`calculate_LAI!`](@ref), [`senescence!`](@ref)                |
-| ``H_s``   | Plant height [m]                                 | [`potential_growth!`](@ref), [`light_competition!`](@ref), [`mowing!`](@ref)               |
+| ``PH_s``  | Plant height [m]                                 | [`potential_growth!`](@ref), [`light_competition!`](@ref), [`mowing!`](@ref)               |
 | ``RSA_s`` | Root surface area / aboveground biomass [m² g⁻¹] | [`nutrient_competition!`](@ref), [`water_reduction!`](@ref), [`nutrient_reduction!`](@ref) |
 | ``ABP_s`` | Aboveground biomass / total biomass [-]          | [`calculate_LAI!`](@ref)                                                                   |
 | ``LBP_s`` | Leaf mass / total biomass [-]                    | [`calculate_LAI!`](@ref)                                                                   |

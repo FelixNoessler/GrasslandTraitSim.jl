@@ -8,10 +8,10 @@ Click on a process to view detailed documentation:
 
 ```mermaid
 flowchart LR
-    F[⇅ light competition] --> C[[species-specific adjustment]]
-    H[↓ water stress] -->  C
-    I[↓ nutrient stress] --> C
-    L[↓ cost for investment into roots] --> C
+    F[⇅ light competition LIG] --> C[[species-specific adjustment]]
+    H[↓ water stress WAT] -->  C
+    I[↓ nutrient stress NUT] --> C
+    L[↓ cost for investment into roots ROOT] --> C
 click F "growth_species_specific_light" "Go"
 click H "growth_species_specific_water" "Go"
 click I "growth_species_specific_nutrients" "Go"
