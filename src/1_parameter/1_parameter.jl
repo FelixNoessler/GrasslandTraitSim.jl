@@ -52,10 +52,10 @@ Parameter of the GrasslandTraitSim.jl model
     ω_TEMP_T2::QC = F(10.0)u"°C"
     ω_TEMP_T3::QC = F(20.0)u"°C"
     ω_TEMP_T4::QC = F(35.0)u"°C"
-    ST₁::QC = F(775.0)u"°C"
-    ST₂::QC = F(1450.0)u"°C"
-    SEA_min::T = F(0.7)
-    SEA_max::T = F(1.3)
+    ζ_SEA_ST1::QC = F(775.0)u"°C"
+    ζ_SEA_ST2::QC = F(1450.0)u"°C"
+    ζ_SEAmin::T = F(0.7)
+    ζ_SEAmax::T = F(1.3)
 
     ####################################################################################
     ## 5 Senescence
