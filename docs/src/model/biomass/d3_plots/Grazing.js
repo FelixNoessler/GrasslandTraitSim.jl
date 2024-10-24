@@ -27,7 +27,7 @@ export function grazingPlot() {
         .attr("x", width / 2)
         .attr("y", height + 40)
         .attr("text-anchor", "middle")
-        .text("Total aboveground biomass accessible to grazers [kg ha⁻¹]");
+        .text("Total aboveground biomass accessible to grazers (B_F) [kg ha⁻¹]");
 
     g.append("text")
         .attr("class", "y-label")
@@ -35,7 +35,7 @@ export function grazingPlot() {
         .attr("y", -40)
         .attr("transform", "rotate(-90)")
         .attr("text-anchor", "middle")
-        .text("Total Grazed [kg ha⁻¹]");
+        .text("Total grazed biomass [kg ha⁻¹]");
 
     // Function to calculate total grazed based on η_GRZ, LD, and κ
     function calculateTotalGrazed(η_GRZ, LD, κ) {
