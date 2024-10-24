@@ -6,14 +6,14 @@ function root_investment!(; container)
     @unpack root_invest_amc, root_invest_srsa,
             root_invest, above_proportion = container.calc
     @unpack amc, srsa = container.traits
-    @unpack κ_maxred_amc, κ_maxred_srsa, ϕ_amc, ϕ_rsa = container.p
+    @unpack κ_ROOT_amc, κ_ROOT_rsa, ϕ_amc, ϕ_rsa = container.p
 
     if !included.root_invest
         @. root_invest_srsa = 1.0
         @. root_invest_amc = 1.0
     else
-        @. root_invest_amc = 1 - κ_maxred_amc + κ_maxred_amc * exp(log(0.5) / ϕ_amc * (1 - above_proportion) * amc)
-        @. root_invest_srsa = 1 - κ_maxred_srsa + κ_maxred_srsa * exp(log(0.5) / ϕ_rsa * (1 - above_proportion) * srsa)
+        @. root_invest_amc = 1 - κ_ROOT_amc + κ_ROOT_amc * exp(log(0.5) / ϕ_amc * (1 - above_proportion) * amc)
+        @. root_invest_srsa = 1 - κ_ROOT_rsa + κ_ROOT_rsa * exp(log(0.5) / ϕ_rsa * (1 - above_proportion) * srsa)
     end
 
     @. root_invest = root_invest_amc * root_invest_srsa
@@ -40,7 +40,7 @@ function plot_root_investment(; θ = nothing, path = nothing)
          ylabel = "Growth reduction due to\ninvestment in mycorrhiza\n← stronger reduction, less reduction →",
          xlabel = "Arbuscular mycorrhizal colonisation rate (amc) [-]",
          limits = (nothing, nothing, -0.05, 1.05))
-    colorrange = (0.0, maximum([p.κ_maxred_amc, p.κ_maxred_srsa, 1.0]))
+    colorrange = (0.0, maximum([p.κ_ROOT_amc, p.κ_ROOT_rsa, 1.0]))
 
     root_investment!(; container)
     root_investment!(; container=container_line)
@@ -49,16 +49,16 @@ function plot_root_investment(; θ = nothing, path = nothing)
     root_invest_srsa_l = copy(container_line.calc.root_invest_srsa)
 
     for x in LinRange(0.0, colorrange[2], 12)
-        container_line.p.κ_maxred_amc = x
+        container_line.p.κ_ROOT_amc = x
         root_investment!(; container = container_line)
         lines!(container_line.traits.amc, container_line.calc.root_invest_amc;
                color = x, colorrange, colormap)
     end
-    Colorbar(fig[1, 2]; colorrange, label = "κ_maxred_amc [-]")
+    Colorbar(fig[1, 2]; colorrange, label = "κ_ROOT_amc [-]")
 
-    lines!(container_line.traits.amc, root_invest_amc_l; color = p.κ_maxred_amc,
+    lines!(container_line.traits.amc, root_invest_amc_l; color = p.κ_ROOT_amc,
            colorrange)
-    scatter!(container.traits.amc, container.calc.root_invest_amc; color = p.κ_maxred_amc,
+    scatter!(container.traits.amc, container.calc.root_invest_amc; color = p.κ_ROOT_amc,
              colorrange)
 
     Axis(fig[2, 1];
@@ -66,17 +66,17 @@ function plot_root_investment(; θ = nothing, path = nothing)
               xlabel = "Root surface area per belowground biomass (srsa) [-]",
               limits = (nothing, nothing, -0.05, 1.05))
     for x in LinRange(0, colorrange[2], 12)
-        container_line.p.κ_maxred_srsa = x
+        container_line.p.κ_ROOT_rsa = x
         root_investment!(; container = container_line)
         lines!(ustrip.(container_line.traits.srsa), container_line.calc.root_invest_srsa;
                color = x, colorrange, colormap)
     end
-    Colorbar(fig[2, 2]; colorrange, label = "κ_maxred_srsa [-]")
+    Colorbar(fig[2, 2]; colorrange, label = "κ_ROOT_rsa [-]")
 
     lines!(ustrip.(container_line.traits.srsa), root_invest_srsa_l;
-           color =  p.κ_maxred_srsa, colorrange)
+           color =  p.κ_ROOT_rsa, colorrange)
     scatter!(ustrip.(container.traits.srsa), container.calc.root_invest_srsa;
-             color = p.κ_maxred_srsa, colorrange)
+             color = p.κ_ROOT_rsa, colorrange)
 
     if !isnothing(path)
         save(path, fig;)

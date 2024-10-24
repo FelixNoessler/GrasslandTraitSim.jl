@@ -40,8 +40,8 @@ Parameter of the GrasslandTraitSim.jl model
     δ_namc::T = F(10.0)
 
     ############################# Root investment
-    κ_maxred_amc::T = F(0.02)
-    κ_maxred_srsa::T = F(0.01)
+    κ_ROOT_amc::T = F(0.02)
+    κ_ROOT_rsa::T = F(0.01)
 
     ####################################################################################
     ## 4 Environmental and seasonal growth adjustment
