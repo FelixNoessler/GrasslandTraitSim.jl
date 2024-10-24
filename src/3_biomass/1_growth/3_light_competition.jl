@@ -17,13 +17,13 @@ function light_competition!(; container, above_biomass, actual_height)
         @. heightinfluence = 1.0
     else
         @unpack relative_height = container.calc
-        @unpack β_height = container.p
+        @unpack β_LIG_H = container.p
 
         total_above_biomass = sum(above_biomass)
         relative_height .= actual_height .* above_biomass ./ total_above_biomass
         height_cwm = sum(relative_height)
 
-        @. heightinfluence = (actual_height / height_cwm) ^ β_height
+        @. heightinfluence = (actual_height / height_cwm) ^ β_LIG_H
     end
 
     @. lais_heightinfluence = LAIs .* heightinfluence
@@ -38,14 +38,14 @@ function plot_height_influence(; θ = nothing, path = nothing)
     height_strength_exps = LinRange(0.0, 1.5, 40)
     above_biomass = fill(50, nspecies)u"kg / ha"
     ymat = Array{Float64}(undef, nspecies, length(height_strength_exps))
-    orig_β_height = container.p.β_height
+    orig_β_LIG_H = container.p.β_LIG_H
 
     ### otherwise the function won't be calculated
     ### the LAI is not used in the hieght influence function
     container.calc.com.LAItot = 0.2 * nspecies
 
-    for (i, β_height) in enumerate(height_strength_exps)
-        @reset container.p.β_height = β_height
+    for (i, β_LIG_H) in enumerate(height_strength_exps)
+        @reset container.p.β_LIG_H = β_LIG_H
         light_competition!(; container, above_biomass,
                            actual_height = container.traits.height)
         ymat[:, i] .= container.calc.heightinfluence
@@ -64,7 +64,7 @@ function plot_height_influence(; θ = nothing, path = nothing)
     fig = Figure(; size = (700, 400))
     ax = Axis(fig[1, 1];
         ylabel = "Plant height growth factor (heightinfluence)",
-        xlabel = "Influence strength of the plant height (β_height)",
+        xlabel = "Influence strength of the plant height (β_LIG_H)",
         yticks = 0.0:5.0)
 
     for i in Base.OneTo(nspecies)
@@ -79,7 +79,7 @@ function plot_height_influence(; θ = nothing, path = nothing)
         linewidth = 2,
         linestyle = :dash,
         color = :red)
-    # vlines!(orig_β_height)
+    # vlines!(orig_β_LIG_H)
     Colorbar(fig[1, 2]; colormap, colorrange, label = "Plant height [m]")
 
     if !isnothing(path)

@@ -15,9 +15,9 @@ Parameter of the GrasslandTraitSim.jl model
     ## 2 Light interception and competition
     ####################################################################################
     γ_RUEmax::Qkg_MJ = F(3 / 1000)u"kg / MJ"
-    γ_k::T = F(0.6)
-    α_LIE_comH::T = F(0.75)
-    β_height::T = F(0.5)
+    γ_RUE_k::T = F(0.6)
+    α_RUE_comH::T = F(0.75)
+    β_LIG_H::T = F(0.5)
 
     ####################################################################################
     ## 3 Belowground competition
