@@ -30,8 +30,8 @@ function potential_growth!(; container, above_biomass, actual_height, PAR)
         com.self_shading = exp(log(self_shading_severity)*0.2u"m" / cwm_height)
     end
 
-    @unpack γ_RUEmax, k = container.p
-    com.potgrowth_total = PAR * γ_RUEmax * (1 - exp(-k * com.LAItot)) * com.self_shading
+    @unpack γ_RUEmax, γ_k = container.p
+    com.potgrowth_total = PAR * γ_RUEmax * (1 - exp(-γ_k * com.LAItot)) * com.self_shading
 
     return nothing
 end
