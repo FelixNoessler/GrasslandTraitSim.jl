@@ -3,7 +3,7 @@ Simulates the removal of biomass by grazing for each species.
 """
 function grazing!(; container, LD, above_biomass, actual_height)
     @unpack lnc = container.traits
-    @unpack η_GRZ, β_PAL_lnc, β_height_GRZ, κ = container.p
+    @unpack η_GRZ, β_PAL_lnc, β_height_GRZ, κ_GRZ = container.p
     @unpack defoliation, grazed_share, relative_lnc, ρ, relative_height, grazed,
             heightinfluence, height_ρ_biomass, feedible_biomass = container.calc
     @unpack nspecies = container.simp
@@ -18,7 +18,7 @@ function grazing!(; container, LD, above_biomass, actual_height)
     sum_feedible_biomass = sum(feedible_biomass)
 
     if iszero(sum_feedible_biomass)
-        container.calc.com.fodder_supply = κ * LD
+        container.calc.com.fodder_supply = κ_GRZ * LD
         @. grazed = 0.0u"kg/ha"
         defoliation .+= grazed
         return nothing
@@ -26,10 +26,10 @@ function grazing!(; container, LD, above_biomass, actual_height)
 
     #################################### total grazed biomass
     biomass_squarred = sum_feedible_biomass * sum_feedible_biomass
-    α_GRZ = κ * LD * η_GRZ
-    total_grazed = κ * LD * biomass_squarred / (α_GRZ * α_GRZ + biomass_squarred)
+    α_GRZ = κ_GRZ * LD * η_GRZ
+    total_grazed = κ_GRZ * LD * biomass_squarred / (α_GRZ * α_GRZ + biomass_squarred)
 
-    container.calc.com.fodder_supply = κ * LD - total_grazed
+    container.calc.com.fodder_supply = κ_GRZ * LD - total_grazed
 
     #################################### share of grazed biomass per species
     ## Palatability ρ
@@ -117,12 +117,12 @@ function plot_η_GRZ(; θ = nothing, path = nothing)
         x = LinRange(0, 3000, 120)
 
         LD = 2
-        κ = 22
+        κ_GRZ = 22
 
         k_exp = 2
-        y = @. LD * κ * x^k_exp / ((κ * η_GRZ)^k_exp + x^k_exp)
+        y = @. LD * κ_GRZ * x^k_exp / ((κ_GRZ * η_GRZ)^k_exp + x^k_exp)
 
-        lines!(x, y, label = "$(κ * η_GRZ)",
+        lines!(x, y, label = "$(κ_GRZ * η_GRZ)",
             linewidth = 3)
     end
 

@@ -72,7 +72,7 @@ Parameter of the GrasslandTraitSim.jl model
     β_PAL_lnc::T = F(1.2)
     β_height_GRZ::T = F(2.0)
     η_GRZ::T = F(2.0)
-    κ::Qkg = F(22.0)u"kg"
+    κ_GRZ::Qkg = F(22.0)u"kg"
 end
 
 function Base.show(io::IO, obj::SimulationParameter)
