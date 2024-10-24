@@ -250,7 +250,7 @@ end
 @kwdef mutable struct CommunityLevel{T, Qkg_ha}
     LAItot::T = F(0.0)
     potgrowth_total::Qkg_ha = F(0.0) * u"kg/ha"
-    self_shading::T = F(1.0)
+    RUE_community_height::T = F(1.0)
     RAD::T = F(1.0)
     SEA::T = F(1.0)
     TEMP::T = F(1.0)

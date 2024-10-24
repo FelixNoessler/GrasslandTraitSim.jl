@@ -15,23 +15,23 @@ function potential_growth!(; container, above_biomass, actual_height, PAR)
 
     if !included.community_self_shading
         @info "No community height growth reduction!" maxlog=1
-        com.self_shading = 1.0
+        com.RUE_community_height = 1.0
     else
         @unpack relative_height = container.calc
-        @unpack α_RUE_comH = container.p
+        @unpack α_RUE_cwmH = container.p
 
         ## community weighted mean height
         relative_height .= above_biomass ./ sum(above_biomass) .* actual_height
         cwm_height = sum(relative_height)
 
-        # α_RUE_comH is the growth reduction factor ∈ [0, 1]
+        # α_RUE_cwmH is the growth reduction factor ∈ [0, 1]
         # at a community weighted mean height of 0.2 m
         # 0.4 means that the growth is reduced by 60 % with a community weighted mean height of 0.2 m
-        com.self_shading = exp(log(α_RUE_comH)*0.2u"m" / cwm_height)
+        com.RUE_community_height = exp(log(α_RUE_cwmH)*0.2u"m" / cwm_height)
     end
 
     @unpack γ_RUEmax, γ_RUE_k = container.p
-    com.potgrowth_total = PAR * γ_RUEmax * (1 - exp(-γ_RUE_k * com.LAItot)) * com.self_shading
+    com.potgrowth_total = PAR * γ_RUEmax * (1 - exp(-γ_RUE_k * com.LAItot)) * com.RUE_community_height
 
     return nothing
 end
@@ -189,7 +189,7 @@ function plot_potential_growth_height(; θ = nothing, path = nothing)
         potential_growth!(; container, above_biomass,
                           actual_height = container.traits.height,
                           PAR = container.input.PAR[150])
-        red[hi] = container.calc.com.self_shading
+        red[hi] = container.calc.com.RUE_community_height
     end
 
     fig = Figure()

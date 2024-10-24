@@ -138,7 +138,7 @@ function one_day!(; t, container)
 
             ######################### write outputs
             output.community_pot_growth[t, x, y] = com.potgrowth_total
-            output.community_height_reducer[t, x, y] = com.self_shading
+            output.community_height_reducer[t, x, y] = com.RUE_community_height
             output.radiation_reducer[t, x, y] = com.RAD
             output.seasonal_growth[t, x, y] = com.SEA
             output.temperature_reducer[t, x, y] = com.TEMP
