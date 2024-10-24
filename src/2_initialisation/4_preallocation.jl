@@ -211,8 +211,8 @@ function preallocate_vectors(; input_obj, T = Float64)
 
         # leaf nitrogen (palatability) --> grazing
         relative_lnc = Array{T}(undef, nspecies)u"mg/g",
-        ρ = Array{T}(undef, nspecies),
-        height_ρ_biomass = Array{T}(undef, nspecies)u"kg / ha",
+        lncinfluence = Array{T}(undef, nspecies),
+        biomass_scaled = Array{T}(undef, nspecies)u"kg / ha",
 
         ## investment to roots
         root_invest = Array{T}(undef, nspecies),

@@ -2,7 +2,7 @@
 Parameter of the GrasslandTraitSim.jl model
 """
 @kwdef mutable struct SimulationParameter{
-    T, Qkg_MJ, Qkg_ha, Qm2_g, Qg_m2, Qg_kg, Qha_MJ, QMJ_ha, QC, Qkg}
+    T, Qkg_MJ, Qkg_ha, Qm2_g, Qg_m2, Qg_kg, Qha_MJ, QMJ_ha, QC, Qkg, Qm}
 
     ####################################################################################
     ## 1 Mean/reference trait values
@@ -69,10 +69,11 @@ Parameter of the GrasslandTraitSim.jl model
     ####################################################################################
     ## 6 Management
     ####################################################################################
-    β_PAL_lnc::T = F(1.2)
-    β_height_GRZ::T = F(2.0)
+    β_GRZ_lnc::T = F(1.2)
+    β_GRZ_H::T = F(2.0)
     η_GRZ::T = F(2.0)
     κ_GRZ::Qkg = F(22.0)u"kg"
+    ϵ_GRZ_minheight::Qm = F(0.05)u"m"
 end
 
 function Base.show(io::IO, obj::SimulationParameter)

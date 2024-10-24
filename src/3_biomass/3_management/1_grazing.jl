@@ -3,15 +3,13 @@ Simulates the removal of biomass by grazing for each species.
 """
 function grazing!(; container, LD, above_biomass, actual_height)
     @unpack lnc = container.traits
-    @unpack η_GRZ, β_PAL_lnc, β_height_GRZ, κ_GRZ = container.p
-    @unpack defoliation, grazed_share, relative_lnc, ρ, relative_height, grazed,
-            heightinfluence, height_ρ_biomass, feedible_biomass = container.calc
+    @unpack η_GRZ, β_PAL_lnc, β_height_GRZ, κ_GRZ, ϵ_GRZ_minheight = container.p
+    @unpack defoliation, grazed_share, relative_lnc, lncinfluence, relative_height, grazed,
+            heightinfluence, biomass_scaled, feedible_biomass = container.calc
     @unpack nspecies = container.simp
 
-    min_height = 0.05u"m"
-
     for s in 1:nspecies
-        height_proportion_feedible = max(1 - min_height / actual_height[s], 0.0)
+        height_proportion_feedible = max(1 - ϵ_GRZ_minheight / actual_height[s], 0.0)
         feedible_biomass[s] = height_proportion_feedible * above_biomass[s]
     end
 
@@ -24,43 +22,44 @@ function grazing!(; container, LD, above_biomass, actual_height)
         return nothing
     end
 
-    #################################### total grazed biomass
-    biomass_squarred = sum_feedible_biomass * sum_feedible_biomass
+    #################################### Total grazed biomass
+    feedible_biomass_squarred = sum_feedible_biomass * sum_feedible_biomass
     α_GRZ = κ_GRZ * LD * η_GRZ
-    total_grazed = κ_GRZ * LD * biomass_squarred / (α_GRZ * α_GRZ + biomass_squarred)
+    total_grazed = κ_GRZ * LD * feedible_biomass_squarred /
+                  (α_GRZ * α_GRZ + feedible_biomass_squarred)
 
     container.calc.com.fodder_supply = κ_GRZ * LD - total_grazed
 
-    #################################### share of grazed biomass per species
-    ## Palatability ρ
+    #################################### Share of grazed biomass per species
+    ## Grazers feed more on plants with high leaf nitrogen content
     relative_lnc .= lnc .* feedible_biomass ./ sum_feedible_biomass
     cwm_lnc = sum(relative_lnc)
-    @. ρ = (lnc / cwm_lnc) ^ β_PAL_lnc
+    @. lncinfluence = (lnc / cwm_lnc) ^ β_GRZ_lnc
 
     ## Grazers feed more on tall plants
     relative_height .= actual_height .* feedible_biomass ./ sum_feedible_biomass
     cwm_height = sum(relative_height)
-    @. heightinfluence = (actual_height / cwm_height) ^ β_height_GRZ
+    @. heightinfluence = (actual_height / cwm_height) ^ β_GRZ_H
 
-    @. height_ρ_biomass = heightinfluence * ρ * feedible_biomass
-    grazed_share .= height_ρ_biomass ./ sum(height_ρ_biomass)
+    @. biomass_scaled = heightinfluence * lncinfluence * feedible_biomass
+    grazed_share .= biomass_scaled ./ sum(biomass_scaled)
 
-    #################################### add grazed biomass to defoliation
+    #################################### Add grazed biomass to defoliation
     @. grazed = grazed_share * total_grazed
     defoliation .+= grazed
 
     return nothing
 end
 
-function plot_grazing(; α_GRZ = nothing, β_PAL_lnc = nothing, θ = nothing, path = nothing)
+function plot_grazing(; α_GRZ = nothing, β_GRZ_lnc = nothing, θ = nothing, path = nothing)
     nspecies, container = create_container_for_plotting(; θ)
 
     if !isnothing(α_GRZ)
         container.p.α_GRZ = α_GRZ
     end
 
-    if !isnothing(β_PAL_lnc)
-        container.p.β_PAL_lnc = β_PAL_lnc
+    if !isnothing(β_GRZ_lnc)
+        container.p.β_GRZ_lnc = β_GRZ_lnc
     end
 
     nbiomass = 80
