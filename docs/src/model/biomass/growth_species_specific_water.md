@@ -116,12 +116,12 @@ morphological traits:
         <td><input type="range" id="ɑ_R_05" min="0.1" max="0.999" step="0.001" value="0.9" class="input_water_stress_graph"></td>
     </tr>
     <tr>
-        <td>difference between species (δ_WRSA) <br>(no to strong difference)</td>
+        <td>difference between species (δ_WAT_rsa) <br>(no to strong difference)</td>
         <td><span id="δ_R-value">10</span></td>
         <td><input type="range" id="δ_R" min="0.1" max="25.0" step="0.1" value="10" class="input_water_stress_graph"></td>
     </tr>
     <tr>
-        <td>slope of response (β_WRSA)</td>
+        <td>slope of response (β_WAT_rsa)</td>
         <td><span id="β_R-value">7</span></td>
         <td><input type="range" id="β_R" min="3" max="10" step="0.1" value="7" class="input_water_stress_graph"></td>
     </tr>

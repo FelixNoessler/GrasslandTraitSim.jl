@@ -23,9 +23,9 @@ Parameter of the GrasslandTraitSim.jl model
     ## 3 Belowground competition
     ####################################################################################
     ############################# Water competition
-    α_wrsa_05::T = F(0.9)
-    β_wrsa::T = F(7.0)
-    δ_wrsa::Qg_m2 = F(20.0)u"g / m^2"
+    α_WAT_rsa05::T = F(0.9)
+    β_WAT_rsa::T = F(7.0)
+    δ_WAT_rsa::Qg_m2 = F(20.0)u"g / m^2"
 
     ############################# Nutrient competition
     α_NUT_Nmax::Qg_kg = F(35.0)u"g/kg"

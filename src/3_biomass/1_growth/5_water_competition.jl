@@ -7,7 +7,7 @@ function water_reduction!(; container, W, PWP, WHC)
     @unpack Waterred, above_proportion = container.calc
     @unpack R_05, x0 = container.transfer_function
     @unpack srsa = container.traits
-    @unpack ϕ_rsa, α_wrsa_05, β_wrsa, δ_wrsa = container.p
+    @unpack ϕ_rsa, α_WAT_rsa05, β_WAT_rsa, δ_WAT_rsa = container.p
 
     if !included.water_growth_reduction
         @info "No water reduction!" maxlog=1
@@ -25,17 +25,17 @@ function water_reduction!(; container, W, PWP, WHC)
         ###### relate the root surface area per total biomass
         ###### to growth reduction at 0.5 of Wsc = R_05
         ## inflection of logistic function ∈ [0, 1]
-        x0_R_05 = ϕ_rsa + 1 / δ_wrsa * log((1 - α_wrsa_05) / α_wrsa_05)
+        x0_R_05 = ϕ_rsa + 1 / δ_WAT_rsa * log((1 - α_WAT_rsa05) / α_WAT_rsa05)
 
         ## growth reduction at 0.5 of Wsc ∈ [0, 1]
-        @. R_05 = 1 / (1 + exp(-δ_wrsa * ((1 - above_proportion) * srsa - x0_R_05)))
+        @. R_05 = 1 / (1 + exp(-δ_WAT_rsa * ((1 - above_proportion) * srsa - x0_R_05)))
 
         ###### growth reduction due to water stress for different Wsc
         ## inflection point of logistic function ∈ [0, ∞]
-        @. x0 = log((1 - R_05)/ R_05) / β_wrsa + 0.5
+        @. x0 = log((1 - R_05)/ R_05) / β_WAT_rsa + 0.5
 
         ## growth reduction
-        @. Waterred = 1 / (1 + exp(-β_wrsa * (Wsc - x0)))
+        @. Waterred = 1 / (1 + exp(-β_WAT_rsa * (Wsc - x0)))
     end
 
     return nothing
@@ -75,7 +75,7 @@ function plot_W_srsa(; θ = nothing, path = nothing)
             color = rsa_total[i],
             colorrange)
     end
-    scatter!([0.5], [container.p.α_wrsa_05];
+    scatter!([0.5], [container.p.α_WAT_rsa05];
         markersize = 15,
         color = :red)
 
@@ -86,7 +86,7 @@ function plot_W_srsa(; θ = nothing, path = nothing)
         marker = :x,
         color = rsa_total,
         colorrange)
-    scatter!([ustrip(container.p.ϕ_rsa)], [container.p.α_wrsa_05];
+    scatter!([ustrip(container.p.ϕ_rsa)], [container.p.α_WAT_rsa05];
         markersize = 15,
         color = :red)
 

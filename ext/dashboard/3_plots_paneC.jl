@@ -111,7 +111,7 @@ function plot_static_water_reducer(; plot_obj, sol, kwargs...)
         lines!(ax, xs, ymat[:, i]; color = (:black, 0.3))
     end
 
-    scatter!([0.4], [sol.p.α_wrsa_05];
+    scatter!([0.4], [sol.p.α_WAT_rsa05];
         markersize = 15,
         color = :red)
 

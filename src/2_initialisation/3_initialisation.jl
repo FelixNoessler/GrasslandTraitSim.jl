@@ -26,7 +26,7 @@ function initialization(; input_obj, p, prealloc, prealloc_specific, trait_input
 
     if p.δ_NUT_amc <= 0.0 throw(DomainError(p.δ_NUT_amc, "δ_NUT_amc must be larger than zero")) end
     if p.δ_NUT_rsa <= 0.0u"g/m^2" throw(DomainError(p.δ_NUT_rsa, "δ_NUT_rsa must be larger than zero")) end
-    if p.δ_wrsa <= 0.0u"g/m^2" throw(DomainError(p.δ_wrsa, "δ_wrsa must be larger than zero")) end
+    if p.δ_WAT_rsa <= 0.0u"g/m^2" throw(DomainError(p.δ_WAT_rsa, "δ_WAT_rsa must be larger than zero")) end
 
     return container
 end
