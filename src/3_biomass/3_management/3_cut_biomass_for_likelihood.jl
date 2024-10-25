@@ -4,7 +4,6 @@ function calc_cut_biomass!(; container)
             proportion_mown = container.calc
     @unpack output = container
     @unpack nspecies = container.simp
-    @unpack height, abp = container.traits
 
     for i in eachindex(biomass_cutting_t)
         t = biomass_cutting_t[i]

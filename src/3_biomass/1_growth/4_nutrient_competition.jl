@@ -17,7 +17,7 @@ in fine roots and collaboration with mycorrhiza.
 """
 function similarity_matrix!(; container)
     @unpack nspecies = container.simp
-    @unpack amc, srsa = container.traits
+    @unpack amc, rsa = container.traits
     @unpack amc_resid, rsa_resid, TS = container.calc
 
     if isone(nspecies)
@@ -26,7 +26,7 @@ function similarity_matrix!(; container)
     end
 
     amc_resid .= (amc .- mean(amc)) ./ std(amc)
-    rsa_resid .= (srsa .- mean(srsa)) ./ std(srsa)
+    rsa_resid .= (rsa .- mean(rsa)) ./ std(rsa)
 
     for i in Base.OneTo(nspecies)
         for u in Base.OneTo(nspecies)
@@ -76,13 +76,13 @@ root surface area per belowground biomass.
 """
 function nutrient_reduction!(; container, nutrients, total_biomass)
     @unpack included, nspecies = container.simp
-    @unpack Nutred = container.calc
+    @unpack NUT = container.calc
 
     nutrient_competition!(; container, total_biomass)
 
     if !included.nutrient_growth_reduction
         @info "No nutrient reduction!" maxlog=1
-        @. Nutred = 1.0
+        @. NUT = 1.0
         return nothing
     end
 
@@ -91,7 +91,7 @@ function nutrient_reduction!(; container, nutrients, total_biomass)
             N_amc, N_rsa, above_proportion = container.calc
     @unpack ϕ_rsa, ϕ_amc, α_NUT_amc05, α_NUT_rsa05,
             β_NUT_rsa, β_NUT_amc, δ_NUT_rsa, δ_NUT_amc = container.p
-    @unpack amc, srsa = container.traits
+    @unpack amc, rsa = container.traits
 
     @. nutrients_splitted = nutrients * nutrients_adj_factor
 
@@ -101,7 +101,7 @@ function nutrient_reduction!(; container, nutrients, total_biomass)
     x0_R_05 = ϕ_rsa + 1 / δ_NUT_rsa * log((1 - α_NUT_rsa05) / α_NUT_rsa05)
 
     ## growth reduction at 0.5 of Np ∈ [0, 1]
-    @. R_05 = 1 / (1 + exp(-δ_NUT_rsa * ((1 - above_proportion) * srsa - x0_R_05)))
+    @. R_05 = 1 / (1 + exp(-δ_NUT_rsa * ((1 - above_proportion) * rsa - x0_R_05)))
 
     ###### growth reduction due to nutrient stress for different Np
     ## inflection point of logistic function ∈ [0, ∞]
@@ -128,13 +128,13 @@ function nutrient_reduction!(; container, nutrients, total_biomass)
 
 
     ###### 3 calculate the nutrient reduction factor
-    @. Nutred = max(N_amc, N_rsa)
+    @. NUT = max(N_amc, N_rsa)
 
     for s in 1:nspecies
         if nutrients_splitted[s] <= 0.0
-            Nutred[s] = 0.0
+            NUT[s] = 0.0
         elseif nutrients_splitted[s] >= 1.0
-            Nutred[s] = 1.0
+            NUT[s] = 1.0
         end
     end
 

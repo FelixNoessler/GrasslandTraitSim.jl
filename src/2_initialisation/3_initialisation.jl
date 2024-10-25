@@ -39,7 +39,7 @@ function set_initialconditions!(; container)
     @unpack output = container
     @unpack initbiomass, initsoilwater = container.site
     @unpack nspecies, patch_xdim, patch_ydim = container.simp
-    @unpack height, abp = container.traits
+    @unpack maxheight, abp = container.traits
 
     @. u_biomass = initbiomass / nspecies
     @. u_water = initsoilwater
@@ -57,7 +57,7 @@ function set_initialconditions!(; container)
                 output.above_biomass[1, x, y, s] = u_above_biomass[x, y, s]
                 output.below_biomass[1, x, y, s] = u_below_biomass[x, y, s]
 
-                u_height[x, y, s] = height[s] / 2
+                u_height[x, y, s] = maxheight[s] / 2
                 output.height[1, x, y, s] = u_height[x, y, s]
             end
 

@@ -9,7 +9,7 @@ function potential_growth!(; container, above_biomass, actual_height, PAR)
 
     if !included.potential_growth || iszero(com.LAItot)
         @info "Zero potential growth!" maxlog=1
-        com.potgrowth_total = 0.0u"kg / ha"
+        com.growth_pot_total = 0.0u"kg / ha"
         return nothing
     end
 
@@ -31,7 +31,7 @@ function potential_growth!(; container, above_biomass, actual_height, PAR)
     end
 
     @unpack γ_RUEmax, γ_RUE_k = container.p
-    com.potgrowth_total = PAR * γ_RUEmax * (1 - exp(-γ_RUE_k * com.LAItot)) * com.RUE_community_height
+    com.growth_pot_total = PAR * γ_RUEmax * com.RUE_community_height * (1 - exp(-γ_RUE_k * com.LAItot))
 
     return nothing
 end
@@ -44,7 +44,7 @@ function calculate_LAI!(; container, above_biomass)
     @unpack sla, lbp, abp = container.traits
 
     for s in eachindex(LAIs)
-        LAIs[s] = uconvert(NoUnits, sla[s] * above_biomass[s] * lbp[s] / abp[s]) # TODO
+        LAIs[s] = uconvert(NoUnits, sla[s] * above_biomass[s] * lbp[s] / abp[s])
     end
     com.LAItot = sum(LAIs)
 
@@ -72,7 +72,7 @@ function plot_potential_growth_lai_height(; θ = nothing, path = nothing)
                                 actual_height = container.traits.height,
                                 PAR = container.input.PAR[150])
 
-            ymat[hi, i] = ustrip(container.calc.com.potgrowth_total)
+            ymat[hi, i] = ustrip(container.calc.com.growth_pot_total)
             lai_tot[i] = sum(container.calc.LAIs)
         end
     end
@@ -116,7 +116,7 @@ function plot_potential_growth_height_lai(; θ = nothing, path = nothing)
             potential_growth!(; container, above_biomass,
                               actual_height = container.traits.height,
                               PAR = container.input.PAR[150])
-            pot_gr = ustrip(container.calc.com.potgrowth_total)
+            pot_gr = ustrip(container.calc.com.growth_pot_total)
 
             lais[li] = round(container.calc.com.LAItot; digits = 1)
             red[li, hi] = pot_gr

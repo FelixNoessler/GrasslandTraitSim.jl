@@ -9,7 +9,7 @@ function create_axes_paneC(layout)
         alignmode = Inside())
     axes[:static_nutrient_reducer] = Axis(layout[1, 2];
         xlabel = "Nutrient index",
-        ylabel = "Growth reduction factor (Nutred)\n← stronger reduction, less reduction →",
+        ylabel = "Growth reduction factor (NUT)\n← stronger reduction, less reduction →",
         title = "Nutrient growth reducer",
         limits = (0, 1, -0.05, 1.05),
         alignmode = Inside())
@@ -60,7 +60,7 @@ function plot_static_nutrient_reducer(; plot_obj, sol, kwargs...)
 
         ymat_amc[i, :] .= sol.calc.N_amc
         ymat_rsa[i, :] .= sol.calc.N_rsa
-        ymat_both[i, :] .= sol.calc.Nutred
+        ymat_both[i, :] .= sol.calc.NUT
     end
     @reset sol.simp.included.belowground_competition = true
 
@@ -92,7 +92,7 @@ function plot_static_water_reducer(; plot_obj, sol, kwargs...)
 
     for (i, x) in enumerate(xs)
         gts.water_reduction!(; container = sol, W = x * u"mm", PWP, WHC)
-        ymat[i, :] .= sol.calc.Waterred
+        ymat[i, :] .= sol.calc.WAT
     end
 
     idx = sortperm(sol.traits.srsa)

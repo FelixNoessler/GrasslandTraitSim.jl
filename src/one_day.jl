@@ -7,8 +7,8 @@ function one_day!(; t, container)
     @unpack u_biomass, u_above_biomass, u_below_biomass, u_water, u_height,
             du_biomass, du_above_biomass, du_below_biomass, du_water, du_height = container.u
     @unpack WHC, PWP, nutrients = container.patch_variables
-    @unpack com, act_growth, senescence, mown, grazed, defoliation,
-        light_competition, Nutred, Waterred, root_invest, allocation_above, above_proportion,
+    @unpack com, growth_act, senescence, mown, grazed, defoliation,
+        LIG, NUT, WAT, ROOT, allocation_above, above_proportion,
         height_gain, height_loss_mowing, height_loss_grazing = container.calc
 
     ## -------- loop over patches
@@ -49,7 +49,7 @@ function one_day!(; t, container)
             @. allocation_above = 1 - above_proportion / traits.abp
 
             defoliation .= 0.0u"kg / ha"
-            act_growth .= 0.0u"kg / ha"
+            growth_act .= 0.0u"kg / ha"
             senescence .= 0.0u"kg / ha"
             grazed .= 0.0u"kg / ha"
             mown .= 0.0u"kg / ha"
@@ -101,9 +101,9 @@ function one_day!(; t, container)
             end
 
             # -------------- net growth
-            @. du_biomass[x, y, :] = act_growth - senescence - defoliation
-            @. du_above_biomass[x, y, :] = allocation_above * act_growth - (1-allocation_above) * senescence - defoliation
-            @. du_below_biomass[x, y, :] = (1-allocation_above) * act_growth - allocation_above * senescence
+            @. du_biomass[x, y, :] = growth_act - senescence - defoliation
+            @. du_above_biomass[x, y, :] = allocation_above * growth_act - (1-allocation_above) * senescence - defoliation
+            @. du_below_biomass[x, y, :] = (1-allocation_above) * growth_act - allocation_above * senescence
 
             # --------------------- height dynamic
             height_dynamic!(; container, actual_height = patch_height,
@@ -111,8 +111,8 @@ function one_day!(; t, container)
                               allocation_above)
             @. du_height[x, y, :] = height_gain - height_loss_mowing - height_loss_grazing
             for s in 1:nspecies
-                if patch_height[s] + du_height[x, y, s] > traits.height[s]
-                    du_height[x, y, s] = traits.height[s] - patch_height[s]
+                if patch_height[s] + du_height[x, y, s] > traits.maxheight[s]
+                    du_height[x, y, s] = traits.maxheight[s] - patch_height[s]
                 end
             end
             # --------------------- water dynamics
@@ -124,7 +124,7 @@ function one_day!(; t, container)
                 PWP = PWP[x, y])
 
             ######################### write outputs
-            output.community_pot_growth[t, x, y] = com.potgrowth_total
+            output.community_pot_growth[t, x, y] = com.growth_pot_total
             output.community_height_reducer[t, x, y] = com.RUE_community_height
             output.radiation_reducer[t, x, y] = com.RAD
             output.seasonal_growth[t, x, y] = com.SEA
@@ -133,14 +133,14 @@ function one_day!(; t, container)
             output.fodder_supply[t, x, y] = com.fodder_supply
 
             for s in 1:nspecies
-                output.act_growth[t, x, y, s] = act_growth[s]
+                output.growth_act[t, x, y, s] = growth_act[s]
                 output.mown[t, x, y, s] = mown[s]
                 output.grazed[t, x, y, s] = grazed[s]
                 output.senescence[t, x, y, s] = senescence[s]
-                output.light_growth[t, x, y, s] = light_competition[s]
-                output.water_growth[t, x, y, s] = Waterred[s]
-                output.nutrient_growth[t, x, y, s] = Nutred[s]
-                output.root_invest[t, x, y, s] = root_invest[s]
+                output.light_growth[t, x, y, s] = LIG[s]
+                output.water_growth[t, x, y, s] = WAT[s]
+                output.nutrient_growth[t, x, y, s] = NUT[s]
+                output.root_invest[t, x, y, s] = ROOT[s]
             end
 
         end

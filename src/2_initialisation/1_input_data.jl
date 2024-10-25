@@ -32,8 +32,8 @@ function validation_input(;
         patch_ydim = 1,
         biomass_stats = nothing,
         included = (;),
-
-        trait_seed = missing)
+        trait_seed = missing,
+        use_height_layers = true)
 
 
     included = create_included(included)
@@ -209,6 +209,7 @@ function validation_input(;
 
     return (
         simp = (;
+            variations = (; use_height_layers),
             output_date = date_range,
             output_date_num = to_numeric.(date_range),
             mean_input_date = date_range[1:end-1] .+ .+ time_step_days ÷ 2,
@@ -343,8 +344,8 @@ function input_traits()
     trait_input = (;
         amc = trait_df.amc,
         sla = trait_df.sla * u"m^2/g",
-        height = trait_df.height * u"m",
-        srsa = trait_df.srsa * u"m^2/g",
+        maxheight = trait_df.maxheight * u"m",
+        rsa = trait_df.rsa * u"m^2/g",
         abp = trait_df.abp,
         lbp = trait_df.lbp,
         lnc = trait_df.lnc * u"mg/g");

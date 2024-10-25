@@ -11,8 +11,8 @@ Calculates the growth of the plant species.
 function growth!(; t, container, above_biomass, total_biomass, actual_height, W, nutrients, WHC, PWP)
     @unpack input = container
     @unpack included = container.simp
-    @unpack act_growth, com, species_specific_red, light_competition, Waterred,
-            Nutred, root_invest = container.calc
+    @unpack growth_act, species_specific_red, LIG, WAT, NUT, ROOT = container.calc
+    @unpack growth_pot_total, RAD, SEA, TEMP = container.calc.com
 
     ########### Potential growth
     potential_growth!(; container, above_biomass, actual_height, PAR = input.PAR_sum[t])
@@ -22,16 +22,16 @@ function growth!(; t, container, above_biomass, total_biomass, actual_height, W,
     nutrient_reduction!(; container, nutrients, total_biomass)
     water_reduction!(; container, W, PWP, WHC)
     root_investment!(; container)
-    @. species_specific_red = light_competition * Nutred * Waterred * root_invest
+    @. species_specific_red = LIG * NUT * WAT# * ROOT
 
     ########### Community growth adjustment by environmental and seasonal factors
     radiation_reduction!(; container, PAR = input.PAR[t])
     temperature_reduction!(; container, T = input.temperature[t])
     seasonal_reduction!(; container, ST = input.temperature_sum[t])
-    community_red = com.RAD * com.SEA * com.TEMP
+    community_red = RAD * SEA * TEMP
 
     ########### Final growth
-    @. act_growth = com.potgrowth_total * species_specific_red * community_red
+    @. growth_act = growth_pot_total * species_specific_red * community_red
 
     return nothing
 end

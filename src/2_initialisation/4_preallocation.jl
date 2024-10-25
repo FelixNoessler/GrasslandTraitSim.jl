@@ -38,10 +38,10 @@ function preallocate_vectors(; input_obj, T = Float64)
         Array{T}(undef, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
         name = :senescence)
-    act_growth = DimArray(
+    growth_act = DimArray(
         Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim, nspecies)u"kg/ha",
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
-        name = :act_growth)
+        name = :growth_act)
     light_growth = DimArray(
         Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim, nspecies),
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
@@ -91,7 +91,7 @@ function preallocate_vectors(; input_obj, T = Float64)
 
     output = (; biomass, above_biomass, below_biomass, water, height,
               mown, grazed, senescence, community_pot_growth, community_height_reducer,
-              act_growth, radiation_reducer, seasonal_growth, temperature_reducer,
+              growth_act, radiation_reducer, seasonal_growth, temperature_reducer,
               seasonal_senescence, fodder_supply, light_growth,
               water_growth, nutrient_growth, root_invest)
 
@@ -168,14 +168,18 @@ function preallocate_vectors(; input_obj, T = Float64)
 
     global F = T
 
+    max_height = 2.0u"m"
+    Δheightlayer = 0.05u"m"
+    nheight_layers = ceil(Int64, max_height / Δheightlayer)
+
     calc = (;
         com = CommunityLevel(),
 
         negbiomass = fill(false, ntimesteps + 1, patch_xdim, patch_ydim, nspecies),
 
         ############ preallaocated vectors that are used in the calculations
-        light_competition = Array{T}(undef, nspecies),
-        act_growth = Array{T}(undef, nspecies)u"kg / ha",
+        LIG = Array{T}(undef, nspecies),
+        growth_act = Array{T}(undef, nspecies)u"kg / ha",
         senescence = Array{T}(undef, nspecies)u"kg / ha",
         defoliation = Array{T}(undef, nspecies)u"kg / ha",
         species_specific_red = Array{T}(undef, nspecies),
@@ -216,18 +220,18 @@ function preallocate_vectors(; input_obj, T = Float64)
         biomass_scaled = Array{T}(undef, nspecies)u"kg / ha",
 
         ## investment to roots
-        root_invest = Array{T}(undef, nspecies),
+        ROOT = Array{T}(undef, nspecies),
         root_invest_srsa = Array{T}(undef, nspecies),
         root_invest_amc = Array{T}(undef, nspecies),
 
         ## nutrient reducer function
         nutrients_splitted = Array{T}(undef, nspecies),
-        Nutred = Array{T}(undef, nspecies),
+        NUT = Array{T}(undef, nspecies),
         N_amc = Array{T}(undef, nspecies),
         N_rsa = Array{T}(undef, nspecies),
 
         ## water reducer function
-        Waterred = Array{T}(undef, nspecies),
+        WAT = Array{T}(undef, nspecies),
 
         ## mowing and grazing
         feedible_biomass = Array{T}(undef, nspecies)u"kg / ha",
@@ -240,6 +244,15 @@ function preallocate_vectors(; input_obj, T = Float64)
         ## senescence
         senescence_rate = Array{T}(undef, nspecies),
         senescence_sla = Array{T}(undef, nspecies),
+
+        ## height layers
+        min_height_layer = collect(0.0u"m":Δheightlayer:nheight_layers*Δheightlayer-Δheightlayer),
+        max_height_layer = collect(Δheightlayer:Δheightlayer:nheight_layers*Δheightlayer),
+        LAIs_layer = Array{T}(undef, nspecies, nheight_layers),
+        LAItot_layer = Array{T}(undef, nheight_layers),
+        cumLAItot_above = Array{T}(undef, nheight_layers),
+        Intensity_layer = Array{T}(undef, nheight_layers),
+        fPAR_layer = Array{T}(undef, nspecies, nheight_layers)
     )
 
     global F = Float64
@@ -249,7 +262,7 @@ end
 
 @kwdef mutable struct CommunityLevel{T, Qkg_ha}
     LAItot::T = F(0.0)
-    potgrowth_total::Qkg_ha = F(0.0) * u"kg/ha"
+    growth_pot_total::Qkg_ha = F(0.0) * u"kg/ha"
     RUE_community_height::T = F(1.0)
     RAD::T = F(1.0)
     SEA::T = F(1.0)

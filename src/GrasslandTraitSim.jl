@@ -130,26 +130,18 @@ function load_data(datapath)
         DataFrame)
 
     traits = (
-        cwm = [mtraits.srsa mtraits.amc mtraits.abp mtraits.sla mtraits.height mtraits.lnc],
-        dim = [:srsa, :amc, :abp, :sla, :height, :lnc],
+        cwm = [mtraits.rsa mtraits.amc mtraits.abp mtraits.sla mtraits.maxheight mtraits.lnc],
+        dim = [:rsa, :amc, :abp, :sla, :maxheight, :lnc],
         t = mtraits.date,
         num_t = mtraits.numeric_date,
         plotID = mtraits.plotID)
-
-    fun_diversity = (;
-        fdis = mtraits.fdis,
-        t = mtraits.date,
-        num_t = mtraits.numeric_date,
-        plotID = mtraits.plotID
-    )
 
     valid = (;
         soilmoisture,
         evaporation,
         traits,
         measuredbiomass,
-        measuredheight,
-        fun_diversity)
+        measuredheight)
 
     ########### input data
     ## time dependent 2009-2022
@@ -194,8 +186,6 @@ function load_data(datapath)
     input_traits = CSV.read("$datapath/input/traits.csv",
         DataFrame)
     input_traits.lbp = 0.8 .* input_traits.abp
-    input_traits.bbp = 1.0 .- input_traits.bbp
-
     input = (;
         traits = input_traits,
         clim,
