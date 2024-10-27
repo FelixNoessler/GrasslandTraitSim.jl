@@ -22,7 +22,7 @@ function growth!(; t, container, above_biomass, total_biomass, actual_height, W,
     nutrient_reduction!(; container, nutrients, total_biomass)
     water_reduction!(; container, W, PWP, WHC)
     root_investment!(; container)
-    @. species_specific_red = LIG * NUT * WAT# * ROOT
+    @. species_specific_red = LIG * NUT * WAT * ROOT
 
     ########### Community growth adjustment by environmental and seasonal factors
     radiation_reduction!(; container, PAR = input.PAR[t])
