@@ -30,8 +30,8 @@ function similarity_matrix!(; container)
 
     for i in Base.OneTo(nspecies)
         for u in Base.OneTo(nspecies)
-            TS[i, u] = (amc_resid[i] - amc_resid[u]) ^ 2 +
-                       (rsa_resid[i] - rsa_resid[u]) ^ 2
+            TS[i, u] = sqrt((amc_resid[i] - amc_resid[u]) ^ 2 +
+                            (rsa_resid[i] - rsa_resid[u]) ^ 2)
         end
     end
 
