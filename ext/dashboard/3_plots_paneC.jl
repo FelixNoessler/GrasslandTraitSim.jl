@@ -41,7 +41,7 @@ function plot_static_nutrient_reducer(; plot_obj, sol, kwargs...)
     nspecies = sol.simp.nspecies
     δ_NUT_amc = sol.p.δ_NUT_amc
     δ_NUT_rsa = sol.p.δ_NUT_rsa
-    srsa = sol.traits.srsa
+    rsa = sol.traits.rsa
     amc = sol.traits.amc
     abp = sol.traits.abp
 
@@ -95,9 +95,9 @@ function plot_static_water_reducer(; plot_obj, sol, kwargs...)
         ymat[i, :] .= sol.calc.WAT
     end
 
-    idx = sortperm(sol.traits.srsa)
+    idx = sortperm(sol.traits.rsa)
     R_05 = sol.transfer_function.R_05[idx]
-    srsa = ustrip.(sol.traits.srsa[idx])
+    rsa = ustrip.(sol.traits.rsa[idx])
     abp = sol.traits.abp[idx]
     ymat = ymat[:, idx]
 

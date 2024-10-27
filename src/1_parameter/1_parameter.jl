@@ -32,7 +32,7 @@ Parameter of the GrasslandTraitSim.jl model
 
     ############################# Nutrient competition
     α_NUT_Nmax::Qg_kg = F(35.0)u"g/kg"
-    α_NUT_TSB::Qkg_ha = F(40000.0)u"kg / ha"
+    α_NUT_TSB::Qkg_ha = F(15000.0)u"kg / ha"
     α_NUT_maxadj::T = F(10.0)
     α_NUT_amc05::T = F(0.95)
     α_NUT_rsa05::T = F(0.95)
