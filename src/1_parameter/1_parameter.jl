@@ -17,10 +17,10 @@ Parameter of the GrasslandTraitSim.jl model
     ############################# Community potential growth
     γ_RUEmax::Qkg_MJ = F(3 / 1000)u"kg / MJ"
     γ_RUE_k::T = F(0.6)
-    α_RUE_cwmH::T = F(0.75)
+    α_RUE_cwmH::T = F(0.95)
 
     ############################# Competition / shading
-    β_LIG_H::T = F(0.5)
+    β_LIG_H::T = F(1.0)
 
     ####################################################################################
     ## 3 Belowground competition
@@ -33,7 +33,7 @@ Parameter of the GrasslandTraitSim.jl model
     ############################# Nutrient competition
     α_NUT_Nmax::Qg_kg = F(35.0)u"g/kg"
     α_NUT_TSB::Qkg_ha = F(40000.0)u"kg / ha"
-    α_NUT_maxadj::T = F(4.0)
+    α_NUT_maxadj::T = F(10.0)
     α_NUT_amc05::T = F(0.95)
     α_NUT_rsa05::T = F(0.95)
     β_NUT_rsa::T = F(15.0)
@@ -56,17 +56,17 @@ Parameter of the GrasslandTraitSim.jl model
     ω_TEMP_T4::QC = F(35.0)u"°C"
     ζ_SEA_ST1::QC = F(775.0)u"°C"
     ζ_SEA_ST2::QC = F(1450.0)u"°C"
-    ζ_SEAmin::T = F(0.7)
-    ζ_SEAmax::T = F(1.3)
+    ζ_SEAmin::T = F(0.9)
+    ζ_SEAmax::T = F(1.5)
 
     ####################################################################################
     ## 5 Senescence
     ####################################################################################
-    α_SEN_month::T = F(0.001)
-    β_SEN_sla::T = F(0.3)
+    α_SEN_month::T = F(0.05)
+    β_SEN_sla::T = F(1.5)
     ψ_SEN_ST1::QC = F(775.0)u"°C"
     ψ_SEN_ST2::QC = F(3000.0)u"°C"
-    ψ_SENmax::T = F(3.0)
+    ψ_SENmax::T = F(1.5)
 
     ####################################################################################
     ## 6 Management
