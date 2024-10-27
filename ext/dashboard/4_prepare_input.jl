@@ -10,8 +10,8 @@ function prepare_input(; plot_obj, posterior, biomass_stats = nothing)
         gts.load_input(path; included,
                    plotIDs = [plotID])[Symbol(plotID)]
     else
-        gts.validation_input(; plotID, nspecies = 71, included, biomass_stats,
-                                    time_step_days)
+        gts.validation_input(; plotID, nspecies = 70, included, biomass_stats,
+                               time_step_days)
     end
     # ------------- parameter values
     p = nothing

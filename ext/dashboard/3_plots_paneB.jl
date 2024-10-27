@@ -3,13 +3,13 @@ function create_axes_paneB(layout)
     axes[:sla] = Axis(layout[1, 1]; alignmode = Inside(),
                       xticklabelsvisible = false,
                       ylabel = "Specific leaf\narea [m² g⁻¹]")
-    axes[:height] = Axis(layout[1, 2]; alignmode = Inside(),
+    axes[:maxheight] = Axis(layout[1, 2]; alignmode = Inside(),
                          xticklabelsvisible = false,
                          ylabel = "Potential height [m]")
     axes[:lnc] = Axis(layout[1, 3]; alignmode = Inside(),
                       xticklabelsvisible = false,
                       ylabel = "Leaf nitrogen per\nleaf mass [mg g⁻¹]")
-    axes[:srsa] = Axis(layout[2, 1]; alignmode = Inside(), xlabel = "Time [years]",
+    axes[:rsa] = Axis(layout[2, 1]; alignmode = Inside(), xlabel = "Time [years]",
                        ylabel = "Root surface area per\nbelowground biomass [m² g⁻¹]")
     axes[:amc] = Axis(layout[2, 2]; alignmode = Inside(), xlabel = "Time [years]",
                       ylabel = "Arbuscular mycorrhizal\ncolonisation [-]")
@@ -28,7 +28,7 @@ function create_axes_paneB(layout)
 end
 
 function update_plots_paneB(; kwargs...)
-    for t in [:amc, :sla, :height, :srsa, :lnc, :abp]
+    for t in [:amc, :sla, :maxheight, :rsa, :lnc, :abp]
         trait_time_plot(; trait = t, kwargs...)
     end
     trait_share_plot(; kwargs...)
@@ -74,9 +74,9 @@ function trait_share_plot(; plot_obj, sol, kwargs...)
     trait_names = Dict(
         :sla => "Specific leaf area [m² g⁻¹]",
         :lnc => "Leaf nitrogen per leaf mass [mg g⁻¹]",
-        :height => "Potential height [m]",
+        :maxheight => "Maximum height [m]",
         :amc => "Arbuscular mycorrhizal colonisation [-]",
-        :srsa => "Root surface area per belowground biomass [m² g⁻¹]",
+        :rsa => "Root surface area per belowground biomass [m² g⁻¹]",
         :abp => "Aboveground biomass per total biomass [-]"
     )
 

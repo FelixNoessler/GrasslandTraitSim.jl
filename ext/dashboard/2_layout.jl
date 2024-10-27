@@ -100,7 +100,7 @@ function dashboard_layout(; variable_p)
     select = [["core", "sade"], ["satellite_mean", "satellite_min", "satellite_max"], nothing]
     menu_biomassvalid = Menu(leftplotsettings_layout[4, 2], options = zip(labels, select))
 
-    trait_keys =  [:amc, :sla, :height, :srsa, :lnc, :abp]
+    trait_keys =  [:amc, :sla, :maxheight, :rsa, :lnc, :abp]
     Label(leftplotsettings_layout[5, 1], "Trait (panel B):";
           halign = :left, justification = :left, fontsize = 16)
     menu_traits = Menu(leftplotsettings_layout[5, 2];
