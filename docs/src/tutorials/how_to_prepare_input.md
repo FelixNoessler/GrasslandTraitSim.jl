@@ -45,6 +45,9 @@ simp = (
     ## which processes to include, see extra tutorial
     ## empty tuple means, that everything is included
     included = sim.create_included(),
+    
+    ## decide on different versions of the model
+    variations = (; use_height_layers = true)
 )
 
 nothing # hide
@@ -168,8 +171,8 @@ If you want to use your own traits, you can specify them in the following way:
 trait_input = (;
     amc = [0.12, 0.52, 0.82, 0.13, 0.16],
     sla = [0.021, 0.026, 0.014, 0.016, 0.0191]u"m^2/g",
-    height = [0.38, 0.08, 0.06, 0.51, 0.27]u"m",
-    srsa = [0.108, 0.163, 0.117, 0.132, 0.119]u"m^2/g",
+    maxheight = [0.38, 0.08, 0.06, 0.51, 0.27]u"m",
+    rsa = [0.108, 0.163, 0.117, 0.132, 0.119]u"m^2/g",
     abp = [0.63, 0.52, 0.65, 0.58, 0.72],
     lbp = [0.55, 0.49, 0.62, 0.38, 0.68],
     lnc = [19.6, 20.7, 22.7, 20.1, 23.6]u"mg/g")

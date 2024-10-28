@@ -227,13 +227,13 @@ function plot_N_srsa(; θ = nothing, path = nothing)
     end
 
     @unpack δ_NUT_rsa, α_NUT_rsa05, ϕ_rsa = container.p
-    @unpack srsa = container.traits
+    @unpack rsa = container.traits
     @unpack above_proportion = container.calc
     x0_R_05 = ϕ_rsa + 1 / δ_NUT_rsa * log((1 - α_NUT_rsa05) / α_NUT_rsa05)
-    R_05 = @. 1 / (1 + exp(-δ_NUT_rsa * ((1 - above_proportion) * srsa - x0_R_05)))
+    R_05 = @. 1 / (1 + exp(-δ_NUT_rsa * ((1 - above_proportion) * rsa - x0_R_05)))
 
-    srsa = ustrip.(container.traits.srsa)
-    rsa_total = (1 .- abp) .* srsa
+    rsa = ustrip.(container.traits.rsa)
+    rsa_total = (1 .- abp) .* rsa
     colorrange = (minimum(rsa_total), maximum(rsa_total))
 
     fig = Figure(size = (1000, 500))

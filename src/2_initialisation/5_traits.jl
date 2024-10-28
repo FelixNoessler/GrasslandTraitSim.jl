@@ -37,9 +37,9 @@ function random_traits!(; container)
 
     ### backtransformation and add units
     @. traits.sla = exp(@view traitmat[1, :]) * u"m^2/g"
-    @. traits.height = exp(@view traitmat[2, :]) * u"m"
+    @. traits.maxheight = exp(@view traitmat[2, :]) * u"m"
     @. traits.lnc = exp(@view traitmat[3, :]) * u"mg/g"
-    @. traits.srsa = exp(@view traitmat[4, :]) * u"m^2/g"
+    @. traits.rsa = exp(@view traitmat[4, :]) * u"m^2/g"
     @. traits.amc = inverse_logit(@view traitmat[5, :])
     @. traits.abp = inverse_logit(@view traitmat[6, :])
     @. traits.lbp = inverse_logit(@view traitmat[7, :])

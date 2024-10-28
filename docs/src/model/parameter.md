@@ -134,7 +134,7 @@ using Unitful
 sim.SimulationParameter() 
 
 # you can change parameter values with keyword arguments
-sim.SimulationParameter(k = 0.65,  ϕ_rsa = 0.05u"m^2 / g")
+sim.SimulationParameter(γ_RUE_k  = 0.65,  ϕ_rsa = 0.05u"m^2 / g")
 ```
 
 ## API

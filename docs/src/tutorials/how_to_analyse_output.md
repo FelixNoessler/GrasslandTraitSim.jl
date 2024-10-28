@@ -10,6 +10,7 @@ using Statistics
 using CairoMakie
 using Unitful
 using RCall # only for functional diversity indices
+CairoMakie.activate!()
 
 trait_input = sim.input_traits()
 input_obj = sim.validation_input(; plotID = "HEG01", nspecies = length(trait_input.amc));
@@ -147,10 +148,10 @@ We can calculate for all traits the community weighted mean over time:
 
 ```@example output
 relative_biomass = species_biomass ./ total_biomass
-traits = [:height, :sla, :lnc, :srsa, :amc, :abp, :lbp]
+traits = [:maxheight, :sla, :lnc, :rsa, :amc, :abp, :lbp]
 trait_names = [
-    "Potential\n height [m]", "Specific leaf\narea [m² g⁻¹]", "Leaf nitrogen \nper leaf mass\n [mg g⁻¹]",
-    "Root surface\narea per above\nground biomass\n[m² g⁻¹]", "Arbuscular\n mycorrhizal\n colonisation",
+    "Maximum\n height [m]", "Specific leaf\narea [m² g⁻¹]", "Leaf nitrogen \nper leaf mass\n [mg g⁻¹]",
+    "Root surface\narea per below\nground biomass\n[m² g⁻¹]", "Arbuscular\n mycorrhizal\n colonisation",
     "Aboveground\nbiomass per total\nbiomass [-]", "Leaf biomass\nper total \nbiomass [-]"]
 
 begin

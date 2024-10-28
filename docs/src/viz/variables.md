@@ -60,7 +60,7 @@ let
     ax1 = Axis(fig[3, 1];
         xlabel = "Root suface area per\nbelowground biomass [m² g⁻¹]",
         ylabel = "Growth reduction due to investment\ninto roots, single effects [-]\n← stronger reduction, less reduction →")
-    scatter!(ustrip.(sol.traits.srsa), sol.calc.root_invest_srsa;
+    scatter!(ustrip.(sol.traits.rsa), sol.calc.root_invest_srsa;
             color = c, colormap,
             markersize = 10)
 

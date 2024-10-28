@@ -30,7 +30,7 @@ function plot_root_investment(; θ = nothing, path = nothing)
     nspecies_line = 100
     _, container_line = create_container_for_plotting(; θ, nspecies = nspecies_line)
     container_line.traits.amc .= LinRange(0, 0.8, nspecies_line)
-    container_line.traits.srsa .= LinRange(0, 0.4, nspecies_line)u"m^2 / g"
+    container_line.traits.rsa .= LinRange(0, 0.4, nspecies_line)u"m^2 / g"
     container_line.calc.above_proportion .= mean(container.traits.abp)
 
     colormap = (:viridis, 0.3)
@@ -63,19 +63,19 @@ function plot_root_investment(; θ = nothing, path = nothing)
 
     Axis(fig[2, 1];
               ylabel = "Growth reduction due to\ninvestment in root surface area per\nbelowground biomass\n← stronger reduction, less reduction →",
-              xlabel = "Root surface area per belowground biomass (srsa) [-]",
+              xlabel = "Root surface area per belowground biomass (rsa) [-]",
               limits = (nothing, nothing, -0.05, 1.05))
     for x in LinRange(0, colorrange[2], 12)
         container_line.p.κ_ROOT_rsa = x
         root_investment!(; container = container_line)
-        lines!(ustrip.(container_line.traits.srsa), container_line.calc.root_invest_srsa;
+        lines!(ustrip.(container_line.traits.rsa), container_line.calc.root_invest_srsa;
                color = x, colorrange, colormap)
     end
     Colorbar(fig[2, 2]; colorrange, label = "κ_ROOT_rsa [-]")
 
-    lines!(ustrip.(container_line.traits.srsa), root_invest_srsa_l;
+    lines!(ustrip.(container_line.traits.rsa), root_invest_srsa_l;
            color =  p.κ_ROOT_rsa, colorrange)
-    scatter!(ustrip.(container.traits.srsa), container.calc.root_invest_srsa;
+    scatter!(ustrip.(container.traits.rsa), container.calc.root_invest_srsa;
              color = p.κ_ROOT_rsa, colorrange)
 
     if !isnothing(path)

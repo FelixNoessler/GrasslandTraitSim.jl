@@ -18,7 +18,7 @@ patch_xdim = 2
 patch_ydim = 1
 
 input_obj_prep = sim.validation_input(;
-    plotID = "HEG01", nspecies = 25,
+    plotID = "HEG01", nspecies = 70,
     trait_seed = 99);
 
 # --------------- change the number of patches
@@ -54,8 +54,8 @@ input = NamedTuple(daily_input_prep)
 input_obj = (; input, simp, site = input_obj_prep.site)
 
 p = sim.SimulationParameter() 
-
-sol = sim.solve_prob(; input_obj, p);
+trait_input = sim.input_traits()
+sol = sim.solve_prob(; input_obj, p, trait_input);
 
 patch_biomass = dropdims(sum(sol.output.biomass; dims = :species); dims = :species)
 

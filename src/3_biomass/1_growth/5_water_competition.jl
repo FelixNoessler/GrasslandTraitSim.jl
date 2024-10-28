@@ -56,8 +56,8 @@ function plot_W_srsa(; θ = nothing, path = nothing)
     end
 
     R_05 = container.transfer_function.R_05
-    srsa = ustrip.(container.traits.srsa)
-    rsa_total = (1 .- abp) .* srsa
+    rsa = ustrip.(container.traits.rsa)
+    rsa_total = (1 .- abp) .* rsa
     colorrange = (minimum(rsa_total), maximum(rsa_total))
 
     fig = Figure(size = (1000, 500))
