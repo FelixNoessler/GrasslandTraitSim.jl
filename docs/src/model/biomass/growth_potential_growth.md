@@ -102,7 +102,7 @@ morphological traits:
 
 ---
 
-- Influence of specific leaf area and aboveground biomass proportion on the leaf area index 
+- Influence of specific leaf area and aboveground biomass proportion on the leaf area index, all species have a total biomass of 2000 [kg ha⁻¹] and the aboveground biomass is assumed to be total biomass times aboveground biomass proportion: ``B_{A, txys} = B_{txys} \cdot ABP_s``. Note, that during the simulation the aboveground biomass proportion is often lower than the trait ``ABP_s``.
 
 
 ```@raw html
@@ -116,23 +116,29 @@ using CairoMakie
 using Unitful
 
 let
-    nspecies, container = sim.create_container_for_plotting()
-    sim.calculate_LAI!(; container, above_biomass = container.u.u_above_biomass[1, 1, :])
+    traits = sim.input_traits()
+    nspecies = length(traits.sla)
+    LAIs = zeros(nspecies)
+    biomass = fill(2000.0u"kg/ha", nspecies)
+    above_biomass = traits.abp   .* biomass
+        
+    for s in eachindex(LAIs)
+        LAIs[s] = uconvert(NoUnits, traits.sla[s] * above_biomass[s] * traits.lbp[s] / traits.abp[s])
+    end
+    
+    idx = sortperm(traits.sla)
+    LAIs_sorted = LAIs[idx]
+    sla = ustrip.(traits.sla[idx])
 
-    idx = sortperm(container.traits.sla)
-    LAIs_sorted = ustrip.(container.calc.LAIs[idx])
-    sla = ustrip.(container.traits.sla[idx])
-
-    abp = (container.traits.abp)[idx]
+    abp = (traits.abp)[idx]
     colorrange = (minimum(abp), maximum(abp))
     colormap = :viridis
 
     fig = Figure()
     ax = Axis(fig[1, 1]; xlabel = "Specific leaf area [m² g⁻¹]", ylabel = "Leaf area index [-]", title = "")
     sc = scatter!(sla, LAIs_sorted, color = abp, colormap = colormap)
-    Colorbar(fig[1,2], sc; label = "Aboveground biomass per total biomass")
+    Colorbar(fig[1,2], sc; label = "Aboveground biomass per total biomass [-]")
     
-    fig
     save("sla_lai.png", fig); nothing # hide
 end
 ```
