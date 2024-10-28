@@ -277,4 +277,5 @@ morphological traits:
 ```@docs
 similarity_matrix!
 nutrient_competition!
+input_nutrients!
 ```

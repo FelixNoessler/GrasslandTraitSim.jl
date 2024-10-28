@@ -35,6 +35,8 @@ sim.dashboard()
 ```@example
 import GrasslandTraitSim as sim
 using GLMakie
+GLMakie.activate!()
+
 sim.dashboard(; variable_p = sim.load_optim_result(), path = "dashboard.png")
 using CairoMakie; CairoMakie.activate!() # hide
 ```

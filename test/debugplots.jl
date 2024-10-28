@@ -2,7 +2,6 @@ using CairoMakie
 
 using GrasslandTraitSim: input_traits, validation_input, SimulationParameter, preallocate_vectors,
     preallocate_specific_vectors, initialization, potential_growth!, solve_prob, nutrient_reduction!,
-    radiation_reduction!, temperature_reduction!, water_reduction!, root_investment!, root_investment!,
     radiation_reduction!, temperature_reduction!, water_reduction!, root_investment!, root_investment!
 
 function create_container_for_plotting(; nspecies = nothing, param = (;), θ = nothing, kwargs...)

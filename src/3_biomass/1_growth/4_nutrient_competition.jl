@@ -1,3 +1,6 @@
+"""
+Scale the total soil nitrogen
+"""
 function input_nutrients!(; container)
     @unpack nutrients = container.patch_variables
     @unpack totalN = container.site

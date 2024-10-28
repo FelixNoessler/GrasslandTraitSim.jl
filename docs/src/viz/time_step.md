@@ -94,7 +94,7 @@ function calc_total_biomass(included; plotID = "HEG01")
      input_obj_14 = sim.load_input(path; plotIDs = [plotID], included)[Symbol(plotID)];
      
      ## faster than preprocessing:
-     # input_obj_14 = sim.validation_input(; plotID, nspecies = 71, time_step_days = 14, included);
+     # input_obj_14 = sim.validation_input(; plotID, nspecies = 70, time_step_days = 14, included);
 
      sol_1 = sim.solve_prob(; input_obj=input_obj_1, p, trait_input);
      sol_14 = sim.solve_prob(; input_obj=input_obj_14, p, trait_input);
