@@ -60,7 +60,7 @@ overview of the transformation of the traits:
 | ``SLA_s`` | specific leaf area [m² g⁻¹]                        | log            |
 | ``PH_s``  | potential plant height [m]                         | log            |
 | ``LNC_s`` | leaf nitrogen content per leaf dry mass [mg g⁻¹]   | log            |
-| ``RSA_s`` | root surface area per aboveground biomass [m² g⁻¹] | log            |
+| ``RSA_s`` | root surface area per belowground biomass [m² g⁻¹] | log            |
 | ``AMC_s`` | arbuscular mycorrhizal colonisation rate [-]       | logit          |
 | ``ABP_s`` | aboveground dry mass per plant dry mass [-]        | logit          |
 | ``LBP_s`` | leaf dry mass per plant dry mass [-]               | logit          |
