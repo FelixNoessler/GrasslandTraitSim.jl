@@ -78,6 +78,24 @@ Parameter of the GrasslandTraitSim.jl model
     ϵ_GRZ_minH::Qm = F(0.05)u"m"
 end
 
+
+function parameter_doc()
+    df = DataFrame([
+        :ϕ_rsa "``\\phi_{\\rsa}``" "Reference root surace area"
+        :ϕ_amc "``\\phi_{\\amc}``" "Reference arbuscular mycorriza colonisation rate"
+        :ϕ_sla "``\\phi_{\\sla}``" "Reference specific leaf area"
+
+        :γ_RUEmax "``\\gamma_{\\RUEmax}``" "Maximum radiation use efficiency"
+        :γ_RUE_k "``\\gamma_{\\RUE_k}``" "Extinction coefficient"
+    ], [:symbol, :latex, :name])
+
+
+    p = SimulationParameter()
+    df.value = [p[row.symbol] for row in eachrow(df)]
+
+    pretty_table(df, tf = tf_borderless, body_hlines = [1,3], body_hlines_format = Tuple('─' for _ = 1:4), alignment = [:l, :l, :l, :l])
+end
+
 function Base.show(io::IO, obj::SimulationParameter)
     p_names = collect(keys(obj))
     vals = [obj[k] for k in p_names]

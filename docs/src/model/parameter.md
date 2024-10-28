@@ -4,7 +4,10 @@ CurrentModule = GrasslandTraitSim
 
 # Parameter in the model
 
-
+```@example
+import GrasslandTraitSim as sim
+sim.parameter_doc()
+```
 
 ## Which method uses a parameter?
 ```@raw html
