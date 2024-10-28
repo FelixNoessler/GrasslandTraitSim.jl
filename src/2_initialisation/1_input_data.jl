@@ -60,7 +60,7 @@ function validation_input(;
     pet_sub = @subset data.input.pet first.(:explo) .== first(plotID) .&& :year .∈ yearrange
     par_sub = @subset data.input.par first.(:explo) .== first(plotID) .&& :year .∈ yearrange
     mow_sub = @subset data.input.mow :plotID .== plotID .&& :year .∈ yearrange
-    graz_sub = @subset data.input.graz :plotID .== plotID .&& :year .∈ yearrange
+    graz_sub = @subset copy(data.input.graz) :plotID .== plotID .&& :year .∈ yearrange
 
     daily_data_prep = @chain vcat(clim_init, clim_sub)  begin
         innerjoin(_, pet_sub, on = :date, makeunique = true)
