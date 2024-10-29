@@ -263,11 +263,11 @@ export function lightCompetitionHeightLayerPlot(){
         
     
     const svg_size = {width: 500, height: 200};
-    const plot_margin = {top: 5, right: 20, bottom: 50, left: 70};
+    const plot_margin = {top: 10, right: 20, bottom: 50, left: 70};
     const ranges = {minx: 0, maxx: 1.6, miny: 0, maxy: 0.2};
     const id = "height_layer_graph";
     const axes_label = {x: "Height [m]", 
-                        y: "Proportion of light intercepted [-]"}; 
+                        y: "Proportion of\nlight intercepted [-]"}; 
     const {plot, x, y} = base_plot(id, axes_label, plot_margin, svg_size, ranges)
     
     const line = d3.line()
