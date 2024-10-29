@@ -81,10 +81,18 @@ function load_data(datapath)
         num_t = mtraits.numeric_date,
         plotID = mtraits.plotID)
 
+    fun_diversity = (;
+        fdis = mtraits.fdis,
+        t = mtraits.date,
+        num_t = mtraits.numeric_date,
+        plotID = mtraits.plotID
+    )
+
     valid = (;
         soilmoisture,
         evaporation,
         traits,
+        fun_diversity,
         measuredbiomass,
         measuredheight)
 

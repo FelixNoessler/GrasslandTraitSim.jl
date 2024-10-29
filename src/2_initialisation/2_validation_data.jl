@@ -28,6 +28,14 @@ function get_validation_data(; plotID, biomass_stats = nothing, mean_input_date 
             (time = date_to_solt(data.valid.traits.t[f]; mean_input_date),
             trait = data.valid.traits.dim))
 
+    # ---------------------------- functional dispersion
+    f = plotID .== data.valid.fun_diversity.plotID
+    fun_diversity = (; fdis = data.valid.fun_diversity.fdis[f],
+                        num_t = data.valid.fun_diversity.num_t[f],
+                        date = data.valid.fun_diversity.t[f],
+                        time = date_to_solt(data.valid.fun_diversity.t[f]; mean_input_date))
+
+
     # ---------------------------- measured height
     height_sub = @subset data.valid.measuredheight :plotID .== plotID .&&
         Dates.year.(:date) .<= 2021
@@ -35,7 +43,7 @@ function get_validation_data(; plotID, biomass_stats = nothing, mean_input_date 
         (; time = date_to_solt(height_sub.date; mean_input_date)))
 
 
-    return (; traits, biomass, biomass_type, height)
+    return (; traits, biomass, biomass_type, height, fun_diversity)
 end
 
 function date_to_solt(calibration_dates; mean_input_date)
