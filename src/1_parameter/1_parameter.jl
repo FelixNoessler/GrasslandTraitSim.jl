@@ -79,21 +79,26 @@ Parameter of the GrasslandTraitSim.jl model
 end
 
 
-function parameter_doc()
-    df = DataFrame([
-        :ϕ_rsa "``\\phi_{\\rsa}``" "Reference root surace area"
-        :ϕ_amc "``\\phi_{\\amc}``" "Reference arbuscular mycorriza colonisation rate"
-        :ϕ_sla "``\\phi_{\\sla}``" "Reference specific leaf area"
+function parameter_doc(; html = false)
+    param_description = (;
+        ϕ_rsa = "Reference root surace area",
+        ϕ_amc = "Reference arbuscular mycorriza colonisation rate",
+        ϕ_sla = "Reference specific leaf area",
+        γ_RUEmax = "Maximum radiation use efficiency",
+        γ_RUE_k =  "Extinction coefficient",
+    )
 
-        :γ_RUEmax "``\\gamma_{\\RUEmax}``" "Maximum radiation use efficiency"
-        :γ_RUE_k "``\\gamma_{\\RUE_k}``" "Extinction coefficient"
-    ], [:symbol, :latex, :name])
+    p = optim_parameter()
+    p_keys = collect(keys(p))
+    p_values = collect(values(p))
+    p_descriptions = [haskey(param_description, k) ? param_description[k] : "TODO" for k in p_keys]
+    data = hcat(p_keys, p_values, p_descriptions)
 
+    if html
+        return pretty_table(HTML, data; alignment = [:r, :l, :l], header = ["Parameter", "Value", "Description"], backend = Val(:html))
+    end
 
-    p = SimulationParameter()
-    df.value = [p[row.symbol] for row in eachrow(df)]
-
-    pretty_table(df, tf = tf_borderless, body_hlines = [1,3], body_hlines_format = Tuple('─' for _ = 1:4), alignment = [:l, :l, :l, :l])
+    return pretty_table(data; alignment = [:r, :l, :l], header = ["Parameter", "Value", "Description"])
 end
 
 function Base.show(io::IO, obj::SimulationParameter)

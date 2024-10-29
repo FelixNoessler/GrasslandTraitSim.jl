@@ -6,7 +6,7 @@ CurrentModule = GrasslandTraitSim
 
 ```@example
 import GrasslandTraitSim as sim
-sim.parameter_doc()
+sim.parameter_doc(; html = true)
 ```
 
 ## Which method uses a parameter?
@@ -36,44 +36,46 @@ function read_files_to_string(directory::String)
     return all_contents
 end
 
-contents = read_files_to_string(dirname(pathof(sim)))
-create_regex = x -> Regex("function $x\\(.*?\\n(.*?\\n)*?end")
+let
+    contents = read_files_to_string(dirname(pathof(sim)))
+    create_regex = x -> Regex("function $x\\(.*?\\n(.*?\\n)*?end")
 
+    prep_method = names(sim, all = true)
+    f1 = [isa(getfield(sim, n), Function) for n in prep_method]
+    f2 = .! startswith.(String.(prep_method), "#")
+    f3 = .! startswith.(String.(prep_method), "plot")
+    f4 = .! startswith.(String.(prep_method), "initialization")
+    f5 = .! startswith.(String.(prep_method), "parameter_doc")
 
-prep_method = names(sim, all = true)
-f1 = [isa(getfield(sim, n), Function) for n in prep_method]
-f2 = .! startswith.(String.(prep_method), "#")
-f3 = .! startswith.(String.(prep_method), "plot")
-f4 = .! startswith.(String.(prep_method), "initialization")
+    method_names = String.(prep_method[f1 .&& f2 .&& f3 .&& f4 .&& f5])
 
-method_names = String.(prep_method[f1 .&& f2 .&& f3 .&& f4])
-
-methods_dict = Dict{String, String}()
-for method_name in method_names
-    method_match = match(create_regex(method_name), contents)
-    if method_match !== nothing
-        methods_dict[method_name] = method_match.match
-    end
-end
-
-pnames = String.(keys(sim.SimulationParameter()))
-
-p_in_methods = []
-for pname in pnames 
-    p_functions = String[]             
-    for k in keys(methods_dict)
-        if occursin(pname, methods_dict[k])
-            push!(p_functions, k)
+    methods_dict = Dict{String, String}()
+    for method_name in method_names
+        method_match = match(create_regex(method_name), contents)
+        if method_match !== nothing
+            methods_dict[method_name] = method_match.match
         end
     end
 
-    fun_format = join(["[`$f`](@ref); " for f in p_functions])[1:end-2]
-    push!(p_in_methods, fun_format) 
-end
+    pnames = String.(keys(sim.SimulationParameter()))
 
-pretty_table([collect(pnames) p_in_methods]; 
-             header = ["Parameter", "Used in..."],       
-             backend = Val(:markdown))
+    p_in_methods = []
+    for pname in pnames 
+        p_functions = String[]             
+        for k in keys(methods_dict)
+            if occursin(pname, methods_dict[k])
+                push!(p_functions, k)
+            end
+        end
+
+        fun_format = join(["[`$f`](@ref); " for f in p_functions])[1:end-2]
+        push!(p_in_methods, fun_format) 
+    end
+
+    pretty_table([collect(pnames) p_in_methods]; 
+                header = ["Parameter", "Used in..."],       
+                backend = Val(:markdown))
+end
 ```
 
 ```@raw html
@@ -86,9 +88,9 @@ pretty_table([collect(pnames) p_in_methods];
 | ϕ\_amc         | [\`root\_investment!\`](@ref); [\`nutrient\_reduction!\`](@ref)                                |
 | ϕ\_sla         | [\`initialize\_senescence\_rate!\`](@ref)                                                      |
 | γ\_RUEmax      | [\`potential\_growth!\`](@ref)                                                                 |
-| γ\_RUE\_k      | [\`potential\_growth!\`](@ref)                                                                 |
+| γ\_RUE\_k      | [\`light\_competition\_height\_layer!\`](@ref); [\`potential\_growth!\`](@ref)                 |
 | α\_RUE\_cwmH   | [\`potential\_growth!\`](@ref)                                                                 |
-| β\_LIG\_H      | [\`light\_competition!\`](@ref)                                                                |
+| β\_LIG\_H      | [\`light\_competition\_simple!\`](@ref)                                                        |
 | α\_WAT\_rsa05  | [\`water\_reduction!\`](@ref)                                                                  |
 | β\_WAT\_rsa    | [\`water\_reduction!\`](@ref)                                                                  |
 | δ\_WAT\_rsa    | [\`water\_reduction!\`](@ref)                                                                  |
