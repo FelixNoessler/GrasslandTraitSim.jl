@@ -100,7 +100,7 @@ function base_plot(id, axes_label, plot_margin, svg_size, ranges) {
     const y = d3.scaleLinear().domain([ranges.miny, ranges.maxy]).range([plot_height, 0]);
     const xAxis = d3.axisBottom(x);
 
-    const yAxis = d3.axisLeft(y);
+    const yAxis = d3.axisLeft(y).ticks(3);
     plot.append("g")
         .call(yAxis)
         .append("text")

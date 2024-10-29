@@ -32,9 +32,7 @@ E_{txy} &= \frac{W_{txy}}{WHC_{xy}} \cdot PET_{txy} \cdot \left[1-\min\left(1, \
 TR_{txy} &= 
     \max\left(0,\,\frac{W_{txy} - PWP_{xy}}{WHC_{xy} - PWP_{xy}}\right) \cdot 
     PET_{txy} \cdot
-    \left(\frac{SLA_{cwm, txy}}{\alpha_{TR,sla}} \right)^{\beta_{TR,sla}} \cdot 
     \min\left(1, \frac{LAI_{tot, txy}}{3}\right)  \\
-SLA_{cwm, txy} &= \sum_{s=1}^{S} SLA_{s} \cdot \frac{B_{txys}}{B_{tot, txy}} \\
 LAI_{tot, txy} &= \sum_{s=1}^{S} LAI_{txys} \\
 LAI_{txys} &= B_{A, txys} \cdot SLA_s \cdot \frac{LBP_s}{ABP_s} \cdot 0.1
 \end{align}
@@ -64,8 +62,6 @@ F_{PWP, xy} &= \beta_{SND, PWP} \cdot SND_{xy} +
 
 == Parameter
 
-- ``\beta_{TR,sla}`` controls the influence of the community weighted mean specific leaf area on the transpiration [-]
-- ``\alpha_{TR,sla}`` reference community weighted mean specific leaf area above which transpiration is increased and below which transpiration is reduced [m² g⁻¹]
 - ``\beta_{SND, WHC}`` relates sand content to fraction of soil filled with water at ``WHC_{xy}`` [-]
 - ``\beta_{SLT, WHC}`` relates silt content to fraction of soil filled with water at ``WHC_{xy}`` [-]
 - ``\beta_{CLY, WHC}`` relates clay content to fraction of soil filled with water at ``WHC_{xy}`` [-]
@@ -103,7 +99,6 @@ intermediate variables:
 - ``TR_{txy}`` transpiration [mm]
 - ``LAI_{tot, txy}`` leaf area index of the community [-]
 - ``LAI_{txys}`` leaf area index of each species [-]
-- ``SLA_{cwm, txy}`` community weighted mean specific leaf area [m² g⁻¹]
 - ``WHC_{xy}`` water holding capacity [mm] 
 - ``PWP_{xy}`` permanent wilting point [mm]
 - ``F_{PWP, xy}`` fraction of the soil filled with water at the permanent wilting point [-]
