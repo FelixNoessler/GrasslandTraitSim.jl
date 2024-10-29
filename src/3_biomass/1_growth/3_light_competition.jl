@@ -28,7 +28,9 @@ function light_competition!(; container, above_biomass, actual_height)
     return nothing
 end
 
-
+"""
+Method 1: Simple light competition based on the height of each species.
+"""
 function light_competition_simple!(; container, above_biomass, actual_height)
     @unpack lais_heightinfluence, LIG, LAIs,
             relative_height = container.calc
@@ -46,6 +48,10 @@ function light_competition_simple!(; container, above_biomass, actual_height)
     return nothing
 end
 
+"""
+Method 2: Divide the grassland into vertical layers and calculate
+the light competition for each layer.
+"""
 function light_competition_height_layer!(; container, actual_height)
     @unpack LAIs, LIG, min_height_layer, max_height_layer,
             LAIs_layer, LAItot_layer, cumLAItot_above,
