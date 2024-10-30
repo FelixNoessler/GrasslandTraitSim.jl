@@ -9,12 +9,6 @@ Licence: [GPL-3.0](https://github.com/FelixNoessler/GrasslandTraitSim.jl/blob/ma
 
 Please refer to the [documentation](https://felixnoessler.github.io/GrasslandTraitSim.jl/dev/) for more information about the grassland simulation model.
 
-Here are slides from presentations that show concepts of the models:
-- [European Conference on Ecological Modelling 2023](assets/ECEM_2023_presentation.pdf)
-- [Biodiversity Exploratories Assembly 2024](assets/Assembly_2024_presentation.pdf)
-
-![](assets/biomass_dynamic_overview.png)
-
 ## Quick install
 
 1. [Download Julia](https://julialang.org/downloads/).
@@ -23,12 +17,8 @@ Here are slides from presentations that show concepts of the models:
 
 ```julia
 import Pkg
-Pkg.add(url="https://github.com/felixnoessler/GrasslandTraitSim.jl")
+Pkg.add("GrasslandTraitSim")
 ```
-
-> **_Compatibility:_** The simulations were tested with `Julia` 1.10. I recommend using this version.
-
-For more information on installing unregistered packages, see [the Julia documentation](https://pkgdocs.julialang.org/v1/managing-packages/#Adding-unregistered-packages). You can browse the releases of `GrasslandTraitSim.jl` [here](https://github.com/FelixNoessler/GrasslandTraitSim.jl/releases). 
 
 ## Run simulations
 
@@ -36,8 +26,7 @@ For more information on installing unregistered packages, see [the Julia documen
 import GrasslandTraitSim as sim
 
 trait_input = sim.input_traits();
-nspecies = length(trait_input.amc)
-input_obj = sim.validation_input(; plotID = "HEG01", nspecies);
+input_obj = sim.validation_input(; plotID = "HEG01", nspecies = length(trait_input.amc));
 p = sim.SimulationParameter();
 sol = sim.solve_prob(; input_obj, p, trait_input);
 sol.output.biomass
