@@ -122,7 +122,7 @@ export function nutrientStressRSAPlot(){
     const trait_values = [0.05, 0.10, 0.15, 0.20, 0.25]; // rsa
 
     const svg_width = 700, svg_height = 400;
-    const margin = { top: 20, right: 110, bottom: 50, left: 70 },
+    const margin = { top: 20, right: 110, bottom: 50, left: 75 },
         width = svg_width - margin.left - margin.right,
         height = svg_height - margin.top - margin.bottom;
 
@@ -149,7 +149,7 @@ export function nutrientStressRSAPlot(){
         .attr("fill", "#000")
         .text("Plant available nutrients (Nₚ) [-]");
     
-    let ylabel = "Nutrient growth reducer based on RSA (NUT_rsa) [-]\n← less reduction, strong reduction →"
+    let ylabel = "Nutrient growth reducer based on RSA (NUT_rsa) [-]\n← strong reduction, less reduction →"
     svg.append("g")
         .call(yAxis)
         .append("text")
@@ -262,7 +262,7 @@ export function nutrientStressRSAPlot(){
                 .attr("x", width + 10 + colorbarWidth + 10)
                 .attr("y", (height - colorbarHeight) / 2 + colorbarHeight / 3)
                 .attr("fill", "#000")
-                .text("Root surface area per total biomass [m² g⁻¹]")
+                .text("Root surface area per total biomass (TRSA) [m² g⁻¹]")
                 .attr("class", "colorbar-label")
                 .attr("text-anchor", "middle")
                 .attr("transform", `rotate(90, ${width + 10 + colorbarWidth + 10}, ${(height - colorbarHeight) / 2 + colorbarHeight / 2})`);
@@ -280,7 +280,7 @@ export function nutrientStressAMCPlot(){
 
     // Set up SVG dimensions
     const svg_width = 600, svg_height = 400;
-    const margin = { top: 20, right: 110, bottom: 50, left: 70 },
+    const margin = { top: 20, right: 110, bottom: 50, left: 75 },
           width = svg_width - margin.left - margin.right,
           height = svg_height - margin.top - margin.bottom;
 
@@ -307,7 +307,7 @@ export function nutrientStressAMCPlot(){
         .attr("fill", "#000")
         .text("Plant available nutrients (Nₚ) [-]");
 
-    let ylabel = "Nutrient growth reducer based on AMC (NUT_amc) [-]\n← less reduction, strong reduction →"
+    let ylabel = "Nutrient growth reducer based on AMC (NUT_amc) [-]\n← strong reduction, less reduction →"
     svg.append("g")
         .call(yAxis)
         .append("text")
@@ -416,7 +416,7 @@ export function nutrientStressAMCPlot(){
                 .attr("class", "colorbar-axis")
                 .call(colorbarAxis);
                 
-            const textData = ["Arbuscular mycorrhizal", "colonisation per total biomass [m² g⁻¹]"];
+            const textData = ["Arbuscular mycorrhizal", "colonisation per total biomass (TAMC) [m² g⁻¹]"];
             const centerX = width + 10 + colorbarWidth + 60;
             const centerY = (height - colorbarHeight) / 2 + colorbarHeight / 2;    
             svg.append("text")   

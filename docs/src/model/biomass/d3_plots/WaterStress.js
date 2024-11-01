@@ -88,7 +88,7 @@ export function waterStressPlot() {
 
     // Set up SVG dimensions
     const svg_width = 600, svg_height = 400;
-    const margin = { top: 20, right: 110, bottom: 50, left: 70 },
+    const margin = { top: 20, right: 110, bottom: 50, left: 75 },
         width = svg_width - margin.left - margin.right,
         height = svg_height - margin.top - margin.bottom;
 
@@ -116,7 +116,7 @@ export function waterStressPlot() {
         .text("Plant available water (Wₚ) [-]");
     
     
-    let ylabel = "Water growth reducer based on RSA (WAT) [-]\n← less reduction, strong reduction →"
+    let ylabel = "Water growth reducer based on RSA (WAT) [-]\n← strong reduction, less reduction →"
     svg.append("g")
         .call(yAxis)
         .append("text")
