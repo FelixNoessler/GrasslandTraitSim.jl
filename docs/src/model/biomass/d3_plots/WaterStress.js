@@ -114,17 +114,24 @@ export function waterStressPlot() {
         .attr("y", 40)
         .attr("fill", "#000")
         .text("Plant available water (Wₚ) [-]");
-
+    
+    
+    let ylabel = "Water growth reducer based on RSA (WAT) [-]\n← less reduction, strong reduction →"
     svg.append("g")
         .call(yAxis)
         .append("text")
         .attr("class", "axis-label")
         .attr("transform", "rotate(-90)")
-        .attr("x", -height / 2)
-        .attr("y", -40)
         .attr("fill", "#000")
         .attr("text-anchor", "middle")
-        .text("Water growth reducer based on RSA (WAT) [-]");
+        .selectAll("tspan")
+        .data(ylabel.split("\n"))  
+        .enter()
+        .append("tspan")
+        .attr("x", -height / 2)
+        .attr("y", -60)
+        .attr("dy", (d, i) => i * 20)  
+        .text(d => d);
 
     const line = d3.line()
         .x(d => x(d.R))

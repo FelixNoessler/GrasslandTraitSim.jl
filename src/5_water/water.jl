@@ -43,17 +43,20 @@ Derive walter holding capacity (WHC) and permanent wilting point (PWP) from soil
 function input_WHC_PWP!(; container)
     @unpack WHC, PWP = container.patch_variables
     @unpack sand, silt, clay, organic, bulk, rootdepth = container.site
+    @unpack β_SND_WHC, β_SLT_WHC, β_CLY_WHC, β_OM_WHC, β_BLK_WHC,
+            β_SND_PWP, β_SLT_PWP, β_CLY_PWP, β_OM_PWP, β_BLK_PWP = container.p
 
-    @. WHC = (0.5678 * sand +
-        0.9228 * silt +
-        0.9135 * clay +
-        0.6103 * organic -
-        0.2696u"cm^3/g" * bulk) * rootdepth
-    @. PWP = (-0.0059 * sand +
-        0.1142 * silt +
-        0.5766 * clay +
-        0.2228 * organic +
-        0.02671u"cm^3/g" * bulk) * rootdepth
+    @. WHC = (β_SND_WHC * sand +
+              β_SLT_WHC * silt +
+              β_CLY_WHC * clay +
+              β_OM_WHC * organic +
+              β_BLK_WHC * bulk) * rootdepth
+
+    @. PWP = (β_SND_PWP * sand +
+              β_SLT_PWP * silt +
+              β_CLY_PWP * clay +
+              β_OM_PWP * organic +
+              β_BLK_PWP * bulk) * rootdepth
 
     return nothing
 end

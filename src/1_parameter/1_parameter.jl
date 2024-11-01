@@ -2,7 +2,7 @@
 Parameter of the GrasslandTraitSim.jl model
 """
 @kwdef mutable struct SimulationParameter{
-    T, Qkg_MJ, Qkg_ha, Qm2_g, Qg_m2, Qg_kg, Qha_MJ, QMJ_ha, QC, Qkg, Qm}
+    T, Qkg_MJ, Qkg_ha, Qm2_g, Qg_m2, Qg_kg, Qha_MJ, QMJ_ha, QC, Qkg, Qm, Qcm3_g}
 
     ####################################################################################
     ## 1 Mean/reference trait values
@@ -14,23 +14,21 @@ Parameter of the GrasslandTraitSim.jl model
     ####################################################################################
     ## 2 Light interception and competition
     ####################################################################################
-    ############################# Community potential growth
     γ_RUEmax::Qkg_MJ = F(3 / 1000)u"kg / MJ"
     γ_RUE_k::T = F(0.6)
     α_RUE_cwmH::T = F(0.95)
-
-    ############################# Competition / shading
     β_LIG_H::T = F(1.0)
 
     ####################################################################################
-    ## 3 Belowground competition
+    ## 3 Water stress
     ####################################################################################
-    ############################# Water competition
     α_WAT_rsa05::T = F(0.9)
     β_WAT_rsa::T = F(7.0)
     δ_WAT_rsa::Qg_m2 = F(20.0)u"g / m^2"
 
-    ############################# Nutrient competition
+    ####################################################################################
+    ## 4 Nutrient stress
+    ####################################################################################
     α_NUT_Nmax::Qg_kg = F(35.0)u"g/kg"
     α_NUT_TSB::Qkg_ha = F(15000.0)u"kg / ha"
     α_NUT_maxadj::T = F(10.0)
@@ -41,7 +39,9 @@ Parameter of the GrasslandTraitSim.jl model
     δ_NUT_rsa::Qg_m2 = F(20.0)u"g / m^2"
     δ_NUT_amc::T = F(10.0)
 
-    ############################# Root investment
+    ####################################################################################
+    ## 5 Maintenance costs for roots and mycorrhiza
+    ####################################################################################
     κ_ROOT_amc::T = F(0.02)
     κ_ROOT_rsa::T = F(0.01)
 
@@ -62,7 +62,7 @@ Parameter of the GrasslandTraitSim.jl model
     ####################################################################################
     ## 5 Senescence
     ####################################################################################
-    α_SEN_month::T = F(0.05)
+    α_SEN::T = F(0.05)
     β_SEN_sla::T = F(1.5)
     ψ_SEN_ST1::QC = F(775.0)u"°C"
     ψ_SEN_ST2::QC = F(3000.0)u"°C"
@@ -76,6 +76,20 @@ Parameter of the GrasslandTraitSim.jl model
     η_GRZ::T = F(2.0)
     κ_GRZ::Qkg = F(22.0)u"kg"
     ϵ_GRZ_minH::Qm = F(0.05)u"m"
+
+    ####################################################################################
+    ## 7 Soil water dynamics
+    ####################################################################################
+    β_SND_WHC::T = F(0.5678)
+    β_SLT_WHC::T = F(0.9228)
+    β_CLY_WHC::T = F(0.9135)
+    β_OM_WHC::T = F(0.6103)
+    β_BLK_WHC::Qcm3_g = F(-0.2696)u"cm^3/g"
+    β_SND_PWP::T = F(-0.0059)
+    β_SLT_PWP::T = F(0.1142)
+    β_CLY_PWP::T = F(0.5766)
+    β_OM_PWP::T = F(0.2228)
+    β_BLK_PWP::Qcm3_g = F(0.02671)u"cm^3/g"
 end
 
 

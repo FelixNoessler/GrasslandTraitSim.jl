@@ -41,9 +41,9 @@ function initialize_senescence_rate!(; container)
         @. senescence_sla = 1.0
     end
 
-    @unpack α_SEN_month = container.p
+    @unpack α_SEN = container.p
     days_per_month = 30.44
-    senescence_per_day = 1 - (1 - α_SEN_month) ^ (1 / days_per_month)
+    senescence_per_day = 1 - (1 - α_SEN) ^ (1 / days_per_month)
 
     @. senescence_rate  = senescence_per_day * senescence_sla
     return nothing

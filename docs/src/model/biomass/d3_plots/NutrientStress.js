@@ -148,18 +148,24 @@ export function nutrientStressRSAPlot(){
         .attr("y", 40)
         .attr("fill", "#000")
         .text("Plant available nutrients (Nₚ) [-]");
-
+    
+    let ylabel = "Nutrient growth reducer based on RSA (NUT_rsa) [-]\n← less reduction, strong reduction →"
     svg.append("g")
         .call(yAxis)
         .append("text")
         .attr("class", "axis-label")
         .attr("transform", "rotate(-90)")
-        .attr("x", -height / 2)
-        .attr("y", -40)
         .attr("fill", "#000")
         .attr("text-anchor", "middle")
-        .text("Nutrient growth reducer based on RSA (NUT_rsa) [-]");
-
+        .selectAll("tspan")
+        .data(ylabel.split("\n"))  
+        .enter()
+        .append("tspan")
+        .attr("x", -height / 2)
+        .attr("y", -60)
+        .attr("dy", (d, i) => i * 20)  
+        .text(d => d);
+        
     const line = d3.line()
         .x(d => x(d.R))
         .y(d => y(d.Reducer));
@@ -301,17 +307,23 @@ export function nutrientStressAMCPlot(){
         .attr("fill", "#000")
         .text("Plant available nutrients (Nₚ) [-]");
 
+    let ylabel = "Nutrient growth reducer based on AMC (NUT_amc) [-]\n← less reduction, strong reduction →"
     svg.append("g")
         .call(yAxis)
         .append("text")
         .attr("class", "axis-label")
         .attr("transform", "rotate(-90)")
-        .attr("x", -height / 2)
-        .attr("y", -40)
         .attr("fill", "#000")
         .attr("text-anchor", "middle")
-        .text("Nutrient growth reducer based on AMC (NUT_amc) [-]");
-
+        .selectAll("tspan")
+        .data(ylabel.split("\n"))  
+        .enter()
+        .append("tspan")
+        .attr("x", -height / 2)
+        .attr("y", -60)
+        .attr("dy", (d, i) => i * 20)  
+        .text(d => d);
+            
     const line = d3.line()
         .x(d => x(d.R))
         .y(d => y(d.Reducer));
