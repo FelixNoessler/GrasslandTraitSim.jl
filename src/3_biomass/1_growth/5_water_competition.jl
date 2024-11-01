@@ -7,7 +7,7 @@ function water_reduction!(; container, W, PWP, WHC)
     @unpack WAT, above_proportion = container.calc
     @unpack R_05, x0 = container.transfer_function
     @unpack rsa = container.traits
-    @unpack ϕ_rsa, α_WAT_rsa05, β_WAT_rsa, δ_WAT_rsa = container.p
+    @unpack ϕ_TRSA, α_WAT_rsa05, β_WAT_rsa, δ_WAT_rsa = container.p
 
     if !included.water_growth_reduction
         @info "No water reduction!" maxlog=1
@@ -25,7 +25,7 @@ function water_reduction!(; container, W, PWP, WHC)
         ###### relate the root surface area per total biomass
         ###### to growth reduction at 0.5 of Wsc = R_05
         ## inflection of logistic function ∈ [0, 1]
-        x0_R_05 = ϕ_rsa + 1.0 / δ_WAT_rsa * log((1.0 - α_WAT_rsa05) / α_WAT_rsa05)
+        x0_R_05 = ϕ_TRSA + 1.0 / δ_WAT_rsa * log((1.0 - α_WAT_rsa05) / α_WAT_rsa05)
 
         ## growth reduction at 0.5 of Wsc ∈ [0, 1]
         @. R_05 = 1.0 / (1.0 + exp(-δ_WAT_rsa * ((1.0 - above_proportion) * rsa - x0_R_05)))

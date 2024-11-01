@@ -336,10 +336,10 @@ function plot_N_amc(; θ = nothing, path = nothing)
         ymat[i, :] .= container.calc.N_amc
     end
 
-    @unpack δ_NUT_amc, α_NUT_amc05, ϕ_amc = container.p
+    @unpack δ_NUT_amc, α_NUT_amc05, ϕ_TAMC = container.p
     @unpack amc = container.traits
     @unpack above_proportion = container.calc
-    x0_R_05 = ϕ_amc + 1 / δ_NUT_amc * log((1 - α_NUT_amc05) / α_NUT_amc05)
+    x0_R_05 = ϕ_TAMC + 1 / δ_NUT_amc * log((1 - α_NUT_amc05) / α_NUT_amc05)
     R_05 = @. 1 / (1 + exp(-δ_NUT_amc * ((1 - above_proportion) * amc - x0_R_05)))
 
     amc = container.traits.amc
@@ -373,7 +373,7 @@ function plot_N_amc(; θ = nothing, path = nothing)
         marker = :x,
         color = amc_total,
         colorrange)
-    scatter!([ustrip(container.p.ϕ_amc)], [container.p.α_NUT_amc05];
+    scatter!([ustrip(container.p.ϕ_TAMC)], [container.p.α_NUT_amc05];
         markersize = 15,
         color = :red)
 
@@ -406,10 +406,10 @@ function plot_N_srsa(; θ = nothing, path = nothing)
         ymat[i, :] .= container.calc.N_rsa
     end
 
-    @unpack δ_NUT_rsa, α_NUT_rsa05, ϕ_rsa = container.p
+    @unpack δ_NUT_rsa, α_NUT_rsa05, ϕ_TRSA = container.p
     @unpack rsa = container.traits
     @unpack above_proportion = container.calc
-    x0_R_05 = ϕ_rsa + 1 / δ_NUT_rsa * log((1 - α_NUT_rsa05) / α_NUT_rsa05)
+    x0_R_05 = ϕ_TRSA + 1 / δ_NUT_rsa * log((1 - α_NUT_rsa05) / α_NUT_rsa05)
     R_05 = @. 1 / (1 + exp(-δ_NUT_rsa * ((1 - above_proportion) * rsa - x0_R_05)))
 
     rsa = ustrip.(container.traits.rsa)
@@ -443,7 +443,7 @@ function plot_N_srsa(; θ = nothing, path = nothing)
         marker = :x,
         color = rsa_total,
         colorrange)
-    scatter!([ustrip(container.p.ϕ_rsa)], [container.p.α_NUT_rsa05];
+    scatter!([ustrip(container.p.ϕ_TRSA)], [container.p.α_NUT_rsa05];
         markersize = 15,
         color = :red)
 
@@ -540,7 +540,7 @@ function plot_W_srsa(; θ = nothing, path = nothing)
         marker = :x,
         color = rsa_total,
         colorrange)
-    scatter!([ustrip(container.p.ϕ_rsa)], [container.p.α_WAT_rsa05];
+    scatter!([ustrip(container.p.ϕ_TRSA)], [container.p.α_WAT_rsa05];
         markersize = 15,
         color = :red)
 

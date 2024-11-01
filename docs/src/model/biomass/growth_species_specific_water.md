@@ -126,7 +126,7 @@ morphological traits:
         <td><input type="range" id="β_R" min="3" max="10" step="0.1" value="7" class="input_water_stress_graph"></td>
     </tr>
     <tr>
-        <td>reference trait value (ϕ_RSA)</td>
+        <td>reference trait value (ϕ_TRSA)</td>
         <td><span id="phi_RSA-value">0.15</span></td>
         <td><input type="range" id="phi_RSA" min="0.05" max="0.25" step="0.05" value="0.15" class="input_water_stress_graph"></td>
     </tr>

@@ -70,9 +70,9 @@ morphological traits:
         <td><input type="range" id="κ_rsa" min="0.0" max="1" step="0.01" value="0.2" class="input_rsa_cost_graph"></td>
     </tr>
     <tr>
-        <td>reference trait value (ϕ_RSA)</td>
-        <td><span id="ϕ_rsa-value">0.15</span></td>
-        <td><input type="range" id="ϕ_rsa" min="0.05" max="0.25" step="0.05" value="0.15" class="input_rsa_cost_graph"></td>
+        <td>reference trait value (ϕ_TRSA)</td>
+        <td><span id="ϕ_TRSA-value">0.15</span></td>
+        <td><input type="range" id="ϕ_TRSA" min="0.05" max="0.25" step="0.05" value="0.15" class="input_rsa_cost_graph"></td>
     </tr>
     </tbody>
 </table>
@@ -95,9 +95,9 @@ morphological traits:
         <td><input type="range" id="κ_amc" min="0.0" max="1" step="0.01" value="0.2" class="input_amc_cost_graph"></td>
     </tr>
     <tr>
-        <td>reference trait value (ϕ_AMC)</td>
-        <td><span id="ϕ_amc-value">0.2</span></td>
-        <td><input type="range" id="ϕ_amc" min="0.1" max="0.5" step="0.05" value="0.2" class="input_amc_cost_graph"></td>
+        <td>reference trait value (ϕ_TAMC)</td>
+        <td><span id="ϕ_TAMC-value">0.2</span></td>
+        <td><input type="range" id="ϕ_TAMC" min="0.1" max="0.5" step="0.05" value="0.2" class="input_amc_cost_graph"></td>
     </tr>
     </tbody>
 </table>

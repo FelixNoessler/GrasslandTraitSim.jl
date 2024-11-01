@@ -92,7 +92,7 @@ function nutrient_reduction!(; container, nutrients, total_biomass)
     @unpack R_05, x0 = container.transfer_function
     @unpack nutrients_splitted, nutrients_adj_factor,
             N_amc, N_rsa, above_proportion = container.calc
-    @unpack ϕ_rsa, ϕ_amc, α_NUT_amc05, α_NUT_rsa05,
+    @unpack ϕ_TRSA, ϕ_TAMC, α_NUT_amc05, α_NUT_rsa05,
             β_NUT_rsa, β_NUT_amc, δ_NUT_rsa, δ_NUT_amc = container.p
     @unpack amc, rsa = container.traits
 
@@ -101,7 +101,7 @@ function nutrient_reduction!(; container, nutrients, total_biomass)
     ###### 1 relate the root surface area per total biomass
     ###### to growth reduction at 0.5 of Np = R_05
     ## inflection of logistic function ∈ [0, 1]
-    x0_R_05 = ϕ_rsa + 1 / δ_NUT_rsa * log((1 - α_NUT_rsa05) / α_NUT_rsa05)
+    x0_R_05 = ϕ_TRSA + 1 / δ_NUT_rsa * log((1 - α_NUT_rsa05) / α_NUT_rsa05)
 
     ## growth reduction at 0.5 of Np ∈ [0, 1]
     @. R_05 = 1 / (1 + exp(-δ_NUT_rsa * ((1 - above_proportion) * rsa - x0_R_05)))
@@ -117,7 +117,7 @@ function nutrient_reduction!(; container, nutrients, total_biomass)
     ###### 2 relate the arbuscular mycorrhizal colonisation
     ###### to growth reduction at 0.5 of Np = R_05
     ## inflection of logistic function ∈ [0, 1]
-    x0_R_05 = ϕ_amc + 1 / δ_NUT_amc * log((1 - α_NUT_amc05) / α_NUT_amc05)
+    x0_R_05 = ϕ_TAMC + 1 / δ_NUT_amc * log((1 - α_NUT_amc05) / α_NUT_amc05)
 
     ## growth reduction at 0.5 of Np ∈ [0, 1]
     @. R_05 = 1 / (1 + exp(-δ_NUT_amc * ((1 - above_proportion) * amc - x0_R_05)))

@@ -82,15 +82,15 @@ export function RSACostsPlot(){
 
     function updatePlot() {
         const κ_rsa = d3.select("#κ_rsa").property("value");
-        const ϕ_rsa = d3.select("#ϕ_rsa").property("value");
+        const ϕ_TRSA = d3.select("#ϕ_TRSA").property("value");
         d3.select("#κ_rsa-value").text(κ_rsa);
-        d3.select("#ϕ_rsa-value").text(ϕ_rsa);
+        d3.select("#ϕ_TRSA-value").text(ϕ_TRSA);
         
         const data = [];
         for (let rsa = ranges.minx; rsa <= ranges.maxx; rsa += (ranges.maxx - ranges.minx) / 200) {
             data.push({ 
                 rsa: rsa, 
-                rsa_invest: 1 - κ_rsa + κ_rsa * Math.exp(Math.log(0.5) / ϕ_rsa * rsa) 
+                rsa_invest: 1 - κ_rsa + κ_rsa * Math.exp(Math.log(0.5) / ϕ_TRSA * rsa) 
             });
         }
 
@@ -102,7 +102,7 @@ export function RSACostsPlot(){
         halfCircle
             .transition()
             .duration(50)
-            .attr("cx", x(ϕ_rsa))
+            .attr("cx", x(ϕ_TRSA))
             .attr("cy", y(1 - κ_rsa / 2));
             
         lowerLine
@@ -154,15 +154,15 @@ export function AMCCostsPlot(){
 
     function updatePlot() {
         const κ_amc = d3.select("#κ_amc").property("value");
-        const ϕ_amc = d3.select("#ϕ_amc").property("value");
+        const ϕ_TAMC = d3.select("#ϕ_TAMC").property("value");
         d3.select("#κ_amc-value").text(κ_amc);
-        d3.select("#ϕ_amc-value").text(ϕ_amc);
+        d3.select("#ϕ_TAMC-value").text(ϕ_TAMC);
         
         const data = [];
         for (let amc = ranges.minx; amc <= ranges.maxx; amc += (ranges.maxx - ranges.minx) / 200) {
             data.push({ 
                 amc: amc, 
-                amc_invest: 1 - κ_amc + κ_amc * Math.exp(Math.log(0.5) / ϕ_amc * amc) 
+                amc_invest: 1 - κ_amc + κ_amc * Math.exp(Math.log(0.5) / ϕ_TAMC * amc) 
             });
         }
 
@@ -174,7 +174,7 @@ export function AMCCostsPlot(){
         halfCircle
             .transition()
             .duration(50)
-            .attr("cx", x(ϕ_amc))
+            .attr("cx", x(ϕ_TAMC))
             .attr("cy", y(1 - κ_amc / 2));
             
         lowerLine

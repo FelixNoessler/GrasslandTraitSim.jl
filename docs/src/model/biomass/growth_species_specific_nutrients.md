@@ -146,7 +146,7 @@ morphological traits:
         <td><input type="range" id="β_RSA" min="3" max="10" step="0.1" value="7" class="input_nutrient_rsa_graph"></td>
     </tr>
     <tr>
-        <td>reference trait value (ϕ_RSA)</td>
+        <td>reference trait value (ϕ_TRSA)</td>
         <td><span id="phi_RSA-value">0.15</span></td>
         <td><input type="range" id="phi_RSA" min="0.05" max="0.25" step="0.05" value="0.15" class="input_nutrient_rsa_graph"></td>
     </tr>
@@ -181,7 +181,7 @@ morphological traits:
             <td><input type="range" id="β_AMC" min="3" max="10" step="0.1" value="7" class="input_nutrient_amc_graph"></td>
         </tr>
         <tr>
-            <td>reference trait value (ϕ_AMC)</td>
+            <td>reference trait value (ϕ_TAMC)</td>
             <td><span id="phi_AMC-value">0.2</span></td>
             <td><input type="range" id="phi_AMC" min="0.0" max="0.4" step="0.1" value="0.2" class="input_nutrient_amc_graph"></td>
         </tr>

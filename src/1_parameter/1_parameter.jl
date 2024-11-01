@@ -7,8 +7,8 @@ Parameter of the GrasslandTraitSim.jl model
     ####################################################################################
     ## 1 Mean/reference trait values
     ####################################################################################
-    ϕ_rsa::Qm2_g = F(0.07)u"m^2 / g"
-    ϕ_amc::T = F(0.2)
+    ϕ_TRSA::Qm2_g = F(0.07)u"m^2 / g"
+    ϕ_TAMC::T = F(0.2)
     ϕ_sla::Qm2_g = F(0.009)u"m^2 / g"
 
     ####################################################################################
@@ -81,8 +81,8 @@ end
 
 function parameter_doc(; html = false)
     param_description = (;
-        ϕ_rsa = "Reference root surace area",
-        ϕ_amc = "Reference arbuscular mycorriza colonisation rate",
+        ϕ_TRSA = "Reference root surace area",
+        ϕ_TAMC = "Reference arbuscular mycorriza colonisation rate",
         ϕ_sla = "Reference specific leaf area",
         γ_RUEmax = "Maximum radiation use efficiency",
         γ_RUE_k =  "Extinction coefficient",
