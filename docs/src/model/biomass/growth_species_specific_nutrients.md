@@ -270,7 +270,7 @@ morphological traits:
     </tr>
     </tbody>
 </table>
-<svg width="600" height="400" id="nutrient_adjustment_graph"></svg>
+<svg id="nutrient_adjustment_graph"></svg>
 ```
 
 ### API
