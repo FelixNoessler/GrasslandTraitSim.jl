@@ -9,6 +9,8 @@ export function nutrientAdjustmentPlot(){
         height = 400 - margin.top - margin.bottom;
     
     const svg = d3.select("#nutrient_adjustment_graph")
+        .attr("viewBox", `0 0 ${width + margin.left + margin.top} ${height + margin.top + margin.left}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
     
@@ -127,8 +129,8 @@ export function nutrientStressRSAPlot(){
         height = svg_height - margin.top - margin.bottom;
 
     const svg = d3.select("#nutrient_rsa_graph")
-        .attr("width", svg_width)
-        .attr("height", svg_height)
+        .attr("viewBox", `0 0 ${svg_width} ${svg_height}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -285,8 +287,8 @@ export function nutrientStressAMCPlot(){
           height = svg_height - margin.top - margin.bottom;
 
     const svg = d3.select("#nutrient_amc_graph")
-        .attr("width", svg_width)
-        .attr("height", svg_height)
+        .attr("viewBox", `0 0 ${svg_width} ${svg_height}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
