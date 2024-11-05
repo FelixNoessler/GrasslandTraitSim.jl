@@ -25,13 +25,7 @@ const navTemp = {
         { text: 'Heterogenous site or management conditions', link: '/tutorials/how_to_heterogeneous_site_management' },
       ],
     },
-    { text: 'Model description',
-      items: [
-        { text: 'Overview', link: '/model'},
-        { text: 'Model inputs', link: '/model/inputs' },
-        { text: 'Parameter', link: '/model/parameter' },
-      ],
-    },
+    { text: 'Model description', link: '/model'},
     { text: 'Visualization',
       items: [
         { text: 'Dashboard', link: '/viz/dashboard'},
