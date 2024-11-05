@@ -75,12 +75,12 @@ inputs:
     </colgroup>
     <tbody>
     <tr>
-        <td>PAR at which the growth is reduced γ_RAD_1</td>
+        <td>steepness of the reduction γ_RAD_1</td>
         <td><span id="gamma1-value">4.45e-6</span></td>
         <td><input type="range" min="3e-6" max="6e-6" step="0.0000001" value="4.45e-6" id="gamma1" class="radiation_reducer_input"></td>
     </tr>
     <tr>
-        <td>steepness of the recution γ_RAD_2</td>
+        <td>PAR at which the growth is reduced γ_RAD_2</td>
         <td><span id="gamma2-value">50000</span></td>
         <td><input type="range" min="30000.0" max="70000.0" step="10" value="50000.0" id="gamma2" class="radiation_reducer_input"></td>
     </tr>
