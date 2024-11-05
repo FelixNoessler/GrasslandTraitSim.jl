@@ -8,10 +8,10 @@ The dynamics of the plant height of the species ``H_{txys}`` [m] are described b
 ```math
 \begin{align}
 H_{t+1xys} &= H_{txys} \cdot \left(1 + \frac{A_{txys} \cdot G_{act, txys}}{B_{A, txys}} - \frac{MOW_{txys}}{B_{A, txys}} - \frac{GRZ_{txys}}{B_{A, txys}}\right) \\
-A_{txys} &= \frac{\left(\frac{B_{A,txys}}{B_{txys}}\right)}{ABP_s}
+A_{txys} &= \frac{\left(\frac{B_{A,txys}}{B_{txys}}\right)}{abp_s}
 \end{align}
 ```
-If the plants are taller than their potential height ``PH_s``, their height is set to their potential height.
+If the plants are taller than their maximum height ``maxheight_s``, their height is set to their maximum height.
 
 
 :::tabs
@@ -34,8 +34,8 @@ intermediate variables:
 - ``A_{txys}`` fraction between realised aboveground biomass proportion to the trait aboveground biomass proportion of each species [-]
 
 morphological traits:
-- ``ABP_s`` aboveground biomass per total biomass of each species [-]
-- ``PH_s`` potential height of each species [-]
+- ``abp_s`` aboveground biomass per total biomass of each species [-]
+- ``maxheight_s`` maximum height of each species [-]
 
 :::
 

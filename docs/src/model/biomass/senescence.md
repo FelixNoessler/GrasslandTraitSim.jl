@@ -44,7 +44,6 @@ The monthly senescence rate defined by ``\alpha_{SEN}`` is converted to a daily 
 - ``\Psi_1`` when the senescence starts to increase [°C]
 - ``\Psi_2`` when the senescence reaches the maximum senescence rate [°C]
 - ``SEN_{\max}`` maximum senescence rate [-]
-see also [`SimulationParameter`](@ref)
 
 == Variables
 

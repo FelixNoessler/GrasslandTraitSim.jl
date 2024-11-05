@@ -32,7 +32,6 @@ The root investment factor ``ROOT_{txys}`` [-], which reduces growth, is describ
 - ``\phi_{AMC}`` reference trait value [-]
 - ``\kappa_{RSA}`` maximum reduction in growth [-]
 - ``\kappa_{AMC}`` maximum reduction in growth [-]
-see also [`SimulationParameter`](@ref)
 
 == Variables
 

@@ -75,7 +75,6 @@ The equation is partly based on [Moulin2021](@cite).
 - ``\eta_{GRZ,H}`` plant parts below this height are not accessible to grazers. [m] 
 - ``\beta_{PAL, lnc}`` scales the influence of the leaf nitrogen content on the preference of the grazers [-]
 - ``\beta_{GRZ, H}`` scales the influence of the height on the preference of the grazers [-]
-see also [`SimulationParameter`](@ref)
 
 == Variables
 

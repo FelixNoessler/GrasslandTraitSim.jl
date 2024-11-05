@@ -20,21 +20,26 @@ We define two different methods for distributing the total potential growth of t
 
 ```math
 \begin{align*}
-    LIG_{txys} &= \frac{LAI_{txys}}{LAI_{tot, txy}} \cdot \left(\frac{H_{txys}}{H_{cwm, txy}} \right) ^ {\beta_H} \\
+    LIG_{txys} &= \frac{LAI_{txys}}{LAI_{tot, txy}} \cdot \left(\frac{H_{txys}}{H_{cwm, txy}} \right) ^ {\beta_{LIG,H}} \\
     H_{cwm, txy} &= \sum_{s=1}^{S}\frac{B_{txys}}{B_{tot, txy}} \cdot H_{txys}
 \end{align*}
 ```
 
 **Method 2:** Use vertical height layers, implemented in [`light_competition_height_layer!`](@ref)
 
-We divide the grassland sward into layers of 0.05 [m] height. We calculate the leaf area index of each species in each layer and calculate the total leaf area in each layer ``LAI_{layer,txy}`` [-]. We can then calculate the leaf area index of all the layers above a layer ``LAI_{abovelayer,txy}`` [-]. With this value we can calculate the amount of light reaching a layer with ``exp(-\gamma_{RUE,k} * LAI_{abovelayer,txy})``. For each layer, the fraction of light reaching a layer is multiplied by the fraction intercepted in a layer ``(1 - \exp(-\gamma_{RUE,k} * LAI_{layer,txy})``. We distribute this fraction of light intercepted in a layer to all species according to their leaf area index fraction in the layer. The light intercepted by each plant species is summed over all layers. This value is divided by ``1 - \exp(-γ_{RUE,k} * LAI_{tot,txy})`` to obtain ``LIG_{txys}`` and to satisfy ``\sum_{s=1}^{S} LIG_{txys} = 1``.
+In the second method, we derive the proportion of light intercepted by each species out of the total light intercepted by dividing the sward into vertical height layers of constant width, by default $0.05 m$: 
+```math
+\begin{align}
+    LIG_{txys} &= \sum_{z = l}^{L} INT_{txy,l} \cdot \frac{LAI_{txys,z}}{LAI_{tot,txy,z}} \cdot \frac{1}{1 - \exp(\gamma_{RUE,k} \cdot LAI_{tot,txy})} \\
+    INT_{txy,l} &= \exp\left(\gamma_{RUE,k} \cdot \sum_{z = l+1}^{L} LAI_{tot,txy,z}\right) \cdot \left(1 - \exp\left(\gamma_{RUE,k} \cdot LAI_{tot,txy,l}\right)\right) 
+\end{align}
+```
 
 :::tabs
 
 == Parameter
 
-- ``\beta_H`` controls how strongly taller plants get more light for growth, only used in the simple method [-]
-see also [`SimulationParameter`](@ref)
+- ``\beta_{LIG,H}`` controls how strongly taller plants get more light for growth, only used in the first method without height layers [-]
 
 == Variables
 
@@ -46,6 +51,9 @@ intermediate variables:
 - ``LAI_{txys}`` leaf area index of each species [-]
 - ``LAI_{tot, txy}`` total leaf area index of the community [-]
 - ``H_{cwm, txy}`` community weighted mean height [m]
+- ``LAI_{txys, l}`` leaf area index of each species in the vertical layer ``l`` [-]
+- ``LAI_{tot, txy, l}`` total leaf area index of the community in the vertical layer ``l`` [-]
+- ``INT_{txy,l}`` light interception in the vertical layer ``l`` [-]
 
 :::
 
@@ -63,7 +71,7 @@ intermediate variables:
     </colgroup>
     <tbody>
     <tr>
-        <td>control how strongly taller plants get more light (β_H)</td>
+        <td>control how strongly taller plants get more light β_LIG_H</td>
         <td><span id="beta_H-value">1</span></td>
         <td><input type="range" min="0" max="2" step="0.01" value="1" id="beta_H" class="light_competition_input"></td>
     </tr>

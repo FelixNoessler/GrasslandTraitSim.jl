@@ -52,7 +52,6 @@ The water stress growth reducer ``WAT_{txys}`` [-] is defined as:
 - ``\beta_{W,RSA}`` slope of response function [-]
 - ``\alpha_{W,RSA,05}`` response at ``W_{p, txy} = 0.5`` for species with the reference trait value[-]
 - ``\delta_{W,RSA}`` scales the difference in the growth reducer between species [g m⁻²]
-see also [`SimulationParameter`](@ref)
 
 == Variables
 
