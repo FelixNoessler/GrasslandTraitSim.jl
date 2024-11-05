@@ -1,8 +1,6 @@
 ####### Build the documentation locally
 # julia --project=docs/
 # import Pkg; Pkg.develop(path="."); Pkg.instantiate(); include("docs/make.jl")
-## to redo the documentation:
-# include("docs/make.jl")
 ## to clean everything for commits/push:
 # include("docs/clean_local_doc.jl")
 # using DocumenterVitepress; DocumenterVitepress.dev_docs("build", md_output_path = "")
