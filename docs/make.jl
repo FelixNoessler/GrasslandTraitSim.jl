@@ -1,4 +1,4 @@
-####### build the documentation locally
+####### Build the documentation locally
 # julia --project=docs/
 # import Pkg; Pkg.develop(path="."); Pkg.instantiate(); include("docs/make.jl")
 ## to redo the documentation:
