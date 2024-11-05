@@ -3,6 +3,45 @@ import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs'
 import mathjax3 from "markdown-it-mathjax3";
 import { withMermaid } from "vitepress-plugin-mermaid";
 
+
+const navTemp = {
+  nav: [
+    { text: 'Home', link: '/' },
+    { text: 'Getting Started', link: '/basics' },
+    { text: 'Tutorials',  
+      items: [
+        { text: 'Prepare input and run simulation', link: '/tutorials/how_to_prepare_input'},
+        { text: 'Analyse model output', link: '/tutorials/how_to_analyse_output' },
+        { text: 'Heterogenous site or management conditions', link: '/tutorials/how_to_heterogeneous_site_management' },
+      ],
+    },
+    { text: 'Model description',
+      items: [
+        { text: 'Overview', link: '/model'},
+        { text: 'Model inputs', link: '/model/inputs' },
+        { text: 'Parameter', link: '/model/parameter' },
+      ],
+    },
+    { text: 'Visualization',
+      items: [
+        { text: 'Dashboard', link: '/viz/dashboard'},
+        { text: 'Visualize model components', link: '/viz/variables' },
+        { text: 'Varying the time step', link: '/viz/time_step' },
+      ],
+    },
+    
+    { text: 'References', link: '/references' },
+  ],
+}
+
+const nav = [
+  ...navTemp.nav,
+  {
+    component: 'VersionPicker'
+  }
+]
+
+
 // https://vitepress.dev/reference/site-config
 export default withMermaid(defineConfig({
   appearance: false,
@@ -34,7 +73,7 @@ export default withMermaid(defineConfig({
         detailedView: true
       }
     },
-    nav: 'REPLACE_ME_DOCUMENTER_VITEPRESS',
+    nav,
     sidebar: 'REPLACE_ME_DOCUMENTER_VITEPRESS',
     editLink: 'REPLACE_ME_DOCUMENTER_VITEPRESS',
     socialLinks: [

@@ -4,6 +4,7 @@ import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 
 import { enhanceAppWithTabs } from 'vitepress-plugin-tabs/client'
+import VersionPicker from "./VersionPicker.vue"
 import './style.css'
 
 export default {
@@ -14,6 +15,7 @@ export default {
     })
   },
   enhanceApp({ app, router, siteData }) {
-    enhanceAppWithTabs(app)
+    enhanceAppWithTabs(app);
+    app.component('VersionPicker', VersionPicker);
   }
 } satisfies Theme
