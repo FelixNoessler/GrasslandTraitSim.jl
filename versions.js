@@ -5,4 +5,4 @@ var DOC_VERSIONS = [
   "dev",
 ];
 var DOCUMENTER_NEWEST = "v0.2.0";
-var DOCUMENTER_STABLE = "stable"; // huhu
+var DOCUMENTER_STABLE = "stable";
