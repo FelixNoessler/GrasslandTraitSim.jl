@@ -4,6 +4,16 @@ import mathjax3 from "markdown-it-mathjax3";
 import { withMermaid } from "vitepress-plugin-mermaid";
 
 
+function getBaseRepository(base: string): string {
+  if (!base) return '/';
+  // I guess if deploy_url is available. From where do I check this ?
+  const parts = base.split('/').filter(Boolean);
+  return parts.length > 0 ? `/${parts[0]}/` : '/';
+}
+const baseTemp = {
+  base: 'REPLACE_ME_DOCUMENTER_VITEPRESS',// TODO: replace this in makedocs!
+}
+
 const navTemp = {
   nav: [
     { text: 'Home', link: '/' },
@@ -51,7 +61,11 @@ export default withMermaid(defineConfig({
   lastUpdated: true,
   cleanUrls: true,
   outDir: 'REPLACE_ME_DOCUMENTER_VITEPRESS', // This is required for MarkdownVitepress to work correctly...
-  head: [['link', { rel: 'icon', href: 'REPLACE_ME_DOCUMENTER_VITEPRESS_FAVICON' }]],
+  head: [
+    ['link', { rel: 'icon', href: 'REPLACE_ME_DOCUMENTER_VITEPRESS_FAVICON' }],
+    ['script', {src: `${getBaseRepository(baseTemp.base)}versions.js`}],
+    ['script', {src: `${baseTemp.base}siteinfo.js`}]
+  ],
   ignoreDeadLinks: true,
   
   markdown: {
