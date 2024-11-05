@@ -2,19 +2,6 @@ import { defineConfig } from 'vitepress'
 import { tabsMarkdownPlugin } from 'vitepress-plugin-tabs'
 import mathjax3 from "markdown-it-mathjax3";
 import { withMermaid } from "vitepress-plugin-mermaid";
-import type { Plugin } from 'vitepress';
-
-
-const NavLinkPatch = (): Plugin => ({
-  name: 'override-target-blank',
-  enforce: 'pre',
-  transform: (code, id) => {
-    if (id.endsWith('VPLink.vue')) {
-      return code.replace('_blank', '_self');
-    }
-  },
-});
-
 
 function getBaseRepository(base: string): string {
   if (!base) return '/';
@@ -60,7 +47,6 @@ const nav = [
 
 // https://vitepress.dev/reference/site-config
 export default withMermaid(defineConfig({
-  plugins: [NavLinkPatch()],
   appearance: false,
   base: 'REPLACE_ME_DOCUMENTER_VITEPRESS',// TODO: replace this in makedocs!
   title: 'REPLACE_ME_DOCUMENTER_VITEPRESS',
