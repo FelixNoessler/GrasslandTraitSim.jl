@@ -41,3 +41,8 @@ jobs:
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
           JULIA_DEBUG: "Documenter"
           DATADEPS_ALWAYS_ACCEPT: true
+      - name: Upload site as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Docs build
+          path: ./docs/build
