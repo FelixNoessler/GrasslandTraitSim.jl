@@ -18,7 +18,7 @@ The root investment factor ``ROOT_{txys}`` [-], which reduces growth, is describ
 \begin{align}
     ROOT_{txys} &= ROOT_{rsa,txys} \cdot ROOT_{amc,txys} \\
     ROOT_{rsa,txys} &= 1 - \kappa_{ROOT,rsa} + \kappa_{ROOT,rsa} \cdot \exp\left(\frac{\log(0.5)}{\phi_{TRSA} \cdot TRSA_{txys}} \right) \\
-    ROOT_{amc,txys} &= 1 - \kappa_{ROOT,amc} + \kappa_{ROOT,amc} \cdot \exp\left(\frac{\log(0.5)}{\phi_{AMC} \cdot TAMC_{txys}} \right) \\
+    ROOT_{amc,txys} &= 1 - \kappa_{ROOT,amc} + \kappa_{ROOT,amc} \cdot \exp\left(\frac{\log(0.5)}{\phi_{TAMC} \cdot TAMC_{txys}} \right) \\
     TRSA_{txys} &= \frac{B_{B, txys}}{B_{txys}} \cdot  rsa_s \\
     TAMC_{txys} &= \frac{B_{B, txys}}{B_{txys}} \cdot  amc_s  
 \end{align}
@@ -29,7 +29,7 @@ The root investment factor ``ROOT_{txys}`` [-], which reduces growth, is describ
 == Parameter
 
 - ``\phi_{TRSA}`` reference trait value [m² g⁻¹]
-- ``\phi_{AMC}`` reference trait value [-]
+- ``\phi_{TAMC}`` reference trait value [-]
 - ``\kappa_{ROOT,rsa}`` maximum reduction in growth [-]
 - ``\kappa_{ROOT,amc}`` maximum reduction in growth [-]
 
