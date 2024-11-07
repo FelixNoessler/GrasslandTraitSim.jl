@@ -61,12 +61,8 @@ makedocs(;
                 "- for investment into roots" => "model/biomass/growth_species_specific_roots.md",
                 "Senescence" => "model/biomass/senescence.md",
                 "Mowing and grazing" => "model/biomass/mowing_grazing.md"],
-            "Plant height dynamics" => [
-                "Dynamics" => "model/height/index.md"
-            ],
-            "Soil water dynamics" => [
-                "Dynamics" => "model/water/index.md"
-        ]],
+            "Plant height dynamics" => "model/height/index.md",
+            "Soil water dynamics" => "model/water/index.md"],
         "Visualization" => [
             "Dashboard" => "viz/dashboard.md",
             "Visualize model components" => "viz/variables.md",
