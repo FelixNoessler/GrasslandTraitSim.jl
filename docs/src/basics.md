@@ -8,7 +8,7 @@ Author: [Felix Nößler](https://github.com/FelixNoessler/).
 ```
 Licence: [GPL-3.0](https://github.com/FelixNoessler/GrasslandTraitSim.jl/blob/master/LICENSE)
 
-Please contact me if you have any questions about using the model or if you would like to collaborate. You can write my an email [here](mailto:felix.noessler@fu-berlin.de).
+Please contact me if you have any questions about using the model or if you would like to collaborate. You can write my [an email](mailto:felix.noessler@fu-berlin.de) or open [an issue on Github](https://github.com/felixnoessler/grasslandtraitsim.jl/issues/new).
 
 ## Installation
 
