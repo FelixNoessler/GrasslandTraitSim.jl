@@ -1,11 +1,11 @@
 import * as d3 from 'd3';
 
 export function nutrientAdjustmentPlot(){
-    let α_TSB = 10000, D_max = 4;
+    let α_TSB = 10000, D_max = 10;
     let xmax = 40000;
      
     const margin = { top: 25, right: 60, bottom: 50, left: 70 },
-        width = 600 - margin.left - margin.right,
+        width = 700 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
     
     const svg = d3.select("#nutrient_adjustment_graph")
@@ -15,7 +15,7 @@ export function nutrientAdjustmentPlot(){
         .attr("transform", `translate(${margin.left},${margin.top})`);
     
     const x = d3.scaleLinear().domain([0, xmax]).range([0, width]);
-    const y = d3.scaleLinear().domain([0, 10]).range([height, 0]);
+    const y = d3.scaleLinear().domain([0, 15]).range([height, 0]);
     
     
     const xAxis = d3.axisBottom(x);
@@ -77,7 +77,6 @@ export function nutrientAdjustmentPlot(){
     function updateParameters() {
         α_TSB = +d3.select("#α_TSB").property("value");
         D_max = +d3.select("#D_max").property("value");
-    
         d3.select("#α_TSB-value").text(α_TSB);
         d3.select("#D_max-value").text(D_max);
     
@@ -115,7 +114,7 @@ export function nutrientAdjustmentPlot(){
             .attr("cy", y(1));
     }
     
-    plot();
+    updateParameters();
     
     d3.selectAll(".nutrient_adjustment_graph_graph").on("input", updateParameters); 
 }
@@ -281,7 +280,7 @@ export function nutrientStressAMCPlot(){
     const trait_values = [0.0, 0.10, 0.2, 0.30, 0.4]; // amc
 
     // Set up SVG dimensions
-    const svg_width = 600, svg_height = 400;
+    const svg_width = 700, svg_height = 400;
     const margin = { top: 20, right: 110, bottom: 50, left: 75 },
           width = svg_width - margin.left - margin.right,
           height = svg_height - margin.top - margin.bottom;

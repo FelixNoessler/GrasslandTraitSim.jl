@@ -57,6 +57,7 @@ F_{PWP, xy} &= \beta_{SND, PWP} \cdot SND_{xy} +
 \end{align}
 ```
 
+Equations and parameter values for water holding capacity and permanent wilting point are based on [Gupta1979](@citet).
 
 :::tabs
 

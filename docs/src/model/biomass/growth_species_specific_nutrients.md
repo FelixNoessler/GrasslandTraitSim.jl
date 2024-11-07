@@ -258,12 +258,12 @@ morphological traits:
     <tbody>
     <tr>
         <td>maximum nutrient adjustment factor α_NUT_maxadj</td>
-        <td><span id="D_max-value">4.0</span></td>
-        <td><input type="range" id="D_max" min="1.0" max="10.0" step="0.1" value="4.0" class="nutrient_adjustment_graph_graph"></td>
+        <td><span id="D_max-value"></span></td>
+        <td><input type="range" id="D_max" min="1.0" max="15.0" step="0.1" value="10" class="nutrient_adjustment_graph_graph"></td>
     </tr>
     <tr>
         <td>reference value for ∑ TS ⋅ B α_NUT_TSB</td>
-        <td><span id="α_TSB-value">10000</span></td>
+        <td><span id="α_TSB-value"></span></td>
         <td><input type="range" id="α_TSB" min="5000" max="40000" step="500" value="10000" class="nutrient_adjustment_graph_graph"></td>
     </tr>
     </tbody>

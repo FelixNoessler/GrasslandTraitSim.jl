@@ -64,7 +64,7 @@ H_{cwm,txy} &= \sum_{s=1}^{S} \frac{B_{F, txys}}{B_{F,txy}} \cdot H_{txys}
 \end{align}
 ```
 
-The equation is partly based on [Moulin2021](@cite).
+The equation is partly based on [Moulin2021](@citet).
 
 :::tabs
 
@@ -133,7 +133,7 @@ morphological traits:
     </tbody>
 </table>
 
-<svg id="grazing_graph"></svg> 
+<div style="max-width: 700px"><svg id="grazing_graph"></svg></div>
 ```
 
 ### API
