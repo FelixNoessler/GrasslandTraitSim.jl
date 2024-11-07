@@ -7,8 +7,8 @@ export function temperatureReducerPlot() {
         height = svg_height - margin.top - margin.bottom;
 
     const svg = d3.select("#temperature_reducer_graph")
-        .attr("width", svg_width)
-        .attr("height", svg_height)
+        .attr("viewBox", `0 0 ${svg_width} ${svg_height}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 

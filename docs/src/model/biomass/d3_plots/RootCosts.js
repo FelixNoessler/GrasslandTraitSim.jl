@@ -5,8 +5,8 @@ function base_plot(id, axes_label, plot_margin, svg_size, ranges){
     const plot_height = svg_size.height - plot_margin.top - plot_margin.bottom;
     
     const svg = d3.select(`#${id}`)
-        .attr("width", svg_size.width)
-        .attr("height", svg_size.height);
+        .attr("viewBox", `0 0 ${svg_size.width} ${vg_size.height}`)
+        .attr("preserveAspectRatio", "xMidYMid meet");
     const plot = svg.append("g")
         .attr("transform", `translate(${plot_margin.left},${plot_margin.top})`);
         

@@ -7,8 +7,8 @@ export function plantAvailableWaterPlot() {
         height = svg_height - margin.top - margin.bottom;
 
     const svg = d3.select("#plant_av_water_graph")
-        .attr("width", svg_width)
-        .attr("height", svg_height)
+        .attr("viewBox", `0 0 ${svg_width} ${svg_height}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -93,8 +93,8 @@ export function waterStressPlot() {
         height = svg_height - margin.top - margin.bottom;
 
     const svg = d3.select("#water_stress_graph")
-        .attr("width", svg_width)
-        .attr("height", svg_height)
+        .attr("viewBox", `0 0 ${svg_width} ${svg_height}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 

@@ -40,7 +40,7 @@ export function nutrientAdjustmentPlot(){
         .attr("y", -40)
         .attr("fill", "#000")
         .attr("text-anchor", "middle")
-        .text("Nutrient adjustment factor (D) [-]");
+        .text("Nutrient adjustment factor (NUT_adj) [-]");
     
     svg.append("line")
         .attr("x1", x(0)) 
@@ -418,7 +418,7 @@ export function nutrientStressAMCPlot(){
                 .attr("class", "colorbar-axis")
                 .call(colorbarAxis);
                 
-            const textData = ["Arbuscular mycorrhizal", "colonisation per total biomass (TAMC) [m² g⁻¹]"];
+            const textData = ["Arbuscular mycorrhizal colonisation", "per total biomass (TAMC) [m² g⁻¹]"];
             const centerX = width + 10 + colorbarWidth + 60;
             const centerY = (height - colorbarHeight) / 2 + colorbarHeight / 2;    
             svg.append("text")   

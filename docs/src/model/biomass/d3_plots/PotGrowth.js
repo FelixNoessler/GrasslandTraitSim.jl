@@ -1,11 +1,16 @@
 import * as d3 from 'd3';
 
 export function potGrowthPlot() {
-    const svg = d3.select("#pot_growth_graph"),
-            margin = {top: 15, right: 30, bottom: 45, left: 70},
-            width = +svg.attr("width") - margin.left - margin.right,
-            height = +svg.attr("height") - margin.top - margin.bottom,
-            g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    const margin = {top: 15, right: 30, bottom: 45, left: 70},
+        width = 500 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+    
+    const svg = d3.select("#pot_growth_graph")
+        .attr("viewBox", `0 0 ${width + margin.left + margin.top} ${height + margin.top + margin.left}`)
+        .attr("preserveAspectRatio", "xMidYMid meet");
+
+    const g = svg.append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
 
     const max_LAItot = 10;
     const x = d3.scaleLinear().range([0, width]).domain([0, max_LAItot]); 

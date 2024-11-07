@@ -7,8 +7,8 @@ export function lightCompetitionSimplePlot() {
         height = svg_height - margin.top - margin.bottom;
 
     const svg = d3.select("#light_competition_graph")
-        .attr("width", svg_width)
-        .attr("height", svg_height)
+        .attr("viewBox", `0 0 ${svg_width} ${svg_height}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
         .append("g")
         .attr("transform", `translate(${margin.left},${margin.top})`);
 
@@ -91,8 +91,8 @@ function base_plot(id, axes_label, plot_margin, svg_size, ranges) {
     const plot_height = svg_size.height - plot_margin.top - plot_margin.bottom;
     
     const svg = d3.select(`#${id}`)
-        .attr("width", svg_size.width)
-        .attr("height", svg_size.height);
+        .attr("viewBox", `0 0 ${svg_size.width} ${svg_size.height}`)
+        .attr("preserveAspectRatio", "xMidYMid meet");
     const plot = svg.append("g")
         .attr("transform", `translate(${plot_margin.left},${plot_margin.top})`);
         
@@ -227,8 +227,8 @@ export function lightCompetitionHeightLayerPlot(){
         height = 150 - marginBar.top - marginBar.bottom;
     
     const svgBar = d3.select("#totalIntercepted_graph")
-        .attr("width", width + marginBar.left + marginBar.right)
-        .attr("height", height + marginBar.top + marginBar.bottom)
+        .attr("viewBox", `0 0 ${width + marginBar.left + marginBar.top} ${height + marginBar.top + marginBar.left}`)
+        .attr("preserveAspectRatio", "xMidYMid meet")
         .append("g")
         .attr("transform", `translate(${marginBar.left}, ${marginBar.top})`);
     

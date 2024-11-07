@@ -133,7 +133,7 @@ morphological traits:
     </tbody>
 </table>
 
-<svg width="600" height="400" id="grazing_graph"></svg> 
+<svg id="grazing_graph"></svg> 
 ```
 
 ### API
