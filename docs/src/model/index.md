@@ -51,7 +51,7 @@ to the original scale and the units are added. If the proportion of the leaf mas
 of the total plant mass ``lbp_s`` is larger than 0.95 % of the proportion of the
 aboveground mass of the total mass ``abp_s``, ``lbp_s`` is set to 0.95 % of ``abp_s``. 
 The Gaussian mixture model was fitted to the data with the function
-`BayesianGaussianMixture` of [scikit-learn](@cite) to a set of grassland species
+`BayesianGaussianMixture` of [scikit-learn](@citet) to a set of grassland species
 that was found in Germany in the Biodiversity Exploratories. Here, you can get an 
 overview of the transformation of the traits:
 

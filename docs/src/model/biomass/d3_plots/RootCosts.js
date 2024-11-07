@@ -50,7 +50,7 @@ export function RSACostsPlot(){
     const ranges = {minx: 0, maxx: 0.25, miny: 0, maxy: 1.05};
     const id = "rsa_cost_graph";
     const axes_label = {x: "Root surface area per total biomass (TRSA) [m² g⁻¹]", 
-                        y: "Growth reduction due to investment\nin root surface area (ROOT_RSA) [-]"}; 
+                        y: "Growth reduction due to investment\nin root surface area (ROOT_rsa) [-]"}; 
     const {plot, x, y} = base_plot(id, axes_label, plot_margin, svg_size, ranges)
 
     plot.append("line")
@@ -122,7 +122,7 @@ export function AMCCostsPlot(){
     const ranges = {minx: 0, maxx: 0.5, miny: 0, maxy: 1.05};
     const id = "amc_cost_graph";
     const axes_label = {x: "Arbuscular mycorrhiza colonisation rate per total biomass (TAMC) [-]", 
-                        y: "Growth reduction due to investment\nin mycorrhiza (ROOT_AMC) [-]"}; 
+                        y: "Growth reduction due to investment\nin mycorrhiza (ROOT_amc) [-]"}; 
     const {plot, x, y} = base_plot(id, axes_label, plot_margin, svg_size, ranges)
 
     plot.append("line")

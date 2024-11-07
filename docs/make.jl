@@ -17,7 +17,7 @@ makie_theme = Theme(fontsize = 18,
 set_theme!(makie_theme)
 
 ####### Create bilbiography
-bib = CitationBibliography("docs/src/lit.bib"; style = :numeric)
+bib = CitationBibliography("docs/src/lit.bib"; style = :authoryear)
 
 ####### Create documentation
 makedocs(;
