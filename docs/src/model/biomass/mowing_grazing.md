@@ -22,7 +22,7 @@ M_{txys} = MOW_{txys} + GRZ_{txys}
 
 The mown biomass ``MOW_{txys}`` [kg ha⁻¹] is decribed by:
 ```math
-MOW_{txys} =  \frac{\max\left(H_{txys} - CUT_{txy},\,0\,\text{m}\right)}{H_{txys}} \cdot B_{A, txys}
+MOW_{txys} =  \frac{\max\left(H_{txys} - CUT_{txy},\,0\right)}{H_{txys}} \cdot B_{A, txys}
 ```
 
 :::tabs
