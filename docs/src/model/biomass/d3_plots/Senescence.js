@@ -43,7 +43,7 @@ export function seasonalSenescenceAjdPlot(){
     const plot_margin = {top: 20, right: 20, bottom: 50, left: 70};
     const ranges = {minx: 0, maxx: 3500, miny: 0, maxy: 3.5};
     const id = "seasonal_senescence_graph";
-    const axes_label = {x: "Yearly cumulative temperature (ST) [°C] ", y: "Seasonal adjustment of senescence rate (SEN) [-]"}; 
+    const axes_label = {x: "Cumulative temperature from the beginning of current year (ST) [°C] ", y: "Seasonal adjustment of senescence rate (SEN) [-]"}; 
     const {plot, x, y} = base_plot(id, axes_label, plot_margin, svg_size, ranges)
     
     const line1 = d3.line()
@@ -93,7 +93,7 @@ export function SLASenescenceRatePlot(){
     const plot_margin = {top: 20, right: 20, bottom: 50, left: 70};
     const ranges = {minx: 0.001, maxx: 0.02, miny: 0, maxy: 2.5};
     const id = "SLA_senescence_graph";
-    const axes_label = {x: "Specific leaf area (SLA) [m² g⁻¹] ", y: "Influence of the SLA on the senescence rate [-]"}; 
+    const axes_label = {x: "Specific leaf area (sla) [m² g⁻¹] ", y: "Influence of the SLA on the senescence rate [-]"}; 
     const {plot, x, y} = base_plot(id, axes_label, plot_margin, svg_size, ranges)
     
     const line1 = d3.line()

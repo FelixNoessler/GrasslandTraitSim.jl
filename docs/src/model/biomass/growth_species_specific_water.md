@@ -86,12 +86,12 @@ morphological traits:
     <tbody>
     <tr>
         <td>permanent wilting point (PWP)</td>
-        <td><span id="PWP-value">1</span></td>
+        <td><span id="PWP-value"></span></td>
         <td><input type="range" min="25" max="105" step="1" value="50" id="PWP" class="plant_av_water_input"></td>
     </tr>
     <tr>
         <td>water holding capacity (WHC)</td>
-        <td><span id="WHC-value">1</span></td>
+        <td><span id="WHC-value"></span></td>
         <td><input type="range" min="85" max="205" step="1" value="120" id="WHC" class="plant_av_water_input"></td>
     </tr>
     </tbody>
@@ -111,7 +111,7 @@ morphological traits:
     <tbody>
     <tr>
         <td>response at Wₚ = 0.5 for species with the reference trait value (α_WRSA05) <br>(strong to weak growth reduction)</td>
-        <td><span id="ɑ_R_05-value">0.9</span></td>
+        <td><span id="ɑ_R_05-value"></span></td>
         <td><input type="range" id="ɑ_R_05" min="0.1" max="0.999" step="0.001" value="0.9" class="input_water_stress_graph"></td>
     </tr>
     <tr>
@@ -121,12 +121,12 @@ morphological traits:
     </tr>
     <tr>
         <td>slope of response (β_WAT_rsa)</td>
-        <td><span id="β_R-value">7</span></td>
+        <td><span id="β_R-value"></span></td>
         <td><input type="range" id="β_R" min="3" max="10" step="0.1" value="7" class="input_water_stress_graph"></td>
     </tr>
     <tr>
         <td>reference trait value (ϕ_TRSA)</td>
-        <td><span id="phi_RSA-value">0.15</span></td>
+        <td><span id="phi_RSA-value"></span></td>
         <td><input type="range" id="phi_RSA" min="0.05" max="0.25" step="0.05" value="0.15" class="input_water_stress_graph"></td>
     </tr>
     </tbody>

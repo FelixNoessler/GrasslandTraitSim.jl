@@ -16,11 +16,11 @@ The root investment factor ``ROOT_{txys}`` [-], which reduces growth, is describ
 
 ```math
 \begin{align}
-    ROOT_{txys} &= ROOT_{RSA, txys} \cdot ROOT_{AMC, txys} \\
-    ROOT_{RSA, txys} &= 1 - \kappa_{RSA} + \kappa_{RSA} \cdot \exp\left(\frac{\log(0.5)}{\phi_{RSA} \cdot TRSA_{txys}} \right) \\
-    ROOT_{AMC, txys} &= 1 - \kappa_{AMC} + \kappa_{AMC} \cdot \exp\left(\frac{\log(0.5)}{\phi_{AMC} \cdot TAMC_{txys}} \right) \\
-    TRSA_{txys} &= \frac{B_{B, txys}}{B_{txys}} \cdot  RSA_s \\
-    TAMC_{txys} &= \frac{B_{B, txys}}{B_{txys}} \cdot  AMC_s  
+    ROOT_{txys} &= ROOT_{rsa,txys} \cdot ROOT_{amc,txys} \\
+    ROOT_{rsa,txys} &= 1 - \kappa_{ROOT,rsa} + \kappa_{ROOT,rsa} \cdot \exp\left(\frac{\log(0.5)}{\phi_{TRSA} \cdot TRSA_{txys}} \right) \\
+    ROOT_{amc,txys} &= 1 - \kappa_{ROOT,amc} + \kappa_{ROOT,amc} \cdot \exp\left(\frac{\log(0.5)}{\phi_{TAMC} \cdot TAMC_{txys}} \right) \\
+    TRSA_{txys} &= \frac{B_{B, txys}}{B_{txys}} \cdot  rsa_s \\
+    TAMC_{txys} &= \frac{B_{B, txys}}{B_{txys}} \cdot  amc_s  
 \end{align}
 ```
 
@@ -28,10 +28,10 @@ The root investment factor ``ROOT_{txys}`` [-], which reduces growth, is describ
 
 == Parameter
 
-- ``\phi_{RSA}`` reference trait value [m² g⁻¹]
-- ``\phi_{AMC}`` reference trait value [-]
-- ``\kappa_{RSA}`` maximum reduction in growth [-]
-- ``\kappa_{AMC}`` maximum reduction in growth [-]
+- ``\phi_{TRSA}`` reference trait value [m² g⁻¹]
+- ``\phi_{TAMC}`` reference trait value [-]
+- ``\kappa_{ROOT,rsa}`` maximum reduction in growth [-]
+- ``\kappa_{ROOT,amc}`` maximum reduction in growth [-]
 
 == Variables
 
@@ -40,14 +40,14 @@ state variables:
 - ``B_{txys}`` biomass of each species [kg ha⁻¹]
 
 intermediate variables:
-- ``ROOT_{RSA, txys}`` growth reduction due to investment in root surface area per total biomass [-]
-- ``ROOT_{AMC, txys}`` growth reduction due to investment in arbuscular mycorrhizal colonisation rate per total biomass [-]
+- ``ROOT_{rsa,txys}`` growth reduction due to investment in root surface area per total biomass [-]
+- ``ROOT_{amc,txys}`` growth reduction due to investment in arbuscular mycorrhizal colonisation rate per total biomass [-]
 - ``TRSA_{txys}`` root surface area per total biomass of each species [m² g⁻¹] 
 - ``TAMC_{txys}`` arbuscular mycorrhizal colonisation rate per total biomass of each species [-] 
 
 morphological traits:
-- ``RSA_s`` root surface area per belowground biomass of each species [m² g⁻¹]
-- ``AMC_s`` arbuscular mycorrhizal colonisation rate [-]
+- ``rsa_s`` root surface area per belowground biomass of each species [m² g⁻¹]
+- ``amc_s`` arbuscular mycorrhizal colonisation rate [-]
 
 :::
 
@@ -64,7 +64,7 @@ morphological traits:
     </colgroup>
     <tbody>
     <tr>
-        <td>maximum growth reduction (κ_RSA)</td>
+        <td>maximum growth reduction (κ_ROOT_rsa)</td>
         <td><span id="κ_rsa-value">0.2</span></td>
         <td><input type="range" id="κ_rsa" min="0.0" max="1" step="0.01" value="0.2" class="input_rsa_cost_graph"></td>
     </tr>
@@ -89,7 +89,7 @@ morphological traits:
     </colgroup>
     <tbody>
     <tr>
-        <td>maximum growth reduction (κ_AMC)</td>
+        <td>maximum growth reduction (κ_ROOT_rsa)</td>
         <td><span id="κ_amc-value">0.2</span></td>
         <td><input type="range" id="κ_amc" min="0.0" max="1" step="0.01" value="0.2" class="input_amc_cost_graph"></td>
     </tr>

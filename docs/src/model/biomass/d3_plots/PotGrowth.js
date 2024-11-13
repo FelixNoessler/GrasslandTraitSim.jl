@@ -2,7 +2,7 @@ import * as d3 from 'd3';
 
 export function potGrowthPlot() {
     const margin = {top: 15, right: 30, bottom: 45, left: 70},
-        width = 500 - margin.left - margin.right,
+        width = 600 - margin.left - margin.right,
         height = 400 - margin.top - margin.bottom;
     
     const svg = d3.select("#pot_growth_graph")
@@ -32,7 +32,7 @@ export function potGrowthPlot() {
         .attr("x", width / 2)
         .attr("y", height + 40)
         .attr("text-anchor", "middle")
-        .text("Leaf area index of community (LAItot) [-]");
+        .text("Leaf area index of community (LAI_tot) [-]");
 
     g.append("text")
         .attr("class", "y-label")
@@ -40,7 +40,7 @@ export function potGrowthPlot() {
         .attr("y", -40)
         .attr("transform", "rotate(-90)")
         .attr("text-anchor", "middle")
-        .text("Fraction of radiation intercepted (fPAR) [-]");
+        .text("Fraction of radiation intercepted (FPAR) [-]");
 
     function calcShading(){
         return Math.exp(Math.log(α_comH)*0.2 / H_cwm)

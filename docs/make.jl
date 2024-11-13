@@ -17,7 +17,7 @@ makie_theme = Theme(fontsize = 18,
 set_theme!(makie_theme)
 
 ####### Create bilbiography
-bib = CitationBibliography("src/lit.bib"; style = :numeric)
+bib = CitationBibliography("docs/src/lit.bib"; style = :authoryear)
 
 ####### Create documentation
 makedocs(;
@@ -61,12 +61,8 @@ makedocs(;
                 "- for investment into roots" => "model/biomass/growth_species_specific_roots.md",
                 "Senescence" => "model/biomass/senescence.md",
                 "Mowing and grazing" => "model/biomass/mowing_grazing.md"],
-            "Plant height dynamics" => [
-                "Dynamics" => "model/height/index.md"
-            ],
-            "Soil water dynamics" => [
-                "Dynamics" => "model/water/index.md"
-        ]],
+            "Plant height dynamics" => "model/height/index.md",
+            "Soil water dynamics" => "model/water/index.md"],
         "Visualization" => [
             "Dashboard" => "viz/dashboard.md",
             "Visualize model components" => "viz/variables.md",

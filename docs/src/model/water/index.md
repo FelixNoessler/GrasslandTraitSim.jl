@@ -34,7 +34,7 @@ TR_{txy} &=
     PET_{txy} \cdot
     \min\left(1, \frac{LAI_{tot, txy}}{3}\right)  \\
 LAI_{tot, txy} &= \sum_{s=1}^{S} LAI_{txys} \\
-LAI_{txys} &= B_{A, txys} \cdot SLA_s \cdot \frac{LBP_s}{ABP_s} \cdot 0.1
+LAI_{txys} &= B_{A, txys} \cdot sla_s \cdot \frac{lbp_s}{abp_s} \cdot 0.1
 \end{align}
 ```
 
@@ -57,6 +57,7 @@ F_{PWP, xy} &= \beta_{SND, PWP} \cdot SND_{xy} +
 \end{align}
 ```
 
+Equations and parameter values for water holding capacity and permanent wilting point are based on [Gupta1979](@citet).
 
 :::tabs
 
@@ -104,9 +105,9 @@ intermediate variables:
 - ``F_{WHC, xy}`` fraction of the soil filled with water at the water holding capacity [-]
 
 morphological traits:
-- ``SLA_s`` specific leaf area of each species [m² g⁻¹]
-- ``LBP_s`` leaf biomass per plant biomass of each species [-]
-- ``ABP_s`` aboveground biomass per plant biomass of each species [-]
+- ``sla_s`` specific leaf area of each species [m² g⁻¹]
+- ``lbp_s`` leaf biomass per plant biomass of each species [-]
+- ``abp_s`` aboveground biomass per plant biomass of each species [-]
 
 :::
 

@@ -1,7 +1,7 @@
 import * as d3 from 'd3';
 
 export function plantAvailableWaterPlot() {
-    const svg_width = 700, svg_height = 400;
+    const svg_width = 700, svg_height = 300;
     const margin = { top: 10, right: 110, bottom: 50, left: 70 },
         width = svg_width - margin.left - margin.right,
         height = svg_height - margin.top - margin.bottom;
@@ -87,7 +87,7 @@ export function waterStressPlot() {
     const trait_values = [0.05, 0.10, 0.15, 0.20, 0.25]; // rsa
 
     // Set up SVG dimensions
-    const svg_width = 600, svg_height = 400;
+    const svg_width = 700, svg_height = 400;
     const margin = { top: 20, right: 110, bottom: 50, left: 75 },
         width = svg_width - margin.left - margin.right,
         height = svg_height - margin.top - margin.bottom;
@@ -246,7 +246,7 @@ export function waterStressPlot() {
     }
 
     createColorbar();
-    plot();
+    updateParameters();
 
     // Event listeners for sliders
     d3.selectAll(".input_water_stress_graph").on("input", updateParameters);  
