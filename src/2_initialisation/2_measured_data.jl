@@ -1,6 +1,6 @@
 function load_measured_data(measured_data_path = joinpath(artifact"hainich_data", "Calibration_data"))
 
-    cwm_traits_df = CSV.read(joinpath(measured_data_path, "CWM_traits.csv"), DataFrame)
+    cwm_traits_df = CSV.read(joinpath(measured_data_path, "CWM_Traits.csv"), DataFrame)
     biomass_df = CSV.read(joinpath(measured_data_path, "Biomass.csv"), DataFrame)
 
     plotIDs = unique(biomass_df.plotID)
