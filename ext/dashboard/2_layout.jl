@@ -35,7 +35,7 @@ function dashboard_layout(; variable_p)
     ##############################################################################
     Label(sim_layout[1, 1:2], "Turn off parts of the model";
         halign = :left, font = :bold, fontsize = 16)
-    input_obj = gts.validation_input(; plotID = "HEG01", nspecies = 1)
+    input_obj = gts.validation_input("HEG01"; nspecies = 1)
     included_symbols = keys(input_obj.simp.included)
     is_included = collect(values(input_obj.simp.included))
     labels = String.(included_symbols)
@@ -74,41 +74,23 @@ function dashboard_layout(; variable_p)
     rightplotsettings_layout = GridLayout(plotsettings_layout[4, 1][1, 2];
                                           valign = :top)
 
-    Label(leftplotsettings_layout[1, 1], "How to get parameter:";
-        tellwidth = true, halign = :left, fontsize = 16)
-    menu_samplingtype = Menu(leftplotsettings_layout[1, 2];
-        options = zip(
-            ["fixed (see right side)", "sample prior"],
-            [:fixed, :prior]),
-        halign = :left)
 
-    Label(leftplotsettings_layout[2, 1], "PlotID of the Biodiversity Exploratories:";
+    Label(leftplotsettings_layout[1, 1], "PlotID of the Biodiversity Exploratories:";
         tellwidth = true, halign = :left, justification = :left, fontsize = 16)
-    menu_plotID = Menu(leftplotsettings_layout[2, 2];
+    menu_plotID = Menu(leftplotsettings_layout[1, 2];
         options = ["$(explo)$(lpad(i, 2, "0"))"  for explo in ["HEG", "SEG", "AEG"]
                    for i in 1:50],
         halign = :left)
 
-
-    Label(leftplotsettings_layout[3, 1], "Time step:"; halign = :left, fontsize = 16)
-    menu_timestep = Menu(leftplotsettings_layout[3, 2];
-        options = [1, 7, 14])
-
-    Label(leftplotsettings_layout[4, 1], "Biomass for validation (panel A):";
-          halign = :left, fontsize = 16)
-    labels = ["only cut biomass", "only inferred from sentinel", "both"]
-    select = [["core", "sade"], ["satellite_mean", "satellite_min", "satellite_max"], nothing]
-    menu_biomassvalid = Menu(leftplotsettings_layout[4, 2], options = zip(labels, select))
-
     trait_keys =  [:amc, :sla, :maxheight, :rsa, :lnc, :abp]
-    Label(leftplotsettings_layout[5, 1], "Trait (panel B):";
+    Label(leftplotsettings_layout[2, 1], "Trait (panel B):";
           halign = :left, justification = :left, fontsize = 16)
-    menu_traits = Menu(leftplotsettings_layout[5, 2];
+    menu_traits = Menu(leftplotsettings_layout[2, 2];
                        options = zip(string.(trait_keys), trait_keys))
 
-    Label(leftplotsettings_layout[6, 1], "Abiotic variable (panel E):";
+    Label(leftplotsettings_layout[3, 1], "Abiotic variable (panel E):";
           halign = :left, justification = :left, fontsize = 16)
-    menu_abiotic = Menu(leftplotsettings_layout[6, 2],
+    menu_abiotic = Menu(leftplotsettings_layout[3, 2],
         options = zip([
                 "Precipitation",
                 "Potential evapotranspiration",
@@ -148,12 +130,12 @@ function dashboard_layout(; variable_p)
     ##############################################################################
     preset_button = Button(righttop_layout[1, 1]; label = "reset parameter")
 
-    p = gts.SimulationParameter()
+    p = gts.optim_parameter()
     parameter_keys = collect(keys(p))
     for k in keys(variable_p)
         p[k] = variable_p[k]
     end
-    p_val = ustrip.(collect(p))
+    p_val = round.(ustrip.(collect(p)); digits = 5)
 
     nstart2 = length(p) - length(p) ÷ 2 + 1
     nend1 = nstart2 - 1
@@ -207,12 +189,9 @@ function dashboard_layout(; variable_p)
         button_panelD,
         button_panelE,
         which_pane,
-        menu_samplingtype,
         menu_plotID,
-        menu_timestep,
         menu_abiotic,
         menu_traits,
-        menu_biomassvalid,
         parameter_keys,
         tb_p,
         toggles_included,
@@ -220,9 +199,6 @@ function dashboard_layout(; variable_p)
         toggle_validdata,
         toggle_standingbiomass,
         plots_layout)
-
-
-
 
     return (; fig, axes, obs)
 end

@@ -37,8 +37,7 @@ Set the initial conditions for the state variables.
 function set_initialconditions!(; container)
     @unpack u_biomass, u_above_biomass, u_below_biomass, u_water, u_height = container.u
     @unpack output = container
-    @unpack initbiomass, initsoilwater = container.site
-    @unpack nspecies, patch_xdim, patch_ydim = container.simp
+    @unpack initbiomass, initsoilwater, nspecies, patch_xdim, patch_ydim = container.simp
     @unpack maxheight, abp = container.traits
 
     @. u_biomass = initbiomass / nspecies

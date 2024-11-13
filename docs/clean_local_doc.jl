@@ -1,10 +1,10 @@
 import Pkg
 Pkg.rm("GrasslandTraitSim")
 
-img_path = "docs/src/img/"
+img_path = "src/img/"
 [img[1] == '.' ? "" : rm("$(img_path)$img") for img in readdir(img_path)]
 
-assets_path = "docs/src/assets/"
+assets_path = "src/assets/"
 [file[1] == '.' ? "" : rm("$(assets_path)$file") for file in readdir(assets_path)]
 
-rm("docs/build/", recursive = true)
+rm("build/", recursive = true)

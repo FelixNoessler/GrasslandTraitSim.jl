@@ -113,3 +113,8 @@ celsius_vec_float = typeof([1.0u"°C"])
 
 Statistics.mean(x::celsius_vec_int) = mean(float.(x))
 Statistics.mean(x::celsius_vec_float) = mean(ustrip.(x)) * u"°C"
+
+# Base.show(io::IO, obj::NamedTuple) = print(io, "Named tuple with keys: $(collect(keys(obj)))")
+
+to_numeric(d::Dates.Date) = Dates.year(d) + (Dates.dayofyear(d) - 1) /
+                            Dates.daysinyear(Dates.year(d))

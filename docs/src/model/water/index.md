@@ -118,7 +118,7 @@ morphological traits:
 <table>
     <colgroup>
         <col>
-        <col width="80px">
+        <col width="100px">
         <col>
     </colgroup>
     <tbody>

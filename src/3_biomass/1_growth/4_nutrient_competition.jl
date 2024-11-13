@@ -3,7 +3,7 @@ Scale the total soil nitrogen
 """
 function input_nutrients!(; container)
     @unpack nutrients = container.patch_variables
-    @unpack totalN = container.site
+    @unpack totalN = container.input
     @unpack included = container.simp
     @unpack α_NUT_Nmax = container.p
 

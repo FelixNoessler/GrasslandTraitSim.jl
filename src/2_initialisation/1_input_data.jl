@@ -1,356 +1,183 @@
-function load_input(path; included = (;),  plotIDs = nothing)
-    inputs = load(path)
+function input_traits(inputdata_path = joinpath(artifact"hainich_data", "Input_data"))
+    traits = CSV.read("$inputdata_path/Traits.csv", DataFrame)
 
-    for k in keys(inputs)
-        @reset inputs[k].simp.included = create_included(included)
-    end
+    ## unfortunately, this is slower:
+    # nspecies = nrow(traits)
+    # amcdim = DimArray(traits.amc, (; species = 1:nspecies), name = "amc")
+    # sladim = DimArray(traits.sla * u"m^2/g", (; species = 1:nspecies), name = "sla")
+    # maxheightdim = DimArray(traits.maxheight * u"m", (; species = 1:nspecies), name = "maxheight")
+    # rsadim = DimArray(traits.rsa * u"m^2/g", (; species = 1:nspecies), name = "rsa")
+    # abpdim = DimArray(traits.abp, (; species = 1:nspecies), name = "abp")
+    # lbpdim = DimArray(traits.lbp, (; species = 1:nspecies), name = "lbp")
+    # lncdim = DimArray(traits.lnc * u"mg/g", (; species = 1:nspecies), name = "lnc")
+    # return DimStack(amcdim, sladim, maxheightdim, rsadim, abpdim, lbpdim, lncdim)
 
-    if isnothing(plotIDs)
-        plotIDs = keys(inputs)
-    end
-
-    inputs = NamedTuple((Symbol(k) => inputs[k] for k in plotIDs))
-
-    return inputs
+    return (;
+        amc = traits.amc,
+        sla = traits.sla * u"m^2/g",
+        maxheight = traits.maxheight * u"m",
+        rsa = traits.rsa * u"m^2/g",
+        abp = traits.abp,
+        lbp = traits.lbp,
+        lnc = traits.lnc * u"mg/g");
 end
 
-function validation_input_plots(; plotIDs, kwargs...)
-    static_inputs = Dict()
+function load_input_data(input_data_path = joinpath(artifact"hainich_data", "Input_data"))
 
-    for plotID in plotIDs
-        static_inputs[Symbol(plotID)] = validation_input(; plotID, kwargs...)
+    clim = CSV.read(joinpath(input_data_path, "Climate.csv"), DataFrame)
+    soil = CSV.read(joinpath(input_data_path, "Soil.csv"), DataFrame)
+    man = CSV.read(joinpath(input_data_path, "Management.csv"), DataFrame)
+
+    plotIDs = unique(clim.plotID)
+    inputs = Dict()
+
+    for p in plotIDs
+        nx = length(unique(soil.x))
+        ny = length(unique(soil.y))
+        nt = length(clim.t[p .== clim.plotID])
+        ts = clim.t[p .== clim.plotID]
+
+        ########## Soil data
+        soil_sub = @subset soil :plotID .== p
+
+        sand = Array{Float64}(undef, nx, ny)
+        silt = Array{Float64}(undef, nx, ny)
+        clay = Array{Float64}(undef, nx, ny)
+        organic = Array{Float64}(undef, nx, ny)
+        bulk = Array{typeof(1.0u"g/cm^3")}(undef, nx, ny)
+        rootdepth = Array{typeof(1.0u"mm")}(undef, nx, ny)
+        totalN = Array{typeof(1.0u"g/kg")}(undef, nx, ny)
+
+        for r in eachrow(soil_sub)
+            sand[r.x, r.y] = r.sand
+            silt[r.x, r.y] = r.silt
+            clay[r.x, r.y] = r.clay
+            organic[r.x, r.y] = r.organic
+            bulk[r.x, r.y] = r.bulk * u"g/cm^3"
+            rootdepth[r.x, r.y] = r.rootdepth * u"mm"
+            totalN[r.x, r.y] = r.totalN * u"g/kg"
+        end
+
+        sanddim = DimArray(sand, (; x = 1:nx, y = 1:ny), name = "sand")
+        siltdim = DimArray(silt, (; x = 1:nx, y = 1:ny), name = "silt")
+        claydim = DimArray(clay, (; x = 1:nx, y = 1:ny), name = "clay")
+        organicdim = DimArray(organic, (; x = 1:nx, y = 1:ny), name = "organic")
+        bulkdim = DimArray(bulk, (; x = 1:nx, y = 1:ny), name = "bulk")
+        rootdepthdim = DimArray(rootdepth, (; x = 1:nx, y = 1:ny), name = "rootdepth")
+        totalNdim = DimArray(totalN, (; x = 1:nx, y = 1:ny), name = "totalN")
+
+        ########## Climate data
+        clim_sub = @chain clim begin
+        @subset :plotID .== p
+        @orderby :t
+        end
+
+        temperature = Array{typeof(1.0u"°C")}(undef, nt, nx, ny)
+        temperature_sum = Array{typeof(1.0u"°C")}(undef, nt, nx, ny)
+        precipitation = Array{typeof(1.0u"mm")}(undef, nt, nx, ny)
+        PET = Array{typeof(1.0u"mm")}(undef, nt, nx, ny)
+        PET_sum = Array{typeof(1.0u"mm")}(undef, nt, nx, ny)
+        PAR = Array{typeof(1.0u"MJ/ha")}(undef, nt, nx, ny)
+        PAR_sum = Array{typeof(1.0u"MJ/ha")}(undef, nt, nx, ny)
+
+        for (i,r) in enumerate(eachrow(clim_sub))
+            temperature[i, r.x, r.y] = r.temperature * u"°C"
+            temperature_sum[i, r.x, r.y] = r.temperature_sum * u"°C"
+            precipitation[i, r.x, r.y] = r.precipitation * u"mm"
+            PET[i, r.x, r.y] = r.PET * u"mm"
+            PET_sum[i, r.x, r.y] = r.PET * u"mm"
+            PAR[i, r.x, r.y] = r.PAR * u"MJ/ha"
+            PAR_sum[i, r.x, r.y] = r.PAR * u"MJ/ha"
+        end
+
+        temperaturedim = DimArray(temperature, (; t = ts, x = 1:nx, y = 1:ny), name = "temperature")
+        temperature_sumdim = DimArray(temperature_sum, (; t = ts, x = 1:nx, y = 1:ny), name = "temperature_sum")
+        precipitationdim = DimArray(precipitation, (; t = ts, x = 1:nx, y = 1:ny), name = "precipitation")
+        PETdim = DimArray(PET, (; t = ts, x = 1:nx, y = 1:ny), name = "PET")
+        PET_sumdim = DimArray(PET_sum, (; t = ts, x = 1:nx, y = 1:ny), name = "PET_sum")
+        PARdim = DimArray(PAR, (; t = ts, x = 1:nx, y = 1:ny), name = "PAR")
+        PAR_sumdim = DimArray(PAR_sum, (; t = ts, x = 1:nx, y = 1:ny), name = "PAR_sum")
+
+        ########## Management data
+        man_sub = @chain copy(man) begin
+            @subset :plotID .== p
+            @orderby :t
+        end
+
+        CUT = Array{Union{typeof(missing), typeof(1.0u"m")}}(undef, nt, nx, ny)
+        LD = Array{Union{typeof(missing), typeof(1.0u"ha^-1")}}(undef, nt, nx, ny)
+
+        for (i,r) in enumerate(eachrow(man_sub))
+            CUT[i, r.x, r.y] = r.CUT * u"m"
+            LD[i, r.x, r.y] = r.LD * u"ha^-1"
+        end
+
+        CUTdim = DimArray(CUT, (; t = ts, x = 1:nx, y = 1:ny), name = "CUT_mowing")
+        LDdim = DimArray(LD, (; t = ts, x = 1:nx, y = 1:ny), name = "LD_grazing")
+
+        inputs[Symbol(p)] = DimStack(sanddim, siltdim, claydim,
+                    organicdim, bulkdim, rootdepthdim,
+                    totalNdim,
+                    temperaturedim, temperature_sumdim,
+                    precipitationdim,
+                    PETdim, PET_sumdim, PARdim, PAR_sumdim,
+                    CUTdim, LDdim)
     end
 
-    return NamedTuple(static_inputs)
+    global input_data = NamedTuple(inputs)
+
+    return nothing
 end
 
-function validation_input(;
-        plotID,
-        nspecies,
-        time_step_days = 1,
-        patch_xdim = 1,
-        patch_ydim = 1,
-        biomass_stats = nothing,
-        included = (;),
-        trait_seed = missing,
-        use_height_layers = true)
+validation_input(plotID::Union{String, Symbol}; kwargs...) = validation_input(input_data[Symbol(plotID)]; kwargs...)
 
+function validation_input(input_data; included = (;),
+        use_height_layers = true,
+        nspecies = nothing, trait_seed = missing,
+        initbiomass = 5000.0u"kg/ha",
+        initsoilwater = 100.0u"mm")
 
     included = create_included(included)
 
-    time_step_days = Dates.Day(time_step_days)
-    start_date = Dates.Date(2006, 1, 1)
-    end_date = Dates.Date(2021, 12, 31)
-    yearrange = Ref(2006:2021)
-    date_range_all_days = start_date:end_date
-    date_range = start_date:time_step_days:end_date
-    ntimesteps = length(date_range) - 1
-
-    ###### daily data
-    clim_init = @chain data.input.dwd_clim begin
-        @subset first.(:explo) .== first(plotID)
-        @select(:date, :temperature, :precipitation)
+    if isnothing(nspecies)
+        nspecies = length(input_traits().sla)
     end
 
-    clim_sub = @chain data.input.clim begin
-        @subset :plotID .== plotID .&& :year .∈ yearrange
-        @select(:date, :temperature, :precipitation)
-    end
+    #### input date
+    input_date_range = LookupArrays.index(input_data, :t)
+    time_step_days = input_date_range[2] - input_date_range[1]
+    time_step_hours = Dates.Hour(time_step_days)
+    # exact_input_date = input_date_range .+ time_step_hours ÷ 2
 
-    pet_sub = @subset data.input.pet first.(:explo) .== first(plotID) .&& :year .∈ yearrange
-    par_sub = @subset data.input.par first.(:explo) .== first(plotID) .&& :year .∈ yearrange
-    mow_sub = @subset data.input.mow :plotID .== plotID .&& :year .∈ yearrange
-    graz_sub = @subset copy(data.input.graz) :plotID .== plotID .&& :year .∈ yearrange
+    ### output date
+    start_date = input_date_range[1]
+    end_date = input_date_range[end] + time_step_days
+    output_date_range = start_date:time_step_days:end_date
 
-    daily_data_prep = @chain vcat(clim_init, clim_sub)  begin
-        innerjoin(_, pet_sub, on = :date, makeunique = true)
-        innerjoin(_, par_sub, on = :date, makeunique = true)
-        @transform begin
-            :temperature = :temperature .* u"°C"
-            :temperature_sum = cumulative_temperature(:temperature .* u"°C", Dates.year.(:date))
-            :precipitation = :precipitation .* u"mm"
-            :PET = :PET .* u"mm"
-            :PET_sum = :PET .* u"mm"
-            :PAR = :PAR .* u"MJ / ha"
-            :PAR_sum = :PAR .* u"MJ / ha"
-            :CUT_mowing = prepare_mowing(mow_sub) ./ 100 .* u"m"
-            :LD_grazing = prepare_grazing(graz_sub) ./ u"ha"
-            :doy = Dates.dayofyear.(:date)
-        end
-        @orderby :date
-    end
-
-    daily_input_df = @select(daily_data_prep,
-        :date,
-        :temperature,
-        :temperature_sum,
-        :precipitation, :PET, :PET_sum,
-        :PAR, :PAR_sum,
-        :CUT_mowing, :LD_grazing)
-
-    ## convert to dimension of the time step
-    input = nothing
-
-    if isone(time_step_days.value)
-        daily_input_df_sub = @chain daily_input_df begin
-            @subset :date .< end_date
-            @select Not(:date)
-        end
-        input = (; zip(Symbol.(names(daily_input_df_sub)), eachcol(daily_input_df_sub))...)
-    else
-        temperature = Array{eltype(daily_input_df.temperature)}(undef, ntimesteps)
-        temperature_sum = Array{eltype(daily_input_df.temperature_sum)}(undef, ntimesteps)
-        precipitation = Array{eltype(daily_input_df.precipitation)}(undef, ntimesteps)
-        PET = Array{eltype(daily_input_df.PET)}(undef, ntimesteps)
-        PET_sum = Array{eltype(daily_input_df.PET)}(undef, ntimesteps)
-        par_type = eltype(float(daily_input_df.PAR[1]))
-        PAR = Array{par_type}(undef, ntimesteps)
-        PAR_sum = Array{par_type}(undef, ntimesteps)
-        CUT_mowing = Array{eltype(daily_input_df.CUT_mowing)}(undef, ntimesteps)
-        LD_grazing = Array{eltype(daily_input_df.LD_grazing)}(undef, ntimesteps)
-
-        old_T_kelvin = uconvert.(u"K", daily_input_df.temperature)
-
-        for i in Base.OneTo(ntimesteps)
-            sub_date = date_range[i]:(date_range[i+1] - Dates.Day(1))
-            f = date_range_all_days .∈ Ref(sub_date)
-
-            temperature[i] = uconvert(u"°C", mean(old_T_kelvin[f]))
-            temperature_sum[i] = mean(daily_input_df.temperature_sum[f])
-            precipitation[i] = sum(daily_input_df.precipitation[f])
-            PET[i] = mean(daily_input_df.PET[f])
-            PET_sum[i] = sum(daily_input_df.PET[f])
-            PAR[i] = mean(daily_input_df.PAR[f])
-            PAR_sum[i] = sum(daily_input_df.PAR[f])
-
-            new_mowing_prep = daily_input_df.CUT_mowing[f]
-            if all(isnan.(new_mowing_prep))
-                CUT_mowing[i] = NaN * u"m"
-            else
-                mow_index = findfirst(.!isnan.(new_mowing_prep))
-                CUT_mowing[i] = new_mowing_prep[mow_index]
-            end
-
-            new_grazing_prep = daily_input_df.LD_grazing[f]
-            if all(isnan.(new_grazing_prep))
-                LD_grazing[i] = NaN / u"ha"
-            else
-                LD_grazing[i] = sum(new_grazing_prep[.!isnan.(new_grazing_prep)])
-            end
-        end
-
-        input = (; temperature, temperature_sum, precipitation, PET, PET_sum,
-                 PAR, PAR_sum, CUT_mowing, LD_grazing)
-    end
-
-    ### ----------------- initial biomass and soilwater content
-    initbiomass = 5000.0u"kg / ha"
-    initsoilwater = 180.0u"mm"
-
-    ### ----------------- dates when biomass was cut (for creating output for validation)
-    df_cutting_day = @chain data.valid.measuredbiomass begin
-        @subset :plotID .== plotID
-        @subset :date .<= end_date
-        @transform :biomass_cutting_day = Dates.value.(:date - start_date)
-        @select :date :biomass_cutting_day :cutting_height :stat
-    end
-
-    if !isnothing(biomass_stats)
-        df_cutting_day = @subset df_cutting_day :stat .∈ Ref(biomass_stats)
-    end
-
-    ##### what to calculate
-    unique_calc = unique(df_cutting_day, [:date, :cutting_height])
-    cutting_height = unique_calc.cutting_height
-    biomass_cutting_date = unique_calc.date
-    biomass_cutting_numeric_date = to_numeric.(biomass_cutting_date)
-
-    biomass_cutting_t = unique_calc.biomass_cutting_day
-    if isone(time_step_days.value)
-        biomass_cutting_t = unique_calc.biomass_cutting_day
-    else
-        biomass_cutting_t = Array{Int64}(undef, length(biomass_cutting_date))
-        for i in eachindex(biomass_cutting_date)
-            biomass_cutting_t[i] = findfirst(date_range .> biomass_cutting_date[i]) - 2
-        end
-    end
-
-    ###### how to index to get final result
-    cutting_t_prep = df_cutting_day.biomass_cutting_day
-    cutting_height_prep = df_cutting_day.cutting_height
-    biomass_cutting_index = Int64[]
-    current_index = 0
-    for i in eachindex(cutting_t_prep)
-        if i == 1
-            current_index += 1
-            push!(biomass_cutting_index, current_index)
-            continue
-        end
-
-        if cutting_t_prep[i] != cutting_t_prep[i-1] ||
-            cutting_height_prep[i] != cutting_height_prep[i-1]
-            current_index += 1
-        end
-
-        push!(biomass_cutting_index, current_index)
-    end
-
-    ### ----------------- abiotic
-    nut_sub = @subset data.input.nut :plotID .== plotID
-    totalN = nut_sub.totalN[1] * u"g / kg"
-
-    soil_sub = @subset data.input.soil :plotID .== plotID
-    clay = soil_sub.clay[1] / 100
-    silt = soil_sub.silt[1] / 100
-    sand = soil_sub.sand[1] / 100
-    organic = soil_sub.organic[1] / 100
-    bulk = soil_sub.bulk[1] * u"g / cm^3"
-    rootdepth = soil_sub.rootdepth[1] * u"mm"
+    ntimesteps = length(output_date_range) - 1
+    patch_xdim = LookupArrays.index(input_data, :x)[end]
+    patch_ydim = LookupArrays.index(input_data, :y)[end]
 
     return (
         simp = (;
             variations = (; use_height_layers),
-            output_date = date_range,
-            output_date_num = to_numeric.(date_range),
-            mean_input_date = date_range[1:end-1] .+ .+ time_step_days ÷ 2,
-            mean_input_date_num = to_numeric.(date_range[1:end-1] .+ time_step_days ÷ 2),
+            output_date = output_date_range,
+            output_date_num = to_numeric.(output_date_range),
+            mean_input_date = input_date_range,
+            mean_input_date_num = to_numeric.(input_date_range),
             ts = Base.OneTo(ntimesteps),
-            ntimesteps = ntimesteps,
+            ntimesteps,
             nspecies,
             time_step_days,
-            plotID,
-            npatches = patch_xdim * patch_ydim,
             patch_xdim,
             patch_ydim,
+            npatches = patch_xdim * patch_ydim,
             trait_seed,
-            included),
-        site = (;
+            included,
             initbiomass,
-            initsoilwater,
-            totalN,
-            clay,
-            silt,
-            sand,
-            organic,
-            bulk,
-            rootdepth),
-        output_validation = (;
-            biomass_cutting_index,
-            biomass_cutting_t,
-            biomass_cutting_date,
-            biomass_cutting_numeric_date,
-            cutting_height),
-            input)
+            initsoilwater),
+        input = input_data,)
 end
-
-function to_numeric(d)
-    daysinyear = Dates.daysinyear(Dates.year(d))
-    return Dates.year(d) + (Dates.dayofyear(d) - 1) / daysinyear
-end
-
-# function yearly_temp_cumsum(data, date)
-#     all_years = Dates.year.(date)
-#     unqiue_years = unique(all_years)
-#     yearly_cumsum = Float64[]
-#     temperature_filter = data .> 0
-
-#     for y in unqiue_years
-#         f = all_years .== y
-#         append!(yearly_cumsum, cumsum(data[f .&& temperature_filter]))
-#     end
-
-#     return yearly_cumsum
-# end
-
-function cumulative_temperature(temperature, year)
-    temperature_diff = temperature .- 0.0u"°C"
-    temperature_sum = eltype(temperature_diff)[]
-    temperature_diff[temperature_diff .< 0u"K"] .= 0u"K"
-
-    for y in unique(year)
-        year_filter = y .== year
-        append!(temperature_sum, cumsum(temperature_diff[year_filter]))
-    end
-
-    return temperature_sum
-end
-
-
-function prepare_mowing(d::DataFrame)
-    startyear = minimum(d.year)
-    endyear = maximum(d.year)
-    days = Dates.Date(startyear):Dates.lastdayofyear(Dates.Date(endyear))
-
-    cutheights = d.CutHeight_cm1[.!ismissing.(d.CutHeight_cm1)]
-    mean_cutheight = 7.0
-    if !isempty(cutheights)
-        mean_cutheight = Statistics.mean(cutheights)
-    end
-
-    cutHeight_vec = Array{Float64}(undef, length(days))
-    cutHeight_vec .= NaN
-
-    for row in eachrow(d)
-        y = row.year
-        for i in 1:5
-            if !ismissing.(row["MowingDay$i"])
-                mowing_date = Dates.Date(y) + Dates.Day(row["MowingDay$i"])
-                cH = row["CutHeight_cm$i"]
-                if ismissing(cH)
-                    cH = mean_cutheight
-                end
-
-                cutHeight_vec[findfirst(mowing_date .== days)] = cH
-            end
-        end
-    end
-
-    return cutHeight_vec
-end
-
-function prepare_grazing(d::DataFrame)
-    startyear = minimum(d.year)
-    endyear = maximum(d.year)
-    days = Dates.Date(startyear):Dates.lastdayofyear(Dates.Date(endyear))
-
-    grazing_vec = Array{Float64}(undef, length(days))
-    grazing_vec .= NaN
-
-    for row in eachrow(d)
-        y = row.year
-        indeces = "start_graz4" ∈ names(d) ? [1,2,3,4] : [1]
-
-        for i in indeces
-            if !ismissing.(row["start_graz$i"])
-                grazing_startdate = row["start_graz$i"]
-                grazing_enddate = row["end_graz$i"]
-                grazing_intensity = row["inten_graz$i"]
-                if grazing_enddate > days[end]
-                    grazing_enddate = days[end]
-                end
-
-                start_index = findfirst(grazing_startdate .== days)
-                end_index = findfirst(grazing_enddate .== days)
-                grazing_vec[start_index:end_index] .= grazing_intensity
-            end
-        end
-    end
-    return grazing_vec
-end
-
-
-function input_traits()
-    trait_df = data.input.traits;
-    trait_input = (;
-        amc = trait_df.amc,
-        sla = trait_df.sla * u"m^2/g",
-        maxheight = trait_df.maxheight * u"m",
-        rsa = trait_df.rsa * u"m^2/g",
-        abp = trait_df.abp,
-        lbp = trait_df.lbp,
-        lnc = trait_df.lnc * u"mg/g");
-end
-
 
 function create_included(included_prep = (;);)
     included = (;
@@ -375,4 +202,106 @@ function create_included(included_prep = (;);)
     end
 
     return included
+end
+
+function cumulative_temperature(temperature::Vector{Float64}, years)
+    temperature_sum = []
+    temperature = deepcopy(temperature)
+    temperature[temperature .< 0] .= 0
+
+    for y in unique(years)
+        year_filter = y .== years
+        append!(temperature_sum, cumsum(temperature[year_filter]))
+    end
+
+    return temperature_sum
+end
+
+function cumulative_temperature(temperature::Vector{typeof(1.0u"°C")}, years)
+    temperature_sum = []
+    temperature = deepcopy(temperature)
+    temperature[temperature .< 0u"°C"] .= 0u"°C"
+
+    for y in unique(years)
+        year_filter = y .== years
+        append!(temperature_sum, cumsum(temperature[year_filter]))
+    end
+
+    return temperature_sum
+end
+
+
+function scale_input(input; time_step_days = 14)
+    input = deepcopy(input)
+
+    old_date_range = LookupArrays.index(input, :t)
+    time_step_days = Dates.Day(time_step_days)
+    start_date = old_date_range[1]
+    end_date = old_date_range[end]
+    date_range = start_date:time_step_days:end_date
+
+    ntimesteps = length(date_range) - 1
+
+    nx = LookupArrays.index(input, :x)[end]
+    ny = LookupArrays.index(input, :y)[end]
+
+    temperature = Array{eltype(input.temperature)}(undef, ntimesteps, nx, ny)
+    temperature_sum = Array{eltype(input.temperature_sum)}(undef, ntimesteps, nx, ny)
+    precipitation = Array{eltype(input.precipitation)}(undef, ntimesteps, nx, ny)
+    PET = Array{eltype(input.PET)}(undef, ntimesteps, nx, ny)
+    PET_sum = Array{eltype(input.PET)}(undef, ntimesteps, nx, ny)
+    par_type = eltype(float(input.PAR[1]))
+    PAR = Array{par_type}(undef, ntimesteps, nx, ny)
+    PAR_sum = Array{par_type}(undef, ntimesteps, nx, ny)
+    CUT_mowing = Array{eltype(input.CUT_mowing)}(undef, ntimesteps, nx, ny)
+    LD_grazing = Array{eltype(input.LD_grazing)}(undef, ntimesteps, nx, ny)
+
+
+    for i in Base.OneTo(ntimesteps)
+        sub_date = date_range[i]:(date_range[i+1] - Dates.Day(1))
+        f = old_date_range .∈ Ref(sub_date)
+
+        for x in 1:nx
+            for y in 1:ny
+                temperature[i, x, y] = mean(vec(input.temperature[f, x, y]))
+                temperature_sum[i, x, y] = mean(vec(input.temperature_sum[f, x, y]))
+                precipitation[i, x, y] = sum(input.precipitation[f, x, y])
+                PET[i, x, y] = mean(input.PET[f, x, y])
+                PET_sum[i, x, y] = sum(input.PET[f, x, y])
+                PAR[i, x, y] = mean(input.PAR[f, x, y])
+                PAR_sum[i, x, y] = sum(input.PAR[f, x, y])
+
+                new_mowing_prep = input.CUT_mowing[f, x, y]
+                if all(ismissing.(new_mowing_prep))
+                    CUT_mowing[i, x, y] = missing
+                else
+                    mow_index = findfirst(.!ismissing.(new_mowing_prep))
+                    CUT_mowing[i, x, y] = new_mowing_prep[mow_index]
+                end
+
+                new_grazing_prep = input.LD_grazing[f, x, y]
+                if all(ismissing.(new_grazing_prep))
+                    LD_grazing[i, x, y] = missing
+                else
+                    LD_grazing[i, x, y] = sum(new_grazing_prep[.!ismissing.(new_grazing_prep)])
+                end
+            end
+        end
+    end
+
+    ts = date_range[1:end-1] .+ time_step_days ÷ 2
+    temperaturedim = DimArray(temperature, (; t = ts, x = 1:nx, y = 1:ny), name = "temperature")
+    temperature_sumdim = DimArray(temperature_sum, (; t = ts, x = 1:nx, y = 1:ny), name = "temperature_sum")
+    precipitationdim = DimArray(precipitation, (; t = ts, x = 1:nx, y = 1:ny), name = "precipitation")
+    PETdim = DimArray(PET, (; t = ts, x = 1:nx, y = 1:ny), name = "PET")
+    PET_sumdim = DimArray(PET_sum, (; t = ts, x = 1:nx, y = 1:ny), name = "PET_sum")
+    PARdim = DimArray(PAR, (; t = ts, x = 1:nx, y = 1:ny), name = "PAR")
+    PAR_sumdim = DimArray(PAR_sum, (; t = ts, x = 1:nx, y = 1:ny), name = "PAR_sum")
+    CUTdim = DimArray(CUT_mowing, (; t = ts, x = 1:nx, y = 1:ny), name = "CUT_mowing")
+    LDdim = DimArray(LD_grazing, (; t = ts, x = 1:nx, y = 1:ny), name = "LD_grazing")
+
+    return DimStack( input.sand, input.silt,input.clay,
+        input.organic, input.bulk, input.rootdepth, input.totalN,
+        temperaturedim, temperature_sumdim, precipitationdim, PETdim, PET_sumdim,
+        PARdim, PAR_sumdim, CUTdim, LDdim)
 end

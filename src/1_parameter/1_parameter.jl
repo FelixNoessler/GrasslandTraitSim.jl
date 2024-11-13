@@ -156,3 +156,12 @@ function add_units(x; p = SimulationParameter())
     end
     return x
 end
+
+function load_optim_result()
+    return load(assetpath("data/optim.jld2"), "θ");
+end
+
+function optim_parameter()
+    θ = load_optim_result()
+    return SimulationParameter(; θ...)
+end

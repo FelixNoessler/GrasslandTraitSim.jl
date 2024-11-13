@@ -1,7 +1,7 @@
 function preallocate_vectors(; input_obj, T = Float64)
     @unpack output_date, mean_input_date, included, nspecies,
             patch_xdim, patch_ydim, ntimesteps = input_obj.simp
-    @unpack initbiomass = input_obj.site
+    @unpack initbiomass = input_obj.simp
 
     ############# output variables
     #### State variables

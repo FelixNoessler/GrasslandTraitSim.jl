@@ -25,7 +25,7 @@ let
     lastn_points = 1500
 
     trait_input = sim.input_traits();
-    input_obj = sim.validation_input(; plotID = "HEG01", nspecies = length(trait_input.amc), time_step_days = 1);
+    input_obj = sim.validation_input("HEG01");
     p = sim.optim_parameter()
     sol = sim.solve_prob(; input_obj, p, trait_input);
     t = sol.simp.mean_input_date_num[end-lastn_points:end]
@@ -110,8 +110,8 @@ let
     lastn_points = 1500
 
     trait_input = sim.input_traits();
-    input_obj = sim.validation_input(; plotID = "HEG01", nspecies = length(trait_input.amc), time_step_days = 1,
-                                        included = (;
+    input_obj = sim.validation_input("HEG01"; 
+                                    included = (;
                                         belowground_competition = true,
                                         nutrient_growth_reduction = true,
                                         water_growth_reduction = true,

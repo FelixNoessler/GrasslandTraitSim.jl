@@ -41,6 +41,8 @@ simp = (
     patch_ydim = 1, 
     npatches = 1,
     trait_seed = missing,  
+    initbiomass = 1500u"kg / ha",
+    initsoilwater = 80u"mm",
     
     ## which processes to include, see extra tutorial
     ## empty tuple means, that everything is included
@@ -96,13 +98,13 @@ For an explanation of the variables, see [here](@ref "Daily management variables
 
 ```@example input_creation
 # --------------- mowing height [m], NaN if no mowing
-CUT_mowing = fill(NaN * u"m", ntimesteps)
+CUT_mowing = Vector{Union{Missing, typeof(1.0u"m")}}(missing, ntimesteps)
 mowing_dates = [Dates.Date(2010, 5, 1), Dates.Date(2010, 8, 1), 
                 Dates.Date(2011, 5, 1), Dates.Date(2011, 8, 1)]
 [CUT_mowing[d .== output_date[1:end-1]] .= 0.08u"m" for d in mowing_dates]
 
 # --------------- grazing intensity in livestock density [ha⁻¹], NaN if no grazing
-LD_grazing = fill(NaN / u"ha", ntimesteps)
+LD_grazing = Vector{Union{Missing, typeof(1.0u"ha^-1")}}(missing, ntimesteps)   
 grazing_starts = [Dates.Date(2010, 6, 1), Dates.Date(2011, 6, 1)]
 grazing_ends = [Dates.Date(2010, 8, 1), Dates.Date(2011, 8, 1)]
 livestock_density = [1, 3]u"ha^-1"
@@ -129,9 +131,7 @@ site_tuple = (;
     sand = 0.05,        
     organic = 0.06,     
     bulk = 0.7u"g / cm^3",
-    rootdepth = 160.0u"mm",
-    initbiomass = 1500u"kg / ha",
-    initsoilwater = 80u"mm"
+    rootdepth = 160.0u"mm"
 )    
 
 nothing # hide       
@@ -144,18 +144,14 @@ nothing # hide
 Then we can add all the tuples to one bigger named tuple.
 
 ```@example input_creation
-input_obj = (; input = (;
-                   climatic_inputs..., 
-                   management_tuple...,),
-               site = site_tuple, 
+input_obj = (; input = (; climatic_inputs..., management_tuple..., site_tuple...),
                simp)
 ```
 
 **For the plots from the Biodiversity Exploratories, we used the following convenience function
 to create the same object:**
 ```@example input_creation
-input_obj_HEG01 = sim.validation_input(;
-    plotID = "HEG01", nspecies = 5);
+input_obj_HEG01 = sim.validation_input("HEG01");
 
 nothing # hide
 ```

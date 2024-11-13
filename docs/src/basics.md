@@ -22,7 +22,7 @@ Pkg.add("GrasslandTraitSim")
 
 For the tutorials you will also need several other Julia packages:
 ```julia
-Pkg.add(["CairoMakie", "GLMakie", "Unitful", "Statistics"])
+Pkg.add(["CairoMakie", "GLMakie", "Unitful", "Statistics", "DimensionalData"])
 ```
 
 
@@ -34,8 +34,7 @@ For more details, see the tutorials on [preparing inputs](@ref "How to prepare t
 import GrasslandTraitSim as sim
 
 trait_input = sim.input_traits();
-nspecies = length(trait_input.amc)
-input_obj = sim.validation_input(; plotID = "HEG01", nspecies);
+input_obj = sim.validation_input("HEG01");
 p = sim.SimulationParameter();
 sol = sim.solve_prob(; input_obj, p, trait_input);
 sol.output.biomass

@@ -13,7 +13,7 @@ using RCall # only for functional diversity indices
 CairoMakie.activate!()
 
 trait_input = sim.input_traits()
-input_obj = sim.validation_input(; plotID = "HEG01", nspecies = length(trait_input.amc));
+input_obj = sim.validation_input("HEG01");
 p = sim.optim_parameter()
 sol = sim.solve_prob(; input_obj, p, trait_input);
 

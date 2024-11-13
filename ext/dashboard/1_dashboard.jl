@@ -1,5 +1,9 @@
-function GrasslandTraitSim.dashboard(; posterior = nothing, variable_p = (;),
-                   θ = nothing, path = nothing)
+function GrasslandTraitSim.dashboard(; variable_p = (;), path = nothing)
+
+    if ! isdefined(gts, :measured_data)
+        gts.load_measured_data()
+    end
+
     set_theme!(
         Theme(
             colgap = 5,
@@ -25,13 +29,11 @@ function GrasslandTraitSim.dashboard(; posterior = nothing, variable_p = (;),
         if !still_running
             still_running = true
 
-            biomass_stats = plot_obj.obs.menu_biomassvalid.selection.val
-
-            p, input_obj = prepare_input(; plot_obj, posterior, biomass_stats)
+            p, input_obj = prepare_input(; plot_obj)
             sol = gts.solve_prob(; input_obj, p, trait_input)
 
             mean_input_date = input_obj.simp.mean_input_date
-            valid_data = get_valid_data(; plot_obj, biomass_stats, mean_input_date)
+            valid_data = get_valid_data(; plot_obj)
 
             show_validdata = plot_obj.obs.toggle_validdata.active.val
             if show_validdata
@@ -45,10 +47,6 @@ function GrasslandTraitSim.dashboard(; posterior = nothing, variable_p = (;),
     end
 
     on(plot_obj.obs.menu_plotID.selection) do n
-        plot_obj.obs.run_button.clicks[] = 1
-    end
-
-    on(plot_obj.obs.menu_timestep.selection) do n
         plot_obj.obs.run_button.clicks[] = 1
     end
 
@@ -81,17 +79,9 @@ function GrasslandTraitSim.dashboard(; posterior = nothing, variable_p = (;),
     on(plot_obj.obs.toggle_validdata.active) do n
         valid_data = nothing
         if n
-            valid_data = get_valid_data(; plot_obj, biomass_stats, mean_input_date)
+            valid_data = get_valid_data(; plot_obj)
         end
         update_plots(; sol, plot_obj, valid_data)
-    end
-
-    on(plot_obj.obs.menu_biomassvalid.selection) do new_stat
-        biomass_stats = new_stat
-        if plot_obj.obs.toggle_validdata.active.val
-            valid_data = get_valid_data(; plot_obj, biomass_stats, mean_input_date)
-            update_plots(; sol, plot_obj, valid_data)
-        end
     end
 
     on(plot_obj.obs.button_panelA.clicks) do _
@@ -139,11 +129,9 @@ function GrasslandTraitSim.dashboard(; posterior = nothing, variable_p = (;),
     return nothing
 end
 
-function get_valid_data(; plot_obj, biomass_stats = nothing, mean_input_date)
+function get_valid_data(; plot_obj)
     plotID = plot_obj.obs.menu_plotID.selection.val
-    data = gts.get_validation_data(; plotID, biomass_stats, mean_input_date)
-
-    return data
+    return gts.measured_data[Symbol(plotID)]
 end
 
 

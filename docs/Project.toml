@@ -1,11 +1,13 @@
 [deps]
 CairoMakie = "13f3f980-e62b-5c42-98c6-ff1f3baf88f0"
 DataFrames = "a93c6f00-e57d-5684-b7b6-d8193f3e46c0"
+DimensionalData = "0703355e-b756-11e9-17c0-8b28908087d0"
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 DocumenterCitations = "daee34ce-89f3-4625-b898-19384cb65244"
 DocumenterVitepress = "4710194d-e776-4893-9690-8d956a29c365"
 GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"
+GrasslandTraitSim = "45e22d02-e628-441d-a1c7-54dcb4b48aca"
 PairPlots = "43a3c2be-4208-490b-832a-a21dcd55d7da"
 PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 RCall = "6f49c342-dc21-5d91-9882-a32aef131414"

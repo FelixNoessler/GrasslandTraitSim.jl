@@ -1,8 +1,8 @@
 ####### Build the documentation locally
-# julia --project=docs/
-# import Pkg; Pkg.develop(path="."); Pkg.instantiate(); include("docs/make.jl")
+# cd 1_GrasslandTraitSim/docs/; julia --project=.
+# import Pkg; Pkg.develop(path="../"); Pkg.instantiate(); include("make.jl")
 ## to clean everything for commits/push:
-# include("docs/clean_local_doc.jl")
+# include("clean_local_doc.jl")
 # using DocumenterVitepress; DocumenterVitepress.dev_docs("build", md_output_path = "")
 
 using CairoMakie
@@ -17,13 +17,13 @@ makie_theme = Theme(fontsize = 18,
 set_theme!(makie_theme)
 
 ####### Create bilbiography
-bib = CitationBibliography("docs/src/lit.bib"; style = :numeric)
+bib = CitationBibliography("src/lit.bib"; style = :numeric)
 
 ####### Create documentation
 makedocs(;
     draft = false,
     warnonly  = true,
-    # clean = false,
+    clean = true,
     plugins = [bib],
     sitename = "GrasslandTraitSim.jl",
     modules = [GrasslandTraitSim],
@@ -34,8 +34,8 @@ makedocs(;
         repo = "github.com/FelixNoessler/GrasslandTraitSim.jl",
         devurl = "dev",
         devbranch = "master",
-        # md_output_path = ".",
-        # build_vitepress = false
+        md_output_path = ".",
+        build_vitepress = false
     ),
     pages = [
         "Home" => "index.md",
