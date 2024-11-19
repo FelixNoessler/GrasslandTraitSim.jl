@@ -1,4 +1,4 @@
-function load_measured_data(measured_data_path = joinpath(artifact"hainich_data", "Calibration_data"))
+function load_measured_data(measured_data_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Calibration_data"))
 
     cwm_traits_df = CSV.read(joinpath(measured_data_path, "CWM_Traits.csv"), DataFrame)
     biomass_df = CSV.read(joinpath(measured_data_path, "Biomass.csv"), DataFrame)
@@ -15,16 +15,16 @@ function load_measured_data(measured_data_path = joinpath(artifact"hainich_data"
         nt = nrow(biomass_sub)
 
         biomass = Array{typeof(1.0u"kg/ha")}(undef, nt)
-        cuttting_height = Array{typeof(1.0u"m")}(undef, nt)
+        cutting_height = Array{typeof(1.0u"m")}(undef, nt)
 
         for (i,r) in enumerate(eachrow(biomass_sub))
             biomass[i] = r.biomass * u"kg/ha"
-            cuttting_height[i] = r.cutting_height * u"m"
+            cutting_height[i] = r.cutting_height * u"m"
         end
 
         ts = biomass_sub.date
         biomassdim = DimArray(biomass, (; t = ts), name = "biomass")
-        cuttting_heightdim = DimArray(cuttting_height, (; t = ts), name = "cuttting_height")
+        cutting_heightdim = DimArray(cutting_height, (; t = ts), name = "cutting_height")
 
         ########## CWM trait data
         cwm_traits_sub = @chain cwm_traits_df begin
@@ -61,7 +61,7 @@ function load_measured_data(measured_data_path = joinpath(artifact"hainich_data"
         abpdim = DimArray(abp, (; t = ts), name = "abp")
         fdisdim = DimArray(fdis, (; t = ts), name = "fdis")
 
-        st1 = DimStack(biomassdim, cuttting_heightdim)
+        st1 = DimStack(biomassdim, cutting_heightdim)
         st2 = DimStack(amcdim, rsadim, lncdim, sladim, maxheightdim, abpdim, fdisdim)
         data[Symbol(p)] = (; CWM_traits = st2, Cut_biomass = st1)
     end

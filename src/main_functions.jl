@@ -7,21 +7,14 @@ All input variables are explained in a tutorial:
 There is also a tutorial on the model output:
 [How to analyse the model output](@ref)
 """
-function solve_prob(; input_obj, p, prealloc = nothing, prealloc_specific = nothing,
-                     trait_input = nothing, θ_type = Float64, callback = (; t = []))
+function solve_prob(; input_obj, p, prealloc = nothing, trait_input = nothing,
+                    θ_type = Float64, callback = (; t = []))
     if isnothing(prealloc)
         prealloc = preallocate_vectors(; input_obj, T = θ_type)
     end
 
-    if isnothing(prealloc_specific)
-        prealloc_specific = preallocate_specific_vectors(; input_obj, T = θ_type)
-    end
-
-    container = initialization(; input_obj, p, prealloc, prealloc_specific, trait_input,
-                               callback)
-
+    container = initialization(; input_obj, p, prealloc, trait_input, callback)
     main_loop!(; container)
-    calc_cut_biomass!(; container)
 
     return container
 end
@@ -60,7 +53,6 @@ function main_loop!(; container)
             end
         end
 
-        # TODO: check if this is the right place for the callback
         callback_above_biomass!(; t, container)
     end
 
@@ -113,8 +105,6 @@ celsius_vec_float = typeof([1.0u"°C"])
 
 Statistics.mean(x::celsius_vec_int) = mean(float.(x))
 Statistics.mean(x::celsius_vec_float) = mean(ustrip.(x)) * u"°C"
-
-# Base.show(io::IO, obj::NamedTuple) = print(io, "Named tuple with keys: $(collect(keys(obj)))")
 
 to_numeric(d::Dates.Date) = Dates.year(d) + (Dates.dayofyear(d) - 1) /
                             Dates.daysinyear(Dates.year(d))

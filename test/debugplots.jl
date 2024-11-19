@@ -32,9 +32,7 @@ function create_container_for_plotting(; nspecies = nothing, param = (;), θ = n
     end
 
     prealloc = preallocate_vectors(; input_obj);
-    prealloc_specific = preallocate_specific_vectors(; input_obj);
-    container = initialization(; input_obj, p, prealloc, prealloc_specific,
-                                   trait_input)
+    container = initialization(; input_obj, p, prealloc, trait_input)
 
     return nspecies, container
 end

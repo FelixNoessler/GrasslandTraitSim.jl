@@ -1,6 +1,9 @@
-function input_traits(inputdata_path = joinpath(artifact"hainich_data", "Input_data"))
-    traits = CSV.read("$inputdata_path/Traits.csv", DataFrame)
+function load_traits(inputdata_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Input_data"))
+    global trait_data = CSV.read("$inputdata_path/Traits.csv", DataFrame)
+    return nothing
+end
 
+function input_traits()
     ## unfortunately, this is slower:
     # nspecies = nrow(traits)
     # amcdim = DimArray(traits.amc, (; species = 1:nspecies), name = "amc")
@@ -13,17 +16,16 @@ function input_traits(inputdata_path = joinpath(artifact"hainich_data", "Input_d
     # return DimStack(amcdim, sladim, maxheightdim, rsadim, abpdim, lbpdim, lncdim)
 
     return (;
-        amc = traits.amc,
-        sla = traits.sla * u"m^2/g",
-        maxheight = traits.maxheight * u"m",
-        rsa = traits.rsa * u"m^2/g",
-        abp = traits.abp,
-        lbp = traits.lbp,
-        lnc = traits.lnc * u"mg/g");
+        amc = trait_data.amc,
+        sla = trait_data.sla * u"m^2/g",
+        maxheight = trait_data.maxheight * u"m",
+        rsa = trait_data.rsa * u"m^2/g",
+        abp = trait_data.abp,
+        lbp = trait_data.lbp,
+        lnc = trait_data.lnc * u"mg/g");
 end
 
-function load_input_data(input_data_path = joinpath(artifact"hainich_data", "Input_data"))
-
+function load_input_data(input_data_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Input_data"))
     clim = CSV.read(joinpath(input_data_path, "Climate.csv"), DataFrame)
     soil = CSV.read(joinpath(input_data_path, "Soil.csv"), DataFrame)
     man = CSV.read(joinpath(input_data_path, "Management.csv"), DataFrame)
@@ -176,7 +178,7 @@ function validation_input(input_data; included = (;),
             included,
             initbiomass,
             initsoilwater),
-        input = input_data,)
+        input = input_data)
 end
 
 function create_included(included_prep = (;);)

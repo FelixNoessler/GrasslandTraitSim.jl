@@ -1,12 +1,11 @@
 """
 Initialize the simulation object. The function is called once at the beginning of the simulation within [`solve_prob`](@ref).
 """
-function initialization(; input_obj, p, prealloc, prealloc_specific, trait_input,
+function initialization(; input_obj, p, prealloc, trait_input,
                         callback = (; t = []))
 
     ###### Store everything in one object
-    container = tuplejoin((; p = p), input_obj, prealloc, prealloc_specific,
-                          (; callback = callback))
+    container = tuplejoin((; p = p), input_obj, prealloc, (; callback = callback))
 
     ###### Traits
     if isnothing(trait_input)

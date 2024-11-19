@@ -40,7 +40,6 @@ include("3_biomass/1_growth/1_growth.jl")
 include("3_biomass/2_senescence/1_senescence.jl")
 include("3_biomass/3_management/1_grazing.jl")
 include("3_biomass/3_management/2_mowing.jl")
-include("3_biomass/3_management/3_cut_biomass_for_likelihood.jl")
 
 include("4_height/height.jl")
 
@@ -50,9 +49,13 @@ include("5_water/water.jl")
 const ASSETS_DIR = joinpath(@__DIR__, "..", "assets")
 assetpath(files...) = normpath(joinpath(ASSETS_DIR, files...))
 
+const DEFAULT_ARTIFACTS_DIR = artifact"hainich_data"
+artifactpath(name) = @artifact_str(name)
+
 function __init__()
-    load_gm(assetpath("data"))
+    load_gm()
     load_input_data()
+    load_traits()
     return nothing
 end
 

@@ -1,4 +1,4 @@
-function load_gm(datapath)
+function load_gm(datapath = assetpath("data"))
     global traits_μ, traits_Σ, traits_ϕ = load(
         "$datapath/traits_gaussian_mixture.jld2", "μ", "Σ", "ϕ")
 

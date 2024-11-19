@@ -185,13 +185,12 @@ p = sim.SimulationParameter()
 # if you will run many simulations, it is recommended to preallocated the vectors
 # but the simulation will also run without preallocation 
 prealloc = sim.preallocate_vectors(; input_obj);
-prealloc_specific = sim.preallocate_specific_vectors(; input_obj);
 
 # traits will be generated, no preallocation
 sol = sim.solve_prob(; input_obj, p);
 
 # with static traits, with preallocation
-sol = sim.solve_prob(; input_obj, prealloc, prealloc_specific, p, trait_input);
+sol = sim.solve_prob(; input_obj, prealloc, p, trait_input);
 
 nothing # hide
 ```

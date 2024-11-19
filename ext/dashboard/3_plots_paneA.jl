@@ -65,11 +65,6 @@ function biomass_plot(; plot_obj, sol, valid_data, kwargs...)
     end
 
     if !isnothing(valid_data)
-        cutbiomass_μ = vec(ustrip.(sol.valid.cut_biomass))
-        t = sol.simp.output_date_num[sol.valid.biomass_cutting_t]
-
-        scatter!(ax, t[1:thin:end], cutbiomass_μ[1:thin:end]; color = :orange)
-
         biomass = vec(ustrip.(valid_data.Cut_biomass.biomass))
         num_t = gts.to_numeric.(LookupArrays.index(valid_data.Cut_biomass, :t))
 
