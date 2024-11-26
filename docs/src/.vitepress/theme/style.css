@@ -97,26 +97,6 @@ pre, code {
     #459c55 50%,
     #09360d
   );
-  
-  --vp-home-hero-image-background-image: linear-gradient(
-    -45deg,
-    #9558B2 30%,
-    #389826 30%,
-    #CB3C33 
-  );
-  --vp-home-hero-image-filter: blur(40px);
-}
-
-@media (min-width: 640px) {
-  :root {
-    --vp-home-hero-image-filter: blur(56px);
-  }
-}
-
-@media (min-width: 960px) {
-  :root {
-    --vp-home-hero-image-filter: blur(72px);
-  }
 }
 
 /* Component: Custom Block */
