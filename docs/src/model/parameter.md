@@ -97,73 +97,6 @@ Markdown.parse(parameter_doc())
 ## Which method uses a parameter?
 
 
-```@eval
-import GrasslandTraitSim as sim
-import Markdown
-using Glob
-using PrettyTables
-
-function parameter_in_methods()
-    function read_files_to_string(directory::String)
-        file_paths = [
-            glob("**/**/**/*.jl", directory)...,
-            glob("**/**/*.jl", directory)...,
-            glob("**/*.jl", directory)...,
-            glob("*.jl", directory)...]
-
-        all_contents = ""
-
-        for file_path in file_paths
-            all_contents *= read(file_path, String) * "\n\n\n\n"
-        end
-
-        return all_contents
-    end
-
-    contents = read_files_to_string(dirname(pathof(sim)))
-    create_regex = x -> Regex("function $x\\(.*?\\n(.*?\\n)*?end")
-
-    prep_method = names(sim, all = true)
-    prep_method = prep_method[prep_method .!== :measured_data]
-    f1 = [isa(getfield(sim, n), Function) for n in prep_method]
-    f2 = .! startswith.(String.(prep_method), "#")
-    f3 = .! startswith.(String.(prep_method), "plot")
-    f4 = .! startswith.(String.(prep_method), "initialization")
-    method_names = String.(prep_method[f1 .&& f2 .&& f3 .&& f4])
-
-    methods_dict = Dict{String, String}()
-    for method_name in method_names
-        method_match = match(create_regex(method_name), contents)
-        if method_match !== nothing
-            methods_dict[method_name] = method_match.match
-        end
-    end
-
-    pnames = String.(keys(sim.SimulationParameter()))
-
-    p_in_methods = []
-    for pname in pnames 
-        p_functions = String[]             
-        for k in keys(methods_dict)
-            if occursin(pname, methods_dict[k])
-                push!(p_functions, k)
-            end
-        end
-
-        fun_format = join(["[`$f`](@ref); " for f in p_functions])[1:end-2]
-        push!(p_in_methods, fun_format) 
-    end
-
-    str = pretty_table(String, [collect(pnames) p_in_methods]; 
-                header = ["Parameter", "Used in..."],       
-                backend = Val(:markdown))
-    return str
-end
-
-Markdown.parse(parameter_in_methods())
-```
-
-
 ## How to change a parameter value
 
 ```@example
@@ -191,4 +124,3 @@ p
 ```@docs
 SimulationParameter
 ```
-
