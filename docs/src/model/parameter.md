@@ -4,18 +4,24 @@ CurrentModule = GrasslandTraitSim
 
 # Parameter in the model
 
-```@example
+```@eval
 import GrasslandTraitSim as sim
 import Markdown
 using PrettyTables
 
 function parameter_doc()
     param_description = (;
-        ϕ_TRSA = " Reference root surface area per total biomass, used in nutrient stress function and maintenance costs for roots function, set to mean of community: ``\\phi_{TRSA} = \\text{mean}((1 - \\mathbf{abp}) \\cdot \\mathbf{rsa})``",
-        ϕ_TAMC = "Reference arbuscular mycorriza colonisation rate",
-        ϕ_sla = "Reference specific leaf area",
+        ϕ_TRSA = "Reference root surface area per total biomass, used in nutrient stress function and maintenance costs for roots function, set to mean of community: ``\\phi_{TRSA} = \\text{mean}((1 - \\mathbf{abp}) \\cdot \\mathbf{rsa})``",
+        ϕ_TAMC = "Reference arbuscular mycorriza colonisation rate per total biomass, used in nutrient stress function and maintenance costs for mycorrhizae function, set to mean of community: ``\\phi_{TAMC} = \\text{mean}((1 - \\mathbf{abp}) \\cdot \\mathbf{amc})``",
+        ϕ_sla = "Reference specific leaf area, used in senescence function, set to mean of community: ``\\phi_{sla} = \\text{mean}(\\mathbf{sla})``",
+        
         γ_RUEmax = "Maximum radiation use efficiency",
-        γ_RUE_k =  "Extinction coefficient",
+        γ_RUE_k =  "Light extinction coefficient",
+        α_RUE_cwmH = "Reduction factor of radiation use efficiency at a height of 0.2 m ∈ [0, 1]",
+        β_LIG_H = "Exponent that coontrols how strongly taller plants intercept more light than smaller plants",
+        
+        α_WAT_rsa05 = "Water stress growth reduction factor for species with mean trait: ``TRSA = \\phi_{TRSA}``, when the plant available water equals: ``W_{p,txy} = 0.5``",
+
     )
 
     p = sim.optim_parameter()
@@ -31,10 +37,10 @@ function parameter_doc()
     end
   
     str = pretty_table(String, data; alignment = [:r, :l, :l], header = ["Parameter", "Value", "Description"], backend = Val(:markdown))
-    return Markdown.parse(str)
+    return str
 end
 
-parameter_doc()
+Markdown.parse(parameter_doc())
 ```
 
 ## Which method uses a parameter?
@@ -73,9 +79,8 @@ let
     f2 = .! startswith.(String.(prep_method), "#")
     f3 = .! startswith.(String.(prep_method), "plot")
     f4 = .! startswith.(String.(prep_method), "initialization")
-    f5 = .! startswith.(String.(prep_method), "parameter_doc")
 
-    method_names = String.(prep_method[f1 .&& f2 .&& f3 .&& f4 .&& f5])
+    method_names = String.(prep_method[f1 .&& f2 .&& f3 .&& f4])
 
     methods_dict = Dict{String, String}()
     for method_name in method_names
