@@ -6,7 +6,35 @@ CurrentModule = GrasslandTraitSim
 
 ```@example
 import GrasslandTraitSim as sim
-sim.parameter_doc(; html = true)
+import Markdown
+using PrettyTables
+
+function parameter_doc()
+    param_description = (;
+        ϕ_TRSA = " Reference root surface area per total biomass, used in nutrient stress function and maintenance costs for roots function, set to mean of community: ``\\phi_{TRSA} = \\text{mean}((1 - \\mathbf{abp}) \\cdot \\mathbf{rsa})``",
+        ϕ_TAMC = "Reference arbuscular mycorriza colonisation rate",
+        ϕ_sla = "Reference specific leaf area",
+        γ_RUEmax = "Maximum radiation use efficiency",
+        γ_RUE_k =  "Extinction coefficient",
+    )
+
+    p = sim.optim_parameter()
+    p_keys = collect(keys(p))
+    p_values = collect(values(p))
+    p_descriptions = [haskey(param_description, k) ? param_description[k] : "TODO" for k in p_keys]
+    data = hcat(p_keys, p_values, p_descriptions)
+    
+    
+    if any(keys(param_description) .∉ Ref(p_keys))
+      p_documented = collect(keys(param_description))[collect(keys(param_description) .∉ Ref(p_keys))]
+      @info "Following keys documented: $p_documented but not part of the GrasslandTraitSim.jl model"
+    end
+  
+    str = pretty_table(String, data; alignment = [:r, :l, :l], header = ["Parameter", "Value", "Description"], backend = Val(:markdown))
+    return Markdown.parse(str)
+end
+
+parameter_doc()
 ```
 
 ## Which method uses a parameter?

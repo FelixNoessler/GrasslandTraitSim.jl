@@ -93,28 +93,6 @@ Parameter of the GrasslandTraitSim.jl model
 end
 
 
-function parameter_doc(; html = false)
-    param_description = (;
-        ϕ_TRSA = "Reference root surace area",
-        ϕ_TAMC = "Reference arbuscular mycorriza colonisation rate",
-        ϕ_sla = "Reference specific leaf area",
-        γ_RUEmax = "Maximum radiation use efficiency",
-        γ_RUE_k =  "Extinction coefficient",
-    )
-
-    p = optim_parameter()
-    p_keys = collect(keys(p))
-    p_values = collect(values(p))
-    p_descriptions = [haskey(param_description, k) ? param_description[k] : "TODO" for k in p_keys]
-    data = hcat(p_keys, p_values, p_descriptions)
-
-    if html
-        return pretty_table(HTML, data; alignment = [:r, :l, :l], header = ["Parameter", "Value", "Description"], backend = Val(:html))
-    end
-
-    return pretty_table(data; alignment = [:r, :l, :l], header = ["Parameter", "Value", "Description"])
-end
-
 function Base.show(io::IO, obj::SimulationParameter)
     p_names = collect(keys(obj))
     vals = [obj[k] for k in p_names]
