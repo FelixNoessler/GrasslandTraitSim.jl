@@ -95,42 +95,40 @@ Markdown.parse(parameter_doc())
 ```
 
 ## Which method uses a parameter?
-```@raw html
-<details>
-<summary>show code</summary>
-```
 
-```julia
+
+```@eval
 import GrasslandTraitSim as sim
+import Markdown
 using Glob
 using PrettyTables
 
-function read_files_to_string(directory::String)
-    file_paths = [
-        glob("**/**/**/*.jl", directory)...,
-        glob("**/**/*.jl", directory)...,
-        glob("**/*.jl", directory)...,
-        glob("*.jl", directory)...]
+function parameter_in_methods()
+    function read_files_to_string(directory::String)
+        file_paths = [
+            glob("**/**/**/*.jl", directory)...,
+            glob("**/**/*.jl", directory)...,
+            glob("**/*.jl", directory)...,
+            glob("*.jl", directory)...]
 
-    all_contents = ""
+        all_contents = ""
 
-    for file_path in file_paths
-        all_contents *= read(file_path, String) * "\n\n\n\n"
+        for file_path in file_paths
+            all_contents *= read(file_path, String) * "\n\n\n\n"
+        end
+
+        return all_contents
     end
 
-    return all_contents
-end
-
-let
     contents = read_files_to_string(dirname(pathof(sim)))
     create_regex = x -> Regex("function $x\\(.*?\\n(.*?\\n)*?end")
 
     prep_method = names(sim, all = true)
+    prep_method = prep_method[prep_method .!== :measured_data]
     f1 = [isa(getfield(sim, n), Function) for n in prep_method]
     f2 = .! startswith.(String.(prep_method), "#")
     f3 = .! startswith.(String.(prep_method), "plot")
     f4 = .! startswith.(String.(prep_method), "initialization")
-
     method_names = String.(prep_method[f1 .&& f2 .&& f3 .&& f4])
 
     methods_dict = Dict{String, String}()
@@ -156,61 +154,14 @@ let
         push!(p_in_methods, fun_format) 
     end
 
-    pretty_table([collect(pnames) p_in_methods]; 
+    str = pretty_table(String, [collect(pnames) p_in_methods]; 
                 header = ["Parameter", "Used in..."],       
                 backend = Val(:markdown))
+    return str
 end
+
+Markdown.parse(parameter_in_methods())
 ```
-
-```@raw html
-</details>
-```
-
-| **Parameter**  | **Used in...**                                                                                 |
-|---------------:|-----------------------------------------------------------------------------------------------:|
-| ϕ\_rsa         | [\`root\_investment!\`](@ref); [\`nutrient\_reduction!\`](@ref); [\`water\_reduction!\`](@ref) |
-| ϕ\_amc         | [\`root\_investment!\`](@ref); [\`nutrient\_reduction!\`](@ref)                                |
-| ϕ\_sla         | [\`initialize\_senescence\_rate!\`](@ref)                                                      |
-| γ\_RUEmax      | [\`potential\_growth!\`](@ref)                                                                 |
-| γ\_RUE\_k      | [\`light\_competition\_height\_layer!\`](@ref); [\`potential\_growth!\`](@ref)                 |
-| α\_RUE\_cwmH   | [\`potential\_growth!\`](@ref)                                                                 |
-| β\_LIG\_H      | [\`light\_competition\_simple!\`](@ref)                                                        |
-| α\_WAT\_rsa05  | [\`water\_reduction!\`](@ref)                                                                  |
-| β\_WAT\_rsa    | [\`water\_reduction!\`](@ref)                                                                  |
-| δ\_WAT\_rsa    | [\`water\_reduction!\`](@ref)                                                                  |
-| α\_NUT\_Nmax   | [\`input\_nutrients!\`](@ref)                                                                  |
-| α\_NUT\_TSB    | [\`nutrient\_competition!\`](@ref)                                                             |
-| α\_NUT\_maxadj | [\`nutrient\_competition!\`](@ref)                                                             |
-| α\_NUT\_amc05  | [\`nutrient\_reduction!\`](@ref)                                                               |
-| α\_NUT\_rsa05  | [\`nutrient\_reduction!\`](@ref)                                                               |
-| β\_NUT\_rsa    | [\`nutrient\_reduction!\`](@ref)                                                               |
-| β\_NUT\_amc    | [\`nutrient\_reduction!\`](@ref)                                                               |
-| δ\_NUT\_rsa    | [\`nutrient\_reduction!\`](@ref)                                                               |
-| δ\_NUT\_amc    | [\`nutrient\_reduction!\`](@ref)                                                               |
-| κ\_ROOT\_amc   | [\`root\_investment!\`](@ref)                                                                  |
-| κ\_ROOT\_rsa   | [\`root\_investment!\`](@ref)                                                                  |
-| γ\_RAD1        | [\`radiation\_reduction!\`](@ref)                                                              |
-| γ\_RAD2        | [\`radiation\_reduction!\`](@ref)                                                              |
-| ω\_TEMP\_T1    | [\`temperature\_reduction!\`](@ref)                                                            |
-| ω\_TEMP\_T2    | [\`temperature\_reduction!\`](@ref)                                                            |
-| ω\_TEMP\_T3    | [\`temperature\_reduction!\`](@ref)                                                            |
-| ω\_TEMP\_T4    | [\`temperature\_reduction!\`](@ref)                                                            |
-| ζ\_SEA\_ST1    | [\`seasonal\_reduction!\`](@ref)                                                               |
-| ζ\_SEA\_ST2    | [\`seasonal\_reduction!\`](@ref)                                                               |
-| ζ\_SEAmin      | [\`seasonal\_reduction!\`](@ref)                                                               |
-| ζ\_SEAmax      | [\`seasonal\_reduction!\`](@ref)                                                               |
-| α\_SEN\_month  | [\`initialize\_senescence\_rate!\`](@ref)                                                      |
-| β\_SEN\_sla    | [\`initialize\_senescence\_rate!\`](@ref)                                                      |
-| ψ\_SEN\_ST1    | [\`seasonal\_component\_senescence\`](@ref)                                                    |
-| ψ\_SEN\_ST2    | [\`seasonal\_component\_senescence\`](@ref)                                                    |
-| ψ\_SENmax      | [\`seasonal\_component\_senescence\`](@ref)                                                    |
-| β\_GRZ\_lnc    | [\`grazing!\`](@ref)                                                                           |
-| β\_GRZ\_H      | [\`grazing!\`](@ref)                                                                           |
-| η\_GRZ         | [\`grazing!\`](@ref)                                                                           |
-| κ\_GRZ         | [\`grazing!\`](@ref)                                                                           |
-| ϵ\_GRZ\_minH   | [\`grazing!\`](@ref)                                                                           |
-
-
 
 
 ## How to change a parameter value
@@ -222,8 +173,17 @@ using Unitful
 # default parameter values
 sim.SimulationParameter() 
 
-# you can change parameter values with keyword arguments
-sim.SimulationParameter(γ_RUE_k  = 0.65,  ϕ_TRSA = 0.05u"m^2 / g")
+# optimized/calibrated parameter values
+sim.optim_parameter()
+
+# you can change parameter values with keyword arguments, when you create the parameter object
+p = sim.SimulationParameter(γ_RUE_k  = 0.65,  ϕ_TRSA = 0.05u"m^2 / g")
+
+# or you can change the parameter values after the object is created
+p.ϕ_TAMC = 0.1
+p.ϕ_sla = 0.01u"m^2 / g"
+
+p
 ```
 
 ## API
