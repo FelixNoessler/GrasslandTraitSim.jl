@@ -12,7 +12,7 @@ Please refer to the documentation for more information about the grassland simul
 |:---|:---|
 | in development | [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://felixnoessler.github.io/GrasslandTraitSim.jl/dev/)  |  
 | newest stable version  |  [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://felixnoessler.github.io/GrasslandTraitSim.jl/)    | 
-| version 0.2 | [![](https://img.shields.io/badge/docs-0.2.0-blue.svg)](https://felixnoessler.github.io/GrasslandTraitSim.jl/v0.2.0/) | 
+| version 0.3 | [![](https://img.shields.io/badge/docs-0.3.0-blue.svg)](https://felixnoessler.github.io/GrasslandTraitSim.jl/v0.3.0/) | 
 
 
 
