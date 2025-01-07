@@ -26,11 +26,20 @@ function input_traits()
 end
 
 function load_input_data(input_data_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Input_data"))
+    ########## Climate data
     clim = CSV.read(joinpath(input_data_path, "Climate.csv"), DataFrame)
-    soil = CSV.read(joinpath(input_data_path, "Soil.csv"), DataFrame)
-    man = CSV.read(joinpath(input_data_path, "Management.csv"), DataFrame)
-
     plotIDs = unique(clim.plotID)
+
+    ########## Management data - join with all combinations of plotID, t, x, y
+    man = allcombinations(DataFrame, plotID = plotIDs, t = unique(clim.t),
+                          x = unique(clim.x), y = unique(clim.y))
+    man = leftjoin(man,
+                   CSV.read(joinpath(input_data_path, "Management.csv"), DataFrame),
+                   on = [:plotID, :t, :x, :y])
+
+    ########## Soil data
+    soil = CSV.read(joinpath(input_data_path, "Soil.csv"), DataFrame)
+
     inputs = Dict()
 
     for p in plotIDs
