@@ -240,6 +240,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         grazed_share = Array{T}(undef, nspecies),
         mown = Array{T}(undef, nspecies)u"kg / ha",
         grazed = Array{T}(undef, nspecies)u"kg / ha",
+        trampled = Array{T}(undef, nspecies)u"kg / ha",
 
         ## senescence
         senescence_rate = Array{T}(undef, nspecies),
