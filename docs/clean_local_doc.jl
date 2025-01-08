@@ -1,3 +1,3 @@
 import Pkg
-Pkg.rm("GrasslandTraitSim")
-rm("build/", recursive = true)
+try Pkg.rm("GrasslandTraitSim") catch end
+rm("docs/build/", recursive = true)

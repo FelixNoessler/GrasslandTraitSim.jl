@@ -1,8 +1,8 @@
 ####### Build the documentation locally
-# cd 1_GrasslandTraitSim/docs/; julia --project=.
+# julia --project=.
 # import Pkg; Pkg.develop(path="."); Pkg.instantiate(); include("docs/make.jl")
 ## to clean everything for commits/push:
-# include("clean_local_doc.jl")
+# include("docs/clean_local_doc.jl")
 # using DocumenterVitepress; DocumenterVitepress.dev_docs("build", md_output_path = "")
 
 using CairoMakie
