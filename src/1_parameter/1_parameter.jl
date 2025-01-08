@@ -2,7 +2,7 @@
 Parameter of the GrasslandTraitSim.jl model
 """
 @kwdef mutable struct SimulationParameter{
-    T, Qkg_MJ, Qkg_ha, Qm2_g, Qg_m2, Qg_kg, Qha_MJ, QMJ_ha, QC, Qkg, Qm, Qha, Qcm3_g}
+    T, Qkg_MJ, Qkg_ha, Qha_kg, Qm2_g, Qg_m2, Qkg_g, Qg_kg, Qha_MJ, QMJ_ha, QC, Qkg, Qm, Qha, Qcm3_g}
 
     ####################################################################################
     ## 1 Mean/reference trait values
@@ -29,7 +29,10 @@ Parameter of the GrasslandTraitSim.jl model
     ####################################################################################
     ## 4 Nutrient stress
     ####################################################################################
+    # TODO: keep α_NUT_Nmax for now for backwards compatibility, remove it later
     α_NUT_Nmax::Qg_kg = F(35.0)u"g/kg"
+    ω_NUT_totalN::Qkg_g = F(0.1)u"kg/g"
+    ω_NUT_fertilization::Qha_kg = F(0.001)u"ha/kg"
     α_NUT_TSB::Qkg_ha = F(15000.0)u"kg / ha"
     α_NUT_maxadj::T = F(10.0)
     α_NUT_amc05::T = F(0.95)
@@ -76,7 +79,7 @@ Parameter of the GrasslandTraitSim.jl model
     η_GRZ::T = F(2.0)
     κ_GRZ::Qkg = F(22.0)u"kg"
     ϵ_GRZ_minH::Qm = F(0.05)u"m"
-β_TRM_height::T = F(1.0)
+    β_TRM_height::T = F(1.0)
     α_TRM_LD::Qha = F(0.01)u"ha"
 
     ####################################################################################

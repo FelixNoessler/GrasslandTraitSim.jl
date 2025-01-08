@@ -29,58 +29,86 @@ function load_input_data(input_data_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Inpu
     ########## Climate data
     clim = CSV.read(joinpath(input_data_path, "Climate.csv"), DataFrame)
     plotIDs = unique(clim.plotID)
+    xs, ys = unique(clim.x), unique(clim.y)
+    ts, years = unique(clim.t), unique(Dates.year.(clim.t))
 
     ########## Management data - join with all combinations of plotID, t, x, y
-    man = allcombinations(DataFrame, plotID = plotIDs, t = unique(clim.t),
-                          x = unique(clim.x), y = unique(clim.y))
+    man = allcombinations(DataFrame, plotID = plotIDs, t = ts, x = ys, y = ys)
     man = leftjoin(man,
                    CSV.read(joinpath(input_data_path, "Management.csv"), DataFrame),
                    on = [:plotID, :t, :x, :y])
 
-    ########## Soil data
-    soil = CSV.read(joinpath(input_data_path, "Soil.csv"), DataFrame)
+    ########## Soil data - can be given...
+    ##### over the whole time frame in Soil.csv
+    ##### or yearly in Soil_yearly.csv
+    soil_yearly = allcombinations(DataFrame, plotID = plotIDs, x = xs, y = ys, year = years)
+    soil_yearly = leftjoin(soil_yearly,
+                           DataFrame(year = years, year_index = 1:length(years)),
+                           on = :year)
+
+    if isfile(joinpath(input_data_path, "Soil.csv"))
+        whole_period_soil_input = CSV.read(joinpath(input_data_path, "Soil.csv"), DataFrame)
+        soil_yearly = leftjoin(soil_yearly, whole_period_soil_input, on = [:plotID, :x, :y])
+    end
+
+    if isfile(joinpath(input_data_path, "Soil_yearly.csv"))
+        yearly_soil_input = CSV.read(joinpath(input_data_path, "Soil_yearly.csv"), DataFrame)
+        soil_yearly = leftjoin(soil_yearly, yearly_soil_input,
+                               on = [:plotID, :x, :y, :year])
+        disallowmissing!(soil_yearly)
+    end
+
+    ## if no fertilization data is given, we set fertilization to 0.0
+    if :fertilization ∉ names(soil_yearly)
+        @transform! soil_yearly :fertilization = 0.0
+    end
 
     inputs = Dict()
 
     for p in plotIDs
-        nx = length(unique(soil.x))
-        ny = length(unique(soil.y))
+        nx = length(unique(clim.x[p .== clim.plotID]))
+        ny = length(unique(clim.y[p .== clim.plotID]))
         nt = length(clim.t[p .== clim.plotID])
+        nyears = length(unique(Dates.year.(clim.t[p .== clim.plotID])))
+
         ts = clim.t[p .== clim.plotID]
 
         ########## Soil data
-        soil_sub = @subset soil :plotID .== p
+        soil_yearly_sub = @subset soil_yearly :plotID .== p
 
-        sand = Array{Float64}(undef, nx, ny)
-        silt = Array{Float64}(undef, nx, ny)
-        clay = Array{Float64}(undef, nx, ny)
-        organic = Array{Float64}(undef, nx, ny)
-        bulk = Array{typeof(1.0u"g/cm^3")}(undef, nx, ny)
-        rootdepth = Array{typeof(1.0u"mm")}(undef, nx, ny)
-        totalN = Array{typeof(1.0u"g/kg")}(undef, nx, ny)
+        sand = Array{Float64}(undef, nyears, nx, ny)
+        silt = Array{Float64}(undef, nyears, nx, ny)
+        clay = Array{Float64}(undef, nyears, nx, ny)
+        organic = Array{Float64}(undef, nyears, nx, ny)
+        bulk = Array{typeof(1.0u"g/cm^3")}(undef, nyears, nx, ny)
+        rootdepth = Array{typeof(1.0u"mm")}(undef, nyears, nx, ny)
+        totalN = Array{typeof(1.0u"g/kg")}(undef, nyears, nx, ny)
+        fertilization = Array{typeof(1.0u"kg/ha")}(undef, nyears, nx, ny)
 
-        for r in eachrow(soil_sub)
-            sand[r.x, r.y] = r.sand
-            silt[r.x, r.y] = r.silt
-            clay[r.x, r.y] = r.clay
-            organic[r.x, r.y] = r.organic
-            bulk[r.x, r.y] = r.bulk * u"g/cm^3"
-            rootdepth[r.x, r.y] = r.rootdepth * u"mm"
-            totalN[r.x, r.y] = r.totalN * u"g/kg"
+        for r in eachrow(soil_yearly_sub)
+            sand[r.year_index, r.x, r.y] = r.sand
+            silt[r.year_index, r.x, r.y] = r.silt
+            clay[r.year_index, r.x, r.y] = r.clay
+            organic[r.year_index, r.x, r.y] = r.organic
+            bulk[r.year_index, r.x, r.y] = r.bulk * u"g/cm^3"
+            rootdepth[r.year_index, r.x, r.y] = r.rootdepth * u"mm"
+            totalN[r.year_index, r.x, r.y] = r.totalN * u"g/kg"
+            fertilization[r.year_index, r.x, r.y] = r.fertilization * u"kg/ha"
         end
 
-        sanddim = DimArray(sand, (; x = 1:nx, y = 1:ny), name = "sand")
-        siltdim = DimArray(silt, (; x = 1:nx, y = 1:ny), name = "silt")
-        claydim = DimArray(clay, (; x = 1:nx, y = 1:ny), name = "clay")
-        organicdim = DimArray(organic, (; x = 1:nx, y = 1:ny), name = "organic")
-        bulkdim = DimArray(bulk, (; x = 1:nx, y = 1:ny), name = "bulk")
-        rootdepthdim = DimArray(rootdepth, (; x = 1:nx, y = 1:ny), name = "rootdepth")
-        totalNdim = DimArray(totalN, (; x = 1:nx, y = 1:ny), name = "totalN")
+        sanddim = DimArray(sand, (; year = years, x = 1:nx, y = 1:ny), name = "sand")
+        siltdim = DimArray(silt, (; year = years, x = 1:nx, y = 1:ny), name = "silt")
+        claydim = DimArray(clay, (; year = years, x = 1:nx, y = 1:ny), name = "clay")
+        organicdim = DimArray(organic, (; year = years, x = 1:nx, y = 1:ny), name = "organic")
+        bulkdim = DimArray(bulk, (; year = years, x = 1:nx, y = 1:ny), name = "bulk")
+        rootdepthdim = DimArray(rootdepth, (; year = years, x = 1:nx, y = 1:ny), name = "rootdepth")
+        totalNdim = DimArray(totalN, (; year = years, x = 1:nx, y = 1:ny), name = "totalN")
+        fertilizationdim = DimArray(fertilization, (; year = years, x = 1:nx, y = 1:ny), name = "fertilization")
 
         ########## Climate data
         clim_sub = @chain clim begin
-        @subset :plotID .== p
-        @orderby :t
+            @subset :plotID .== p
+            @orderby :t
         end
 
         temperature = Array{typeof(1.0u"°C")}(undef, nt, nx, ny)
@@ -128,7 +156,7 @@ function load_input_data(input_data_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Inpu
 
         inputs[Symbol(p)] = DimStack(sanddim, siltdim, claydim,
                     organicdim, bulkdim, rootdepthdim,
-                    totalNdim,
+                    totalNdim, fertilizationdim,
                     temperaturedim, temperature_sumdim,
                     precipitationdim,
                     PETdim, PET_sumdim, PARdim, PAR_sumdim,
@@ -166,6 +194,8 @@ function validation_input(input_data; included = (;),
     output_date_range = start_date:time_step_days:end_date
 
     ntimesteps = length(output_date_range) - 1
+    years = unique(Dates.year.(input_date_range))
+    nyears = length(years)
     patch_xdim = LookupArrays.index(input_data, :x)[end]
     patch_ydim = LookupArrays.index(input_data, :y)[end]
 
@@ -175,9 +205,12 @@ function validation_input(input_data; included = (;),
             output_date = output_date_range,
             output_date_num = to_numeric.(output_date_range),
             mean_input_date = input_date_range,
+            mean_input_year = Dates.year.(input_date_range),
             mean_input_date_num = to_numeric.(input_date_range),
             ts = Base.OneTo(ntimesteps),
+            years,
             ntimesteps,
+            nyears,
             nspecies,
             time_step_days,
             patch_xdim,
@@ -311,8 +344,8 @@ function scale_input(input; time_step_days = 14)
     CUTdim = DimArray(CUT_mowing, (; t = ts, x = 1:nx, y = 1:ny), name = "CUT_mowing")
     LDdim = DimArray(LD_grazing, (; t = ts, x = 1:nx, y = 1:ny), name = "LD_grazing")
 
-    return DimStack( input.sand, input.silt,input.clay,
-        input.organic, input.bulk, input.rootdepth, input.totalN,
+    return DimStack(input.sand, input.silt,input.clay, input.organic, input.bulk,
+        input.rootdepth, input.totalN, input.fertilization,
         temperaturedim, temperature_sumdim, precipitationdim, PETdim, PET_sumdim,
         PARdim, PAR_sumdim, CUTdim, LDdim)
 end

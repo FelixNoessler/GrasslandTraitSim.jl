@@ -26,16 +26,23 @@ using Unitful
 time_step_days = Dates.Day(1)
 output_date = Dates.Date(2010):Dates.lastdayofyear(Dates.Date(2012))
 mean_input_date = output_date[1:end-1] .+ (time_step_days ÷ 2)
+mean_input_year = Dates.year.(mean_input_date)
+     
 year = Dates.year.(output_date[1:end-1])
 ntimesteps = length(output_date) - 1
 ts = Base.OneTo(ntimesteps) 
-
+years = unique(Dates.year.(mean_input_date))
+nyears = length(years)
+    
 simp = (
     output_date,
     ts,
+    years,
+    nyears,
     ntimesteps, 
     time_step_days,
     mean_input_date,
+    mean_input_year,
     nspecies = 5,  
     patch_xdim = 1, 
     patch_ydim = 1, 
@@ -126,6 +133,7 @@ For an explanation of the variables, see [here](@ref "Raw time invariant site va
 ```@example input_creation
 site_tuple = (;
     totalN = 5.0u"g / kg",
+    fertilization = 0.0u"kg / ha",
     clay = 0.5,       
     silt = 0.45,       
     sand = 0.05,        

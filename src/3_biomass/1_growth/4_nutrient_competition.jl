@@ -1,15 +1,13 @@
 """
-Scale the total soil nitrogen
+Calculates nutrient index based on total soil nitrogen and fertilization.
 """
 function input_nutrients!(; container)
     @unpack nutrients = container.patch_variables
-    @unpack totalN = container.input
+    @unpack totalN, fertilization = container.input
     @unpack included = container.simp
-    @unpack α_NUT_Nmax = container.p
+    @unpack ω_NUT_totalN, ω_NUT_fertilization = container.p
 
-    if included.nutrient_growth_reduction
-        @. nutrients = totalN / α_NUT_Nmax
-    end
+    @. nutrients = 1 - exp(-ω_NUT_totalN * totalN -ω_NUT_fertilization * fertilization)
 
     return nothing
 end

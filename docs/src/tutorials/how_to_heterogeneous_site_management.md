@@ -32,11 +32,10 @@ simp_prep[:ts] = input_obj_prep.simp.ts
 simp = NamedTuple(simp_prep)
 
 # --------------- transform (copy) one dimensional to two dimensional arrays in x-direction
-t_axis_exist(x) = !isnothing(DimensionalData.dims(x, :t))
 daily_input_prep = Dict()
 for k in keys(input_obj_prep.input)
     dat = input_obj_prep.input[k]
-    dat_new = t_axis_exist(dat) ? dat[:, [1, 1], :] : dat[[1, 1], :]
+    dat_new = dat[x = At([1, 1])] 
     daily_input_prep[k] = set(dat_new, :x => 1:2)
 end
 

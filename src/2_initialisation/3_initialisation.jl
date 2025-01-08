@@ -15,7 +15,7 @@ function initialization(; input_obj, p, prealloc, trait_input,
     end
     similarity_matrix!(; container)
 
-    ###### Set some variables that do not vary with time
+    ###### Set some variables that do not vary with each time step
     initialize_senescence_rate!(; container)
     input_WHC_PWP!(; container)
     input_nutrients!(; container)

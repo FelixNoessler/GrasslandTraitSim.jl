@@ -1,6 +1,6 @@
 function preallocate_vectors(; input_obj, T = Float64)
     @unpack output_date, mean_input_date, included, nspecies,
-            patch_xdim, patch_ydim, ntimesteps = input_obj.simp
+            patch_xdim, patch_ydim, ntimesteps, years, nyears = input_obj.simp
     @unpack initbiomass = input_obj.simp
 
     ############# output variables
@@ -141,14 +141,14 @@ function preallocate_vectors(; input_obj, T = Float64)
 
     ############# patch variables
     WHC = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim)u"mm",
-        (x = 1:patch_xdim, y = 1:patch_ydim), name = :WHC)
+        Array{T}(undef, nyears, patch_xdim, patch_ydim)u"mm",
+        (year = years, x = 1:patch_xdim, y = 1:patch_ydim), name = :WHC)
     PWP = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim)u"mm",
-        (x = 1:patch_xdim, y = 1:patch_ydim), name = :PWP)
+        Array{T}(undef, nyears, patch_xdim, patch_ydim)u"mm",
+        (year = years, x = 1:patch_xdim, y = 1:patch_ydim), name = :PWP)
     nutrients = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim),
-        (x = 1:patch_xdim, y = 1:patch_ydim), name = :nutrients)
+        Array{T}(undef, nyears, patch_xdim, patch_ydim),
+        (year = years, x = 1:patch_xdim, y = 1:patch_ydim), name = :nutrients)
     patch_variables = (; WHC, PWP, nutrients)
 
     ############# Traits
