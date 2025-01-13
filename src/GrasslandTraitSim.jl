@@ -15,7 +15,6 @@ using LinearAlgebra
 using Pkg.Artifacts
 using PrettyTables
 using Statistics
-using StatsBase
 using Unitful
 using UnPack
 
