@@ -13,7 +13,7 @@ using RCall # only for functional diversity indices
 CairoMakie.activate!()
 
 trait_input = sim.input_traits()
-input_obj = sim.validation_input(; plotID = "HEG01", nspecies = length(trait_input.amc));
+input_obj = sim.validation_input("HEG01");
 p = sim.optim_parameter()
 sol = sim.solve_prob(; input_obj, p, trait_input);
 
@@ -223,7 +223,7 @@ end
 
 ## Functional diversity indices
 
-We use the R-package `fundiversity` to compute the functional diversity indices. We run the R-code from Julia using the Julia package `RCall.jl`.
+We use the R-package `fundiversity` to compute the functional diversity indices. We run the R-code from Julia using the Julia package `RCall.jl`. We assume that species are present if their biomass is larger than 1 kg/ha.
 
 ```@raw html
 <details><summary>show code</summary>
@@ -253,6 +253,7 @@ trait_input_wo_lbp = Base.structdiff(trait_input, (; lbp = nothing))
 
 tstep = 100
 biomass = sol.output.biomass[1:tstep:end, 1, 1, :]
+biomass[biomass .< 1.0u"kg / ha"] .= 0.0u"kg / ha"
 biomass_R = ustrip.(biomass.data)
 traits_R = traits_to_matrix(trait_input_wo_lbp;)
 site_names = string.("time_", 1:size(biomass_R, 1))
@@ -282,7 +283,7 @@ begin
 
     Axis(fig[1, 1]; ylabel = "Number of species", xticks = 2006:2:2022,
          xticklabelsvisible = false, limits = (nothing, nothing, 0, nothing))
-    nspecies = sum(sol.output.biomass[1:tstep:end, 1, 1, :] .> 0.0u"kg / ha"; dims = :species)
+    nspecies = sum(biomass .> 0.0u"kg / ha"; dims = :species)
     lines!(sol.simp.output_date_num[1:tstep:end], vec(nspecies);)
 
     Axis(fig[2, 1]; yscale = identity, xticks = 2006:2:2022, xticklabelsvisible = false,

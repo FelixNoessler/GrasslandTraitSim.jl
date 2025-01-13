@@ -22,8 +22,8 @@ included = (;
 )
 
 trait_input = sim.input_traits()
-input_obj = sim.validation_input(; included, plotID = "HEG01", nspecies = length(trait_input.amc));
-p = sim.SimulationParameter();
+input_obj = sim.validation_input("HEG01"; included);
+p = sim.optim_parameter();
 nothing # hide
 ```
 
@@ -35,7 +35,7 @@ species_biomass = dropdims(mean(sol.output.biomass; dims = (:x, :y)); dims = (:x
 total_biomass = vec(sum(species_biomass; dims = :species))
 
 fig, _ = lines(sol.simp.output_date_num, ustrip.(total_biomass), color = :darkgreen, linewidth = 2;
-      axis = (; ylabel = "Aboveground dry biomass [kg ha⁻¹]", 
+      axis = (; ylabel = "Total dry biomass [kg ha⁻¹]", 
                 xlabel = "Date [year]"))
 fig
 ```

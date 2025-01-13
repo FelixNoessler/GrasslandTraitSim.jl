@@ -95,7 +95,7 @@ morphological traits:
         </g>
     </svg>
 </div>
-<svg width="500" height="400" id="pot_growth_graph"></svg>
+<div style="max-width: 600px"><svg id="pot_growth_graph"></svg></div>
 ```
 
 ---

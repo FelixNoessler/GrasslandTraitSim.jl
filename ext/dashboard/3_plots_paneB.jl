@@ -5,7 +5,7 @@ function create_axes_paneB(layout)
                       ylabel = "Specific leaf\narea [m² g⁻¹]")
     axes[:maxheight] = Axis(layout[1, 2]; alignmode = Inside(),
                          xticklabelsvisible = false,
-                         ylabel = "Potential height [m]")
+                         ylabel = "Maximum height [m]")
     axes[:lnc] = Axis(layout[1, 3]; alignmode = Inside(),
                       xticklabelsvisible = false,
                       ylabel = "Leaf nitrogen per\nleaf mass [mg g⁻¹]")
@@ -14,7 +14,7 @@ function create_axes_paneB(layout)
     axes[:amc] = Axis(layout[2, 2]; alignmode = Inside(), xlabel = "Time [years]",
                       ylabel = "Arbuscular mycorrhizal\ncolonisation [-]")
     axes[:abp] = Axis(layout[2, 3]; alignmode = Inside(), xlabel = "Time [years]",
-                      ylabel = "Potential aboveground biomass\nper total biomass [-]")
+                      ylabel = "Aboveground biomass\nper total biomass [-]")
 
 
     axes[:trait_share] = Axis(layout[3, 1:2]; alignmode = Inside(),
@@ -63,8 +63,8 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait, kwargs...)
           color = (:blue, 0.3))
 
     if !isnothing(valid_data)
-        num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.traits, :time)]
-        y = vec(valid_data.traits[trait = At(trait)])
+        num_t = gts.to_numeric.(LookupArrays.index(valid_data.CWM_traits, :t))
+        y = vec(ustrip.(valid_data.CWM_traits[Symbol(trait)]))
         scatter!(ax, num_t, y, color = :black, markersize = 8)
     end
 end
@@ -72,12 +72,12 @@ end
 function trait_share_plot(; plot_obj, sol, kwargs...)
 
     trait_names = Dict(
-        :sla => "Specific leaf area [m² g⁻¹]",
-        :lnc => "Leaf nitrogen per leaf mass [mg g⁻¹]",
+        :sla => "Specific leaf\narea [m² g⁻¹]",
+        :lnc => "Leaf nitrogen per\nleaf mass [mg g⁻¹]",
         :maxheight => "Maximum height [m]",
-        :amc => "Arbuscular mycorrhizal colonisation [-]",
-        :rsa => "Root surface area per belowground biomass [m² g⁻¹]",
-        :abp => "Aboveground biomass per total biomass [-]"
+        :amc => "Arbuscular mycorrhizal\ncolonisation [-]",
+        :rsa => "Root surface area\nper belowground biomass [m² g⁻¹]",
+        :abp => "Aboveground biomass\nper total biomass [-]"
     )
 
     trait = plot_obj.obs.menu_traits.selection.val

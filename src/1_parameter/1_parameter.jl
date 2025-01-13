@@ -2,7 +2,7 @@
 Parameter of the GrasslandTraitSim.jl model
 """
 @kwdef mutable struct SimulationParameter{
-    T, Qkg_MJ, Qkg_ha, Qm2_g, Qg_m2, Qg_kg, Qha_MJ, QMJ_ha, QC, Qkg, Qm, Qcm3_g}
+    T, Qkg_MJ, Qkg_ha, Qha_kg, Qm2_g, Qg_m2, Qkg_g, Qg_kg, Qha_MJ, QMJ_ha, QC, Qkg, Qm, Qha, Qcm3_g}
 
     ####################################################################################
     ## 1 Mean/reference trait values
@@ -29,7 +29,10 @@ Parameter of the GrasslandTraitSim.jl model
     ####################################################################################
     ## 4 Nutrient stress
     ####################################################################################
+    # TODO: keep α_NUT_Nmax for now for backwards compatibility, remove it later
     α_NUT_Nmax::Qg_kg = F(35.0)u"g/kg"
+    ω_NUT_totalN::Qkg_g = F(0.1)u"kg/g"
+    ω_NUT_fertilization::Qha_kg = F(0.001)u"ha/kg"
     α_NUT_TSB::Qkg_ha = F(15000.0)u"kg / ha"
     α_NUT_maxadj::T = F(10.0)
     α_NUT_amc05::T = F(0.95)
@@ -76,6 +79,8 @@ Parameter of the GrasslandTraitSim.jl model
     η_GRZ::T = F(2.0)
     κ_GRZ::Qkg = F(22.0)u"kg"
     ϵ_GRZ_minH::Qm = F(0.05)u"m"
+    β_TRM_height::T = F(1.0)
+    α_TRM_LD::Qha = F(0.01)u"ha"
 
     ####################################################################################
     ## 7 Soil water dynamics
@@ -92,28 +97,6 @@ Parameter of the GrasslandTraitSim.jl model
     β_BLK_PWP::Qcm3_g = F(0.02671)u"cm^3/g"
 end
 
-
-function parameter_doc(; html = false)
-    param_description = (;
-        ϕ_TRSA = "Reference root surace area",
-        ϕ_TAMC = "Reference arbuscular mycorriza colonisation rate",
-        ϕ_sla = "Reference specific leaf area",
-        γ_RUEmax = "Maximum radiation use efficiency",
-        γ_RUE_k =  "Extinction coefficient",
-    )
-
-    p = optim_parameter()
-    p_keys = collect(keys(p))
-    p_values = collect(values(p))
-    p_descriptions = [haskey(param_description, k) ? param_description[k] : "TODO" for k in p_keys]
-    data = hcat(p_keys, p_values, p_descriptions)
-
-    if html
-        return pretty_table(HTML, data; alignment = [:r, :l, :l], header = ["Parameter", "Value", "Description"], backend = Val(:html))
-    end
-
-    return pretty_table(data; alignment = [:r, :l, :l], header = ["Parameter", "Value", "Description"])
-end
 
 function Base.show(io::IO, obj::SimulationParameter)
     p_names = collect(keys(obj))
@@ -155,4 +138,13 @@ function add_units(x; p = SimulationParameter())
         @reset x[k] = x[k] * unit(p[k])
     end
     return x
+end
+
+function load_optim_result()
+    return load(assetpath("data/optim.jld2"), "θ");
+end
+
+function optim_parameter()
+    θ = load_optim_result()
+    return SimulationParameter(; θ...)
 end

@@ -8,7 +8,7 @@ Author: [Felix Nößler](https://github.com/FelixNoessler/).
 ```
 Licence: [GPL-3.0](https://github.com/FelixNoessler/GrasslandTraitSim.jl/blob/master/LICENSE)
 
-Please contact me if you have any questions about using the model or if you would like to collaborate. You can write my an email [here](mailto:felix.noessler@fu-berlin.de).
+Please contact me if you have any questions about using the model or if you would like to collaborate. You can write my [an email](mailto:felix.noessler@fu-berlin.de) or open [an issue on Github](https://github.com/felixnoessler/grasslandtraitsim.jl/issues/new).
 
 ## Installation
 
@@ -22,7 +22,7 @@ Pkg.add("GrasslandTraitSim")
 
 For the tutorials you will also need several other Julia packages:
 ```julia
-Pkg.add(["CairoMakie", "GLMakie", "Unitful", "Statistics"])
+Pkg.add(["CairoMakie", "GLMakie", "Unitful", "Statistics", "DimensionalData"])
 ```
 
 
@@ -34,8 +34,7 @@ For more details, see the tutorials on [preparing inputs](@ref "How to prepare t
 import GrasslandTraitSim as sim
 
 trait_input = sim.input_traits();
-nspecies = length(trait_input.amc)
-input_obj = sim.validation_input(; plotID = "HEG01", nspecies);
+input_obj = sim.validation_input("HEG01");
 p = sim.SimulationParameter();
 sol = sim.solve_prob(; input_obj, p, trait_input);
 sol.output.biomass

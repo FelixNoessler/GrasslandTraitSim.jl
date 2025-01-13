@@ -109,8 +109,8 @@ TEMP_{txy} =
     \end{cases}
 ```
 
-Equation are from [Jouven2006](@cite) and theses are based on
-[Schapendonk1998](@cite).
+Equation are from [Jouven2006](@citet) and theses are based on
+[Schapendonk1998](@citet).
 
 :::tabs
 
@@ -187,7 +187,7 @@ The seasonal growth adjustment factor ``SEA_{txy}`` [-] is desribed by:
 \end{align}
 ```
 
-This empirical function was developed by [Jouven2006](@cite).
+This empirical function was developed by [Jouven2006](@citet).
 
 :::tabs
 

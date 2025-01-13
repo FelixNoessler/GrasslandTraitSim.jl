@@ -3,13 +3,15 @@ Calculate differences of all state variables for one time step (one day).
 """
 function one_day!(; t, container)
     @unpack input, output, traits = container
-    @unpack npatches, patch_xdim, patch_ydim, nspecies, included = container.simp
+    @unpack npatches, patch_xdim, patch_ydim, nspecies, included, mean_input_year = container.simp
     @unpack u_biomass, u_above_biomass, u_below_biomass, u_water, u_height,
             du_biomass, du_above_biomass, du_below_biomass, du_water, du_height = container.u
     @unpack WHC, PWP, nutrients = container.patch_variables
     @unpack com, growth_act, senescence, mown, grazed, defoliation,
         LIG, NUT, WAT, ROOT, allocation_above, above_proportion,
         height_gain, height_loss_mowing, height_loss_grazing = container.calc
+
+    year = mean_input_year[t]
 
     ## -------- loop over patches
     for x in Base.OneTo(patch_xdim)
@@ -56,29 +58,24 @@ function one_day!(; t, container)
 
             if !iszero(sum(patch_biomass)) && !iszero(sum(patch_above_biomass))
                 # ------------------------------------------ growth
-                growth!(; t, container,
+                growth!(; t, x, y, container,
                     above_biomass = patch_above_biomass,
                     total_biomass = patch_biomass,
                     actual_height = patch_height,
                     W = u_water[x, y],
-                    nutrients = nutrients[x, y],
-                    WHC = WHC[x, y],
-                    PWP = PWP[x, y])
+                    nutrients = nutrients[year = At(year)][x, y],
+                    WHC = WHC[year = At(year)][x, y],
+                    PWP = PWP[year = At(year)][x, y])
 
                 # ------------------------------------------ senescence
                 senescence!(; container,
-                    ST = input.temperature_sum[t],
+                    ST = input[:temperature_sum][t, x, y],
                     total_biomass = patch_biomass)
 
                 # ------------------------------------------ mowing
                 if included.mowing
-                    mowing_height = if input.CUT_mowing isa Vector
-                        input.CUT_mowing[t]
-                    else
-                        input.CUT_mowing[t, x, y]
-                    end
-
-                    if !isnan(mowing_height)
+                    mowing_height = input[:CUT_mowing][t, x, y]
+                    if !ismissing(mowing_height)
                         mowing!(; container, mowing_height,
                                 above_biomass = patch_above_biomass,
                                 actual_height = patch_height)
@@ -87,13 +84,8 @@ function one_day!(; t, container)
 
                 # ------------------------------------------ grazing
                 if included.grazing
-                    LD = if input.LD_grazing isa Vector
-                        input.LD_grazing[t]
-                    else
-                        input.LD_grazing[t, x, y]
-                    end
-
-                    if !isnan(LD)
+                    LD = input[:LD_grazing][t, x, y]
+                    if !ismissing(LD)
                         grazing!(; container, LD, above_biomass = patch_above_biomass,
                                    actual_height = patch_height)
                     end
@@ -109,19 +101,21 @@ function one_day!(; t, container)
             height_dynamic!(; container, actual_height = patch_height,
                               above_biomass = patch_above_biomass,
                               allocation_above)
+
             @. du_height[x, y, :] = height_gain - height_loss_mowing - height_loss_grazing
             for s in 1:nspecies
                 if patch_height[s] + du_height[x, y, s] > traits.maxheight[s]
                     du_height[x, y, s] = traits.maxheight[s] - patch_height[s]
                 end
             end
+
             # --------------------- water dynamics
             du_water[x, y] = change_water_reserve(; container,
                 water = u_water[x, y],
-                precipitation = input.precipitation[t],
-                PET = input.PET_sum[t],
-                WHC = WHC[x, y],
-                PWP = PWP[x, y])
+                precipitation = input[:precipitation][t, x, y],
+                PET = input[:PET_sum][t, x, y],
+                WHC = WHC[year = At(year)][x, y],
+                PWP = PWP[year = At(year)][x, y])
 
             ######################### write outputs
             output.community_pot_growth[t, x, y] = com.growth_pot_total

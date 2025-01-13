@@ -1,11 +1,16 @@
 import * as d3 from 'd3';
 
 export function potGrowthPlot() {
-    const svg = d3.select("#pot_growth_graph"),
-            margin = {top: 15, right: 30, bottom: 45, left: 70},
-            width = +svg.attr("width") - margin.left - margin.right,
-            height = +svg.attr("height") - margin.top - margin.bottom,
-            g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+    const margin = {top: 15, right: 30, bottom: 45, left: 70},
+        width = 600 - margin.left - margin.right,
+        height = 400 - margin.top - margin.bottom;
+    
+    const svg = d3.select("#pot_growth_graph")
+        .attr("viewBox", `0 0 ${width + margin.left + margin.top} ${height + margin.top + margin.left}`)
+        .attr("preserveAspectRatio", "xMidYMid meet");
+
+    const g = svg.append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
 
     const max_LAItot = 10;
     const x = d3.scaleLinear().range([0, width]).domain([0, max_LAItot]); 
@@ -27,7 +32,7 @@ export function potGrowthPlot() {
         .attr("x", width / 2)
         .attr("y", height + 40)
         .attr("text-anchor", "middle")
-        .text("Leaf area index of community (LAItot) [-]");
+        .text("Leaf area index of community (LAI_tot) [-]");
 
     g.append("text")
         .attr("class", "y-label")
@@ -35,7 +40,7 @@ export function potGrowthPlot() {
         .attr("y", -40)
         .attr("transform", "rotate(-90)")
         .attr("text-anchor", "middle")
-        .text("Fraction of radiation intercepted (fPAR) [-]");
+        .text("Fraction of radiation intercepted (FPAR) [-]");
 
     function calcShading(){
         return Math.exp(Math.log(α_comH)*0.2 / H_cwm)

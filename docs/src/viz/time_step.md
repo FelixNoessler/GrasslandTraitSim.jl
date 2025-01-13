@@ -16,42 +16,42 @@ function plot_input_time_steps(input_obj1, input_obj2)
 
      Axis(fig[1, 1]; ylabel = "Temperature [°C]",
           xticklabelsvisible = false)
-     lines!(idate_1, ustrip.(input_obj1.input.temperature), color = :red, alpha = 0.3)
-     lines!(idate_long, ustrip.(input_obj2.input.temperature))
+     lines!(idate_1, vec(ustrip.(input_obj1.input.temperature)), color = :red, alpha = 0.3)
+     lines!(idate_long, vec(ustrip.(input_obj2.input.temperature)))
 
-     Axis(fig[2, 1]; ylabel = "Temperature sum [K]",
+     Axis(fig[2, 1]; ylabel = "Temperature sum [°C]",
           xticklabelsvisible = false)
-     lines!(idate_1, ustrip.(input_obj1.input.temperature_sum), color = :red, alpha = 0.3)
-     lines!(idate_long, ustrip.(input_obj2.input.temperature_sum))
+     lines!(idate_1, vec(ustrip.(input_obj1.input.temperature_sum)), color = :red, alpha = 0.3)
+     lines!(idate_long, vec(ustrip.(input_obj2.input.temperature_sum)))
 
      Axis(fig[3, 1]; ylabel = "Mean photosynthetically\nactive radiation [MJ ha⁻¹]",
           xticklabelsvisible = false)
-     lines!(idate_1, ustrip.(input_obj1.input.PAR), color = :red, alpha = 0.3)
-     lines!(idate_long, ustrip.(input_obj2.input.PAR))
+     lines!(idate_1, vec(ustrip.(input_obj1.input.PAR)), color = :red, alpha = 0.3)
+     lines!(idate_long, vec(ustrip.(input_obj2.input.PAR)))
      
      Axis(fig[4, 1]; ylabel = "Potential\nevapotranspiration\n[mm d⁻¹]",
           xticklabelsvisible = false)
-     lines!(idate_1, ustrip.(input_obj1.input.PET), color = :red, alpha = 0.3)
-     lines!(idate_long, ustrip.(input_obj2.input.PET))
+     lines!(idate_1, vec(ustrip.(input_obj1.input.PET)), color = :red, alpha = 0.3)
+     lines!(idate_long, vec(ustrip.(input_obj2.input.PET)))
 
 
      Axis(fig[5, 1]; ylabel = "Precipitation [mm d⁻¹]", xticklabelsvisible = false)
-     lines!(idate_1, ustrip.(input_obj1.input.precipitation), color = :red, alpha = 0.3, 
+     lines!(idate_1, vec(ustrip.(input_obj1.input.precipitation)), color = :red, alpha = 0.3, 
                label = "$(input_obj1.simp.time_step_days.value) day")
-     lines!(idate_long, ustrip.(input_obj2.input.precipitation) ./ 
+     lines!(idate_long, vec(ustrip.(input_obj2.input.precipitation)) ./ 
                input_obj2.simp.time_step_days.value, label = "$(input_obj2.simp.time_step_days.value) days")
      axislegend("Time step"; position = :lt, framevisible = false)
 
      Axis(fig[6, 1]; limits = (nothing, nothing, 0, 1), ylabel = "Mowing events",
           xticklabelsvisible = false)
-     vlines!(idate_1[.! isnan.(input_obj1.input.CUT_mowing)], color = :red, alpha = 0.5)
-     vlines!(idate_long[ .! isnan.(input_obj2.input.CUT_mowing)], linestyle = :dash)
+     vlines!(idate_1[.! ismissing.(input_obj1.input.CUT_mowing)], color = :red, alpha = 0.5)
+     vlines!(idate_long[ .! ismissing.(input_obj2.input.CUT_mowing)], linestyle = :dash)
 
-     new_f = .!isnan.(input_obj2.input.LD_grazing)
+     new_f = .!ismissing.(input_obj2.input.LD_grazing)
      new_date = idate_long[new_f]
      new_low = zeros(length(new_date))
      new_up = ustrip.(input_obj2.input.LD_grazing[new_f])
-     old_f = .!isnan.(input_obj1.input.LD_grazing)
+     old_f = .!ismissing.(input_obj1.input.LD_grazing)
      old_date = idate_1[old_f]
      old_low = zeros(length(old_date))
      old_up = ustrip.(input_obj1.input.LD_grazing[old_f])
@@ -63,39 +63,23 @@ function plot_input_time_steps(input_obj1, input_obj2)
 end
 
 trait_input = sim.input_traits()
-nspecies = length(trait_input.amc)
-input_obj_1 = sim.validation_input(; plotID = "HEG01", nspecies, time_step_days = 1);
-input_obj_7 = sim.validation_input(; plotID = "HEG01", nspecies, time_step_days = 7);
-plot_input_time_steps(input_obj_1, input_obj_7)
-```
+input_obj_1 = sim.validation_input("HEG01");
 
-
-```@example time_step
-## load data
-path = joinpath(dirname(pathof(sim)), "../assets/data/input/inputs_14_days.jld2")
-input_objs_14 = sim.load_input(path; plotIDs = ["HEG01"]);
-
-## faster than preprocessing:
-# input_obj_14 = sim.validation_input(; plotID = "HEG01", nspecies = 43, time_step_days = 14);
-
-plot_input_time_steps(input_obj_1, input_objs_14.HEG01)
+input14_HEG01 = sim.scale_input(sim.input_data.HEG01; time_step_days = 14)
+input_obj_14 = sim.validation_input(input14_HEG01);
+plot_input_time_steps(input_obj_1, input_obj_14)
 ```
 
 ## Test processes for different time steps
 
 ```@example time_step
-function calc_total_biomass(included; plotID = "HEG01")
+function calc_total_biomass(included, input14; plotID = "HEG01")
      trait_input = sim.input_traits();
      nspecies = length(trait_input.amc)
      p = sim.SimulationParameter()
-     input_obj_1 = sim.validation_input(; plotID, nspecies, time_step_days = 1, included);
+     input_obj_1 = sim.validation_input(plotID; nspecies, included);
+     input_obj_14 = sim.validation_input(input14; nspecies, included);
      
-     path = joinpath(dirname(pathof(sim)), "../assets/data/input/inputs_14_days.jld2")
-     input_obj_14 = sim.load_input(path; plotIDs = [plotID], included)[Symbol(plotID)];
-     
-     ## faster than preprocessing:
-     # input_obj_14 = sim.validation_input(; plotID, nspecies = 70, time_step_days = 14, included);
-
      sol_1 = sim.solve_prob(; input_obj=input_obj_1, p, trait_input);
      sol_14 = sim.solve_prob(; input_obj=input_obj_14, p, trait_input);
 
@@ -126,7 +110,7 @@ included = (;
             temperature_growth_reduction = false,
             seasonal_growth_adjustment = false,
             radiation_growth_reduction = false)
-b1, b14, t1, t14 = calc_total_biomass(included)
+b1, b14, t1, t14 = calc_total_biomass(included, input14_HEG01)
 fig = Figure()
 Axis(fig[1, 1], ylabel = "Aboveground dry biomass [kg ha⁻¹]",
                 xlabel = "Time [year]",
@@ -155,7 +139,7 @@ included = (;
             temperature_growth_reduction = false,
             seasonal_growth_adjustment = false,
             radiation_growth_reduction = false)
-b1, b14, t1, t14 = calc_total_biomass(included)
+b1, b14, t1, t14 = calc_total_biomass(included, input14_HEG01)
 fig = Figure()
 Axis(fig[1, 1], ylabel = "Aboveground dry biomass [kg ha⁻¹]",
                 xlabel = "Time [year]",
@@ -184,7 +168,7 @@ included = (;
             temperature_growth_reduction = false,
             seasonal_growth_adjustment = false,
             radiation_growth_reduction = false)
-b1, b14, t1, t14 = calc_total_biomass(included)
+b1, b14, t1, t14 = calc_total_biomass(included, input14_HEG01)
 fig = Figure()
 Axis(fig[1, 1], ylabel = "Aboveground dry biomass [kg ha⁻¹]",
                 xlabel = "Time [year]",
@@ -213,7 +197,7 @@ included = (;
             temperature_growth_reduction = false,
             seasonal_growth_adjustment = false,
             radiation_growth_reduction = false)
-b1, b14, t1, t14 = calc_total_biomass(included)
+b1, b14, t1, t14 = calc_total_biomass(included, input14_HEG01)
 fig = Figure()
 Axis(fig[1, 1], ylabel = "Aboveground dry biomass [kg ha⁻¹]",
                 xlabel = "Time [year]",
@@ -242,7 +226,7 @@ included = (;
             temperature_growth_reduction = false,
             seasonal_growth_adjustment = false,
             radiation_growth_reduction = true)
-b1, b14, t1, t14 = calc_total_biomass(included)
+b1, b14, t1, t14 = calc_total_biomass(included, input14_HEG01)
 fig = Figure()
 Axis(fig[1, 1], ylabel = "Aboveground dry biomass [kg ha⁻¹]",
                 xlabel = "Time [year]",
@@ -257,7 +241,7 @@ fig
 ########### Everything
 plotID = "HEG01"
 included = (;)
-b1, b14, t1, t14 = calc_total_biomass(included; plotID)
+b1, b14, t1, t14 = calc_total_biomass(included, input14_HEG01; plotID)
 fig = Figure()
 Axis(fig[1, 1], ylabel = "Aboveground dry biomass [kg ha⁻¹]",
                 xlabel = "Time [year]",
@@ -272,7 +256,8 @@ fig
 ########### Everything
 plotID = "HEG07"
 included = (;)
-b1, b14, t1, t14 = calc_total_biomass(included; plotID)
+input14_HEG07 = sim.scale_input(sim.input_data.HEG07; time_step_days = 14)
+b1, b14, t1, t14 = calc_total_biomass(included, input14_HEG07; plotID)
 fig = Figure()
 Axis(fig[1, 1], ylabel = "Aboveground dry biomass [kg ha⁻¹]",
                 xlabel = "Time [year]",
@@ -288,7 +273,8 @@ fig
 ########### Everything
 plotID = "HEG08"
 included = (;)
-b1, b14, t1, t14 = calc_total_biomass(included; plotID)
+input14_HEG08 = sim.scale_input(sim.input_data.HEG08; time_step_days = 14)
+b1, b14, t1, t14 = calc_total_biomass(included, input14_HEG08; plotID)
 fig = Figure()
 Axis(fig[1, 1], ylabel = "Aboveground dry biomass [kg ha⁻¹]",
                 xlabel = "Time [year]",

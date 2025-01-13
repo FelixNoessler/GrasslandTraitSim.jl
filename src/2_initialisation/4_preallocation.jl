@@ -1,7 +1,7 @@
 function preallocate_vectors(; input_obj, T = Float64)
     @unpack output_date, mean_input_date, included, nspecies,
-            patch_xdim, patch_ydim, ntimesteps = input_obj.simp
-    @unpack initbiomass = input_obj.site
+            patch_xdim, patch_ydim, ntimesteps, years, nyears = input_obj.simp
+    @unpack initbiomass = input_obj.simp
 
     ############# output variables
     #### State variables
@@ -141,14 +141,14 @@ function preallocate_vectors(; input_obj, T = Float64)
 
     ############# patch variables
     WHC = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim)u"mm",
-        (x = 1:patch_xdim, y = 1:patch_ydim), name = :WHC)
+        Array{T}(undef, nyears, patch_xdim, patch_ydim)u"mm",
+        (year = years, x = 1:patch_xdim, y = 1:patch_ydim), name = :WHC)
     PWP = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim)u"mm",
-        (x = 1:patch_xdim, y = 1:patch_ydim), name = :PWP)
+        Array{T}(undef, nyears, patch_xdim, patch_ydim)u"mm",
+        (year = years, x = 1:patch_xdim, y = 1:patch_ydim), name = :PWP)
     nutrients = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim),
-        (x = 1:patch_xdim, y = 1:patch_ydim), name = :nutrients)
+        Array{T}(undef, nyears, patch_xdim, patch_ydim),
+        (year = years, x = 1:patch_xdim, y = 1:patch_ydim), name = :nutrients)
     patch_variables = (; WHC, PWP, nutrients)
 
     ############# Traits
@@ -240,6 +240,7 @@ function preallocate_vectors(; input_obj, T = Float64)
         grazed_share = Array{T}(undef, nspecies),
         mown = Array{T}(undef, nspecies)u"kg / ha",
         grazed = Array{T}(undef, nspecies)u"kg / ha",
+        trampled = Array{T}(undef, nspecies)u"kg / ha",
 
         ## senescence
         senescence_rate = Array{T}(undef, nspecies),
@@ -271,50 +272,6 @@ end
     fodder_supply::Qkg_ha = F(0.0) * u"kg/ha"
 end
 
-function preallocate_specific_vectors(; input_obj, T = Float64)
-    biomass_cutting_t = Int64[]
-    cutting_height = Float64[]
-    biomass_cutting_t = Int64[]
-    biomass_cutting_numeric_date = Float64[]
-    biomass_cutting_index = Int64[]
-
-    if haskey(input_obj, :output_validation)
-        @unpack biomass_cutting_t, biomass_cutting_numeric_date,
-                cutting_height, biomass_cutting_index,
-                biomass_cutting_t = input_obj.output_validation
-    end
-
-    cut_biomass = fill(T(NaN), length(biomass_cutting_t))u"kg/ha"
-
-    return (; valid = (; cut_biomass, biomass_cutting_t, biomass_cutting_numeric_date,
-            cut_index = biomass_cutting_index,
-            cutting_height = cutting_height))
-end
-
-# function preallocate(; input_obj, Tdiff = nothing)
-#     normal = preallocate_vectors(; input_obj, T = Float64)
-
-#     if isnothing(Tdiff)
-#         return (; normal)
-#     end
-
-#     diff = preallocate_vectors(; input_obj, T = Tdiff)
-
-#     return (; normal, diff)
-# end
-
-# function preallocate_specific(; input_obj, Tdiff = nothing)
-#     normal = preallocate_specific_vectors(; input_obj, T = Float64)
-
-#     if isnothing(Tdiff)
-#         return (; normal)
-#     end
-#     diff = preallocate_specific_vectors(; input_obj, T = Tdiff)
-
-#     return (; normal, diff)
-# end
-
-
 struct PreallocCache
     normal::Vector{Any}
     diff::Vector{Any}
@@ -336,31 +293,5 @@ function get_buffer(buffer::PreallocCache, T, id; input_obj)
             buffer.diff[id] = preallocate_vectors(; input_obj, T)
         end
         return buffer.diff[id]
-    end
-end
-
-
-struct PreallocPlotCache
-    normal::Matrix{Any}
-    diff::Matrix{Any}
-end
-
-function PreallocPlotCache(nplots)
-    return PreallocPlotCache(fill(nothing, Threads.nthreads(), nplots),
-                             fill(nothing, Threads.nthreads(), nplots))
-end
-
-function get_buffer(buffer::PreallocPlotCache, T, threadid, plotnum; input_obj)
-    if T <: Float64
-        if isnothing(buffer.normal[threadid, plotnum])
-            buffer.normal[threadid, plotnum] = preallocate_specific_vectors(; input_obj, T)
-        end
-        return buffer.normal[threadid, plotnum]
-
-    elseif T <: ForwardDiff.Dual
-        if isnothing(buffer.diff[threadid, plotnum])
-            buffer.diff[threadid, plotnum] = preallocate_specific_vectors(; input_obj, T)
-        end
-        return buffer.diff[threadid, plotnum]
     end
 end

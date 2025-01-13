@@ -1,0 +1,6 @@
+[hainich_data]
+git-tree-sha1 = "f1dced6c5a6cb7d228238ceeded1f4b5f0704ece"
+
+    [[hainich_data.download]]
+    sha256 = "e3f8fcdcb6d098b9fe5335323934494bb591af3a17ad119ec090d4781ca26d7b"
+    url = "https://github.com/FelixNoessler/grassland-data/raw/refs/heads/master/hainich_data.tar.gz"

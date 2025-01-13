@@ -1,13 +1,13 @@
 function create_axes_paneA(layout)
     axes = Dict()
     axes[:biomass] = Axis(layout[1, 1]; alignmode = Inside(),
-                          limits = (nothing, nothing, -100.0, nothing),
+                          limits = (nothing, nothing, -100.0, 10000),
                           ylabel = "Aboveground biomass [kg ha⁻¹]",
                           xticklabelsvisible = false)
 
     axes[:simulated_height] = Axis(layout[1, 2]; alignmode = Inside(),
                                    ylabel = "Height [m]",
-                                   limits = (nothing, nothing, -0.05, 0.71),
+                                   limits = (nothing, nothing, -0.05, 1.4),
                                    yticks = 0.0:0.1:1.5, xticklabelsvisible = false)
     axes[:simulated_abp] = Axis(layout[2, 1]; alignmode = Inside(),
                                 ylabel = "Aboveground biomass per total biomass [-]",
@@ -26,8 +26,6 @@ function update_plots_paneA(; kwargs...)
     simulated_height_plot(; kwargs...)
     simulated_aboveground_proportion(; kwargs...)
     soilwater_plot(; kwargs...)
-
-
 end
 
 function biomass_plot(; plot_obj, sol, valid_data, kwargs...)
@@ -52,31 +50,24 @@ function biomass_plot(; plot_obj, sol, valid_data, kwargs...)
     show_grazmow = plot_obj.obs.toggle_grazmow.active.val
     if show_grazmow
         # -------------- grazing
-        yupper = (.! isnan.(sol.input.LD_grazing)) .* 5500.0
+        yupper = (.! ismissing.(sol.input.LD_grazing)) .* 10000
         ylower = fill(0.0, length(yupper))
-        band!(ax, sol.simp.mean_input_date_num, ylower, yupper;
+        band!(ax, sol.simp.mean_input_date_num, ylower, vec(yupper);
             color = (:steelblue4, 0.6))
 
         # -------------- mowing
-        mowing_f = .! isnan.(sol.input.CUT_mowing)
+        mowing_f = .! ismissing.(sol.input.CUT_mowing)
         xs = sol.simp.mean_input_date_num[mowing_f]
 
         for x in xs
-            lines!(ax, [x, x], [0.0, 5500.0]; color = :magenta3)
+            lines!(ax, [x, x], [0.0, 10000.0]; color = :magenta3)
         end
     end
 
     if !isnothing(valid_data)
-        cutbiomass_μ = vec(ustrip.(sol.valid.cut_biomass))
-        t = sol.simp.output_date_num[sol.valid.biomass_cutting_t]
+        biomass = vec(ustrip.(valid_data.Cut_biomass.biomass))
+        num_t = gts.to_numeric.(LookupArrays.index(valid_data.Cut_biomass, :t))
 
-        scatter!(ax, t[1:thin:end], cutbiomass_μ[1:thin:end]; color = :orange)
-
-        biomass = vec(ustrip.(valid_data.biomass))
-        num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.biomass, :time)]
-
-        # unique_type = unique(valid_data.biomass_type)
-        # color_types = [findfirst(t .== unique_type) for t in valid_data.biomass_type]
         scatter!(ax, num_t, biomass, color = :black, markersize = 6)
     end
 
@@ -149,11 +140,11 @@ function simulated_height_plot(; plot_obj, sol, valid_data, kwargs...)
     end
     lines!(ax, sol.simp.output_date_num, ustrip(mean_height), color = :orange)
 
-    if !isnothing(valid_data)
-        num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.height, :time)]
-        y = vec(valid_data.height)
-        scatter!(ax, num_t, y, color = :black, markersize = 8)
-    end
+    # if !isnothing(valid_data)
+    #     num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.height, :time)]
+    #     y = vec(valid_data.height)
+    #     scatter!(ax, num_t, y, color = :black, markersize = 8)
+    # end
 
     return nothing
 end

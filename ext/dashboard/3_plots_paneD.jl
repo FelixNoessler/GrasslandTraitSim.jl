@@ -13,7 +13,9 @@ end
 function functional_dispersion_plot(; plot_obj, sol, valid_data, kwargs...)
     ax = clear_plotobj_axes(plot_obj, :functional_dispersion)
 
-    traits = (; height = sol.traits.height, sla = sol.traits.sla, lnc = sol.traits.lnc)
+    traits = (; rsa = sol.traits.rsa, amc = sol.traits.amc,
+               abp = sol.traits.abp, sla = sol.traits.sla,
+               maxheight = sol.traits.maxheight,  lnc = sol.traits.lnc)
     biomass = dropdims(
         mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims =(:x, :y))
 
@@ -22,8 +24,8 @@ function functional_dispersion_plot(; plot_obj, sol, valid_data, kwargs...)
     lines!(ax, sol.simp.output_date_num, fdis; color = :red)
 
     if !isnothing(valid_data)
-        num_t = valid_data.fun_diversity.num_t
-        y = valid_data.fun_diversity.fdis
+        num_t = gts.to_numeric.(LookupArrays.index(valid_data.CWM_traits, :t))
+        y = vec(valid_data.CWM_traits.fdis)
         scatter!(ax, num_t, y, color = :black, markersize = 8)
     end
 

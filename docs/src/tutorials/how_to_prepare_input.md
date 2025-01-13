@@ -26,21 +26,30 @@ using Unitful
 time_step_days = Dates.Day(1)
 output_date = Dates.Date(2010):Dates.lastdayofyear(Dates.Date(2012))
 mean_input_date = output_date[1:end-1] .+ (time_step_days ÷ 2)
+mean_input_year = Dates.year.(mean_input_date)
+     
 year = Dates.year.(output_date[1:end-1])
 ntimesteps = length(output_date) - 1
 ts = Base.OneTo(ntimesteps) 
-
+years = unique(Dates.year.(mean_input_date))
+nyears = length(years)
+    
 simp = (
     output_date,
     ts,
+    years,
+    nyears,
     ntimesteps, 
     time_step_days,
     mean_input_date,
+    mean_input_year,
     nspecies = 5,  
     patch_xdim = 1, 
     patch_ydim = 1, 
     npatches = 1,
     trait_seed = missing,  
+    initbiomass = 1500u"kg / ha",
+    initsoilwater = 80u"mm",
     
     ## which processes to include, see extra tutorial
     ## empty tuple means, that everything is included
@@ -96,13 +105,13 @@ For an explanation of the variables, see [here](@ref "Daily management variables
 
 ```@example input_creation
 # --------------- mowing height [m], NaN if no mowing
-CUT_mowing = fill(NaN * u"m", ntimesteps)
+CUT_mowing = Vector{Union{Missing, typeof(1.0u"m")}}(missing, ntimesteps)
 mowing_dates = [Dates.Date(2010, 5, 1), Dates.Date(2010, 8, 1), 
                 Dates.Date(2011, 5, 1), Dates.Date(2011, 8, 1)]
 [CUT_mowing[d .== output_date[1:end-1]] .= 0.08u"m" for d in mowing_dates]
 
 # --------------- grazing intensity in livestock density [ha⁻¹], NaN if no grazing
-LD_grazing = fill(NaN / u"ha", ntimesteps)
+LD_grazing = Vector{Union{Missing, typeof(1.0u"ha^-1")}}(missing, ntimesteps)   
 grazing_starts = [Dates.Date(2010, 6, 1), Dates.Date(2011, 6, 1)]
 grazing_ends = [Dates.Date(2010, 8, 1), Dates.Date(2011, 8, 1)]
 livestock_density = [1, 3]u"ha^-1"
@@ -124,14 +133,13 @@ For an explanation of the variables, see [here](@ref "Raw time invariant site va
 ```@example input_creation
 site_tuple = (;
     totalN = 5.0u"g / kg",
+    fertilization = 0.0u"kg / ha",
     clay = 0.5,       
     silt = 0.45,       
     sand = 0.05,        
     organic = 0.06,     
     bulk = 0.7u"g / cm^3",
-    rootdepth = 160.0u"mm",
-    initbiomass = 1500u"kg / ha",
-    initsoilwater = 80u"mm"
+    rootdepth = 160.0u"mm"
 )    
 
 nothing # hide       
@@ -144,18 +152,14 @@ nothing # hide
 Then we can add all the tuples to one bigger named tuple.
 
 ```@example input_creation
-input_obj = (; input = (;
-                   climatic_inputs..., 
-                   management_tuple...,),
-               site = site_tuple, 
+input_obj = (; input = (; climatic_inputs..., management_tuple..., site_tuple...),
                simp)
 ```
 
 **For the plots from the Biodiversity Exploratories, we used the following convenience function
 to create the same object:**
 ```@example input_creation
-input_obj_HEG01 = sim.validation_input(;
-    plotID = "HEG01", nspecies = 5);
+input_obj_HEG01 = sim.validation_input("HEG01");
 
 nothing # hide
 ```
@@ -189,13 +193,12 @@ p = sim.SimulationParameter()
 # if you will run many simulations, it is recommended to preallocated the vectors
 # but the simulation will also run without preallocation 
 prealloc = sim.preallocate_vectors(; input_obj);
-prealloc_specific = sim.preallocate_specific_vectors(; input_obj);
 
 # traits will be generated, no preallocation
 sol = sim.solve_prob(; input_obj, p);
 
 # with static traits, with preallocation
-sol = sim.solve_prob(; input_obj, prealloc, prealloc_specific, p, trait_input);
+sol = sim.solve_prob(; input_obj, prealloc, p, trait_input);
 
 nothing # hide
 ```
