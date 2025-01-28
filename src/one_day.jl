@@ -63,9 +63,9 @@ function one_day!(; t, container)
                     total_biomass = patch_biomass,
                     actual_height = patch_height,
                     W = u_water[x, y],
-                    nutrients = nutrients[year = At(year)][x, y],
-                    WHC = WHC[year = At(year)][x, y],
-                    PWP = PWP[year = At(year)][x, y])
+                    nutrients = nutrients[year = At(year), x = At(x), y = At(y)],
+                    WHC = WHC[year = At(year), x = At(x), y = At(y)],
+                    PWP = PWP[year = At(year), x = At(x), y = At(y)])
 
                 # ------------------------------------------ senescence
                 senescence!(; container,
@@ -114,8 +114,8 @@ function one_day!(; t, container)
                 water = u_water[x, y],
                 precipitation = input[:precipitation][t, x, y],
                 PET = input[:PET_sum][t, x, y],
-                WHC = WHC[year = At(year)][x, y],
-                PWP = PWP[year = At(year)][x, y])
+                WHC = WHC[year = At(year), x = At(x), y = At(y)],
+                PWP = PWP[year = At(year), x = At(x), y = At(y)])
 
             ######################### write outputs
             output.community_pot_growth[t, x, y] = com.growth_pot_total

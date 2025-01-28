@@ -45,18 +45,29 @@ function input_WHC_PWP!(; container)
     @unpack sand, silt, clay, organic, bulk, rootdepth = container.input
     @unpack β_SND_WHC, β_SLT_WHC, β_CLY_WHC, β_OM_WHC, β_BLK_WHC,
             β_SND_PWP, β_SLT_PWP, β_CLY_PWP, β_OM_PWP, β_BLK_PWP = container.p
+    @unpack patch_xdim, patch_ydim, years = container.simp
 
-    @. WHC = (β_SND_WHC * sand +
-              β_SLT_WHC * silt +
-              β_CLY_WHC * clay +
-              β_OM_WHC * organic +
-              β_BLK_WHC * bulk) * rootdepth
+    for year in years
+        for x in 1:patch_xdim
+            for y in 1:patch_ydim
+                WHC[year = At(year), x = At(x), y = At(y)] = (
+                    β_SND_WHC * sand[year = At(year), x = At(x), y = At(y)] +
+                    β_SLT_WHC * silt[year = At(year), x = At(x), y = At(y)] +
+                    β_CLY_WHC * clay[year = At(year), x = At(x), y = At(y)] +
+                    β_OM_WHC * organic[year = At(year), x = At(x), y = At(y)] +
+                    β_BLK_WHC * bulk[year = At(year), x = At(x), y = At(y)]) *
+                        rootdepth[year = At(year), x = At(x), y = At(y)]
 
-    @. PWP = (β_SND_PWP * sand +
-              β_SLT_PWP * silt +
-              β_CLY_PWP * clay +
-              β_OM_PWP * organic +
-              β_BLK_PWP * bulk) * rootdepth
+                PWP[year = At(year), x = At(x), y = At(y)] = (
+                    β_SND_PWP * sand[year = At(year), x = At(x), y = At(y)] +
+                    β_SLT_PWP * silt[year = At(year), x = At(x), y = At(y)] +
+                    β_CLY_PWP * clay[year = At(year), x = At(x), y = At(y)] +
+                    β_OM_PWP * organic[year = At(year), x = At(x), y = At(y)] +
+                    β_BLK_PWP * bulk[year = At(year), x = At(x), y = At(y)]) *
+                        rootdepth[year = At(year), x = At(x), y = At(y)]
+            end
+        end
+    end
 
     return nothing
 end
