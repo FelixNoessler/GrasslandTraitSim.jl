@@ -9,6 +9,13 @@ There is also a tutorial on the model output:
 """
 function solve_prob(; input_obj, p, prealloc = nothing, trait_input = nothing,
                     θ_type = Float64, callback = (; t = []))
+
+    if ! (p isa SimulationParameter)
+        simulation_keys = keys(SimulationParameter())
+        p_subset = NamedTuple{filter(x -> x ∈ simulation_keys, keys(p))}(p)
+        p = SimulationParameter(; p_subset...)
+    end
+
     if isnothing(prealloc)
         prealloc = preallocate_vectors(; input_obj, T = θ_type)
     end
