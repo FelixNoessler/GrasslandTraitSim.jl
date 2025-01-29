@@ -95,6 +95,7 @@ Parameter of the GrasslandTraitSim.jl model
     β_CLY_PWP::T = F(0.5766)
     β_OM_PWP::T = F(0.2228)
     β_BLK_PWP::Qcm3_g = F(0.02671)u"cm^3/g"
+    ε_WHC::T = F(1.0)
 end
 
 

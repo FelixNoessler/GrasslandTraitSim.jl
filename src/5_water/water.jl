@@ -44,7 +44,7 @@ function input_WHC_PWP!(; container)
     @unpack WHC, PWP = container.patch_variables
     @unpack sand, silt, clay, organic, bulk, rootdepth = container.input
     @unpack β_SND_WHC, β_SLT_WHC, β_CLY_WHC, β_OM_WHC, β_BLK_WHC,
-            β_SND_PWP, β_SLT_PWP, β_CLY_PWP, β_OM_PWP, β_BLK_PWP = container.p
+            β_SND_PWP, β_SLT_PWP, β_CLY_PWP, β_OM_PWP, β_BLK_PWP, ε_WHC = container.p
     @unpack patch_xdim, patch_ydim, years = container.simp
 
     for year in years
@@ -56,7 +56,7 @@ function input_WHC_PWP!(; container)
                     β_CLY_WHC * clay[year = At(year), x = At(x), y = At(y)] +
                     β_OM_WHC * organic[year = At(year), x = At(x), y = At(y)] +
                     β_BLK_WHC * bulk[year = At(year), x = At(x), y = At(y)]) *
-                        rootdepth[year = At(year), x = At(x), y = At(y)]
+                        rootdepth[year = At(year), x = At(x), y = At(y)] * ε_WHC
 
                 PWP[year = At(year), x = At(x), y = At(y)] = (
                     β_SND_PWP * sand[year = At(year), x = At(x), y = At(y)] +
