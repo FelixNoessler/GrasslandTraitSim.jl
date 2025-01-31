@@ -1,7 +1,6 @@
 function preallocate_vectors(; input_obj, T = Float64)
     @unpack output_date, mean_input_date, included, nspecies,
             patch_xdim, patch_ydim, ntimesteps, years, nyears = input_obj.simp
-    @unpack initbiomass = input_obj.simp
 
     ############# output variables
     #### State variables
@@ -122,7 +121,7 @@ function preallocate_vectors(; input_obj, T = Float64)
     u_above_biomass = DimArray(
         Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
         (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
-    name = :u_above_biomass)
+        name = :u_above_biomass)
     u_below_biomass = DimArray(
         Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
         (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
@@ -166,16 +165,12 @@ function preallocate_vectors(; input_obj, T = Float64)
         R_05 = Array{T}(undef, nspecies),
         x0 = Array{T}(undef, nspecies))
 
-    global F = T
-
     max_height = 2.0u"m"
     Δheightlayer = 0.05u"m"
     nheight_layers = ceil(Int64, max_height / Δheightlayer)
 
     calc = (;
         com = CommunityLevel(),
-
-        negbiomass = fill(false, ntimesteps + 1, patch_xdim, patch_ydim, nspecies),
 
         ############ preallaocated vectors that are used in the calculations
         LIG = Array{T}(undef, nspecies),
@@ -256,42 +251,31 @@ function preallocate_vectors(; input_obj, T = Float64)
         fPAR_layer = Array{T}(undef, nspecies, nheight_layers)
     )
 
-    global F = Float64
-
     return (; u, patch_variables, calc, traits, transfer_function, output)
 end
 
 @kwdef mutable struct CommunityLevel{T, Qkg_ha}
-    LAItot::T = F(0.0)
-    growth_pot_total::Qkg_ha = F(0.0) * u"kg/ha"
-    RUE_community_height::T = F(1.0)
-    RAD::T = F(1.0)
-    SEA::T = F(1.0)
-    TEMP::T = F(1.0)
-    SEN_season::T = F(1.0)
-    fodder_supply::Qkg_ha = F(0.0) * u"kg/ha"
+    LAItot::T = 0.0
+    growth_pot_total::Qkg_ha = 0.0u"kg/ha"
+    RUE_community_height::T = 1.0
+    RAD::T = 1.0
+    SEA::T = 1.0
+    TEMP::T = 1.0
+    SEN_season::T = 1.0
+    fodder_supply::Qkg_ha = 0.0u"kg/ha"
 end
 
 struct PreallocCache
-    normal::Vector{Any}
-    diff::Vector{Any}
+    cache::Vector{Any}
 end
 
-function PreallocCache()
-    return PreallocCache(fill(nothing, Threads.nthreads()), fill(nothing, Threads.nthreads()))
+function PreallocCache(nplots::Int)
+    return PreallocCache(fill(nothing, nplots))
 end
 
-function get_buffer(buffer::PreallocCache, T, id; input_obj)
-    if T <: Float64
-        if isnothing(buffer.normal[id])
-            buffer.normal[id] = preallocate_vectors(; input_obj, T)
-        end
-        return buffer.normal[id]
-
-    elseif T <: ForwardDiff.Dual
-        if isnothing(buffer.diff[id])
-            buffer.diff[id] = preallocate_vectors(; input_obj, T)
-        end
-        return buffer.diff[id]
+function get_buffer(c::PreallocCache, plot_id; input_obj)
+    if isnothing(c.cache[plot_id])
+        c.cache[plot_id] = preallocate_vectors(; input_obj)
     end
+    return c.cache[plot_id]
 end

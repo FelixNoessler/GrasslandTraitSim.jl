@@ -8,7 +8,7 @@ There is also a tutorial on the model output:
 [How to analyse the model output](@ref)
 """
 function solve_prob(; input_obj, p, prealloc = nothing, trait_input = nothing,
-                    θ_type = Float64, callback = (; t = []))
+                    callback = (; t = []))
 
     if ! (p isa SimulationParameter)
         simulation_keys = keys(SimulationParameter())
@@ -17,7 +17,7 @@ function solve_prob(; input_obj, p, prealloc = nothing, trait_input = nothing,
     end
 
     if isnothing(prealloc)
-        prealloc = preallocate_vectors(; input_obj, T = θ_type)
+        prealloc = preallocate_vectors(; input_obj)
     end
 
     container = initialization(; input_obj, p, prealloc, trait_input, callback)

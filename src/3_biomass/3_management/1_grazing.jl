@@ -18,8 +18,6 @@ function grazing!(; container, LD, above_biomass, actual_height)
 
     if iszero(sum_feedible_biomass)
         container.calc.com.fodder_supply = κ_GRZ * LD
-        @. grazed = 0.0u"kg/ha"
-        defoliation .+= grazed
         return nothing
     end
 

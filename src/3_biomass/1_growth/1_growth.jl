@@ -12,7 +12,6 @@ function growth!(; t, x, y, container, above_biomass, total_biomass, actual_heig
     @unpack input = container
     @unpack included = container.simp
     @unpack com, growth_act, species_specific_red, LIG, WAT, NUT, ROOT = container.calc
-    # @unpack growth_pot_total, RAD, SEA, TEMP = container.calc.com
 
     ########### Potential growth
     potential_growth!(; container, above_biomass, actual_height, PAR = input[:PAR_sum][t])
