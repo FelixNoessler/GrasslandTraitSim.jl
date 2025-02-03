@@ -279,3 +279,18 @@ function get_buffer(c::PreallocCache, plot_id; input_obj)
     end
     return c.cache[plot_id]
 end
+
+struct PreallocCache2
+    cache::Vector{Vector{Any}}
+end
+
+function PreallocCache2(nthreads::Int, nplots::Int)
+    return PreallocCache2(fill(fill(nothing, nplots), nthreads))
+end
+
+function get_buffer(c::PreallocCache2, thread_id, plot_id; input_obj)
+    if isnothing(c.cache[thread_id][plot_id])
+        c.cache[thread_id][plot_id] = preallocate_vectors(; input_obj)
+    end
+    return c.cache[thread_id][plot_id]
+end
