@@ -154,6 +154,17 @@ fig, _ = lines(sol.simp.output_date_num, get_Wsc(sol), color = :darkblue, linewi
 fig
 ```
 
+## Nutrients
+
+Soil nutrients are not modelled directly in GrasslandTraitsim.jl. However, the nutrient index changes over time in response to changes in biomass due to increased competition for nutrients and in response to changes in annual inputs, namely fertilisation and total soil nitrogen. The nutrient index is species specific and is higher for species with a very different nutrient uptake strategy (defined by root surface area and arbuscular mycorhizal colonisation rate) compared to species with very high biomass, because species with a very different strategy are less affected by nutrient competition. We can plot the mean nutrient index over time:
+
+```@example output
+nut_index = dropdims(mean(sol.output.mean_nutrient_index; dims = (:x, :y)); dims = (:x, :y))
+
+fig, _ = lines(sol.simp.mean_input_date_num, vec(nut_index), color = :orange, linewidth = 2;
+    axis = (; ylabel = "Mean nutrient index [-]", xlabel = "Date [year]"))
+fig
+```
 
 ## Community weighted mean traits
 
