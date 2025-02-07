@@ -68,31 +68,35 @@ function preallocate_vectors(; input_obj, T = Float64)
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
         name = :community_height_reducer)
     radiation_reducer = DimArray(
-        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim),
+        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim),
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
         name = :radiation_reducer)
     temperature_reducer = DimArray(
-        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim),
+        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim),
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
         name = :temperature_reducer)
     seasonal_growth = DimArray(
-        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim),
+        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim),
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
         name = :seasonal_growth)
     seasonal_senescence = DimArray(
-        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim),
+        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim),
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
         name = :seasonal_senescence)
     fodder_supply = DimArray(
-        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim)u"kg/ha",
+        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim)u"kg/ha",
         (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
         name = :fodder_supply)
+    mean_nutrient_index = DimArray(
+        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim),
+        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        name = :mean_nutrient_index)
 
     output = (; biomass, above_biomass, below_biomass, water, height,
               mown, grazed, senescence, community_pot_growth, community_height_reducer,
               growth_act, radiation_reducer, seasonal_growth, temperature_reducer,
               seasonal_senescence, fodder_supply, light_growth,
-              water_growth, nutrient_growth, root_invest)
+              water_growth, nutrient_growth, root_invest, mean_nutrient_index)
 
     ############# change and state variables
     du_biomass = DimArray(

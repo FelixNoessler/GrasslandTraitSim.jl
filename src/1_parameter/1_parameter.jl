@@ -31,6 +31,7 @@ Parameter of the GrasslandTraitSim.jl model
     ####################################################################################
     ω_NUT_totalN::Qkg_g = F(0.1)u"kg/g"
     ω_NUT_fertilization::Qha_kg = F(0.001)u"ha/kg"
+    β_TS::T = F(1.0)
     α_NUT_TSB::Qkg_ha = F(15000.0)u"kg / ha"
     α_NUT_maxadj::T = F(10.0)
     α_NUT_amc05::T = F(0.95)

@@ -8,7 +8,7 @@ function one_day!(; t, container)
             du_biomass, du_above_biomass, du_below_biomass, du_water, du_height = container.u
     @unpack WHC, PWP, nutrients = container.patch_variables
     @unpack com, growth_act, senescence, mown, grazed, defoliation,
-        LIG, NUT, WAT, ROOT, allocation_above, above_proportion,
+        LIG, NUT, WAT, ROOT, allocation_above, above_proportion, nutrients_splitted,
         height_gain, height_loss_mowing, height_loss_grazing = container.calc
 
     year = mean_input_year[t]
@@ -125,6 +125,7 @@ function one_day!(; t, container)
             output.temperature_reducer[t, x, y] = com.TEMP
             output.seasonal_senescence[t, x, y] = com.SEN_season
             output.fodder_supply[t, x, y] = com.fodder_supply
+            output.mean_nutrient_index[t, x, y] = min(max(mean(nutrients_splitted), 0.0), 1.0)
 
             for s in 1:nspecies
                 output.growth_act[t, x, y, s] = growth_act[s]

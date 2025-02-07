@@ -20,6 +20,7 @@ function similarity_matrix!(; container)
     @unpack nspecies = container.simp
     @unpack amc, rsa = container.traits
     @unpack amc_resid, rsa_resid, TS = container.calc
+    @unpack β_TS = container.p
 
     if isone(nspecies)
         TS .= [1.0;;]
@@ -36,7 +37,12 @@ function similarity_matrix!(; container)
         end
     end
 
-    TS .= 1 .- TS ./ maximum(TS)
+    # β_TS scales the trait similiarity matrix, ∈ [0, 2]
+    # β_TS close to zero -> no influence of trait similarity
+    # with increasing β_TS the influence of trait similarity becomes stronger
+    # be careful: if the mean trait similarity changes,
+    # the mean plant vailable nutrients (nutrient index) also change
+    TS .= (1 .- TS ./ maximum(TS)) .^ β_TS
 
     return nothing
 end

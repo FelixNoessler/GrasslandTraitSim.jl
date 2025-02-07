@@ -25,6 +25,7 @@ function parameter_doc()
         β_WAT_rsa = "Slope of the logistic function that relates the plant available water to the water stress growth reduction factor",
         δ_WAT_rsa  = "Controls how strongly species differ in their water stress growth reduction from the mean response", 
         
+        β_TS = L"Scales the similarity for nutrient uptake traits (root surface area and arbuscular and mycorriza colonisation rate), which is used for competition for nutrients (very dissimilar species compete less strongly for nutrients). If $β_TS = 0$, all trait similiarities are set to 1 and the trait similarity has no effect on the competition for nutrients, with increasing $β_{TS}$ the effect of the trait similarity on the nutrient competition becomes stronger.",
         α_NUT_TSB = L"Reference value, if the sum of the product of trait similarity and biomass of all species equals: $\sum TS \cdot B < 1$, $\sum TS \cdot B = 1$, $\sum TS \cdot B > 1$ the nutrient adjustment factor $NUT_{adj,txys}$ is higher than one, one and lower than one, respectively",
         α_NUT_maxadj = "Maximum of the nutrient adjustment factor, fixed for calibration",
         α_NUT_amc05 = L"Nutrient stress based on arbuscular mycorriza colonisation growth reduction factor for species with mean trait: $TAMC = \phi_{TAMC}$, when the plant available nutrients equal: $N_{p,txys} = 0.5$",
