@@ -138,6 +138,23 @@ fig, _ = lines(sol.simp.output_date_num, vec(ustrip.(soil_water_per_site)), colo
 fig
 ```
 
+Soil water content is used to calculate plant water stress. To calculate water stress, we scale the soil water content by the water holding capacity and the permanent wilting point. The scaled soil water content can be visualised as follows:
+
+```@example output
+function get_Wsc(x)
+    WHC = mean(x.patch_variables.WHC)
+    PWP = mean(x.patch_variables.PWP)
+    W = vec(x.output.water)
+    Wsc = @. (W - PWP) / (WHC - PWP)
+    return max.(min.(Wsc, 1.0), 0.0)
+end
+    
+fig, _ = lines(sol.simp.output_date_num, get_Wsc(sol), color = :darkblue, linewidth = 2;
+    axis = (; ylabel = "Scaled soil water content [-]", xlabel = "Date [year]"))
+fig
+```
+
+
 ## Community weighted mean traits
 
 We can calculate for all traits the community weighted mean over time:
