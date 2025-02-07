@@ -145,6 +145,8 @@ function load_optim_result()
 end
 
 function optim_parameter()
-    θ = load_optim_result()
-    return SimulationParameter(; θ...)
+    p = load_optim_result()
+    simulation_keys = keys(SimulationParameter())
+    p_subset = NamedTuple{filter(x -> x ∈ simulation_keys, keys(p))}(p)
+    return SimulationParameter(; p_subset...)
 end

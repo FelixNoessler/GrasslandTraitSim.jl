@@ -133,7 +133,9 @@ function dashboard_layout(; variable_p)
     p = gts.optim_parameter()
     parameter_keys = collect(keys(p))
     for k in keys(variable_p)
-        p[k] = variable_p[k]
+        if k in parameter_keys
+            p[k] = variable_p[k]
+        end
     end
     p_val = round.(ustrip.(collect(p)); digits = 5)
 
