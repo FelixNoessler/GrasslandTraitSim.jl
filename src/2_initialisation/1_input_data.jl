@@ -42,9 +42,7 @@ function load_input_data(input_data_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Inpu
     ##### over the whole time frame in Soil.csv
     ##### or yearly in Soil_yearly.csv
     soil_yearly = allcombinations(DataFrame, plotID = plotIDs, x = xs, y = ys, year = years)
-    soil_yearly = leftjoin(soil_yearly,
-                           DataFrame(year = years, year_index = 1:length(years)),
-                           on = :year)
+    soil_yearly = leftjoin(soil_yearly, DataFrame(year = years), on = :year)
 
     if isfile(joinpath(input_data_path, "Soil.csv"))
         whole_period_soil_input = CSV.read(joinpath(input_data_path, "Soil.csv"), DataFrame)
@@ -72,9 +70,14 @@ function load_input_data(input_data_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Inpu
         nyears = length(unique(Dates.year.(clim.t[p .== clim.plotID])))
 
         ts = clim.t[p .== clim.plotID]
+        years = unique(Dates.year.(ts))
 
         ########## Soil data
-        soil_yearly_sub = @subset soil_yearly :plotID .== p
+        soil_yearly_sub = @chain soil_yearly begin
+            @subset :plotID .== p
+            @subset :year .∈ Ref(years)
+            @orderby :year
+        end
 
         sand = Array{Float64}(undef, nyears, nx, ny)
         silt = Array{Float64}(undef, nyears, nx, ny)
@@ -85,15 +88,15 @@ function load_input_data(input_data_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Inpu
         totalN = Array{typeof(1.0u"g/kg")}(undef, nyears, nx, ny)
         fertilization = Array{typeof(1.0u"kg/ha")}(undef, nyears, nx, ny)
 
-        for r in eachrow(soil_yearly_sub)
-            sand[r.year_index, r.x, r.y] = r.sand
-            silt[r.year_index, r.x, r.y] = r.silt
-            clay[r.year_index, r.x, r.y] = r.clay
-            organic[r.year_index, r.x, r.y] = r.organic
-            bulk[r.year_index, r.x, r.y] = r.bulk * u"g/cm^3"
-            rootdepth[r.year_index, r.x, r.y] = r.rootdepth * u"mm"
-            totalN[r.year_index, r.x, r.y] = r.totalN * u"g/kg"
-            fertilization[r.year_index, r.x, r.y] = r.fertilization * u"kg/ha"
+        for (i,r) in enumerate(eachrow(soil_yearly_sub))
+            sand[i, r.x, r.y] = r.sand
+            silt[i, r.x, r.y] = r.silt
+            clay[i, r.x, r.y] = r.clay
+            organic[i, r.x, r.y] = r.organic
+            bulk[i, r.x, r.y] = r.bulk * u"g/cm^3"
+            rootdepth[i, r.x, r.y] = r.rootdepth * u"mm"
+            totalN[i, r.x, r.y] = r.totalN * u"g/kg"
+            fertilization[i, r.x, r.y] = r.fertilization * u"kg/ha"
         end
 
         sanddim = DimArray(sand, (; year = years, x = 1:nx, y = 1:ny), name = "sand")
@@ -140,6 +143,7 @@ function load_input_data(input_data_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Inpu
         ########## Management data
         man_sub = @chain copy(man) begin
             @subset :plotID .== p
+            @subset :t .∈ Ref(ts)
             @orderby :t
         end
 
