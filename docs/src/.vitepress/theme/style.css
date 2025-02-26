@@ -213,7 +213,7 @@ mjx-container > svg {
 
 .VPNavBar .title {
   text-overflow: ellipsis;
-  overflow: hidden;
+  overflow: visible;
   white-space: nowrap;
 }
 
