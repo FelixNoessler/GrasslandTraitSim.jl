@@ -11,7 +11,14 @@ https://github.com/vuejs/vitepress/blob/main/src/client/theme-default/styles/var
 
 .VPHero .clip {
   white-space: pre;
-  max-width: 500px;
+  max-width: 800px;
+}
+
+@media (min-width: 960px) {
+  .name[data-v-3d256e5e], .text[data-v-3d256e5e] {
+    line-height: 80px;
+    font-size: 56px;
+  }
 }
 
 /* Fonts */
