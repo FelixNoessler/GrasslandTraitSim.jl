@@ -34,6 +34,7 @@ const navTemp = {
     },
     
     { text: 'References', link: '/references' },
+    { text: 'Call from R', link: 'https://felixnoessler.github.io/RGrasslandTraitSim/' },
   ],
 }
 
