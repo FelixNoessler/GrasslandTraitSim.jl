@@ -57,7 +57,7 @@ function load_input_data(input_data_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Inpu
     end
 
     ## if no fertilization data is given, we set fertilization to 0.0
-    if :fertilization ∉ names(soil_yearly)
+    if "fertilization" ∉ names(soil_yearly)
         @transform! soil_yearly :fertilization = 0.0
     end
 
