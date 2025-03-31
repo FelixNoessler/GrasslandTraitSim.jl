@@ -44,7 +44,7 @@ function calculate_LAI!(; container, above_biomass)
     @unpack sla, lbp, abp = container.traits
 
     for s in eachindex(LAIs)
-        LAIs[s] = uconvert(NoUnits, sla[s] * above_biomass[s] * lbp[s] / abp[s])
+        LAIs[s] = uconvert(NoUnits, sla[s] * above_biomass[s] * lbp[s])
     end
     com.LAItot = sum(LAIs)
 

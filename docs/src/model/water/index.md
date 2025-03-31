@@ -106,7 +106,7 @@ intermediate variables:
 
 morphological traits:
 - ``sla_s`` specific leaf area of each species [m² g⁻¹]
-- ``lbp_s`` leaf biomass per plant biomass of each species [-]
+- ``lbp_s`` leaf biomass per aboveground plant biomass of each species [-]
 - ``abp_s`` aboveground biomass per plant biomass of each species [-]
 
 :::

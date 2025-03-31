@@ -63,7 +63,7 @@ overview of the transformation of the traits:
 | ``rsa_s``       | root surface area per belowground biomass [m² g⁻¹] | log            |
 | ``amc_s``       | arbuscular mycorrhizal colonisation rate [-]       | logit          |
 | ``abp_s``       | aboveground dry mass per plant dry mass [-]        | logit          |
-| ``lbp_s``       | leaf dry mass per plant dry mass [-]               | logit          |
+| ``lbp_s``       | leaf dry mass per aboveground plant dry mass [-]   | logit          |
 
 ### API
 ```@docs
