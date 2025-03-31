@@ -108,6 +108,9 @@ function nutrient_reduction!(; container, nutrients, total_biomass)
     x0_R_05 = ϕ_TRSA + 1 / δ_NUT_rsa * log((1 - α_NUT_rsa05) / α_NUT_rsa05)
 
     ## growth reduction at 0.5 of Np ∈ [0, 1]
+    # above_proportion = aboveground biomass / total biomass
+    # 1 - above_proportion = belowground biomass / total biomass
+    # rsa/belowground biomass  * belowground biomass/total biomass = rsa/total biomass
     @. R_05 = 1 / (1 + exp(-δ_NUT_rsa * ((1 - above_proportion) * rsa - x0_R_05)))
 
     ###### growth reduction due to nutrient stress for different Np
@@ -124,6 +127,9 @@ function nutrient_reduction!(; container, nutrients, total_biomass)
     x0_R_05 = ϕ_TAMC + 1 / δ_NUT_amc * log((1 - α_NUT_amc05) / α_NUT_amc05)
 
     ## growth reduction at 0.5 of Np ∈ [0, 1]
+    # above_proportion = aboveground biomass / total biomass
+    # 1 - above_proportion = belowground biomass / total biomass
+    # amc * belowground biomass/total biomass = amc/total biomass
     @. R_05 = 1 / (1 + exp(-δ_NUT_amc * ((1 - above_proportion) * amc - x0_R_05)))
 
     ###### growth reduction due to nutrient stress for different Np
