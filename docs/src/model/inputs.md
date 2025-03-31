@@ -27,7 +27,7 @@ Here you find all inputs needed to start a simulation. You can click on the link
 | ``amc_s``       | Arbuscular mycorrhizal colonisation rate [-]     | [`nutrient_competition!`](@ref), [`nutrient_reduction!`](@ref)                             |
 | ``sla_s``       | Specific leaf area [m² g⁻¹]                      | [`water_reduction!`](@ref), [`calculate_LAI!`](@ref), [`senescence!`](@ref)                |
 | ``maxheight_s`` | Maximum plant height [m]                         | [`potential_growth!`](@ref), [`light_competition!`](@ref), [`mowing!`](@ref)               |
-| ``rsa_s``       | Root surface area / aboveground biomass [m² g⁻¹] | [`nutrient_competition!`](@ref), [`water_reduction!`](@ref), [`nutrient_reduction!`](@ref) |
+| ``rsa_s``       | Root surface area / belowground biomass [m² g⁻¹] | [`nutrient_competition!`](@ref), [`water_reduction!`](@ref), [`nutrient_reduction!`](@ref) |
 | ``abp_s``       | Aboveground biomass / total biomass [-]          | [`calculate_LAI!`](@ref)                                                                   |
 | ``lbp_s``       | Leaf mass / aboveground biomass [-]              | [`calculate_LAI!`](@ref)                                                                   |
 | ``lnc_s``       | Leaf nitrogen content per leaf mass [mg g⁻¹]     | [`grazing!`](@ref)                                                                         |

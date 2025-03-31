@@ -39,7 +39,7 @@ The water stress growth reducer ``WAT_{txys}`` [-] is defined as:
             1 & \text{if } W_{p, txy} >= 1 \\
         \end{cases} \\
     x_{0, W,RSA} &= \frac{1}{\beta_{W,RSA}} \cdot \left(-\delta_{W,RSA}\cdot \left(TRSA_{txys} - \left(\frac{1}{\delta_{W,RSA}} \cdot \log\left(\frac{1 - \alpha_{W,RSA, 05}}{\alpha_{W,RSA,05}}\right) + \phi_{RSA}\right)\right)\right) + 0.5  \\
-    TRSA_{txys} &= \frac{B_{B, txys}}{B_{txys}} \cdot  RSA_s  \\
+    TRSA_{txys} &= \frac{B_{B, txys}}{B_{txys}} \cdot  rsa_s  \\
     W_{p, txy} &= \frac{W_{txy} - PWP_{xy}}{WHC_{xy}-PWP_{xy}}  
 \end{align}
 ```
@@ -67,7 +67,7 @@ intermediate variables:
 - ``W_{p, txy} \in [0, 1]`` plant available water [-]
 
 morphological traits:
-- ``RSA_s`` root surface area per belowground biomass of each species [m² g⁻¹]
+- ``rsa_s`` root surface area per belowground biomass of each species [m² g⁻¹]
 
 :::
 
