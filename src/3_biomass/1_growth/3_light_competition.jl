@@ -5,7 +5,7 @@ area index and the height of each species.
 function light_competition!(; container, above_biomass, actual_height)
     @unpack lais_heightinfluence, LIG, LAIs = container.calc
     @unpack LAItot = container.calc.com
-    @unpack included, variations = container.simp
+    @unpack included = container.simp
 
     if iszero(LAItot)
         @. LIG = 0.0
@@ -18,12 +18,10 @@ function light_competition!(; container, above_biomass, actual_height)
         return nothing
     end
 
-    ### there are two methods for simulating light competition:
-    if variations.use_height_layers
-        light_competition_height_layer!(; container, actual_height)
-    else
-        light_competition_simple!(; container, above_biomass, actual_height)
-    end
+    light_competition_height_layer!(; container, actual_height)
+    ### for debugging:
+    # light_competition_simple!(; container, above_biomass, actual_height)
+
 
     return nothing
 end

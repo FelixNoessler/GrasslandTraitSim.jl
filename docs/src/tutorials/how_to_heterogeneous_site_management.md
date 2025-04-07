@@ -18,7 +18,7 @@ using Unitful
 patch_xdim = 2 
 patch_ydim = 1
 
-input_obj_prep = sim.validation_input("HEG01"; nspecies = 70, trait_seed = 99);
+input_obj_prep = sim.create_input("HEG01"; nspecies = 70, trait_seed = 99);
 
 # --------------- change the number of patches
 simp_prep = Dict()

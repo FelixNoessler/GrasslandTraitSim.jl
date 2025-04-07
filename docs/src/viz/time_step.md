@@ -63,10 +63,10 @@ function plot_input_time_steps(input_obj1, input_obj2)
 end
 
 trait_input = sim.input_traits()
-input_obj_1 = sim.validation_input("HEG01");
+input_obj_1 = sim.create_input("HEG01");
 
 input14_HEG01 = sim.scale_input(sim.input_data.HEG01; time_step_days = 14)
-input_obj_14 = sim.validation_input(input14_HEG01);
+input_obj_14 = sim.create_input(input14_HEG01);
 plot_input_time_steps(input_obj_1, input_obj_14)
 ```
 
@@ -77,8 +77,8 @@ function calc_total_biomass(included, input14; plotID = "HEG01")
      trait_input = sim.input_traits();
      nspecies = length(trait_input.amc)
      p = sim.SimulationParameter()
-     input_obj_1 = sim.validation_input(plotID; nspecies, included);
-     input_obj_14 = sim.validation_input(input14; nspecies, included);
+     input_obj_1 = sim.create_input(plotID; nspecies, included);
+     input_obj_14 = sim.create_input(input14; nspecies, included);
      
      sol_1 = sim.solve_prob(; input_obj=input_obj_1, p, trait_input);
      sol_14 = sim.solve_prob(; input_obj=input_obj_14, p, trait_input);

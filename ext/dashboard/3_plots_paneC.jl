@@ -37,7 +37,7 @@ end
 function plot_static_nutrient_reducer(; plot_obj, sol, kwargs...)
     ax = clear_plotobj_axes(plot_obj, :static_nutrient_reducer)
 
-    real_nutrients = mean(sol.patch_variables.nutrients; dims = (:x, :y))[1, 1]
+    real_nutrients = mean(sol.soil_variables.nutrients; dims = (:x, :y))[1, 1]
     nspecies = sol.simp.nspecies
     δ_NUT_amc = sol.p.δ_NUT_amc
     δ_NUT_rsa = sol.p.δ_NUT_rsa

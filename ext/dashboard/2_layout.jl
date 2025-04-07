@@ -35,7 +35,7 @@ function dashboard_layout(; variable_p)
     ##############################################################################
     Label(sim_layout[1, 1:2], "Turn off parts of the model";
         halign = :left, font = :bold, fontsize = 16)
-    input_obj = gts.validation_input("HEG01"; nspecies = 1)
+    input_obj = gts.create_input("HEG01"; nspecies = 1)
     included_symbols = keys(input_obj.simp.included)
     is_included = collect(values(input_obj.simp.included))
     labels = String.(included_symbols)

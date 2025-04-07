@@ -1,37 +1,20 @@
-function load_traits(inputdata_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Input_data"))
-    global trait_data = CSV.read("$inputdata_path/Traits.csv", DataFrame)
+function load_data(inputdata_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Input_data"))
+    load_species(inputdata_path)
+    load_input_data(inputdata_path)
+end
+
+function load_species(inputdata_path)
+    global species_data = CSV.read("$inputdata_path/Species.csv", DataFrame)
     return nothing
 end
 
-function input_traits()
-    ## unfortunately, this is slower:
-    # nspecies = nrow(traits)
-    # amcdim = DimArray(traits.amc, (; species = 1:nspecies), name = "amc")
-    # sladim = DimArray(traits.sla * u"m^2/g", (; species = 1:nspecies), name = "sla")
-    # maxheightdim = DimArray(traits.maxheight * u"m", (; species = 1:nspecies), name = "maxheight")
-    # rsadim = DimArray(traits.rsa * u"m^2/g", (; species = 1:nspecies), name = "rsa")
-    # abpdim = DimArray(traits.abp, (; species = 1:nspecies), name = "abp")
-    # lbpdim = DimArray(traits.lbp, (; species = 1:nspecies), name = "lbp")
-    # lncdim = DimArray(traits.lnc * u"mg/g", (; species = 1:nspecies), name = "lnc")
-    # return DimStack(amcdim, sladim, maxheightdim, rsadim, abpdim, lbpdim, lncdim)
-
-    return (;
-        amc = trait_data.amc,
-        sla = trait_data.sla * u"m^2/g",
-        maxheight = trait_data.maxheight * u"m",
-        rsa = trait_data.rsa * u"m^2/g",
-        abp = trait_data.abp,
-        lbp = trait_data.lbp,
-        lnc = trait_data.lnc * u"mg/g");
-end
-
-function load_input_data(input_data_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Input_data"))
+function load_input_data(input_data_path)
     ########## Base information
-    info = CSV.read(joinpath(input_data_path, "Plots.csv"), DataFrame)
-    plotIDs = info.plotID
+    global plot_data = CSV.read(joinpath(input_data_path, "Plots.csv"), DataFrame)
+    plotIDs = plot_data.plotID
     nplots = length(plotIDs)
-    start_dates = info.startDate
-    end_dates = info.endDate
+    start_dates = plot_data.startDate
+    end_dates = plot_data.endDate
     ts = [start_dates[i]:Dates.Day(1):end_dates[i] for i in 1:nplots]
     years = [Dates.year(start_dates[i]):1:Dates.year(end_dates[i]) for i in 1:nplots]
 
@@ -72,115 +55,75 @@ function load_input_data(input_data_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Inpu
         ########## Management data
         man = DataFrame(t = ts_plot)
         if "plotID" ∈ names(man_input)
-            @info "Using plot-specific management" maxlog=1
+            i == 1 && @info "Using plot-specific management"
             man = leftjoin(man, @subset(man_input, :plotID .== p),
                            on = :t, order = :left)
         else
-            @info "Using the same management for all plots (for plot-specific management, supply Management.csv with a plotID column)" maxlog=1
+            i == 1 && @info "Using the same management for all plots (for plot-specific management, supply Management.csv with a plotID column)"
             man = leftjoin(man, man_input, on = :t, order = :left)
         end
 
-        CUT = Array{Union{typeof(missing), typeof(1.0u"m")}}(undef, nt)
-        LD = Array{Union{typeof(missing), typeof(1.0u"ha^-1")}}(undef, nt)
-
-        CUT .= man.CUT .* u"m"
-        LD .= man.LD .* u"ha^-1"
-
-        CUTdim = DimArray(CUT, (; t = ts_plot), name = "CUT_mowing")
-        LDdim = DimArray(LD, (; t = ts_plot), name = "LD_grazing")
+        CUTdim = DimArray(man.CUT .* u"m", (; t = ts_plot), name = "CUT_mowing")
+        LDdim = DimArray(man.LD .* u"ha^-1", (; t = ts_plot), name = "LD_grazing")
 
         ########## Soil data
         soil_yearly = DataFrame(year = years_plot)
         if !isnothing(soil_input)
             if "plotID" ∈ names(soil_input)
-                @info "Using plot-specific soil data" maxlog=1
+                i == 1 && @info "Using plot-specific soil data"
                 soil_yearly = @orderby(crossjoin(soil_yearly,
                                                  @subset(soil_input, :plotID .== p)),
                                        :year)
             else
-                @info "Using the same soil data for all plots (for plot-specific soil data, supply Soil.csv with a plotID column)" maxlog=1
+                i == 1 && @info "Using the same soil data for all plots (for plot-specific soil data, supply Soil.csv with a plotID column)"
                 soil_yearly = @orderby(crossjoin(soil_yearly, soil_input),
                                        :year)
             end
         end
         if !isnothing(soil_yearly_input)
             if "plotID" ∈ names(soil_yearly_input)
-                @info "Using plot-specific yearly soil data" maxlog=1
+                i == 1 && @info "Using plot-specific yearly soil data"
                 soil_yearly = leftjoin(soil_yearly,
                                        @subset(soil_yearly_input, :plotID .== p),
                                        on = :year, order = :left, makeunique = true)
             else
-                @info "Using the same yearly soil data for all plots (for plot-specific yearly soil data, supply Soil_yearly.csv with a plotID column)" maxlog=1
+                i == 1 && @info "Using the same yearly soil data for all plots (for plot-specific yearly soil data, supply Soil_yearly.csv with a plotID column)"
                 soil_yearly = leftjoin(soil_yearly, soil_yearly_input,
                                        on = :year, order = :left)
             end
         end
         if "fertilization" ∉ names(soil_yearly)
-            @info "No fertilization data given, set fertilization to 0.0"
+            i == 1 && @info "No fertilization data given, set fertilization to 0.0"
             @transform! soil_yearly :fertilization = 0.0
         end
 
-        sand = Array{Float64}(undef, nyears)
-        silt = Array{Float64}(undef, nyears)
-        clay = Array{Float64}(undef, nyears)
-        organic = Array{Float64}(undef, nyears)
-        bulk = Array{typeof(1.0u"g/cm^3")}(undef, nyears)
-        rootdepth = Array{typeof(1.0u"mm")}(undef, nyears)
-        totalN = Array{typeof(1.0u"g/kg")}(undef, nyears)
-        fertilization = Array{typeof(1.0u"kg/ha")}(undef, nyears)
-
-        sand .= soil_yearly.sand
-        silt .= soil_yearly.silt
-        clay .= soil_yearly.clay
-        organic .= soil_yearly.organic
-        bulk .= soil_yearly.bulk * u"g/cm^3"
-        rootdepth .= soil_yearly.rootdepth * u"mm"
-        totalN .= soil_yearly.totalN * u"g/kg"
-        fertilization .= soil_yearly.fertilization * u"kg/ha"
-
-        sanddim = DimArray(sand, (; year = years_plot), name = "sand")
-        siltdim = DimArray(silt, (; year = years_plot), name = "silt")
-        claydim = DimArray(clay, (; year = years_plot), name = "clay")
-        organicdim = DimArray(organic, (; year = years_plot), name = "organic")
-        bulkdim = DimArray(bulk, (; year = years_plot), name = "bulk")
-        rootdepthdim = DimArray(rootdepth, (; year = years_plot), name = "rootdepth")
-        totalNdim = DimArray(totalN, (; year = years_plot), name = "totalN")
-        fertilizationdim = DimArray(fertilization, (; year = years_plot), name = "fertilization")
+        sanddim = DimArray(soil_yearly.sand, (; year = years_plot), name = "sand")
+        siltdim = DimArray(soil_yearly.silt, (; year = years_plot), name = "silt")
+        claydim = DimArray(soil_yearly.clay, (; year = years_plot), name = "clay")
+        organicdim = DimArray(soil_yearly.organic, (; year = years_plot), name = "organic")
+        bulkdim = DimArray(soil_yearly.bulk * u"g/cm^3", (; year = years_plot), name = "bulk")
+        rootdepthdim = DimArray(soil_yearly.rootdepth * u"mm", (; year = years_plot), name = "rootdepth")
+        totalNdim = DimArray(soil_yearly.totalN * u"g/kg", (; year = years_plot), name = "totalN")
+        fertilizationdim = DimArray(soil_yearly.fertilization * u"kg/ha", (; year = years_plot), name = "fertilization")
 
         ########## Climate data
         clim = DataFrame(t = ts_plot)
         if "plotID" ∈ names(clim_input)
-            @info "Using plot-specific climate data" maxlog=1
+            i == 1 && @info "Using plot-specific climate data"
             clim = leftjoin(clim, @subset(clim_input, :plotID .== p),
                             on = :t, order = :left)
         else
-            @info "Using the same climate data for all plots (for plot-specific climate data, supply Climate.csv with a plotID column)" maxlog=1
+            i == 1 && @info "Using the same climate data for all plots (for plot-specific climate data, supply Climate.csv with a plotID column)"
             clim = leftjoin(clim, clim_input, on = :t, order = :left)
         end
 
-        temperature = Array{typeof(1.0u"°C")}(undef, nt)
-        temperature_sum = Array{typeof(1.0u"°C")}(undef, nt)
-        precipitation = Array{typeof(1.0u"mm")}(undef, nt)
-        PET = Array{typeof(1.0u"mm")}(undef, nt)
-        PET_sum = Array{typeof(1.0u"mm")}(undef, nt)
-        PAR = Array{typeof(1.0u"MJ/ha")}(undef, nt)
-        PAR_sum = Array{typeof(1.0u"MJ/ha")}(undef, nt)
-
-        temperature .= clim.temperature .* u"°C"
-        temperature_sum .= clim.temperature_sum .* u"°C"
-        precipitation .= clim.precipitation .* u"mm"
-        PET .= clim.PET .* u"mm"
-        PET_sum .= clim.PET .* u"mm"
-        PAR .= clim.PAR .* u"MJ/ha"
-        PAR_sum .= clim.PAR .* u"MJ/ha"
-
-        temperaturedim = DimArray(temperature, (; t = ts_plot), name = "temperature")
-        temperature_sumdim = DimArray(temperature_sum, (; t = ts_plot), name = "temperature_sum")
-        precipitationdim = DimArray(precipitation, (; t = ts_plot), name = "precipitation")
-        PETdim = DimArray(PET, (; t = ts_plot), name = "PET")
-        PET_sumdim = DimArray(PET_sum, (; t = ts_plot), name = "PET_sum")
-        PARdim = DimArray(PAR, (; t = ts_plot), name = "PAR")
-        PAR_sumdim = DimArray(PAR_sum, (; t = ts_plot), name = "PAR_sum")
+        temperaturedim = DimArray(clim.temperature .* u"°C", (; t = ts_plot), name = "temperature")
+        temperature_sumdim = DimArray(clim.temperature_sum .* u"°C", (; t = ts_plot), name = "temperature_sum")
+        precipitationdim = DimArray(clim.precipitation .* u"mm", (; t = ts_plot), name = "precipitation")
+        PETdim = DimArray(clim.PET .* u"mm", (; t = ts_plot), name = "PET")
+        PET_sumdim = DimArray(clim.PET .* u"mm", (; t = ts_plot), name = "PET_sum")
+        PARdim = DimArray(clim.PAR .* u"MJ/ha", (; t = ts_plot), name = "PAR")
+        PAR_sumdim = DimArray(clim.PAR .* u"MJ/ha", (; t = ts_plot), name = "PAR_sum")
 
         ########## Combine all data
         inputs[Symbol(p)] = DimStack(
@@ -199,25 +142,18 @@ function load_input_data(input_data_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Inpu
     return nothing
 end
 
-validation_input(plotID::Union{String, Symbol}; kwargs...) = validation_input(input_data[Symbol(plotID)]; kwargs...)
-
-function validation_input(input_data; included = (;),
-        use_height_layers = true,
-        nspecies = nothing, trait_seed = missing,
-        initbiomass = 5000.0u"kg/ha",
-        initsoilwater = 100.0u"mm")
-
+####################################################################
+#####################################################################
+function create_input(plotID; included = (;))
     included = create_included(included)
-
-    if isnothing(nspecies)
-        nspecies = length(input_traits().sla)
-    end
+    input_data_plot = input_data[Symbol(plotID)]
+    init_plot = initial_conditions(plotID)
+    traits_plot = input_traits(plotID)
 
     #### input date
-    input_date_range = LookupArrays.index(input_data, :t)
+    input_date_range = LookupArrays.index(input_data_plot, :t)
     time_step_days = input_date_range[2] - input_date_range[1]
-    time_step_hours = Dates.Hour(time_step_days)
-    # exact_input_date = input_date_range .+ time_step_hours ÷ 2
+    # exact_input_date = input_date_range .+ Dates.Hour(time_step_days) ÷ 2
 
     ### output date
     start_date = input_date_range[1]
@@ -227,12 +163,9 @@ function validation_input(input_data; included = (;),
     ntimesteps = length(output_date_range) - 1
     years = unique(Dates.year.(input_date_range))
     nyears = length(years)
-    patch_xdim = LookupArrays.index(input_data, :x)[end]
-    patch_ydim = LookupArrays.index(input_data, :y)[end]
 
     return (
         simp = (;
-            variations = (; use_height_layers),
             output_date = output_date_range,
             output_date_num = to_numeric.(output_date_range),
             mean_input_date = input_date_range,
@@ -242,16 +175,46 @@ function validation_input(input_data; included = (;),
             years,
             ntimesteps,
             nyears,
-            nspecies,
+            nspecies = length(traits_plot.sla),
             time_step_days,
-            patch_xdim,
-            patch_ydim,
-            npatches = patch_xdim * patch_ydim,
-            trait_seed,
-            included,
-            initbiomass,
-            initsoilwater),
-        input = input_data)
+            included),
+        input = input_data_plot,
+        traits = traits_plot,
+        init = init_plot)
+end
+
+function input_traits(plotID = nothing)
+    species_data_sub = species_data
+
+    if "plotID" ∈ names(species_data)
+        species_data_sub = @subset(species_data, :plotID .== plotID)
+    end
+
+    return (;
+        amc = species_data_sub.amc,
+        sla = species_data_sub.sla * u"m^2/g",
+        maxheight = species_data_sub.maxheight * u"m",
+        rsa = species_data_sub.rsa * u"m^2/g",
+        abp = species_data_sub.abp,
+        lbp = species_data_sub.lbp,
+        lnc = species_data_sub.lnc * u"mg/g");
+
+end
+
+function initial_conditions(plotID)
+    species_data_sub = species_data
+    if "plotID" ∈ names(species_data)
+        species_data_sub = @subset(deepcopy(species_data), :plotID .== plotID)
+    end
+
+    plot_data_sub = @subset(deepcopy(plot_data), :plotID .== plotID)
+
+    return (;
+        AbovegroundBiomass = species_data_sub.initAbovegroundBiomass * u"kg/ha",
+        BelowgroundBiomass = species_data_sub.initBelowgroundBiomass * u"kg/ha",
+        Height = species_data_sub.initHeight * u"m",
+        Soilwater = plot_data_sub.initSoilwater[1] * u"mm",
+    );
 end
 
 function create_included(included_prep = (;);)

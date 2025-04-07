@@ -52,9 +52,9 @@ const DEFAULT_ARTIFACTS_DIR = artifact"hainich_data"
 artifactpath(name) = @artifact_str(name)
 
 function __init__()
-    load_gm()
-    load_input_data()
-    load_traits()
+    # load_gm()
+    # load_input_data()
+    # load_traits()
     return nothing
 end
 

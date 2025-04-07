@@ -2,7 +2,7 @@
 Calculates nutrient index based on total soil nitrogen and fertilization.
 """
 function input_nutrients!(; container)
-    @unpack nutrients = container.patch_variables
+    @unpack nutrients = container.soil_variables
     @unpack totalN, fertilization = container.input
     @unpack included = container.simp
     @unpack ω_NUT_totalN, ω_NUT_fertilization = container.p

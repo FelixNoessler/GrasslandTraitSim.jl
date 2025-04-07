@@ -22,7 +22,7 @@ included = (;
 )
 
 trait_input = sim.input_traits()
-input_obj = sim.validation_input("HEG01"; included);
+input_obj = sim.create_input("HEG01"; included);
 p = sim.optim_parameter();
 nothing # hide
 ```

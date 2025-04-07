@@ -53,10 +53,7 @@ simp = (
     
     ## which processes to include, see extra tutorial
     ## empty tuple means, that everything is included
-    included = sim.create_included(),
-    
-    ## decide on different versions of the model
-    variations = (; use_height_layers = true)
+    included = sim.create_included()
 )
 
 nothing # hide
@@ -159,7 +156,7 @@ input_obj = (; input = (; climatic_inputs..., management_tuple..., site_tuple...
 **For the plots from the Biodiversity Exploratories, we used the following convenience function
 to create the same object:**
 ```@example input_creation
-input_obj_HEG01 = sim.validation_input("HEG01");
+input_obj_HEG01 = sim.create_input("HEG01");
 
 nothing # hide
 ```

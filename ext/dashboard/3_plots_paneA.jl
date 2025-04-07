@@ -82,8 +82,8 @@ function soilwater_plot(; sol, plot_obj, kwargs...)
     water_μ = mean(ustrip.(sol.output.water); dims = (:x, :y))[1:thin:end]
     lines!(ax, t, water_μ; color = :orange, linewidth = 2)
 
-    PWP = mean(ustrip(sol.patch_variables.PWP))
-    WHC = mean(ustrip(sol.patch_variables.WHC))
+    PWP = mean(ustrip(sol.soil_variables.PWP))
+    WHC = mean(ustrip(sol.soil_variables.WHC))
     hlines!([PWP, WHC]; color = :blue)
 end
 

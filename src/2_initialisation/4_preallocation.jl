@@ -1,95 +1,95 @@
 function preallocate_vectors(; input_obj, T = Float64)
     @unpack output_date, mean_input_date, included, nspecies,
-            patch_xdim, patch_ydim, ntimesteps, years, nyears = input_obj.simp
+            ntimesteps, years, nyears = input_obj.simp
 
     ############# output variables
     #### State variables
     biomass = DimArray(
-        Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim, nspecies)u"kg/ha",
-        (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps + 1, nspecies)u"kg/ha",
+        (; time = output_date, species = 1:nspecies),
         name = :state_biomass)
     above_biomass = DimArray(
-        Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim, nspecies)u"kg/ha",
-        (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps + 1, nspecies)u"kg/ha",
+        (; time = output_date, species = 1:nspecies),
         name = :state_above_biomass)
     below_biomass = DimArray(
-        Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim, nspecies)u"kg/ha",
-        (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps + 1, nspecies)u"kg/ha",
+        (; time = output_date, species = 1:nspecies),
         name = :state_below_biomass)
-    water = DimArray(Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim)u"mm",
-        (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim),
+    water = DimArray(Array{T}(undef, ntimesteps + 1)u"mm",
+        (; time = output_date),
         name = :state_water)
     height = DimArray(
-        Array{T}(undef, ntimesteps + 1, patch_xdim, patch_ydim, nspecies)u"m",
-        (time = output_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps + 1, nspecies)u"m",
+        (; time = output_date, species = 1:nspecies),
         name = :state_height)
 
     #### Species-specfic output variables
     mown = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps, nspecies)u"kg/ha",
+        (; time = mean_input_date, species = 1:nspecies),
         name = :mown)
     grazed = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps, nspecies)u"kg/ha",
+        (; time = mean_input_date, species = 1:nspecies),
         name = :grazed)
     senescence = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim, nspecies)u"kg/ha",
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps, nspecies)u"kg/ha",
+        (; time = mean_input_date, species = 1:nspecies),
         name = :senescence)
     growth_act = DimArray(
-        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim, nspecies)u"kg/ha",
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps, nspecies)u"kg/ha",
+        (; time = mean_input_date, species = 1:nspecies),
         name = :growth_act)
     light_growth = DimArray(
-        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim, nspecies),
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps, nspecies),
+        (; time = mean_input_date, species = 1:nspecies),
         name = :light_growth)
     nutrient_growth = DimArray(
-        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim, nspecies),
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps, nspecies),
+        (; time = mean_input_date, species = 1:nspecies),
         name = :nutrient_growth)
     water_growth = DimArray(
-        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim, nspecies),
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps, nspecies),
+        (; time = mean_input_date, species = 1:nspecies),
         name = :water_growth)
     root_invest = DimArray(
-        Array{T}(undef, ntimesteps,  patch_xdim, patch_ydim, nspecies),
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, ntimesteps, nspecies),
+        (; time = mean_input_date, species = 1:nspecies),
         name = :root_invest)
 
     #### Community-level output variables
     community_pot_growth = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim)u"kg/ha",
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        Array{T}(undef, ntimesteps)u"kg/ha",
+        (; time = mean_input_date),
         name = :community_pot_growth)
     community_height_reducer = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim),
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        Array{T}(undef, ntimesteps),
+        (; time = mean_input_date),
         name = :community_height_reducer)
     radiation_reducer = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim),
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        Array{T}(undef, ntimesteps),
+        (; time = mean_input_date),
         name = :radiation_reducer)
     temperature_reducer = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim),
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        Array{T}(undef, ntimesteps),
+        (; time = mean_input_date),
         name = :temperature_reducer)
     seasonal_growth = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim),
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        Array{T}(undef, ntimesteps),
+        (; time = mean_input_date),
         name = :seasonal_growth)
     seasonal_senescence = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim),
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        Array{T}(undef, ntimesteps),
+        (; time = mean_input_date),
         name = :seasonal_senescence)
     fodder_supply = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim)u"kg/ha",
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        Array{T}(undef, ntimesteps)u"kg/ha",
+        (; time = mean_input_date),
         name = :fodder_supply)
     mean_nutrient_index = DimArray(
-        Array{T}(undef, ntimesteps, patch_xdim, patch_ydim),
-        (time = mean_input_date, x = 1:patch_xdim, y = 1:patch_ydim),
+        Array{T}(undef, ntimesteps),
+        (; time = mean_input_date),
         name = :mean_nutrient_index)
 
     output = (; biomass, above_biomass, below_biomass, water, height,
@@ -100,69 +100,62 @@ function preallocate_vectors(; input_obj, T = Float64)
 
     ############# change and state variables
     du_biomass = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
-        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, nspecies)u"kg / ha",
+        (; species = 1:nspecies),
         name = :du_biomass)
     du_above_biomass = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
-        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, nspecies)u"kg / ha",
+        (; species = 1:nspecies),
         name = :du_above_biomass)
     du_below_biomass = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
-        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, nspecies)u"kg / ha",
+        (; species = 1:nspecies),
         name = :du_below_biomass)
-    du_water = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim)u"mm",
-        (x = 1:patch_xdim, y = 1:patch_ydim), name = :du_water)
     du_height = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"m",
-        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, nspecies)u"m",
+        (; species = 1:nspecies),
         name = :du_height)
     u_biomass = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
-        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, nspecies)u"kg / ha",
+        (; species = 1:nspecies),
         name = :u_biomass)
     u_above_biomass = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
-        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, nspecies)u"kg / ha",
+        (; species = 1:nspecies),
         name = :u_above_biomass)
     u_below_biomass = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"kg / ha",
-        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, nspecies)u"kg / ha",
+        (; species = 1:nspecies),
         name = :u_below_biomass)
-    u_water = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim)u"mm",
-        (x = 1:patch_xdim, y = 1:patch_ydim),
-        name = :u_water)
     u_height = DimArray(
-        Array{T}(undef, patch_xdim, patch_ydim, nspecies)u"m",
-        (x = 1:patch_xdim, y = 1:patch_ydim, species = 1:nspecies),
+        Array{T}(undef, nspecies)u"m",
+        (; species = 1:nspecies),
         name = :u_height)
 
-    u = (; du_biomass, du_above_biomass, du_below_biomass, du_water, du_height,
-         u_biomass, u_above_biomass, u_below_biomass, u_water, u_height)
+    u = (; du_biomass, du_above_biomass, du_below_biomass, du_height,
+           u_biomass, u_above_biomass, u_below_biomass, u_height)
 
     ############# patch variables
     WHC = DimArray(
-        Array{T}(undef, nyears, patch_xdim, patch_ydim)u"mm",
-        (year = years, x = 1:patch_xdim, y = 1:patch_ydim), name = :WHC)
+        Array{T}(undef, nyears)u"mm",
+        (; year = years), name = :WHC)
     PWP = DimArray(
-        Array{T}(undef, nyears, patch_xdim, patch_ydim)u"mm",
-        (year = years, x = 1:patch_xdim, y = 1:patch_ydim), name = :PWP)
+        Array{T}(undef, nyears)u"mm",
+        (; year = years), name = :PWP)
     nutrients = DimArray(
-        Array{T}(undef, nyears, patch_xdim, patch_ydim),
-        (year = years, x = 1:patch_xdim, y = 1:patch_ydim), name = :nutrients)
-    patch_variables = (; WHC, PWP, nutrients)
+        Array{T}(undef, nyears),
+        (; year = years), name = :nutrients)
+    soil_variables = (; WHC, PWP, nutrients)
 
     ############# Traits
-    traits = (;
-        amc = Array{T}(undef, nspecies),
-        maxheight = Array{T}(undef, nspecies)u"m",
-        lbp = Array{T}(undef, nspecies),
-        lnc = Array{T}(undef, nspecies)u"mg/g",
-        sla = Array{T}(undef, nspecies)u"m^2 / g",
-        rsa = Array{T}(undef, nspecies)u"m^2 / g",
-        abp = Array{T}(undef, nspecies))
+    # traits = (;
+    #     amc = Array{T}(undef, nspecies),
+    #     maxheight = Array{T}(undef, nspecies)u"m",
+    #     lbp = Array{T}(undef, nspecies),
+    #     lnc = Array{T}(undef, nspecies)u"mg/g",
+    #     sla = Array{T}(undef, nspecies)u"m^2 / g",
+    #     rsa = Array{T}(undef, nspecies)u"m^2 / g",
+    #     abp = Array{T}(undef, nspecies))
 
     ############# Transfer function
     transfer_function = (;
@@ -255,7 +248,9 @@ function preallocate_vectors(; input_obj, T = Float64)
         fPAR_layer = Array{T}(undef, nspecies, nheight_layers)
     )
 
-    return (; u, patch_variables, calc, traits, transfer_function, output)
+    return (; u, state_water = StateWater(),
+            soil_variables, calc, #traits,
+            transfer_function, output)
 end
 
 @kwdef mutable struct CommunityLevel{T, Qkg_ha}
@@ -267,6 +262,11 @@ end
     TEMP::T = 1.0
     SEN_season::T = 1.0
     fodder_supply::Qkg_ha = 0.0u"kg/ha"
+end
+
+@kwdef mutable struct StateWater{Qmm}
+    du_water::Qmm = 0.0u"mm"
+    u_water::Qmm = 0.0u"mm"
 end
 
 struct PreallocCache

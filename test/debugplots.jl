@@ -1,6 +1,6 @@
 using CairoMakie
 
-using GrasslandTraitSim: input_traits, validation_input, SimulationParameter, preallocate_vectors,
+using GrasslandTraitSim: input_traits, create_input, SimulationParameter, preallocate_vectors,
     preallocate_specific_vectors, initialization, potential_growth!, solve_prob, nutrient_reduction!,
     radiation_reduction!, temperature_reduction!, water_reduction!, root_investment!, root_investment!
 
@@ -15,7 +15,7 @@ function create_container_for_plotting(; nspecies = nothing, param = (;), θ = n
         nspecies = length(trait_input.amc)
     end
 
-    input_obj = validation_input(;
+    input_obj = create_input(;
         plotID = "HEG01", nspecies, kwargs...)
     p = SimulationParameter(;)
 
@@ -198,7 +198,7 @@ function plot_community_height_influence(; θ = nothing, path = nothing)
     for k in keys(trait_input)
         @reset trait_input[k] = [mean(trait_input[k])]
     end
-    input_obj = validation_input(;
+    input_obj = create_input(;
         plotID = "HEG01", nspecies = 1);
     input_obj.input.LD_grazing .= NaN * u"ha^-1"
     input_obj.input.CUT_mowing .= NaN * u"m"

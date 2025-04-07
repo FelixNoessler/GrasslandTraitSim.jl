@@ -24,10 +24,9 @@ import GrasslandTraitSim as sim
 let
     lastn_points = 1500
 
-    trait_input = sim.input_traits();
-    input_obj = sim.validation_input("HEG01");
+    input_obj = sim.create_input("HEG01");
     p = sim.optim_parameter()
-    sol = sim.solve_prob(; input_obj, p, trait_input);
+    sol = sim.solve_prob(; input_obj, p);
     t = sol.simp.mean_input_date_num[end-lastn_points:end]
     t_out = sol.simp.output_date_num[end-lastn_points:end]
     total_biomass = ustrip.(vec(sum(sol.output.biomass[end-lastn_points:end, 1, 1, :]; 
@@ -110,7 +109,7 @@ let
     lastn_points = 1500
 
     trait_input = sim.input_traits();
-    input_obj = sim.validation_input("HEG01"; 
+    input_obj = sim.create_input("HEG01"; 
                                     included = (;
                                         belowground_competition = true,
                                         nutrient_growth_reduction = true,
@@ -123,8 +122,8 @@ let
     total_biomass = ustrip.(vec(sum(sol.output.biomass[end-lastn_points:end, 1, 1, :];
                                     dims = :species)))
 
-    PWP = sol.patch_variables.PWP[1, 1]
-    WHC = sol.patch_variables.WHC[1, 1]
+    PWP = sol.soil_variables.PWP[1, 1]
+    WHC = sol.soil_variables.WHC[1, 1]
     water_out = vec(sol.output.water[end-lastn_points:end, 1, 1])
 
     function get_Wsc(x; WHC, PWP)

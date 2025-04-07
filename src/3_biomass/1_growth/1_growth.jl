@@ -8,7 +8,7 @@ include("7_community_growth_reducers.jl")
 """
 Calculates the growth of the plant species.
 """
-function growth!(; t, x, y, container, above_biomass, total_biomass, actual_height, W, nutrients, WHC, PWP)
+function growth!(; t, container, above_biomass, total_biomass, actual_height, W, nutrients, WHC, PWP)
     @unpack input = container
     @unpack included = container.simp
     @unpack com, growth_act, species_specific_red, LIG, WAT, NUT, ROOT = container.calc
@@ -24,9 +24,9 @@ function growth!(; t, x, y, container, above_biomass, total_biomass, actual_heig
     @. species_specific_red = LIG * NUT * WAT * ROOT
 
     ########### Community growth adjustment by environmental and seasonal factors
-    radiation_reduction!(; container, PAR = input[:PAR][t, x, y])
-    temperature_reduction!(; container, T = input[:temperature][t, x, y])
-    seasonal_reduction!(; container, ST = input[:temperature_sum][t, x, y])
+    radiation_reduction!(; container, PAR = input[:PAR][t])
+    temperature_reduction!(; container, T = input[:temperature][t])
+    seasonal_reduction!(; container, ST = input[:temperature_sum][t])
     community_red = com.RAD * com.SEA * com.TEMP
 
     ########### Final growth

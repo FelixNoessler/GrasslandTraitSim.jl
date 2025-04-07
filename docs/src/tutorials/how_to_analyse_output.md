@@ -12,10 +12,9 @@ using Unitful
 using RCall # only for functional diversity indices
 CairoMakie.activate!()
 
-trait_input = sim.input_traits()
-input_obj = sim.validation_input("HEG01");
+input_obj = sim.create_input("HEG01");
 p = sim.optim_parameter()
-sol = sim.solve_prob(; input_obj, p, trait_input);
+sol = sim.solve_prob(; input_obj, p);
 
 nothing # hide
 ```
@@ -142,8 +141,8 @@ Soil water content is used to calculate plant water stress. To calculate water s
 
 ```@example output
 function get_Wsc(x)
-    WHC = mean(x.patch_variables.WHC)
-    PWP = mean(x.patch_variables.PWP)
+    WHC = mean(x.soil_variables.WHC)
+    PWP = mean(x.soil_variables.PWP)
     W = vec(x.output.water)
     Wsc = @. (W - PWP) / (WHC - PWP)
     return max.(min.(Wsc, 1.0), 0.0)
