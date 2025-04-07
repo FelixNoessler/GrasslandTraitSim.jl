@@ -9,6 +9,7 @@ function load_species(inputdata_path)
 end
 
 function load_input_data(input_data_path)
+    @info "Load input data from: $input_data_path"
     ########## Base information
     global plot_data = CSV.read(joinpath(input_data_path, "Plots.csv"), DataFrame)
     plotIDs = plot_data.plotID
@@ -136,6 +137,7 @@ function load_input_data(input_data_path)
             CUTdim, LDdim
         )
     end
+    println() # print empty line / looks better
 
     global input_data = NamedTuple(inputs)
 
@@ -187,7 +189,7 @@ function input_traits(plotID = nothing)
     species_data_sub = species_data
 
     if "plotID" ∈ names(species_data)
-        species_data_sub = @subset(species_data, :plotID .== plotID)
+        species_data_sub = @subset(species_data, :plotID .== String(plotID))
     end
 
     return (;
@@ -204,10 +206,10 @@ end
 function initial_conditions(plotID)
     species_data_sub = species_data
     if "plotID" ∈ names(species_data)
-        species_data_sub = @subset(deepcopy(species_data), :plotID .== plotID)
+        species_data_sub = @subset(deepcopy(species_data), :plotID .== String(plotID))
     end
 
-    plot_data_sub = @subset(deepcopy(plot_data), :plotID .== plotID)
+    plot_data_sub = @subset(deepcopy(plot_data), :plotID .== String(plotID))
 
     return (;
         AbovegroundBiomass = species_data_sub.initAbovegroundBiomass * u"kg/ha",
