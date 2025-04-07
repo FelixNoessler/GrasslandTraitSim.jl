@@ -44,7 +44,7 @@ function input_WHC_PWP!(; container)
     @unpack WHC, PWP = container.soil_variables
     @unpack sand, silt, clay, organic, bulk, rootdepth = container.input
     @unpack β_SND_WHC, β_SLT_WHC, β_CLY_WHC, β_OM_WHC, β_BLK_WHC,
-            β_SND_PWP, β_SLT_PWP, β_CLY_PWP, β_OM_PWP, β_BLK_PWP, ε_WHC = container.p
+            β_SND_PWP, β_SLT_PWP, β_CLY_PWP, β_OM_PWP, β_BLK_PWP = container.p
     @unpack years = container.simp
 
     for year in years
@@ -54,7 +54,7 @@ function input_WHC_PWP!(; container)
             β_CLY_WHC * clay[year = At(year)] +
             β_OM_WHC * organic[year = At(year)] +
             β_BLK_WHC * bulk[year = At(year)]) *
-                rootdepth[year = At(year)] * ε_WHC
+                rootdepth[year = At(year)]
 
         PWP[year = At(year)] = (
             β_SND_PWP * sand[year = At(year)] +
