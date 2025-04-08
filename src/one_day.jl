@@ -84,9 +84,6 @@ function one_day!(; t, container)
     end
 
     # -------------- net growth
-
-
-
     @. du_biomass = growth_act - senescence - defoliation
     @. du_above_biomass = allocation_above * growth_act - (1-allocation_above) * senescence - defoliation
     @. du_below_biomass = (1-allocation_above) * growth_act - allocation_above * senescence
