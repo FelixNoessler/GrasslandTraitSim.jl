@@ -11,6 +11,7 @@ function initialization(; input_obj, p, prealloc,
     initialize_senescence_rate!(; container)
     input_WHC_PWP!(; container)
     input_nutrients!(; container)
+    similarity_matrix!(; container)
 
     ###### Initial conditions
     set_initialconditions!(; container)
