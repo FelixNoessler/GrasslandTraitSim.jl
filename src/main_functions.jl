@@ -66,12 +66,14 @@ function callback_above_biomass!(; t, container)
 
     if t ∈ callback.t
         ab_bb = u_above_biomass ./ u_below_biomass
+        f = iszero.(ab_bb) .|| isinf.(ab_bb) .|| isnan.(ab_bb)
+        ab_bb[f] .= 1.0
 
         if hasdim(callback.above_biomass, :species)
             nspecies = size(callback.above_biomass, :species)
 
             for s in 1:nspecies
-                u_above_biomass[s] = callback.above_biomass[time = At(t), species = s] + 0.01u"kg/ha"
+                u_above_biomass[s] = callback.above_biomass[time = At(t), species = s]
                 u_below_biomass[s] = u_above_biomass[s] / ab_bb[s]
                 u_biomass[s] = u_above_biomass[s] + u_below_biomass[s]
             end
