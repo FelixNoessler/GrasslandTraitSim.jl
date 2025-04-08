@@ -31,7 +31,7 @@ function set_initialconditions!(; container)
     @unpack nspecies = container.simp
     @unpack maxheight, abp = container.traits
 
-    @. u_biomass = init.AbovegroundBiomass + init.AbovegroundBiomass
+    @. u_biomass = init.AbovegroundBiomass + init.BelowgroundBiomass
     @. u_above_biomass = init.AbovegroundBiomass
     @. u_below_biomass = init.BelowgroundBiomass
     @. u_height = init.Height
