@@ -30,6 +30,14 @@ function similarity_matrix!(; container)
     amc_resid .= (amc .- mean(amc)) ./ std(amc)
     rsa_resid .= (rsa .- mean(rsa)) ./ std(rsa)
 
+    #### if there is (almost) no variation in traits, set residuals to zero
+    if (std(amc) < 0.0001)
+        amc_resid .= 0.0
+    end
+    if (std(rsa) < 0.000001u"m^2/g")
+        rsa_resid .= 0.0
+    end
+
     for i in Base.OneTo(nspecies)
         for u in Base.OneTo(nspecies)
             TS[i, u] = sqrt((amc_resid[i] - amc_resid[u]) ^ 2 +
