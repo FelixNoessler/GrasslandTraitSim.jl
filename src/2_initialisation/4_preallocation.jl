@@ -171,6 +171,7 @@ function preallocate_vectors(; input_obj)
         height_loss_grazing = Array{Float64}(undef, nspecies)u"m",
         allocation_above = Array{Float64}(undef, nspecies),
         above_proportion = Array{Float64}(undef, nspecies),
+        above_divided_below = Array{Float64}(undef, nspecies),
 
         ## cut biomass
         species_mean_above_biomass = Array{Float64}(undef, nspecies)u"kg / ha",

@@ -63,23 +63,27 @@ end
 function callback_above_biomass!(; t, container)
     @unpack callback = container
     @unpack u_above_biomass, u_below_biomass, u_biomass = container.u
+    @unpack nspecies = container.simp
+    @unpack above_divided_below = container.calc
 
     if t ∈ callback.t
-        ab_bb = u_above_biomass ./ u_below_biomass
-        f = iszero.(ab_bb) .|| isinf.(ab_bb) .|| isnan.(ab_bb)
-        ab_bb[f] .= 1.0
+        for s in 1:nspecies
+            above_divided_below[s] = u_above_biomass[s] / u_below_biomass[s]
+
+            if iszero(above_divided_below[s]) || isinf(above_divided_below[s]) || isnan(above_divided_below[s])
+                above_divided_below[s] = 1.0
+            end
+        end
 
         if hasdim(callback.above_biomass, :species)
-            nspecies = size(callback.above_biomass, :species)
-
             for s in 1:nspecies
                 u_above_biomass[s] = callback.above_biomass[time = At(t), species = s]
-                u_below_biomass[s] = u_above_biomass[s] / ab_bb[s]
+                u_below_biomass[s] = u_above_biomass[s] / above_divided_below[s]
                 u_biomass[s] = u_above_biomass[s] + u_below_biomass[s]
             end
         else
             @. u_above_biomass = callback.above_biomass[time = At(t)]
-            @. u_below_biomass = u_above_biomass / ab_bb
+            @. u_below_biomass = u_above_biomass / above_divided_below
             @. u_biomass = u_above_biomass + u_below_biomass
         end
     end
