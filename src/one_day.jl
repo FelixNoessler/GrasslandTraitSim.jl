@@ -46,6 +46,7 @@ function one_day!(; t, container)
     senescence .= 0.0u"kg / ha"
     grazed .= 0.0u"kg / ha"
     mown .= 0.0u"kg / ha"
+    com.fodder_supply = 0.0u"kg/ha"
 
     if !iszero(sum(u_biomass)) && !iszero(sum(u_above_biomass))
         # ------------------------------------------ growth
