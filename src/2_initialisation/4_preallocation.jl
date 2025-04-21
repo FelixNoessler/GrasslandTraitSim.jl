@@ -57,6 +57,10 @@ function preallocate_vectors(; input_obj)
         Array{Float64}(undef, ntimesteps, nspecies),
         (; time = mean_input_date, species = 1:nspecies),
         name = :root_invest)
+    nutrients_splitted = DimArray(
+        Array{Float64}(undef, ntimesteps, nspecies),
+        (; time = mean_input_date, species = 1:nspecies),
+        name = :nutrients_splitted)
 
     #### Community-level output variables
     community_pot_growth = DimArray(
@@ -93,7 +97,8 @@ function preallocate_vectors(; input_obj)
         name = :mean_nutrient_index)
 
     output = (; biomass, above_biomass, below_biomass, water, height,
-              mown, grazed, senescence, community_pot_growth, community_height_reducer,
+              mown, grazed, senescence, nutrients_splitted,
+              community_pot_growth, community_height_reducer,
               growth_act, radiation_reducer, seasonal_growth, temperature_reducer,
               seasonal_senescence, fodder_supply, light_growth,
               water_growth, nutrient_growth, root_invest, mean_nutrient_index)

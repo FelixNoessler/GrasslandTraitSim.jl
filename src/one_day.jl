@@ -129,6 +129,7 @@ function one_day!(; t, container)
         output.water_growth[t, s] = WAT[s]
         output.nutrient_growth[t, s] = NUT[s]
         output.root_invest[t, s] = ROOT[s]
+        output.nutrients_splitted[t, s] = nutrients_splitted[s]
     end
 
     return nothing
