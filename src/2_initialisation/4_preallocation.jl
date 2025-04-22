@@ -49,6 +49,14 @@ function preallocate_vectors(; input_obj)
         Array{Float64}(undef, ntimesteps, nspecies),
         (; time = mean_input_date, species = 1:nspecies),
         name = :nutrient_growth)
+    nutrient_growth_rsa = DimArray(
+        Array{Float64}(undef, ntimesteps, nspecies),
+        (; time = mean_input_date, species = 1:nspecies),
+        name = :nutrient_growth_rsa)
+    nutrient_growth_amc = DimArray(
+        Array{Float64}(undef, ntimesteps, nspecies),
+        (; time = mean_input_date, species = 1:nspecies),
+        name = :nutrient_growth_amc)
     water_growth = DimArray(
         Array{Float64}(undef, ntimesteps, nspecies),
         (; time = mean_input_date, species = 1:nspecies),
@@ -97,11 +105,12 @@ function preallocate_vectors(; input_obj)
         name = :mean_nutrient_index)
 
     output = (; biomass, above_biomass, below_biomass, water, height,
-              mown, grazed, senescence, nutrients_splitted,
+              mown, grazed, senescence, light_growth, growth_act, water_growth,
+              nutrient_growth, nutrient_growth_rsa, nutrient_growth_amc,
+              root_invest, nutrients_splitted,
               community_pot_growth, community_height_reducer,
-              growth_act, radiation_reducer, seasonal_growth, temperature_reducer,
-              seasonal_senescence, fodder_supply, light_growth,
-              water_growth, nutrient_growth, root_invest, mean_nutrient_index)
+              radiation_reducer, temperature_reducer, seasonal_growth,
+              seasonal_senescence, fodder_supply, mean_nutrient_index)
 
     ############# change and state variables
     du_biomass = DimArray(

@@ -8,7 +8,7 @@ function one_day!(; t, container)
             du_biomass, du_above_biomass, du_below_biomass, du_height = container.u
     @unpack WHC, PWP, nutrients = container.soil_variables
     @unpack com, growth_act, senescence, mown, grazed, defoliation,
-        LIG, NUT, WAT, ROOT, allocation_above, above_proportion, nutrients_splitted,
+        LIG, NUT, N_amc, N_rsa, WAT, ROOT, allocation_above, above_proportion, nutrients_splitted,
         height_gain, height_loss_mowing, height_loss_grazing = container.calc
 
     year = mean_input_year[t]
@@ -128,6 +128,8 @@ function one_day!(; t, container)
         output.light_growth[t, s] = LIG[s]
         output.water_growth[t, s] = WAT[s]
         output.nutrient_growth[t, s] = NUT[s]
+        output.nutrient_growth_amc[t, s] = N_amc[s]
+        output.nutrient_growth_rsa[t, s] = N_rsa[s]
         output.root_invest[t, s] = ROOT[s]
         output.nutrients_splitted[t, s] = nutrients_splitted[s]
     end
