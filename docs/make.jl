@@ -112,8 +112,8 @@ makedocs(;
         repo = "github.com/FelixNoessler/GrasslandTraitSim.jl",
         devurl = "dev",
         devbranch = "master",
-        md_output_path = ".",
-        build_vitepress = false
+        # md_output_path = ".",
+        # build_vitepress = false
     ),
 
     # left pane, top pane in config.mts
