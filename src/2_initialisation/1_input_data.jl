@@ -1,3 +1,7 @@
+species_data = DataFrame()
+input_data = NamedTuple()
+plot_data = DataFrame()
+
 function load_data(inputdata_path = joinpath(DEFAULT_ARTIFACTS_DIR, "Input_data"))
     load_species(inputdata_path)
     load_input_data(inputdata_path)

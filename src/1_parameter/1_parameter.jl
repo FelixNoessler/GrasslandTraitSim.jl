@@ -17,7 +17,6 @@ Parameter of the GrasslandTraitSim.jl model
     γ_RUEmax::Qkg_MJ = F(3 / 1000)u"kg / MJ"
     γ_RUE_k::T = F(0.6)
     α_RUE_cwmH::T = F(0.95)
-    β_LIG_H::T = F(1.0)
 
     ####################################################################################
     ## 3 Water stress

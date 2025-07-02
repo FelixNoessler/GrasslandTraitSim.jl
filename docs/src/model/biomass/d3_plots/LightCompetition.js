@@ -127,39 +127,19 @@ export function lightCompetitionPlot() {
     
     const line1 = d3.line()
         .x(d => x(d.H))
-        .y(d => y(d.LIGsimple1));
-        
-    const line2 = d3.line()
-        .x(d => x(d.H))
-        .y(d => y(d.LIGsimple2));
-        
-    const line3 = d3.line()
-        .x(d => x(d.H))
         .y(d => y(d.LIGlayer1));
         
-    const line4 = d3.line()
+    const line2 = d3.line()
         .x(d => x(d.H))
         .y(d => y(d.LIGlayer2));
 
     const path1 = svg.append("path")
         .attr("class", "line")
         .attr("fill", "none")
-        .attr("stroke", "steelblue")
+        .attr("stroke", "lightblue")
         .attr("stroke-width", 2);
     
     const path2 = svg.append("path")
-        .attr("class", "line")
-        .attr("fill", "none")
-        .attr("stroke", "red")
-        .attr("stroke-width", 2);
-        
-    const path3 = svg.append("path")
-        .attr("class", "line")
-        .attr("fill", "none")
-        .attr("stroke", "lightblue")
-        .attr("stroke-width", 2);
-
-    const path4 = svg.append("path")
         .attr("class", "line")
         .attr("fill", "none")
         .attr("stroke", "coral")
@@ -170,31 +150,19 @@ export function lightCompetitionPlot() {
         const LAI_1 = +d3.select("#LAI_1").property("value");
         const LAI_2 = +d3.select("#LAI_2").property("value");
         const H_2 = +d3.select("#H_2").property("value");
-        const beta_H = +d3.select("#beta_H").property("value");
         const γ_RUE_k = +d3.select("#γRUEk").property("value");
         
         d3.select("#LAI_1-value").text(LAI_1);
         d3.select("#LAI_2-value").text(LAI_2);
         d3.select("#H_2-value").text(H_2);
-        d3.select("#beta_H-value").text(beta_H);
         d3.select("#γRUEk-value").text(γ_RUE_k);
         
         const data = [];        
         for (let H_1 = 0; H_1 <= max_x; H_1 += max_x/200) {
-            const LAItot = LAI_1 + LAI_2;
-            const cwm_H =  H_1 * LAI_1 / LAItot + H_2 * LAI_2 / LAItot;
-            const lai_h = [LAI_1 * (H_1 / cwm_H) ** beta_H,  LAI_2 * (H_2 / cwm_H) ** beta_H];
-            const lai_h_sum = lai_h[0] + lai_h[1];
-            
-            
-            
             const [LIG, LIG_layers] = lightIntercepted([H_1, H_2], [LAI_1, LAI_2], γ_RUE_k);
-            
             
             data.push({ 
                 H: H_1, 
-                LIGsimple1: lai_h[0] / lai_h_sum,
-                LIGsimple2: lai_h[1] / lai_h_sum ,
                 LIGlayer1: LIG[0],
                 LIGlayer2: LIG[1]});
         }
@@ -206,13 +174,6 @@ export function lightCompetitionPlot() {
             .transition()
             .duration(50)
             .attr("d", line2);  
-        path3.datum(data).transition()
-            .duration(50)
-            .attr("d", line3);
-        path4.datum(data)
-            .transition()
-            .duration(50)
-            .attr("d", line4);  
     }
 
     d3.selectAll(".light_competition_input").on("input", updatePlot);

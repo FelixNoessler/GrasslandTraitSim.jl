@@ -19,7 +19,6 @@ function parameter_doc()
         γ_RUEmax = "Maximum radiation use efficiency",
         γ_RUE_k =  "Light extinction coefficient",
         α_RUE_cwmH = "Reduction factor of radiation use efficiency at a height of 0.2 m ∈ [0, 1]",
-        β_LIG_H = "Exponent that coontrols how strongly taller plants intercept more light than smaller plants",
         
         α_WAT_rsa05 = L"Water stress growth reduction factor for species with mean trait: $TRSA = \phi_{TRSA}$, when the plant available water equals: $W_{p,txy} = 0.5$",
         β_WAT_rsa = "Slope of the logistic function that relates the plant available water to the water stress growth reduction factor",
@@ -96,6 +95,62 @@ Markdown.parse(parameter_doc())
 
 ## Which method uses a parameter?
 
+| **Parameter**         | **Used in...**                                                                                 |
+|----------------------:|-----------------------------------------------------------------------------------------------:|
+| ϕ\_TRSA               | [\`root\_investment!\`](@ref); [\`nutrient\_reduction!\`](@ref); [\`water\_reduction!\`](@ref) |
+| ϕ\_TAMC               | [\`root\_investment!\`](@ref); [\`nutrient\_reduction!\`](@ref)                                |
+| ϕ\_sla                | [\`initialize\_senescence\_rate!\`](@ref)                                                      |
+| γ\_RUEmax             | [\`potential\_growth!\`](@ref)                                                                 |
+| γ\_RUE\_k             | [\`light\_competition\_height\_layer!\`](@ref); [\`potential\_growth!\`](@ref)                 |
+| α\_RUE\_cwmH          | [\`potential\_growth!\`](@ref)                                                                 |
+| α\_WAT\_rsa05         | [\`water\_reduction!\`](@ref)                                                                  |
+| β\_WAT\_rsa           | [\`water\_reduction!\`](@ref)                                                                  |
+| δ\_WAT\_rsa           | [\`water\_reduction!\`](@ref)                                                                  |
+| ω\_NUT\_totalN        | [\`input\_nutrients!\`](@ref)                                                                  |
+| ω\_NUT\_fertilization | [\`input\_nutrients!\`](@ref)                                                                  |
+| β\_TS                 | [\`similarity\_matrix!\`](@ref)                                                                |
+| α\_NUT\_TSB           | [\`nutrient\_competition!\`](@ref)                                                             |
+| α\_NUT\_maxadj        | [\`nutrient\_competition!\`](@ref)                                                             |
+| α\_NUT\_amc05         | [\`nutrient\_reduction!\`](@ref)                                                               |
+| α\_NUT\_rsa05         | [\`nutrient\_reduction!\`](@ref)                                                               |
+| β\_NUT\_rsa           | [\`nutrient\_reduction!\`](@ref)                                                               |
+| β\_NUT\_amc           | [\`nutrient\_reduction!\`](@ref)                                                               |
+| δ\_NUT\_rsa           | [\`nutrient\_reduction!\`](@ref)                                                               |
+| δ\_NUT\_amc           | [\`nutrient\_reduction!\`](@ref)                                                               |
+| κ\_ROOT\_amc          | [\`root\_investment!\`](@ref)                                                                  |
+| κ\_ROOT\_rsa          | [\`root\_investment!\`](@ref)                                                                  |
+| γ\_RAD1               | [\`radiation\_reduction!\`](@ref)                                                              |
+| γ\_RAD2               | [\`radiation\_reduction!\`](@ref)                                                              |
+| ω\_TEMP\_T1           | [\`temperature\_reduction!\`](@ref)                                                            |
+| ω\_TEMP\_T2           | [\`temperature\_reduction!\`](@ref)                                                            |
+| ω\_TEMP\_T3           | [\`temperature\_reduction!\`](@ref)                                                            |
+| ω\_TEMP\_T4           | [\`temperature\_reduction!\`](@ref)                                                            |
+| ζ\_SEA\_ST1           | [\`seasonal\_reduction!\`](@ref)                                                               |
+| ζ\_SEA\_ST2           | [\`seasonal\_reduction!\`](@ref)                                                               |
+| ζ\_SEAmin             | [\`seasonal\_reduction!\`](@ref)                                                               |
+| ζ\_SEAmax             | [\`seasonal\_reduction!\`](@ref)                                                               |
+| α\_SEN                | [\`initialize\_senescence\_rate!\`](@ref)                                                      |
+| β\_SEN\_sla           | [\`initialize\_senescence\_rate!\`](@ref)                                                      |
+| ψ\_SEN\_ST1           | [\`seasonal\_component\_senescence\`](@ref)                                                    |
+| ψ\_SEN\_ST2           | [\`seasonal\_component\_senescence\`](@ref)                                                    |
+| ψ\_SENmax             | [\`seasonal\_component\_senescence\`](@ref)                                                    |
+| β\_GRZ\_lnc           | [\`grazing!\`](@ref)                                                                           |
+| β\_GRZ\_H             | [\`grazing!\`](@ref)                                                                           |
+| η\_GRZ                | [\`grazing!\`](@ref)                                                                           |
+| κ\_GRZ                | [\`grazing!\`](@ref)                                                                           |
+| ϵ\_GRZ\_minH          | [\`grazing!\`](@ref)                                                                           |
+| β\_TRM\_height        | [\`grazing!\`](@ref)                                                                           |
+| α\_TRM\_LD            | [\`grazing!\`](@ref)                                                                           |
+| β\_SND\_WHC           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_SLT\_WHC           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_CLY\_WHC           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_OM\_WHC            | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_BLK\_WHC           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_SND\_PWP           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_SLT\_PWP           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_CLY\_PWP           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_OM\_PWP            | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_BLK\_PWP           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
 
 ## How to change a parameter value
 

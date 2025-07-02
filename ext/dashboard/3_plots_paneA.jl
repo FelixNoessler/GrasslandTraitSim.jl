@@ -34,18 +34,8 @@ function biomass_plot(; plot_obj, sol, valid_data, kwargs...)
     thin = 1
     t = sol.simp.output_date_num
 
-    show_standingbiomass = plot_obj.obs.toggle_standingbiomass.active.val
-    if show_standingbiomass
-        biomass = vec(sum(ustrip.(sol.output.above_biomass); dims = (:x, :y, :species))) ./
-                    sol.simp.npatches
-        lines!(ax, t, biomass; color = :orange, linewidth = 2)
-
-        # mean_speciesbiomass = biomass ./ sol.simp.nspecies
-        # species_biomass = dropdims(mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims = (:x, :y))
-        # biomass_var = vec(sum((mean_speciesbiomass .- species_biomass) .^ 2; dims = :species)) ./ mean_speciesbiomass
-        # lines!(ax, t, biomass .+ biomass_var; color = :orange, linestyle = :dash, linewidth = 2)
-        # lines!(ax, t, biomass .- biomass_var; color = :orange, linestyle = :dash, linewidth = 2)
-    end
+    biomass = vec(sum(ustrip.(sol.output.above_biomass); dims = :species))
+    lines!(ax, t, biomass; color = :orange, linewidth = 2)
 
     show_grazmow = plot_obj.obs.toggle_grazmow.active.val
     if show_grazmow
@@ -64,13 +54,6 @@ function biomass_plot(; plot_obj, sol, valid_data, kwargs...)
         end
     end
 
-    if !isnothing(valid_data)
-        biomass = vec(ustrip.(valid_data.Cut_biomass.biomass))
-        num_t = gts.to_numeric.(LookupArrays.index(valid_data.Cut_biomass, :t))
-
-        scatter!(ax, num_t, biomass, color = :black, markersize = 6)
-    end
-
     return nothing
 end
 
@@ -79,7 +62,7 @@ function soilwater_plot(; sol, plot_obj, kwargs...)
 
     thin = 1
     t = sol.simp.output_date_num[1:thin:end]
-    water_μ = mean(ustrip.(sol.output.water); dims = (:x, :y))[1:thin:end]
+    water_μ = ustrip.(vec(sol.output.water))[1:thin:end]
     lines!(ax, t, water_μ; color = :orange, linewidth = 2)
 
     PWP = mean(ustrip(sol.soil_variables.PWP))
@@ -92,18 +75,14 @@ function simulated_aboveground_proportion(; plot_obj, sol, valid_data, kwargs...
     ax = clear_plotobj_axes(plot_obj, :simulated_abp)
 
     ###### calculate biomass weighted proportion of aboveground biomass / total biomass
-    species_totalbiomass = dropdims(
-        mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims =(:x, :y))
-    totalbiomass = sum(species_totalbiomass, dims = :species)
-    species_abovegroundbiomass = dropdims(
-        mean(ustrip.(sol.output.above_biomass); dims = (:x, :y)); dims =(:x, :y))
-    species_above_proportion = species_abovegroundbiomass ./ species_totalbiomass
-    relative_biomass = species_totalbiomass ./ totalbiomass
+    totalbiomass = sum(sol.output.biomass, dims = :species)
+    species_above_proportion = sol.output.above_biomass ./ sol.output.biomass
+    relative_biomass = sol.output.biomass ./ totalbiomass
     above_proportion = dropdims(sum(species_above_proportion .* relative_biomass;
                                     dims = :species); dims = :species)
 
     ###### calculate alpha values
-    mean_species_biomass = vec(mean(species_totalbiomass; dims = (:time)))
+    mean_species_biomass = vec(mean(sol.output.biomass; dims = (:time)))
     mean_total_biomass = sum(mean_species_biomass)
     alpha_val = min.(2 .* mean_species_biomass ./ mean_total_biomass, 1)
 
@@ -120,31 +99,20 @@ end
 function simulated_height_plot(; plot_obj, sol, valid_data, kwargs...)
     ax = clear_plotobj_axes(plot_obj, :simulated_height)
 
-    species_biomass = dropdims(
-        mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims =(:x, :y))
-    total_biomass = sum(species_biomass, dims = :species)
-    relative_biomass = species_biomass ./ total_biomass
-    height = dropdims(
-        mean(sol.output.height; dims = (:x, :y)),
-        dims = (:x, :y))
-    mean_height = vec(sum(height .* relative_biomass; dims = :species))
+    total_biomass = sum(sol.output.biomass, dims = :species)
+    relative_biomass = sol.output.biomass ./ total_biomass
+    mean_height = vec(sum(sol.output.height .* relative_biomass; dims = :species))
 
     ###### calculate alpha values
-    mean_species_biomass = vec(mean(species_biomass; dims = (:time)))
+    mean_species_biomass = vec(mean(sol.output.biomass; dims = (:time)))
     mean_total_biomass = sum(mean_species_biomass)
     alpha_val = min.(2 .* mean_species_biomass ./ mean_total_biomass, 1)
 
     for s in 1:sol.simp.nspecies
-        lines!(ax, sol.simp.output_date_num, vec(ustrip.(height)[:, s]),
+        lines!(ax, sol.simp.output_date_num, vec(ustrip.(sol.output.height)[:, s]),
                color = (:grey, alpha_val[s]))
     end
     lines!(ax, sol.simp.output_date_num, ustrip(mean_height), color = :orange)
-
-    # if !isnothing(valid_data)
-    #     num_t = sol.simp.output_date_num[LookupArrays.index(valid_data.height, :time)]
-    #     y = vec(valid_data.height)
-    #     scatter!(ax, num_t, y, color = :black, markersize = 8)
-    # end
 
     return nothing
 end

@@ -37,7 +37,7 @@ end
 function plot_static_nutrient_reducer(; plot_obj, sol, kwargs...)
     ax = clear_plotobj_axes(plot_obj, :static_nutrient_reducer)
 
-    real_nutrients = mean(sol.soil_variables.nutrients; dims = (:x, :y))[1, 1]
+    real_nutrients = mean(sol.soil_variables.nutrients)
     nspecies = sol.simp.nspecies
     δ_NUT_amc = sol.p.δ_NUT_amc
     δ_NUT_rsa = sol.p.δ_NUT_rsa
@@ -121,11 +121,8 @@ end
 function plot_water_reducer(; plot_obj, sol, kwargs...)
     ax = clear_plotobj_axes(plot_obj, :water_reducer)
 
-    water_reducer = dropdims(mean(sol.output.water_growth; dims = (:x, :y));
-                             dims = (:x, :y))
-
     for s in 1:sol.simp.nspecies
-        lines!(ax, sol.simp.mean_input_date_num, vec(water_reducer[:, s]);
+        lines!(ax, sol.simp.mean_input_date_num, vec(sol.output.water_growth[:, s]);
                color = (:black, 0.2))
     end
 end
@@ -133,11 +130,8 @@ end
 function plot_nutrient_reducer(; plot_obj, sol, kwargs...)
     ax = clear_plotobj_axes(plot_obj, :nutrient_reducer)
 
-    nutrient_reducer = dropdims(mean(sol.output.nutrient_growth; dims = (:x, :y));
-                             dims = (:x, :y))
-
     for s in 1:sol.simp.nspecies
-        lines!(ax, sol.simp.mean_input_date_num, vec(nutrient_reducer[:, s]);
+        lines!(ax, sol.simp.mean_input_date_num, vec(sol.output.nutrient_growth[:, s]);
                color = (:black, 0.2))
     end
 end
@@ -145,11 +139,8 @@ end
 function plot_root_invest(; plot_obj, sol, kwargs...)
     ax = clear_plotobj_axes(plot_obj, :root_invest)
 
-    root_invest = dropdims(mean(sol.output.root_invest; dims = (:x, :y));
-                             dims = (:x, :y))
-
     for s in 1:sol.simp.nspecies
-        lines!(ax, sol.simp.mean_input_date_num, vec(root_invest[:, s]);
+        lines!(ax, sol.simp.mean_input_date_num, vec(sol.output.root_invest[:, s]);
                color = (:black, 0.2))
     end
 end

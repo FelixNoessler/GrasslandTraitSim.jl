@@ -1,6 +1,6 @@
-[hainich_data]
-git-tree-sha1 = "f1dced6c5a6cb7d228238ceeded1f4b5f0704ece"
+[Hainich_BE_three_sites]
+git-tree-sha1 = "963c42adf97b4a1defa28582decb196bfd312209"
 
-    [[hainich_data.download]]
-    sha256 = "e3f8fcdcb6d098b9fe5335323934494bb591af3a17ad119ec090d4781ca26d7b"
-    url = "https://github.com/FelixNoessler/grassland-data/raw/refs/heads/master/hainich_data.tar.gz"
+    [[Hainich_BE_three_sites.download]]
+    sha256 = "708e551622b062901c2a12a4d685510837db2c2ff9c50355a84ab46ca3f1a8ba"
+    url = "https://github.com/FelixNoessler/grassland-data/raw/refs/heads/master/Hainich_BE_three_sites.tar.gz"
