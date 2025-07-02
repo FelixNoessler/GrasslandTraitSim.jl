@@ -13,16 +13,16 @@ click A "mowing_grazing#mowing" "Go"
 click B "mowing_grazing#grazing" "Go"
 ```
 
-Biomass losses due to management ``M_{txys}`` [kg ha⁻¹] are caused by mowing ``MOW_{txys}`` [kg ha⁻¹] and grazing ``GRZ_{txys}`` [kg ha⁻¹]:
+Biomass losses due to management ``M_{ts}`` [kg ha⁻¹] are caused by mowing ``MOW_{ts}`` [kg ha⁻¹] and grazing ``GRZ_{ts}`` [kg ha⁻¹]:
 ```math
-M_{txys} = MOW_{txys} + GRZ_{txys}
+M_{ts} = MOW_{ts} + GRZ_{ts}
 ```
 
 ## Mowing
 
-The mown biomass ``MOW_{txys}`` [kg ha⁻¹] is decribed by:
+The mown biomass ``MOW_{ts}`` [kg ha⁻¹] is decribed by:
 ```math
-MOW_{txys} =  \frac{\max\left(H_{txys} - CUT_{txy},\,0\right)}{H_{txys}} \cdot B_{A, txys}
+MOW_{ts} =  \frac{\max\left(H_{ts} - CUT_{t},\,0\right)}{H_{ts}} \cdot B_{A, ts}
 ```
 
 :::tabs
@@ -34,11 +34,11 @@ none
 == Variables
 
 inputs:
-- ``CUT_{txy}`` cutting height of a mowing event [m]
+- ``CUT_{t}`` cutting height of a mowing event [m]
 
 state variables:
-- ``B_{A, txys}`` aboveground biomass of each species [kg ha⁻¹]
-- ``H_{txys}`` plant height of each species [m]
+- ``B_{A, ts}`` aboveground biomass of each species [kg ha⁻¹]
+- ``H_{ts}`` plant height of each species [m]
 
 :::
 
@@ -49,18 +49,18 @@ mowing!
 
 ## Grazing
 
-The grazed biomass ``GRZ_{txys}`` [kg ha⁻¹] is defined as:
+The grazed biomass ``GRZ_{ts}`` [kg ha⁻¹] is defined as:
 ```math
 \begin{align}
-GRZ_{txys} &=
-    \frac{\kappa_{GRZ} \cdot LD_{txy} \cdot (B_{F, txy})^{2}}{(\kappa_{GRZ} \cdot LD_{txy} \cdot \eta_{GRZ})^2 + (B_{F, txy})^2} \cdot
-    \frac{LNC_{GRZ,txys}\cdot H_{GRZ,txys} \cdot B_{F, txys}}{\sum_{i=1}^{S}LNC_{GRZ,txyi} \cdot H_{GRZ,txyi} \cdot B_{F, txyi}  } \\
-B_{F, txys} &= \max\left(1 - \frac{\eta_{GRZ,H}}{H_{txys}},\,0\right) \cdot B_{A, txys} \\
-B_{F, txy} &= \sum_{s=1}^{S} B_{F, txys} \\
-LNC_{GRZ,txys} &= \left(\frac{lnc_s}{LNC_{cwm, txy}}\right) ^ {\beta_{GRZ,lnc}} \\
-LNC_{cwm, txy} &= \sum_{s=1}^{S} \frac{B_{F, txys}}{B_{F,txy}} \cdot lnc_s \\
-H_{GRZ,txys} &= \left(\frac{H_{txys}}{H_{cwm,txy}} \right) ^ {\beta_{GRZ,H}} \\
-H_{cwm,txy} &= \sum_{s=1}^{S} \frac{B_{F, txys}}{B_{F,txy}} \cdot H_{txys}
+GRZ_{ts} &=
+    \frac{\kappa_{GRZ} \cdot LD_{t} \cdot (B_{F, t})^{2}}{(\kappa_{GRZ} \cdot LD_{t} \cdot \eta_{GRZ})^2 + (B_{F, t})^2} \cdot
+    \frac{LNC_{GRZ,ts}\cdot H_{GRZ,ts} \cdot B_{F, ts}}{\sum_{i=1}^{S}LNC_{GRZ,ti} \cdot H_{GRZ,ti} \cdot B_{F, ti}  } \\
+B_{F, ts} &= \max\left(1 - \frac{\eta_{GRZ,H}}{H_{ts}},\,0\right) \cdot B_{A, ts} \\
+B_{F, t} &= \sum_{s=1}^{S} B_{F, ts} \\
+LNC_{GRZ,ts} &= \left(\frac{lnc_s}{LNC_{cwm, t}}\right) ^ {\beta_{GRZ,lnc}} \\
+LNC_{cwm, t} &= \sum_{s=1}^{S} \frac{B_{F, ts}}{B_{F,t}} \cdot lnc_s \\
+H_{GRZ,ts} &= \left(\frac{H_{ts}}{H_{cwm,t}} \right) ^ {\beta_{GRZ,H}} \\
+H_{cwm,t} &= \sum_{s=1}^{S} \frac{B_{F, ts}}{B_{F,t}} \cdot H_{ts}
 \end{align}
 ```
 
@@ -79,19 +79,19 @@ The equation is partly based on [Moulin2021](@citet).
 == Variables
 
 inputs:
-- ``LD_{txy}`` livestock density [-]
+- ``LD_{t}`` livestock density [-]
 
 state variables:
-- ``B_{A, txys}`` aboveground biomass of each species [kg ha⁻¹]
-- ``H_{txys}`` plant height of each species [m]
+- ``B_{A, ts}`` aboveground biomass of each species [kg ha⁻¹]
+- ``H_{ts}`` plant height of each species [m]
 
 intermediate variables:
-- ``B_{F, txys}`` biomass that can be fed by grazers of each species [kg ha⁻¹]
-- ``B_{F, txy}`` total biomass that can be fed by grazers [kg ha⁻¹]
-- ``LNC_{GRZ,txys}`` scaled influence of leaf nitrogen content ("palatability") on the gazer preference [-]
-- ``H_{GRZ,txys}`` scaled influence of plant height on the gazer preference [-]
-- ``LNC_{cwm,txy}`` community weighted mean leaf nitrogen content [mg g⁻¹]
-- ``H_{cwm,txy}`` community weighted mean height [m]
+- ``B_{F, ts}`` biomass that can be fed by grazers of each species [kg ha⁻¹]
+- ``B_{F, t}`` total biomass that can be fed by grazers [kg ha⁻¹]
+- ``LNC_{GRZ,ts}`` scaled influence of leaf nitrogen content ("palatability") on the gazer preference [-]
+- ``H_{GRZ,ts}`` scaled influence of plant height on the gazer preference [-]
+- ``LNC_{cwm,t}`` community weighted mean leaf nitrogen content [mg g⁻¹]
+- ``H_{cwm,t}`` community weighted mean height [m]
 
 
 morphological traits:

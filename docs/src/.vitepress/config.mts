@@ -21,18 +21,11 @@ const navTemp = {
       items: [
         { text: 'Prepare input and run simulation', link: '/tutorials/how_to_prepare_input'},
         { text: 'Analyse model output', link: '/tutorials/how_to_analyse_output' },
-        { text: 'Heterogenous site or management conditions', link: '/tutorials/how_to_heterogeneous_site_management' },
+        { text: 'Turn-off subprocesses', link: '/tutorials/how_to_turnoff_subprocesses' },
       ],
     },
     { text: 'Model description', link: '/model'},
-    { text: 'Visualization',
-      items: [
-        { text: 'Dashboard', link: '/viz/dashboard'},
-        { text: 'Visualize model components', link: '/viz/variables' },
-        { text: 'Varying the time step', link: '/viz/time_step' },
-      ],
-    },
-    
+    { text: 'Dashboard', link: '/dashboard' },
     { text: 'References', link: '/references' },
     { text: 'Call from R', link: 'https://felixnoessler.github.io/RGrasslandTraitSim/' },
   ],

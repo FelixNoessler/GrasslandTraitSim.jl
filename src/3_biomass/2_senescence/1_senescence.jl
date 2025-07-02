@@ -25,7 +25,7 @@ end
 Intialize the basic senescence rate based on the specific leaf area.
 """
 function initialize_senescence_rate!(; container)
-    @unpack included = container.simp
+    @unpack included, nspecies = container.simp
     @unpack senescence_rate, senescence_sla =  container.calc
 
     if !included.senescence
@@ -36,7 +36,10 @@ function initialize_senescence_rate!(; container)
     if included.senescence_sla
         @unpack β_SEN_sla, ϕ_sla = container.p
         @unpack sla = container.traits
-        @. senescence_sla = (sla / ϕ_sla) ^ β_SEN_sla
+
+        for s in 1:nspecies
+            senescence_sla[s] = max(0.5, (sla[s] / ϕ_sla) ^ β_SEN_sla)
+        end
     else
         @. senescence_sla = 1.0
     end

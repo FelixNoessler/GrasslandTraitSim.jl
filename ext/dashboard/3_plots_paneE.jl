@@ -21,7 +21,7 @@ function abiotic_plot(; sol, plot_obj, kwargs...)
     abiotic_color = abiotic_colors[name_index][1]
 
     scatterlines!(ax, sol.simp.mean_input_date_num[1:thin:end],
-        ustrip.(sol.input[abiotic])[1:thin:end];
+        ustrip.(vec(sol.input[abiotic]))[1:thin:end];
         color = abiotic_color, markersize = 4, linewidth = 0.1)
     ax.ylabel = abiotic_name
 end

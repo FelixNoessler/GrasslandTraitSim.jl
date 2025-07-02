@@ -41,32 +41,28 @@ end
 Derive walter holding capacity (WHC) and permanent wilting point (PWP) from soil properties.
 """
 function input_WHC_PWP!(; container)
-    @unpack WHC, PWP = container.patch_variables
+    @unpack WHC, PWP = container.soil_variables
     @unpack sand, silt, clay, organic, bulk, rootdepth = container.input
     @unpack β_SND_WHC, β_SLT_WHC, β_CLY_WHC, β_OM_WHC, β_BLK_WHC,
-            β_SND_PWP, β_SLT_PWP, β_CLY_PWP, β_OM_PWP, β_BLK_PWP, ε_WHC = container.p
-    @unpack patch_xdim, patch_ydim, years = container.simp
+            β_SND_PWP, β_SLT_PWP, β_CLY_PWP, β_OM_PWP, β_BLK_PWP = container.p
+    @unpack years = container.simp
 
     for year in years
-        for x in 1:patch_xdim
-            for y in 1:patch_ydim
-                WHC[year = At(year), x = At(x), y = At(y)] = (
-                    β_SND_WHC * sand[year = At(year), x = At(x), y = At(y)] +
-                    β_SLT_WHC * silt[year = At(year), x = At(x), y = At(y)] +
-                    β_CLY_WHC * clay[year = At(year), x = At(x), y = At(y)] +
-                    β_OM_WHC * organic[year = At(year), x = At(x), y = At(y)] +
-                    β_BLK_WHC * bulk[year = At(year), x = At(x), y = At(y)]) *
-                        rootdepth[year = At(year), x = At(x), y = At(y)] * ε_WHC
+        WHC[year = At(year)] = (
+            β_SND_WHC * sand[year = At(year)] +
+            β_SLT_WHC * silt[year = At(year)] +
+            β_CLY_WHC * clay[year = At(year)] +
+            β_OM_WHC * organic[year = At(year)] +
+            β_BLK_WHC * bulk[year = At(year)]) *
+                rootdepth[year = At(year)]
 
-                PWP[year = At(year), x = At(x), y = At(y)] = (
-                    β_SND_PWP * sand[year = At(year), x = At(x), y = At(y)] +
-                    β_SLT_PWP * silt[year = At(year), x = At(x), y = At(y)] +
-                    β_CLY_PWP * clay[year = At(year), x = At(x), y = At(y)] +
-                    β_OM_PWP * organic[year = At(year), x = At(x), y = At(y)] +
-                    β_BLK_PWP * bulk[year = At(year), x = At(x), y = At(y)]) *
-                        rootdepth[year = At(year), x = At(x), y = At(y)]
-            end
-        end
+        PWP[year = At(year)] = (
+            β_SND_PWP * sand[year = At(year)] +
+            β_SLT_PWP * silt[year = At(year)] +
+            β_CLY_PWP * clay[year = At(year)] +
+            β_OM_PWP * organic[year = At(year)] +
+            β_BLK_PWP * bulk[year = At(year)]) *
+                rootdepth[year = At(year)]
     end
 
     return nothing

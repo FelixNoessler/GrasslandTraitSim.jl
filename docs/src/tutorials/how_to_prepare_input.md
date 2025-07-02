@@ -1,204 +1,134 @@
-```@meta
-CurrentModule = GrasslandTraitSim
-```
-
 # How to prepare the input data to start a simulation
 
-Which input is needed (see also [here](@ref "Model inputs")):
-- daily climatic variables (PET, PAR, temperature, precipitation)
-- daily management variables (mowing, livestock density)
-- soil properties (texture, organic matter, bulk density, root depth)
+We need several input files to create the input object for the simulation (see also [page on model inputs](@ref "Model inputs")). You can find the structure and an example for loading the data in the sections below.
 
-We will create the input for a simulation from 2010 to 2012 with
-dummy data.
+## Input files structure
+### Climate.csv
 
-If you want to use the model with data from your own site, you can
-prepare the input similarly. Convert the data to the units that
-are used here and then, add the `Unitful.jl` unit to the data.
+- data for each day is needed
 
-
-## Simulation settings
-```@example input_creation
-import GrasslandTraitSim as sim
-import Dates
-using Unitful
-
-time_step_days = Dates.Day(1)
-output_date = Dates.Date(2010):Dates.lastdayofyear(Dates.Date(2012))
-mean_input_date = output_date[1:end-1] .+ (time_step_days ÷ 2)
-mean_input_year = Dates.year.(mean_input_date)
-     
-year = Dates.year.(output_date[1:end-1])
-ntimesteps = length(output_date) - 1
-ts = Base.OneTo(ntimesteps) 
-years = unique(Dates.year.(mean_input_date))
-nyears = length(years)
-    
-simp = (
-    output_date,
-    ts,
-    years,
-    nyears,
-    ntimesteps, 
-    time_step_days,
-    mean_input_date,
-    mean_input_year,
-    nspecies = 5,  
-    patch_xdim = 1, 
-    patch_ydim = 1, 
-    npatches = 1,
-    trait_seed = missing,  
-    initbiomass = 1500u"kg / ha",
-    initsoilwater = 80u"mm",
-    
-    ## which processes to include, see extra tutorial
-    ## empty tuple means, that everything is included
-    included = sim.create_included(),
-    
-    ## decide on different versions of the model
-    variations = (; use_height_layers = true)
-)
-
-nothing # hide
+```csv
+temperature,temperature_sum,precipitation,PET,PAR,t,plotID
+0.3,0.3,0,0.1,9060,2006-01-01,AEG01
+0.4,0.7,0,0.2,9176,2006-01-02,AEG01
+-1.1,0.7,0.1,0.1,5983,2006-01-03,AEG01
 ```
 
+- **temperature**: Daily average temperature [°C]
+- **temperature_sum**: Cumulative temperature [°C]
+- **precipitation**: Daily precipitation [mm d⁻¹]
+- **PET**: Potential evapotranspiration  [mm d⁻¹]
+- **PAR**: Photosynthetically active radiation [MJ ha⁻¹ d⁻¹]
+- **t**: Date [YYYY-MM-DD]
+- **plotID**: Identifier for the plot (e.g., AEG01)
 
-## Climatic data
+### Management.csv
 
-All climatic variables are here set to one to avoid complex data wrangling.
+- if no management was done, rows can be omited
 
-For an explanation of the variables, see [here](@ref "Daily abiotic conditions").
-
-```@example input_creation
-# --------------- PAR [MJ ha⁻¹]
-PAR = ones(ntimesteps)u"MJ / ha"
-
-# --------------- PET [mm]
-PET = ones(ntimesteps)u"mm"
-
-# --------------- precipiation [mm]	
-precipitation = ones(ntimesteps)u"mm"
-
-# --------------- temperature [°C]
-temperature = ones(ntimesteps)u"°C"
-
-# --------------- yearly temperature sum [°C]
-temperature_sum = sim.cumulative_temperature(temperature, year) 
-
-# --------------- final tuple of climatic inputs
-climatic_inputs = (; temperature, temperature_sum, PAR, PAR_sum = PAR, PET, PET_sum = PET, precipitation)
-
-nothing # hide
+```csv
+LD,CUT,t,plotID
+,0.07,2006-06-01,AEG01
+,0.07,2006-07-31,AEG01
+0.5272,,2022-10-01,AEG01
+0.5272,,2022-10-02,AEG01
 ```
 
-## Management data
+- **LD**: Grazing intensity measured in livestock units [LSU ha⁻¹ d⁻¹] 
+- **CUT**: Height of mowing event [m]
+- **t**: Date [YYYY-MM-DD]
+- **plotID**: Identifier for the plot (e.g., AEG01)
 
-To show how to create the management data, we will add two mowing events 
-(first of May and first of August) and one grazing event per year
-(first of June to first of August).
+### Plots.csv
 
-If you want, you can vary the mowing height and the grazing intensity
-for each event. If the site was not mowed or grazed in a year, set the
-variable to `NaN`.
+```csv
+plotID,startDate,endDate,initSoilwater
+AEG01,2006-01-01,2022-12-31,200
+AEG02,2006-01-01,2022-12-31,200
+AEG03,2006-01-01,2022-12-31,200
+``` 
 
-For an explanation of the variables, see [here](@ref "Daily management variables").
+- **plotID**: Identifier for the plot (e.g., AEG01)
+- **startDate**: Start date of the simulation [YYYY-MM-DD]
+- **endDate**: End date of the simulation [YYYY-MM-DD]
+- **initSoilwater**: Initial soil water content [mm]
 
-```@example input_creation
-# --------------- mowing height [m], NaN if no mowing
-CUT_mowing = Vector{Union{Missing, typeof(1.0u"m")}}(missing, ntimesteps)
-mowing_dates = [Dates.Date(2010, 5, 1), Dates.Date(2010, 8, 1), 
-                Dates.Date(2011, 5, 1), Dates.Date(2011, 8, 1)]
-[CUT_mowing[d .== output_date[1:end-1]] .= 0.08u"m" for d in mowing_dates]
+### Soil.csv
 
-# --------------- grazing intensity in livestock density [ha⁻¹], NaN if no grazing
-LD_grazing = Vector{Union{Missing, typeof(1.0u"ha^-1")}}(missing, ntimesteps)   
-grazing_starts = [Dates.Date(2010, 6, 1), Dates.Date(2011, 6, 1)]
-grazing_ends = [Dates.Date(2010, 8, 1), Dates.Date(2011, 8, 1)]
-livestock_density = [1, 3]u"ha^-1"
+- All soil properties can be either vary between years and then put into Soil_yearly.csv or be constant over the years and put into Soil.csv. It is possible that either of the files can be omitted if all properties are constant or all properties vary over the years.
 
-for i in eachindex(grazing_starts)
-    r = grazing_starts[i] .<= output_date[1:end-1] .<= grazing_ends[i]
-    LD_grazing[r] .= livestock_density[i]
-end
-
-management_tuple = (; CUT_mowing, LD_grazing)
-
-nothing # hide
+```csv
+sand,silt,clay,organic,bulk,rootdepth,plotID
+0.03,0.32,0.64,0.09,0.63,80,AEG01
+0.08,0.41,0.51,0.08,0.71,80,AEG02
+0.03,0.3,0.67,0.06,0.79,80,AEG03
+0.08,0.43,0.49,0.05,0.97,70,AEG04
 ```
 
-## Site variables 
+- **sand**: Sand content in the soil [fraction]
+- **silt**: Silt content in the soil [fraction]
+- **clay**: Clay content in the soil [fraction]
+- **organic**: Organic matter content in the soil [fraction]
+- **bulk**: Bulk density of the soil [g cm⁻³]
+- **rootdepth**: Mean rooting depth of plants [mm]
+- **plotID**: Identifier for the plot (e.g., AEG01)
 
-For an explanation of the variables, see [here](@ref "Raw time invariant site variables").
+### Soil_yearly.csv
 
-```@example input_creation
-site_tuple = (;
-    totalN = 5.0u"g / kg",
-    fertilization = 0.0u"kg / ha",
-    clay = 0.5,       
-    silt = 0.45,       
-    sand = 0.05,        
-    organic = 0.06,     
-    bulk = 0.7u"g / cm^3",
-    rootdepth = 160.0u"mm"
-)    
+- All soil properties can be either vary between years and then put into Soil_yearly.csv or be constant over the years and put into Soil.csv. It is possible that either of the files can be omitted if all properties are constant or all properties vary over the years.
 
-nothing # hide       
+```csv
+totalN,fertilization,year,plotID
+9.28,69.5785,2006,AEG01
+9.28,44.7892,2007,AEG01
+9.28,35,2008,AEG01
 ```
 
+- **totalN**: Total nitrogen content in the soil [g m⁻²]
+- **fertilization**: Amount of fertilization [kg N ha⁻¹]
+- **year**: Year of the fertilization event [YYYY]
+- **plotID**: Identifier for the plot (e.g., AEG01)
 
 
-## Putting everything together
+### Species.csv
 
-Then we can add all the tuples to one bigger named tuple.
+- time invariant morphological traits of the species, initialization of the species
 
-```@example input_creation
-input_obj = (; input = (; climatic_inputs..., management_tuple..., site_tuple...),
-               simp)
+```csv
+species,abp,lbp,maxheight,sla,lnc,rsa,amc,initAbovegroundBiomass,initBelowgroundBiomass,initHeight
+Achillea millefolium,0.608,0.8,0.8,0.00764,23,0.1538,0.482,71,71,0.4
+Agrostis capillaris,0.612,0.8,0.8,0.01714,22.3,0.225,0.44,71,71,0.4
+Allium schoenoprasum,0.563,0.8,0.5,0.0034,27.6,0.1651,0.639,71,71,0.2
 ```
 
-**For the plots from the Biodiversity Exploratories, we used the following convenience function
-to create the same object:**
-```@example input_creation
-input_obj_HEG01 = sim.validation_input("HEG01");
+- **species**: Name of the species
+- **abp**:  Aboveground biomass / total biomass [-]    
+- **lbp**: Leaf mass / aboveground biomass [-]
+- **maxheight**: Maximum plant height [m]
+- **sla**: Specific leaf area [m² g⁻¹]
+- **lnc**: Leaf nitrogen content per leaf mass [mg g⁻¹]
+- **rsa**: Root surface area / belowground biomass [m² g⁻¹]
+- **amc**: Arbuscular mycorrhizal colonisation rate [-]
+- **initAbovegroundBiomass**: Initial aboveground biomass [kg ha⁻¹]
+- **initBelowgroundBiomass**: Initial belowground biomass [kg ha⁻¹]
+- **initHeight**: Initial plant height [m]
 
-nothing # hide
-```
+  
 
-## Traits
+## Code example - load input data
 
-If no input traits are specified, the model will generate for each simulation new traits from a Gaussian Mixture model that was fitted to grassland plant species in Germany (see [`random_traits!`](@ref)).
+see also [example on how to change parameter values](@ref "How to change a parameter value")
 
-If you want to use your own traits, you can specify them in the following way:
-
-```@example input_creation
-# the number of values per array has to be equal to the number of species
-trait_input = (;
-    amc = [0.12, 0.52, 0.82, 0.13, 0.16],
-    sla = [0.021, 0.026, 0.014, 0.016, 0.0191]u"m^2/g",
-    maxheight = [0.38, 0.08, 0.06, 0.51, 0.27]u"m",
-    rsa = [0.108, 0.163, 0.117, 0.132, 0.119]u"m^2/g",
-    abp = [0.63, 0.52, 0.65, 0.58, 0.72],
-    lbp = [0.55, 0.49, 0.62, 0.38, 0.68],
-    lnc = [19.6, 20.7, 22.7, 20.1, 23.6]u"mg/g")
-
-nothing # hide
-```
-
-## Run a simulation
-
-```@example input_creation
-## get parameters
+```julia
+## get parameter object
 p = sim.SimulationParameter()
 
-# if you will run many simulations, it is recommended to preallocated the vectors
-# but the simulation will also run without preallocation 
-prealloc = sim.preallocate_vectors(; input_obj);
+## load input data
+sim.load_data("your_data_path_here") 
 
-# traits will be generated, no preallocation
+## create input object
+input_obj = sim.create_input("your_site_name_here")
+
+## run simulation
 sol = sim.solve_prob(; input_obj, p);
-
-# with static traits, with preallocation
-sol = sim.solve_prob(; input_obj, prealloc, p, trait_input);
-
-nothing # hide
 ```

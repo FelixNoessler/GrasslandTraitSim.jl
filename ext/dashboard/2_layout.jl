@@ -35,7 +35,7 @@ function dashboard_layout(; variable_p)
     ##############################################################################
     Label(sim_layout[1, 1:2], "Turn off parts of the model";
         halign = :left, font = :bold, fontsize = 16)
-    input_obj = gts.validation_input("HEG01"; nspecies = 1)
+    input_obj = gts.create_input(String(keys(gts.input_data)[1]);)
     included_symbols = keys(input_obj.simp.included)
     is_included = collect(values(input_obj.simp.included))
     labels = String.(included_symbols)
@@ -106,23 +106,9 @@ function dashboard_layout(; variable_p)
             ]))
 
 
-    Label(rightplotsettings_layout[1, 1], "show validation\ndata (panel A, B, D)?";
-        halign = :left, justification = :left, fontsize = 16)
-    toggle_validdata = Toggle(rightplotsettings_layout[1, 2],
-        active = true,
-        tellwidth = false,
-        halign = :left)
-
-    Label(rightplotsettings_layout[2, 1], "show standing\nbiomass (panel A)?";
-        halign = :left, justification = :left, fontsize = 16)
-    toggle_standingbiomass = Toggle(rightplotsettings_layout[2, 2],
-        active = true,
-        tellwidth = false,
-        halign = :left)
-
-    Label(rightplotsettings_layout[3, 1], "show grazing and\nmowing (panel A)?";
+    Label(rightplotsettings_layout[1, 1], "show grazing and\nmowing (panel A)?";
           halign = :left, justification = :left, fontsize = 16)
-    toggle_grazmow = Toggle(rightplotsettings_layout[3, 2], active = false)
+    toggle_grazmow = Toggle(rightplotsettings_layout[1, 2], active = false)
 
 
     ##############################################################################
@@ -198,8 +184,6 @@ function dashboard_layout(; variable_p)
         tb_p,
         toggles_included,
         toggle_grazmow,
-        toggle_validdata,
-        toggle_standingbiomass,
         plots_layout)
 
     return (; fig, axes, obs)

@@ -33,10 +33,9 @@ For more details, see the tutorials on [preparing inputs](@ref "How to prepare t
 ```@example
 import GrasslandTraitSim as sim
 
-trait_input = sim.input_traits();
-input_obj = sim.validation_input("HEG01");
+input_obj = sim.create_input("HEG01");
 p = sim.SimulationParameter();
-sol = sim.solve_prob(; input_obj, p, trait_input);
+sol = sim.solve_prob(; input_obj, p);
 sol.output.biomass
 ```
 

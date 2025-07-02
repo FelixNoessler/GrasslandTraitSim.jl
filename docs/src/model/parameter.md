@@ -19,17 +19,18 @@ function parameter_doc()
         γ_RUEmax = "Maximum radiation use efficiency",
         γ_RUE_k =  "Light extinction coefficient",
         α_RUE_cwmH = "Reduction factor of radiation use efficiency at a height of 0.2 m ∈ [0, 1]",
-        β_LIG_H = "Exponent that coontrols how strongly taller plants intercept more light than smaller plants",
         
-        α_WAT_rsa05 = L"Water stress growth reduction factor for species with mean trait: $TRSA = \phi_{TRSA}$, when the plant available water equals: $W_{p,txy} = 0.5$",
+        α_WAT_rsa05 = L"Water stress growth reduction factor for species with mean trait: $TRSA = \phi_{TRSA}$, when the plant available water equals: $W_{p,t} = 0.5$",
         β_WAT_rsa = "Slope of the logistic function that relates the plant available water to the water stress growth reduction factor",
         δ_WAT_rsa  = "Controls how strongly species differ in their water stress growth reduction from the mean response", 
         
+        ω_NUT_totalN = "Controls the influence of the total soil nitrogen on the nutrient index",
+        ω_NUT_fertilization = "Controls the influence of the fertilization rate on the nutrient index",
         β_TS = L"Scales the similarity for nutrient uptake traits (root surface area and arbuscular and mycorriza colonisation rate), which is used for competition for nutrients (very dissimilar species compete less strongly for nutrients). If $β_TS = 0$, all trait similiarities are set to 1 and the trait similarity has no effect on the competition for nutrients, with increasing $β_{TS}$ the effect of the trait similarity on the nutrient competition becomes stronger.",
-        α_NUT_TSB = L"Reference value, if the sum of the product of trait similarity and biomass of all species equals: $\sum TS \cdot B < 1$, $\sum TS \cdot B = 1$, $\sum TS \cdot B > 1$ the nutrient adjustment factor $NUT_{adj,txys}$ is higher than one, one and lower than one, respectively",
+        α_NUT_TSB = L"Reference value, if the sum of the product of trait similarity and biomass of all species equals: $\sum TS \cdot B < 1$, $\sum TS \cdot B = 1$, $\sum TS \cdot B > 1$ the nutrient adjustment factor $NUT_{adj,ts}$ is higher than one, one and lower than one, respectively",
         α_NUT_maxadj = "Maximum of the nutrient adjustment factor, fixed for calibration",
-        α_NUT_amc05 = L"Nutrient stress based on arbuscular mycorriza colonisation growth reduction factor for species with mean trait: $TAMC = \phi_{TAMC}$, when the plant available nutrients equal: $N_{p,txys} = 0.5$",
-        α_NUT_rsa05 = L"Nutrient stress based on root surface area growth reduction factor for species with mean trait: $TRSA = \phi_{TRSA}$, when the plant available nutrients equal: $N_{p,txys} = 0.5$",
+        α_NUT_amc05 = L"Nutrient stress based on arbuscular mycorriza colonisation growth reduction factor for species with mean trait: $TAMC = \phi_{TAMC}$, when the plant available nutrients equal: $N_{p,ts} = 0.5$",
+        α_NUT_rsa05 = L"Nutrient stress based on root surface area growth reduction factor for species with mean trait: $TRSA = \phi_{TRSA}$, when the plant available nutrients equal: $N_{p,ts} = 0.5$",
         β_NUT_rsa = "Slope of the logistic function that relates the plant available nutrients to the nutrient stress growth reduction factor based on root surface area & calibrated",
         β_NUT_amc = "Slope of the logistic function that relates the plant available nutrients to the nutrient stress growth reduction factor based on arbuscular mycorriza colonisation",
         δ_NUT_rsa = "Controls how strongly species differ in their nutrient stress growth reduction based on root surface area from the mean response",
@@ -38,8 +39,8 @@ function parameter_doc()
         κ_ROOT_amc = "Maximum growth reduction due to maintenance costs for mycorrhizae based on arbuscular mycorriza colonisation rate",
         κ_ROOT_rsa = "Maximum growth reduction due to maintenance costs for fine roots based on root surface area",
         
-        γ_RAD1 = L"Controls the steepness of the linear decrease in radiation use efficiency for high $PAR_{txy}$ values",
-        γ_RAD2 = L"Threshold value of $PAR_{txy}$ from which starts a linear decrease in radiation use efficiency",
+        γ_RAD1 = L"Controls the steepness of the linear decrease in radiation use efficiency for high $PAR_{t}$ values",
+        γ_RAD2 = L"Threshold value of $PAR_{t}$ from which starts a linear decrease in radiation use efficiency",
         
         ω_TEMP_T1 = "Minimum temperature for growth",
         ω_TEMP_T2 = "Lower limit of optimum temperature for growth",
@@ -96,6 +97,60 @@ Markdown.parse(parameter_doc())
 
 ## Which method uses a parameter?
 
+| **Parameter**         | **Used in...**                                                                                 |
+|----------------------:|-----------------------------------------------------------------------------------------------:|
+| ϕ\_TRSA               | [\`root\_investment!\`](@ref); [\`nutrient\_reduction!\`](@ref); [\`water\_reduction!\`](@ref) |
+| ϕ\_TAMC               | [\`root\_investment!\`](@ref); [\`nutrient\_reduction!\`](@ref)                                |
+| ϕ\_sla                | [\`initialize\_senescence\_rate!\`](@ref)                                                      |
+| γ\_RUEmax             | [\`potential\_growth!\`](@ref)                                                                 |
+| γ\_RUE\_k             | [\`light\_competition\_height\_layer!\`](@ref); [\`potential\_growth!\`](@ref)                 |
+| α\_RUE\_cwmH          | [\`potential\_growth!\`](@ref)                                                                 |
+| α\_WAT\_rsa05         | [\`water\_reduction!\`](@ref)                                                                  |
+| β\_WAT\_rsa           | [\`water\_reduction!\`](@ref)                                                                  |
+| δ\_WAT\_rsa           | [\`water\_reduction!\`](@ref)                                                                  |
+| ω\_NUT\_totalN        | [\`input\_nutrients!\`](@ref)                                                                  |
+| ω\_NUT\_fertilization | [\`input\_nutrients!\`](@ref)                                                                  |
+| β\_TS                 | [\`similarity\_matrix!\`](@ref)                                                                |
+| α\_NUT\_TSB           | [\`nutrient\_competition!\`](@ref)                                                             |
+| α\_NUT\_maxadj        | [\`nutrient\_competition!\`](@ref)                                                             |
+| α\_NUT\_amc05         | [\`nutrient\_reduction!\`](@ref)                                                               |
+| α\_NUT\_rsa05         | [\`nutrient\_reduction!\`](@ref)                                                               |
+| β\_NUT\_rsa           | [\`nutrient\_reduction!\`](@ref)                                                               |
+| β\_NUT\_amc           | [\`nutrient\_reduction!\`](@ref)                                                               |
+| δ\_NUT\_rsa           | [\`nutrient\_reduction!\`](@ref)                                                               |
+| δ\_NUT\_amc           | [\`nutrient\_reduction!\`](@ref)                                                               |
+| κ\_ROOT\_amc          | [\`root\_investment!\`](@ref)                                                                  |
+| κ\_ROOT\_rsa          | [\`root\_investment!\`](@ref)                                                                  |
+| γ\_RAD1               | [\`radiation\_reduction!\`](@ref)                                                              |
+| γ\_RAD2               | [\`radiation\_reduction!\`](@ref)                                                              |
+| ω\_TEMP\_T1           | [\`temperature\_reduction!\`](@ref)                                                            |
+| ω\_TEMP\_T2           | [\`temperature\_reduction!\`](@ref)                                                            |
+| ω\_TEMP\_T3           | [\`temperature\_reduction!\`](@ref)                                                            |
+| ω\_TEMP\_T4           | [\`temperature\_reduction!\`](@ref)                                                            |
+| ζ\_SEA\_ST1           | [\`seasonal\_reduction!\`](@ref)                                                               |
+| ζ\_SEA\_ST2           | [\`seasonal\_reduction!\`](@ref)                                                               |
+| ζ\_SEAmin             | [\`seasonal\_reduction!\`](@ref)                                                               |
+| ζ\_SEAmax             | [\`seasonal\_reduction!\`](@ref)                                                               |
+| α\_SEN                | [\`initialize\_senescence\_rate!\`](@ref)                                                      |
+| β\_SEN\_sla           | [\`initialize\_senescence\_rate!\`](@ref)                                                      |
+| ψ\_SEN\_ST1           | [\`seasonal\_component\_senescence\`](@ref)                                                    |
+| ψ\_SEN\_ST2           | [\`seasonal\_component\_senescence\`](@ref)                                                    |
+| ψ\_SENmax             | [\`seasonal\_component\_senescence\`](@ref)                                                    |
+| β\_GRZ\_lnc           | [\`grazing!\`](@ref)                                                                           |
+| β\_GRZ\_H             | [\`grazing!\`](@ref)                                                                           |
+| η\_GRZ                | [\`grazing!\`](@ref)                                                                           |
+| κ\_GRZ                | [\`grazing!\`](@ref)                                                                           |
+| ϵ\_GRZ\_minH          | [\`grazing!\`](@ref)                                                                           |
+| β\_SND\_WHC           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_SLT\_WHC           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_CLY\_WHC           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_OM\_WHC            | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_BLK\_WHC           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_SND\_PWP           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_SLT\_PWP           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_CLY\_PWP           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_OM\_PWP            | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
+| β\_BLK\_PWP           | [\`input\_WHC\_PWP!\`](@ref)                                                                   |
 
 ## How to change a parameter value
 

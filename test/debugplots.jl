@@ -1,6 +1,6 @@
 using CairoMakie
 
-using GrasslandTraitSim: input_traits, validation_input, SimulationParameter, preallocate_vectors,
+using GrasslandTraitSim: input_traits, create_input, SimulationParameter, preallocate_vectors,
     preallocate_specific_vectors, initialization, potential_growth!, solve_prob, nutrient_reduction!,
     radiation_reduction!, temperature_reduction!, water_reduction!, root_investment!, root_investment!
 
@@ -15,7 +15,7 @@ function create_container_for_plotting(; nspecies = nothing, param = (;), θ = n
         nspecies = length(trait_input.amc)
     end
 
-    input_obj = validation_input(;
+    input_obj = create_input(;
         plotID = "HEG01", nspecies, kwargs...)
     p = SimulationParameter(;)
 
@@ -198,7 +198,7 @@ function plot_community_height_influence(; θ = nothing, path = nothing)
     for k in keys(trait_input)
         @reset trait_input[k] = [mean(trait_input[k])]
     end
-    input_obj = validation_input(;
+    input_obj = create_input(;
         plotID = "HEG01", nspecies = 1);
     input_obj.input.LD_grazing .= NaN * u"ha^-1"
     input_obj.input.CUT_mowing .= NaN * u"m"
@@ -243,69 +243,6 @@ function plot_community_height_influence(; θ = nothing, path = nothing)
 
     Label(fig[1:2, 0], "Total biomass [kg ha⁻¹]",
           rotation= pi/2, fontsize = 16)
-
-    if !isnothing(path)
-        save(path, fig;)
-    else
-        display(fig)
-    end
-
-    return nothing
-end
-
-
-################################################################
-# Plots for light competition
-################################################################
-function plot_height_influence(; θ = nothing, path = nothing)
-    nspecies, container = create_container_for_plotting(; θ)
-
-    height_strength_exps = LinRange(0.0, 1.5, 40)
-    above_biomass = fill(50, nspecies)u"kg / ha"
-    ymat = Array{Float64}(undef, nspecies, length(height_strength_exps))
-    orig_β_LIG_H = container.p.β_LIG_H
-
-    ### otherwise the function won't be calculated
-    ### the LAI is not used in the hieght influence function
-    container.calc.com.LAItot = 0.2 * nspecies
-
-    for (i, β_LIG_H) in enumerate(height_strength_exps)
-        @reset container.p.β_LIG_H = β_LIG_H
-        LIG!(; container, above_biomass,
-                           actual_height = container.traits.height)
-        ymat[:, i] .= container.calc.heightinfluence
-    end
-
-    idx = sortperm(container.traits.height)
-    height = ustrip.(container.traits.height)[idx]
-
-
-    ymat = ymat[idx, :]
-    colorrange = (minimum(height), maximum(height))
-
-    mean_val = (mean(height) - minimum(height)) / (maximum(height) - minimum(height) )
-    colormap = Makie.diverging_palette(0, 230; mid=mean_val)
-
-    fig = Figure(; size = (700, 400))
-    ax = Axis(fig[1, 1];
-        ylabel = "Plant height growth factor (heightinfluence)",
-        xlabel = "Influence strength of the plant height (β_LIG_H)",
-        yticks = 0.0:5.0)
-
-    for i in Base.OneTo(nspecies)
-        lines!(height_strength_exps, ymat[i, :];
-            linewidth = 3,
-            color = height[i],
-            colorrange = colorrange,
-            colormap = colormap)
-    end
-
-    lines!(height_strength_exps, ones(length(height_strength_exps));
-        linewidth = 2,
-        linestyle = :dash,
-        color = :red)
-    # vlines!(orig_β_LIG_H)
-    Colorbar(fig[1, 2]; colormap, colorrange, label = "Plant height [m]")
 
     if !isnothing(path)
         save(path, fig;)

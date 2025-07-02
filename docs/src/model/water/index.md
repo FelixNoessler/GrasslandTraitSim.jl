@@ -22,38 +22,38 @@ flowchart LR
 ```
 
 
-The dynamics of the soil water content in the rooting zone ``W_{txy}`` [mm] is described by:
+The dynamics of the soil water content in the rooting zone ``W_{t}`` [mm] is described by:
 ```math
 \begin{align}
-W_{t+1xy} &= W_{txy} + P_{txy} - AET_{txy} - R_{txy} \\
-AET_{txy} &= \min\left(W_{txy}, E_{txy} + TR_{txy}\right) \\
-R_{txy} &= \max\left(0\, \text{mm}, W_{txy} + P_{txy} - AET_{txy} - WHC_{xy}\right) \\
-E_{txy} &= \frac{W_{txy}}{WHC_{xy}} \cdot PET_{txy} \cdot \left[1-\min\left(1, \frac{LAI_{tot, txy}}{3}\right)\right] \\
-TR_{txy} &= 
-    \max\left(0,\,\frac{W_{txy} - PWP_{xy}}{WHC_{xy} - PWP_{xy}}\right) \cdot 
-    PET_{txy} \cdot
-    \min\left(1, \frac{LAI_{tot, txy}}{3}\right)  \\
-LAI_{tot, txy} &= \sum_{s=1}^{S} LAI_{txys} \\
-LAI_{txys} &= B_{A, txys} \cdot sla_s \cdot \frac{lbp_s}{abp_s} \cdot 0.1
+W_{t+1} &= W_{t} + P_{t} - AET_{t} - R_{t} \\
+AET_{t} &= \min\left(W_{t}, E_{t} + TR_{t}\right) \\
+R_{t} &= \max\left(0\, \text{mm}, W_{t} + P_{t} - AET_{t} - WHC\right) \\
+E_{t} &= \frac{W_{t}}{WHC} \cdot PET_{t} \cdot \left[1-\min\left(1, \frac{LAI_{tot, t}}{3}\right)\right] \\
+TR_{t} &= 
+    \max\left(0,\,\frac{W_{t} - PWP}{WHC - PWP}\right) \cdot 
+    PET_{t} \cdot
+    \min\left(1, \frac{LAI_{tot, t}}{3}\right)  \\
+LAI_{tot, t} &= \sum_{s=1}^{S} LAI_{ts} \\
+LAI_{ts} &= B_{A, ts} \cdot sla_s \cdot \frac{lbp_s}{abp_s} \cdot 0.1
 \end{align}
 ```
 
-Water holding capacity ``WHC_{xy}`` [mm] and permanent wilting point ``PWP_{xy}`` [mm] are derived by:
+Water holding capacity ``WHC`` [mm] and permanent wilting point ``PWP`` [mm] are derived by:
 ```math
 \begin{align}
-WHC_{xy} &= F_{WHC, xy} \cdot RD_{xy} \\
-PWP_{xy} &= F_{PWP, xy} \cdot RD_{xy} \\
-F_{WHC, xy} &= \beta_{SND, WHC} \cdot SND_{xy} + 
-                    \beta_{SLT, WHC} \cdot SLT_{xy} + 
-                    \beta_{CLY, WHC} \cdot CLY_{xy} +  
-                    \beta_{OM, WHC} \cdot OM_{xy} +
-                    \beta_{BLK, WHC} \cdot BLK_{xy} \\
+WHC &= F_{WHC, } \cdot RD \\
+PWP &= F_{PWP, } \cdot RD \\
+F_{WHC, } &= \beta_{SND, WHC} \cdot SND + 
+                    \beta_{SLT, WHC} \cdot SLT + 
+                    \beta_{CLY, WHC} \cdot CLY +  
+                    \beta_{OM, WHC} \cdot OM +
+                    \beta_{BLK, WHC} \cdot BLK \\
 
-F_{PWP, xy} &= \beta_{SND, PWP} \cdot SND_{xy} + 
-                    \beta_{SLT, PWP} \cdot SLT_{xy} + 
-                    \beta_{CLY, PWP} \cdot CLY_{xy} + 
-                    \beta_{OM, PWP} \cdot OM_{xy} +
-                    \beta_{BLK, PWP} \cdot BLK_{xy} \\
+F_{PWP, } &= \beta_{SND, PWP} \cdot SND + 
+                    \beta_{SLT, PWP} \cdot SLT + 
+                    \beta_{CLY, PWP} \cdot CLY + 
+                    \beta_{OM, PWP} \cdot OM +
+                    \beta_{BLK, PWP} \cdot BLK \\
 \end{align}
 ```
 
@@ -63,46 +63,46 @@ Equations and parameter values for water holding capacity and permanent wilting 
 
 == Parameter
 
-- ``\beta_{SND, WHC}`` relates sand content to fraction of soil filled with water at ``WHC_{xy}`` [-]
-- ``\beta_{SLT, WHC}`` relates silt content to fraction of soil filled with water at ``WHC_{xy}`` [-]
-- ``\beta_{CLY, WHC}`` relates clay content to fraction of soil filled with water at ``WHC_{xy}`` [-]
-- ``\beta_{OM, WHC}`` relates organic matter content to fraction of soil filled with water at ``WHC_{xy}`` [-]
-- ``\beta_{BLK, WHC}`` relates bulk density to fraction of soil filled with water at ``WHC_{xy}`` [cm³ g⁻¹]
-- ``\beta_{SND, PWP}`` relates sand content to fraction of soil filled with water at ``PWP_{xy}`` [-]
-- ``\beta_{SLT, PWP}`` relates silt content to fraction of soil filled with water at ``PWP_{xy}`` [-]
-- ``\beta_{CLY, PWP}`` relates clay content to fraction of soil filled with water at ``PWP_{xy}`` [-]
-- ``\beta_{OM, PWP}`` relates organic matter content to fraction of soil filled with water at ``PWP_{xy}`` [-]
-- ``\beta_{BLK, PWP}`` relates bulk density to fraction of soil filled with water at ``PWP_{xy}`` [cm³ g⁻¹]
+- ``\beta_{SND, WHC}`` relates sand content to fraction of soil filled with water at ``WHC`` [-]
+- ``\beta_{SLT, WHC}`` relates silt content to fraction of soil filled with water at ``WHC`` [-]
+- ``\beta_{CLY, WHC}`` relates clay content to fraction of soil filled with water at ``WHC`` [-]
+- ``\beta_{OM, WHC}`` relates organic matter content to fraction of soil filled with water at ``WHC`` [-]
+- ``\beta_{BLK, WHC}`` relates bulk density to fraction of soil filled with water at ``WHC`` [cm³ g⁻¹]
+- ``\beta_{SND, PWP}`` relates sand content to fraction of soil filled with water at ``PWP`` [-]
+- ``\beta_{SLT, PWP}`` relates silt content to fraction of soil filled with water at ``PWP`` [-]
+- ``\beta_{CLY, PWP}`` relates clay content to fraction of soil filled with water at ``PWP`` [-]
+- ``\beta_{OM, PWP}`` relates organic matter content to fraction of soil filled with water at ``PWP`` [-]
+- ``\beta_{BLK, PWP}`` relates bulk density to fraction of soil filled with water at ``PWP`` [cm³ g⁻¹]
 
 
 == Variables
 
 inputs:
-- ``P_{txy}`` precipitation [mm]
-- ``PET_{txy}`` potential evapotranspiration [mm]
-- ``RD_{xy}`` rooting depth [mm]
-- ``SND_{xy}`` sand content [-]
-- ``SLT_{xy}`` silt content [-]
-- ``CLY_{xy}`` clay content [-]
-- ``OM_{xy}`` organic matter content [-]
-- ``BLK_{xy}`` bulk density [g cm⁻³]
+- ``P_{t}`` precipitation [mm]
+- ``PET_{t}`` potential evapotranspiration [mm]
+- ``RD`` rooting depth [mm]
+- ``SND`` sand content [-]
+- ``SLT`` silt content [-]
+- ``CLY`` clay content [-]
+- ``OM`` organic matter content [-]
+- ``BLK`` bulk density [g cm⁻³]
 
 state variables:
-- ``W_{txy}`` water content in the rooting zone [mm]
-- ``B_{A, txys}`` aboveground biomass of each species [kg ha⁻¹]
-- ``B_{txys}`` biomass of each species [kg ha⁻¹]
+- ``W_{t}`` water content in the rooting zone [mm]
+- ``B_{A, ts}`` aboveground biomass of each species [kg ha⁻¹]
+- ``B_{ts}`` biomass of each species [kg ha⁻¹]
 
 intermediate variables:
-- ``AET_{txy}`` actual evapotranspiration [mm]
-- ``R_{txy}`` surface runoff/drainage [mm]
-- ``E_{txy}`` evaporation [mm]
-- ``TR_{txy}`` transpiration [mm]
-- ``LAI_{tot, txy}`` leaf area index of the community [-]
-- ``LAI_{txys}`` leaf area index of each species [-]
-- ``WHC_{xy}`` water holding capacity [mm] 
-- ``PWP_{xy}`` permanent wilting point [mm]
-- ``F_{PWP, xy}`` fraction of the soil filled with water at the permanent wilting point [-]
-- ``F_{WHC, xy}`` fraction of the soil filled with water at the water holding capacity [-]
+- ``AET_{t}`` actual evapotranspiration [mm]
+- ``R_{t}`` surface runoff/drainage [mm]
+- ``E_{t}`` evaporation [mm]
+- ``TR_{t}`` transpiration [mm]
+- ``LAI_{tot, t}`` leaf area index of the community [-]
+- ``LAI_{ts}`` leaf area index of each species [-]
+- ``WHC`` water holding capacity [mm] 
+- ``PWP`` permanent wilting point [mm]
+- ``F_{PWP, }`` fraction of the soil filled with water at the permanent wilting point [-]
+- ``F_{WHC, }`` fraction of the soil filled with water at the water holding capacity [-]
 
 morphological traits:
 - ``sla_s`` specific leaf area of each species [m² g⁻¹]

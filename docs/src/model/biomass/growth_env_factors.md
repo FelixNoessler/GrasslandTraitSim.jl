@@ -32,20 +32,20 @@ click M "growth_env_factors#Temperature-influence" "Go"
 click N "growth_env_factors#Seasonal-effect" "Go"
 ```
 
-The growth is adjusted for environmental and seasonal factors ``ENV_{txy}`` [-] that apply in the same way to all species:
+The growth is adjusted for environmental and seasonal factors ``ENV_{t}`` [-] that apply in the same way to all species:
 ```math
-ENV_{txy} = RAD_{txy} \cdot TEMP_{txy} \cdot SEA_{txy}
+ENV_{t} = RAD_{t} \cdot TEMP_{t} \cdot SEA_{t}
 ```
-with the radiation ``RAD_{txy}`` [-], temperature ``TEMP_{txy}`` [-], and seasonal ``SEA_{txy}`` [-] growth adjustment factors.
+with the radiation ``RAD_{t}`` [-], temperature ``TEMP_{t}`` [-], and seasonal ``SEA_{t}`` [-] growth adjustment factors.
 
 
 ## Radiation influence
 
 
-The growth reducer due to too much radiation ``RAD_{txy}`` [-] is described by: 
+The growth reducer due to too much radiation ``RAD_{t}`` [-] is described by: 
 
 ```math
-RAD_{txy} = \max\left(\min\left(1, 1 - \gamma_{RAD,1} \cdot \left(PAR_{txys} - \gamma_{RAD,2}\right)\right), 0\right)
+RAD_{t} = \max\left(\min\left(1, 1 - \gamma_{RAD,1} \cdot \left(PAR_{t} - \gamma_{RAD,2}\right)\right), 0\right)
 ```
 
 :::tabs
@@ -53,14 +53,14 @@ RAD_{txy} = \max\left(\min\left(1, 1 - \gamma_{RAD,1} \cdot \left(PAR_{txys} - \
 == Parameter
 
 - ``\gamma_{RAD,1}`` controls the steepness of the linear decrease in
-  radiation use efficiency for high ``PAR_{txy}`` values [ha MJ⁻¹]
-- ``\gamma_{RAD,2}`` threshold value of ``PAR_{txy}`` from which starts
+  radiation use efficiency for high ``PAR_{t}`` values [ha MJ⁻¹]
+- ``\gamma_{RAD,2}`` threshold value of ``PAR_{t}`` from which starts
   a linear decrease in radiation use efficiency [MJ ha⁻¹]
 
 == Variables
 
 inputs:
-- ``PAR_{txy}`` photosynthetically active radiation [MJ ha⁻¹]
+- ``PAR_{t}`` photosynthetically active radiation [MJ ha⁻¹]
 
 :::
 
@@ -96,16 +96,16 @@ radiation_reduction!
 
 ## Temperature influence
 
-The growth reduction factor due to too low or too high temperature ``TEMP_{txy}`` [-] is described by:
+The growth reduction factor due to too low or too high temperature ``TEMP_{t}`` [-] is described by:
 
 ```math
-TEMP_{txy} =
+TEMP_{t} =
     \begin{cases}
-    0 & \text{if } T_{txy} < \omega_{TEMP,T_1} \\
-    \frac{T_{txy} - \omega_{TEMP,T_1}}{\omega_{TEMP,T_2} - \omega_{TEMP,T_1}} & \text{if } \omega_{TEMP,T_1} < T_{txy} < \omega_{TEMP,T_2} \\
-    1 & \text{if } \omega_{TEMP,T_2} < T_{txy} < \omega_{TEMP,T_3} \\
-    \frac{\omega_{TEMP,T_4} - T_{txy}}{\omega_{TEMP,T_4} - \omega_{TEMP,T_3}} & \text{if } \omega_{TEMP,T_3} < T_{txy} < \omega_{TEMP,T_4} \\
-    0 & \text{if } T_{txy} > \omega_{TEMP,T_4} \\
+    0 & \text{if } T_{t} < \omega_{TEMP,T_1} \\
+    \frac{T_{t} - \omega_{TEMP,T_1}}{\omega_{TEMP,T_2} - \omega_{TEMP,T_1}} & \text{if } \omega_{TEMP,T_1} < T_{t} < \omega_{TEMP,T_2} \\
+    1 & \text{if } \omega_{TEMP,T_2} < T_{t} < \omega_{TEMP,T_3} \\
+    \frac{\omega_{TEMP,T_4} - T_{t}}{\omega_{TEMP,T_4} - \omega_{TEMP,T_3}} & \text{if } \omega_{TEMP,T_3} < T_{t} < \omega_{TEMP,T_4} \\
+    0 & \text{if } T_{t} > \omega_{TEMP,T_4} \\
     \end{cases}
 ```
 
@@ -124,7 +124,7 @@ Equation are from [Jouven2006](@citet) and theses are based on
 == Variables
 
 inputs:
-- ``T_{txy}`` mean air temperature [°C]
+- ``T_{t}`` mean air temperature [°C]
 
 :::
 
@@ -169,21 +169,21 @@ temperature_reduction!
 
 ## Seasonal effect
 
-The seasonal growth adjustment factor ``SEA_{txy}`` [-] is desribed by: 
+The seasonal growth adjustment factor ``SEA_{t}`` [-] is desribed by: 
 
 ```math
 \begin{align}
-    SEA_{txy} &=
+    SEA_{t} &=
         \begin{cases}
-        \zeta_{SEA\min} & \text{if}\;\; ST_{txy} < 200\,°C  \\
-        \zeta_{SEA\min} + (\zeta_{SEA\max} - \zeta_{SEA\min}) \cdot \frac{ST_{txy} - 200\,°C}{\zeta_{SEA,ST_1} - 400\,°C} &
-            \text{if}\;\; 200\,°C < ST_{txy} < \zeta_{SEA,ST_1} - 200\,°C \\
-        \zeta_{SEA\max} & \text{if}\;\; \zeta_{SEA,ST_1} - 200\,°C < ST_{txy} < \zeta_{SEA,ST_1} - 100\,°C \\
-        \zeta_{SEA\min} + (\zeta_{SEA\min} - \zeta_{SEA\max}) \cdot \frac{ST_{txy} - \zeta_{SEA,ST_2}}{\zeta_{SEA,ST_2} - \zeta_{SEA,ST_1} - 100\,°C} &
-            \text{if}\;\; \zeta_{SEA,ST_1} - 100\,°C < ST_{txy} < \zeta_{SEA,ST_2} \\
-        \zeta_{SEA\min} & \text{if}\;\; ST_{txy} > \zeta_{SEA,ST_2}
+        \zeta_{SEA\min} & \text{if}\;\; ST_{t} < 200\,°C  \\
+        \zeta_{SEA\min} + (\zeta_{SEA\max} - \zeta_{SEA\min}) \cdot \frac{ST_{t} - 200\,°C}{\zeta_{SEA,ST_1} - 400\,°C} &
+            \text{if}\;\; 200\,°C < ST_{t} < \zeta_{SEA,ST_1} - 200\,°C \\
+        \zeta_{SEA\max} & \text{if}\;\; \zeta_{SEA,ST_1} - 200\,°C < ST_{t} < \zeta_{SEA,ST_1} - 100\,°C \\
+        \zeta_{SEA\min} + (\zeta_{SEA\min} - \zeta_{SEA\max}) \cdot \frac{ST_{t} - \zeta_{SEA,ST_2}}{\zeta_{SEA,ST_2} - \zeta_{SEA,ST_1} - 100\,°C} &
+            \text{if}\;\; \zeta_{SEA,ST_1} - 100\,°C < ST_{t} < \zeta_{SEA,ST_2} \\
+        \zeta_{SEA\min} & \text{if}\;\; ST_{t} > \zeta_{SEA,ST_2}
         \end{cases} \\
-    ST_{txy} &= \sum_{i=t\bmod{365}}^{t} \max\left(0\,°C,\, T_{ixy} - 0\,°C\right)
+    ST_{t} &= \sum_{i=t\bmod{365}}^{t} \max\left(0\,°C,\, T_{i} - 0\,°C\right)
 \end{align}
 ```
 
@@ -205,10 +205,10 @@ This empirical function was developed by [Jouven2006](@citet).
 
 inputs:
 
-- ``T_{txy}`` mean air temperature [°C]
+- ``T_{t}`` mean air temperature [°C]
 
 intermediate variables:
-- ``ST_{txy}`` yearly cumulative mean air temperature [°C]
+- ``ST_{t}`` yearly cumulative mean air temperature [°C]
 
 :::
 

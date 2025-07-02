@@ -12,10 +12,9 @@ using Unitful
 using RCall # only for functional diversity indices
 CairoMakie.activate!()
 
-trait_input = sim.input_traits()
-input_obj = sim.validation_input("HEG01");
+input_obj = sim.create_input("HEG01");
 p = sim.optim_parameter()
-sol = sim.solve_prob(; input_obj, p, trait_input);
+sol = sim.solve_prob(; input_obj, p);
 
 nothing # hide
 ```
@@ -33,9 +32,7 @@ The four dimension of the array are: daily time step, patch x dim, patch y dim, 
 For plotting the values with `Makie.jl`, we have to remove the units with `ustrip`:
 
 ```@example output
-# if we have more than one patch per site, we have to first calculate the mean biomass per site
-species_biomass = dropdims(mean(sol.output.biomass; dims = (:x, :y)); dims = (:x, :y))
-total_biomass = vec(sum(species_biomass; dims = :species))
+total_biomass = vec(sum(sol.output.biomass; dims = :species))
 
 fig, _ = lines(sol.simp.output_date_num, ustrip.(total_biomass), color = :darkgreen, linewidth = 2;
       axis = (; ylabel = "Total dry biomass [kg ha⁻¹]", 
@@ -55,10 +52,8 @@ sol.output.height
 We calculate the height of the community by weighting the height of the species by their proportion of biomass on the total biomass:
 
 ```@example output
-species_biomass = dropdims(mean(sol.output.biomass; dims = (:x, :y)); dims = (:x, :y))
-total_biomass = vec(sum(species_biomass; dims = :species))
-species_height = dropdims(mean(sol.output.height; dims = (:x, :y)); dims = (:x, :y))
-community_height = vec(sum(species_height .* species_biomass ./ total_biomass; dims = :species))
+total_biomass = vec(sum(sol.output.biomass; dims = :species))
+community_height = vec(sum(sol.output.height .* sol.output.biomass ./ total_biomass; dims = :species))
 
 fig, _ = lines(sol.simp.output_date_num, ustrip.(community_height),
                 color = :seagreen, linewidth = 2;
@@ -86,8 +81,7 @@ colors = [cmap[(co .- colorrange[1]) ./ (colorrange[2] - colorrange[1])]
           for co in color[is]]
 
 # calculate biomass proportion of each species
-biomass_site = dropdims(mean(sol.output.biomass; dims=(:x, :y)); dims = (:x, :y))
-biomass_ordered = biomass_site[:, sortperm(color)]
+biomass_ordered = sol.output.biomass[:, sortperm(color)]
 biomass_fraction = biomass_ordered ./ sum(biomass_ordered; dims = :species)
 biomass_cumfraction = cumsum(biomass_fraction; dims = 2)
 
@@ -129,11 +123,7 @@ end
 Similarly, we plot the soil water content over time:
 
 ```@example output
-# if we have more than one patch per site, 
-# we have to first calculate the mean soil water content per site
-soil_water_per_site = dropdims(mean(sol.output.water; dims = (:x, :y)); dims = (:x, :y))
-
-fig, _ = lines(sol.simp.output_date_num, vec(ustrip.(soil_water_per_site)), color = :blue, linewidth = 2;
+fig, _ = lines(sol.simp.output_date_num, vec(ustrip.(sol.output.water)), color = :blue, linewidth = 2;
       axis = (; ylabel = "Soil water content [mm]", xlabel = "Date [year]"))
 fig
 ```
@@ -142,8 +132,8 @@ Soil water content is used to calculate plant water stress. To calculate water s
 
 ```@example output
 function get_Wsc(x)
-    WHC = mean(x.patch_variables.WHC)
-    PWP = mean(x.patch_variables.PWP)
+    WHC = mean(x.soil_variables.WHC)
+    PWP = mean(x.soil_variables.PWP)
     W = vec(x.output.water)
     Wsc = @. (W - PWP) / (WHC - PWP)
     return max.(min.(Wsc, 1.0), 0.0)
@@ -159,9 +149,7 @@ fig
 Soil nutrients are not modelled directly in GrasslandTraitsim.jl. However, the nutrient index changes over time in response to changes in biomass due to increased competition for nutrients and in response to changes in annual inputs, namely fertilisation and total soil nitrogen. The nutrient index is species specific and is higher for species with a very different nutrient uptake strategy (defined by root surface area and arbuscular mycorhizal colonisation rate) compared to species with very high biomass, because species with a very different strategy are less affected by nutrient competition. We can plot the mean nutrient index over time:
 
 ```@example output
-nut_index = dropdims(mean(sol.output.mean_nutrient_index; dims = (:x, :y)); dims = (:x, :y))
-
-fig, _ = lines(sol.simp.mean_input_date_num, vec(nut_index), color = :orange, linewidth = 2;
+fig, _ = lines(sol.simp.mean_input_date_num, vec(sol.output.mean_nutrient_index), color = :orange, linewidth = 2;
     axis = (; ylabel = "Mean nutrient index [-]", xlabel = "Date [year]"))
 fig
 ```
@@ -175,12 +163,13 @@ We can calculate for all traits the community weighted mean over time:
 ```
 
 ```@example output
-relative_biomass = species_biomass ./ total_biomass
-traits = [:maxheight, :sla, :lnc, :rsa, :amc, :abp, :lbp]
+relative_biomass = sol.output.biomass ./ total_biomass
+# the species do not have different lbp values, so we not use it here
+traits = [:maxheight, :sla, :lnc, :rsa, :amc, :abp]
 trait_names = [
     "Maximum\n height [m]", "Specific leaf\narea [m² g⁻¹]", "Leaf nitrogen \nper leaf mass\n [mg g⁻¹]",
     "Root surface\narea per below\nground biomass\n[m² g⁻¹]", "Arbuscular\n mycorrhizal\n colonisation",
-    "Aboveground\nbiomass per total\nbiomass [-]", "Leaf biomass\nper total \nbiomass [-]"]
+    "Aboveground\nbiomass per total\nbiomass [-]"]
 
 begin
     fig = Figure(; size = (500, 1000))
@@ -226,10 +215,10 @@ sum(sol.output.mown)
 sum(sol.output.grazed)
 
 # plot the grazed and mown biomass over time
-grazed_site = dropdims(mean(sol.output.grazed; dims=(:x, :y, :species)); dims=(:x, :y, :species))
+grazed_site = dropdims(mean(sol.output.grazed; dims=(:species)); dims=(:species))
 cum_grazed = cumsum(grazed_site)
 
-mown_site = dropdims(mean(sol.output.mown; dims=(:x, :y, :species)); dims=(:x, :y, :species))
+mown_site = dropdims(mean(sol.output.mown; dims=(:species)); dims=(:species))
 cum_mown = cumsum(mown_site)
 begin
       fig = Figure()
@@ -277,10 +266,10 @@ function traits_to_matrix(trait_data; std_traits = true)
     return m
 end
 
-trait_input_wo_lbp = Base.structdiff(trait_input, (; lbp = nothing))
+trait_input_wo_lbp = Base.structdiff(sol.traits, (; lbp = nothing))
 
 tstep = 100
-biomass = sol.output.biomass[1:tstep:end, 1, 1, :]
+biomass = sol.output.biomass[1:tstep:end, :]
 biomass[biomass .< 1.0u"kg / ha"] .= 0.0u"kg / ha"
 biomass_R = ustrip.(biomass.data)
 traits_R = traits_to_matrix(trait_input_wo_lbp;)
@@ -350,12 +339,11 @@ We can calculate the Shannon and Simpson diversity over time:
 ```
 
 ```@example output
-biomass_site = dropdims(mean(sol.output.biomass; dims = (:x, :y)); dims = (:x, :y))
-tend = size(biomass_site, 1)
+tend = size(sol.output.biomass, 1)
 shannon = Array{Float64}(undef, tend)
 simpson = Array{Float64}(undef, tend)
 for t in 1:tend
-    b1 = biomass_site[t, :]
+    b1 = sol.output.biomass[t, :]
     b1 = b1[.!iszero.(b1)]
     p1 = b1 ./ sum(b1)
     shannon[t] = -sum(p1 .* log.(p1))

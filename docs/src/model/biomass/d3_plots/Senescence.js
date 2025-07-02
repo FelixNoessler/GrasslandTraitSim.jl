@@ -121,7 +121,7 @@ export function SLASenescenceRatePlot(){
         
         const data = [];
         for (let SLA = ranges.minx; SLA <= ranges.maxx; SLA += (ranges.maxx - ranges.minx) / 200) {
-            data.push({ SLA : SLA, SLA_SENadj: (SLA / phi_SLA) ** beta_SEN_SLA });
+            data.push({ SLA : SLA, SLA_SENadj: Math.max(0.5, (SLA / phi_SLA) ** beta_SEN_SLA) });
         }
         
         phiSLACircle

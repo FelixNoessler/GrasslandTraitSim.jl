@@ -4,11 +4,11 @@ CurrentModule=GrasslandTraitSim
 
 # Plant height dynamics
 
-The dynamics of the plant height of the species ``H_{txys}`` [m] are described by:
+The dynamics of the plant height of the species ``H_{ts}`` [m] are described by:
 ```math
 \begin{align}
-H_{t+1xys} &= H_{txys} \cdot \left(1 + \frac{A_{txys} \cdot G_{act, txys}}{B_{A, txys}} - \frac{MOW_{txys}}{B_{A, txys}} - \frac{GRZ_{txys}}{B_{A, txys}}\right) \\
-A_{txys} &= \frac{\left(\frac{B_{A,txys}}{B_{txys}}\right)}{abp_s}
+H_{t+1s} &= H_{ts} \cdot \left(1 + \frac{A_{ts} \cdot G_{act, ts}}{B_{A, ts}} - \frac{MOW_{ts}}{B_{A, ts}} - \frac{GRZ_{ts}}{B_{A, ts}}\right) \\
+A_{ts} &= \frac{\left(\frac{B_{A,ts}}{B_{ts}}\right)}{abp_s}
 \end{align}
 ```
 If the plants are taller than their maximum height ``maxheight_s``, their height is set to their maximum height.
@@ -23,15 +23,15 @@ none
 == Variables
 
 state variables:
-- ``H_{txys}`` plant height of each species [m]
-- ``B_{A, txys}`` aboveground biomass of each species [kg ha⁻¹]
-- ``B_{txys}`` biomass of each species [kg ha⁻¹]
+- ``H_{ts}`` plant height of each species [m]
+- ``B_{A, ts}`` aboveground biomass of each species [kg ha⁻¹]
+- ``B_{ts}`` biomass of each species [kg ha⁻¹]
 
 intermediate variables:
-- ``G_{act, txys}`` actual growth of each species [kg ha⁻¹]
-- ``MOW_{txys}`` mown biomass of each species [kg ha⁻¹]
-- ``GRZ_{txys}`` grazed biomass of each species [kg ha⁻¹]
-- ``A_{txys}`` fraction between realised aboveground biomass proportion to the trait aboveground biomass proportion of each species [-]
+- ``G_{act, ts}`` actual growth of each species [kg ha⁻¹]
+- ``MOW_{ts}`` mown biomass of each species [kg ha⁻¹]
+- ``GRZ_{ts}`` grazed biomass of each species [kg ha⁻¹]
+- ``A_{ts}`` fraction between realised aboveground biomass proportion to the trait aboveground biomass proportion of each species [-]
 
 morphological traits:
 - ``abp_s`` aboveground biomass per total biomass of each species [-]
