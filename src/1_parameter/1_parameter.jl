@@ -2,7 +2,7 @@
 Parameter of the GrasslandTraitSim.jl model
 """
 @kwdef mutable struct SimulationParameter{
-    T, Qkg_MJ, Qkg_ha, Qha_kg, Qm2_g, Qg_m2, Qkg_g, Qha_MJ, QMJ_ha, QC, Qkg, Qm, Qha, Qcm3_g}
+    T, Qkg_MJ, Qkg_ha, Qha_kg, Qm2_g, Qg_m2, Qkg_g, Qha_MJ, QMJ_ha, QC, Qkg, Qm, Qcm3_g}
 
     ####################################################################################
     ## 1 Mean/reference trait values
@@ -77,8 +77,8 @@ Parameter of the GrasslandTraitSim.jl model
     η_GRZ::T = F(2.0)
     κ_GRZ::Qkg = F(22.0)u"kg"
     ϵ_GRZ_minH::Qm = F(0.05)u"m"
-    β_TRM_height::T = F(1.0)
-    α_TRM_LD::Qha = F(0.01)u"ha"
+    # β_TRM_height::T = F(1.0)
+    # α_TRM_LD::Qha = F(0.01)u"ha"
 
     ####################################################################################
     ## 7 Soil water dynamics

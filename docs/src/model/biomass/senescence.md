@@ -15,19 +15,19 @@ CurrentModule=GrasslandTraitSim
 </script>
 ```
 
-The loss of biomass due to senescence ``S_{txys}`` [kg ha⁻¹] is defined as follows:
+The loss of biomass due to senescence ``S_{ts}`` [kg ha⁻¹] is defined as follows:
 
 ```math
 \begin{align}
-S_{txys} &= \left(1 - \left(1 - \alpha_{SEN}\right) ^ {1 / 30.44} \right) \cdot SEN_{txy} \cdot \left(\frac{sla_s}{\phi_{sla}}\right)^{\beta_{SEN,sla}}  \cdot B_{txys} \\
-SEN_{txy} &= 
+S_{ts} &= \left(1 - \left(1 - \alpha_{SEN}\right) ^ {1 / 30.44} \right) \cdot SEN_{t} \cdot \max\left(\left(\frac{sla_s}{\phi_{sla}}\right)^{\beta_{SEN,sla}}, 0.5\right) \cdot B_{ts} \\
+SEN_{t} &= 
     \begin{cases}
-    1  & \text{if}\,\,\, ST_{txy} < \psi_{SEN,ST_1} \\
-    1+(\psi_{SEN\max} - 1) \frac{ST_{txy} - \psi_{SEN,ST_1}}{\psi_{SEN,ST_2} - \psi_{SEN,ST_1}} & 
-        \text{if}\,\,\, \psi_{SEN,ST_1} < ST_{txy} < \psi_{SEN,ST_2} \\
-    \psi_{SEN\max}  & \text{if}\,\,\, ST_{txy} > \psi_{SEN,ST_2}
+    1  & \text{if}\,\,\, ST_{t} < \psi_{SEN,ST_1} \\
+    1+(\psi_{SEN\max} - 1) \frac{ST_{t} - \psi_{SEN,ST_1}}{\psi_{SEN,ST_2} - \psi_{SEN,ST_1}} & 
+        \text{if}\,\,\, \psi_{SEN,ST_1} < ST_{t} < \psi_{SEN,ST_2} \\
+    \psi_{SEN\max}  & \text{if}\,\,\, ST_{t} > \psi_{SEN,ST_2}
     \end{cases} \\
-ST_{txy} &= \sum_{i=t\bmod{365}}^{tmax} \max\left(0 °C,\, T_{ixy}\right)
+ST_{t} &= \sum_{i=t\bmod{365}}^{tmax} \max\left(0 °C,\, T_{i}\right)
 \end{align}
 
 ```
@@ -48,14 +48,14 @@ The monthly senescence rate defined by ``\alpha_{SEN}`` is converted to a daily 
 == Variables
 
 inputs:
-- ``T_{txy}`` mean air temperature at a height of 2 m [°C]
+- ``T_{t}`` mean air temperature at a height of 2 m [°C]
 
 state variables:
-- ``B_{txys}`` biomass of each species [kg ha⁻¹]
+- ``B_{ts}`` biomass of each species [kg ha⁻¹]
 
 intermediate variables:
-- ``SEN_{txy}`` seasonal component of senescence [-]
-- ``ST_{txy}`` cumulative temperature from the beginning of current year [°C]
+- ``SEN_{t}`` seasonal component of senescence [-]
+- ``ST_{t}`` cumulative temperature from the beginning of current year [°C]
 
 morphological traits:
 - ``sla_s`` specific leaf area [m² g⁻¹]
@@ -65,7 +65,7 @@ morphological traits:
 
 ### Visualization
 
-- seasonal component ``SEN_{txy}`` of the senescence rate:
+- seasonal component ``SEN_{t}`` of the senescence rate:
 
 ```@raw html
 <table>

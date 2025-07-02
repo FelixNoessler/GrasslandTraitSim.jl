@@ -18,9 +18,9 @@ CurrentModule=GrasslandTraitSim
 We derive the proportion of light intercepted by each species out of the total light intercepted by dividing the sward into vertical height layers of constant width, by default $0.05 m$: 
 ```math
 \begin{align}
-    LIG_{txys} &= \sum_{z = l}^{L} LIG_{txy,l} \\
-    LIG_{txys,l} &= INT_{txy,l} \cdot \frac{LAI_{txys,l}}{LAI_{tot,txy,l}} \cdot \frac{1}{1 - \exp(\gamma_{RUE,k} \cdot LAI_{tot,txy})} \\
-    INT_{txy,l} &= \exp\left(\gamma_{RUE,k} \cdot \sum_{z = l+1}^{L} LAI_{tot,txy,z}\right) \cdot \left(1 - \exp\left(\gamma_{RUE,k} \cdot LAI_{tot,txy,l}\right)\right) 
+    LIG_{ts} &= \sum_{z = l}^{L} LIG_{t,l} \\
+    LIG_{ts,l} &= INT_{t,l} \cdot \frac{LAI_{ts,l}}{LAI_{tot,t,l}} \cdot \frac{1}{1 - \exp(\gamma_{RUE,k} \cdot LAI_{tot,t})} \\
+    INT_{t,l} &= \exp\left(\gamma_{RUE,k} \cdot \sum_{z = l+1}^{L} LAI_{tot,t,z}\right) \cdot \left(1 - \exp\left(\gamma_{RUE,k} \cdot LAI_{tot,t,l}\right)\right) 
 \end{align}
 ```
 
@@ -34,17 +34,17 @@ We derive the proportion of light intercepted by each species out of the total l
 == Variables
 
 state variables:
-- ``B_{txys}`` biomass of each species [kg ha⁻¹]
-- ``H_{txys}`` plant height of each species [m]
+- ``B_{ts}`` biomass of each species [kg ha⁻¹]
+- ``H_{ts}`` plant height of each species [m]
 
 intermediate variables:
-- ``LAI_{txys}`` leaf area index of each species [-]
-- ``LAI_{tot, txy}`` total leaf area index of the community [-]
-- ``H_{cwm, txy}`` community weighted mean height [m]
-- ``LIG_{txys,l}`` light competition factor in the vertical layer ``l`` [-]
-- ``LAI_{txys, l}`` leaf area index of each species in the vertical layer ``l`` [-]
-- ``LAI_{tot, txy, l}`` total leaf area index of the community in the vertical layer ``l`` [-]
-- ``INT_{txy,l}`` light interception in the vertical layer ``l`` [-]
+- ``LAI_{ts}`` leaf area index of each species [-]
+- ``LAI_{tot, t}`` total leaf area index of the community [-]
+- ``H_{cwm, t}`` community weighted mean height [m]
+- ``LIG_{ts,l}`` light competition factor in the vertical layer ``l`` [-]
+- ``LAI_{ts, l}`` leaf area index of each species in the vertical layer ``l`` [-]
+- ``LAI_{tot, t, l}`` total leaf area index of the community in the vertical layer ``l`` [-]
+- ``INT_{t,l}`` light interception in the vertical layer ``l`` [-]
 
 :::
 

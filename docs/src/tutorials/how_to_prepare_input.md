@@ -117,6 +117,8 @@ Allium schoenoprasum,0.563,0.8,0.5,0.0034,27.6,0.1651,0.639,71,71,0.2
 
 ## Code example - load input data
 
+see also [example on how to change parameter values](@ref "How to change a parameter value")
+
 ```julia
 ## get parameter object
 p = sim.SimulationParameter()

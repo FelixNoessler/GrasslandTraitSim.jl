@@ -12,15 +12,15 @@ CurrentModule=GrasslandTraitSim
 </script>
 ```
 
-The root investment factor ``ROOT_{txys}`` [-], which reduces growth, is described by:
+The root investment factor ``ROOT_{ts}`` [-], which reduces growth, is described by:
 
 ```math
 \begin{align}
-    ROOT_{txys} &= ROOT_{rsa,txys} \cdot ROOT_{amc,txys} \\
-    ROOT_{rsa,txys} &= 1 - \kappa_{ROOT,rsa} + \kappa_{ROOT,rsa} \cdot \exp\left(\frac{\log(0.5)}{\phi_{TRSA} \cdot TRSA_{txys}} \right) \\
-    ROOT_{amc,txys} &= 1 - \kappa_{ROOT,amc} + \kappa_{ROOT,amc} \cdot \exp\left(\frac{\log(0.5)}{\phi_{TAMC} \cdot TAMC_{txys}} \right) \\
-    TRSA_{txys} &= \frac{B_{B, txys}}{B_{txys}} \cdot  rsa_s \\
-    TAMC_{txys} &= \frac{B_{B, txys}}{B_{txys}} \cdot  amc_s  
+    ROOT_{ts} &= ROOT_{rsa,ts} \cdot ROOT_{amc,ts} \\
+    ROOT_{rsa,ts} &= 1 - \kappa_{ROOT,rsa} + \kappa_{ROOT,rsa} \cdot \exp\left(\frac{\log(0.5)}{\phi_{TRSA} \cdot TRSA_{ts}} \right) \\
+    ROOT_{amc,ts} &= 1 - \kappa_{ROOT,amc} + \kappa_{ROOT,amc} \cdot \exp\left(\frac{\log(0.5)}{\phi_{TAMC} \cdot TAMC_{ts}} \right) \\
+    TRSA_{ts} &= \frac{B_{B, ts}}{B_{ts}} \cdot  rsa_s \\
+    TAMC_{ts} &= \frac{B_{B, ts}}{B_{ts}} \cdot  amc_s  
 \end{align}
 ```
 
@@ -36,14 +36,14 @@ The root investment factor ``ROOT_{txys}`` [-], which reduces growth, is describ
 == Variables
 
 state variables:
-- ``B_{B, txys}`` belowground biomass of each species [kg ha⁻¹]
-- ``B_{txys}`` biomass of each species [kg ha⁻¹]
+- ``B_{B, ts}`` belowground biomass of each species [kg ha⁻¹]
+- ``B_{ts}`` biomass of each species [kg ha⁻¹]
 
 intermediate variables:
-- ``ROOT_{rsa,txys}`` growth reduction due to investment in root surface area per total biomass [-]
-- ``ROOT_{amc,txys}`` growth reduction due to investment in arbuscular mycorrhizal colonisation rate per total biomass [-]
-- ``TRSA_{txys}`` root surface area per total biomass of each species [m² g⁻¹] 
-- ``TAMC_{txys}`` arbuscular mycorrhizal colonisation rate per total biomass of each species [-] 
+- ``ROOT_{rsa,ts}`` growth reduction due to investment in root surface area per total biomass [-]
+- ``ROOT_{amc,ts}`` growth reduction due to investment in arbuscular mycorrhizal colonisation rate per total biomass [-]
+- ``TRSA_{ts}`` root surface area per total biomass of each species [m² g⁻¹] 
+- ``TAMC_{ts}`` arbuscular mycorrhizal colonisation rate per total biomass of each species [-] 
 
 morphological traits:
 - ``rsa_s`` root surface area per belowground biomass of each species [m² g⁻¹]
