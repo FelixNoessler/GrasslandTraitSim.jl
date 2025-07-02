@@ -3,7 +3,7 @@ function prepare_input(; plot_obj)
     included = NamedTuple(
         [first(s) => last(s).active.val for s in plot_obj.obs.toggles_included])
     plotID = plot_obj.obs.menu_plotID.selection.val
-    input_obj = gts.validation_input(plotID; included)
+    input_obj = gts.create_input(plotID; included)
 
     # ------------- parameter values
     p = gts.SimulationParameter()

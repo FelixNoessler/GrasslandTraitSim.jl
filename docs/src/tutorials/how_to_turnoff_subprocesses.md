@@ -21,18 +21,16 @@ included = (;
     potential_growth = false,
 )
 
-trait_input = sim.input_traits()
-input_obj = sim.validation_input("HEG01"; included);
+input_obj = sim.create_input("HEG01"; included);
 p = sim.optim_parameter();
 nothing # hide
 ```
 
 Run the simulation and let's visualize the biomass dynamic without potential growth:
 ```@example turnoff_subprocesses
-sol = sim.solve_prob(; input_obj, p, trait_input);
+sol = sim.solve_prob(; input_obj, p);
 
-species_biomass = dropdims(mean(sol.output.biomass; dims = (:x, :y)); dims = (:x, :y))
-total_biomass = vec(sum(species_biomass; dims = :species))
+total_biomass = vec(sum(sol.output.biomass; dims = :species))
 
 fig, _ = lines(sol.simp.output_date_num, ustrip.(total_biomass), color = :darkgreen, linewidth = 2;
       axis = (; ylabel = "Total dry biomass [kg ha⁻¹]", 

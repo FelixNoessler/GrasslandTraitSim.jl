@@ -28,19 +28,19 @@ flowchart LR
     R ---> W;
 ```
 
-The water stress growth reducer ``WAT_{txys}`` [-] is defined as:
+The water stress growth reducer ``WAT_{ts}`` [-] is defined as:
 
 ```math
 \begin{align}
-    WAT_{txys} &= 
+    WAT_{ts} &= 
         \begin{cases}
-            0 & \text{if } W_{p, txy} = 0 \\
-            1 / \left(1 + \exp\left(-\beta_{W,RSA}\cdot \left(W_{p, txy} - x_{0, W,RSA} \right)\right)\right) & \text{if } 0 < W_{p, txy} < 1 \\
-            1 & \text{if } W_{p, txy} >= 1 \\
+            0 & \text{if } W_{p, t} = 0 \\
+            1 / \left(1 + \exp\left(-\beta_{W,RSA}\cdot \left(W_{p, t} - x_{0, W,RSA} \right)\right)\right) & \text{if } 0 < W_{p, t} < 1 \\
+            1 & \text{if } W_{p, t} >= 1 \\
         \end{cases} \\
-    x_{0, W,RSA} &= \frac{1}{\beta_{W,RSA}} \cdot \left(-\delta_{W,RSA}\cdot \left(TRSA_{txys} - \left(\frac{1}{\delta_{W,RSA}} \cdot \log\left(\frac{1 - \alpha_{W,RSA, 05}}{\alpha_{W,RSA,05}}\right) + \phi_{RSA}\right)\right)\right) + 0.5  \\
-    TRSA_{txys} &= \frac{B_{B, txys}}{B_{txys}} \cdot  rsa_s  \\
-    W_{p, txy} &= \frac{W_{txy} - PWP_{xy}}{WHC_{xy}-PWP_{xy}}  
+    x_{0, W,RSA} &= \frac{1}{\beta_{W,RSA}} \cdot \left(-\delta_{W,RSA}\cdot \left(TRSA_{ts} - \left(\frac{1}{\delta_{W,RSA}} \cdot \log\left(\frac{1 - \alpha_{W,RSA, 05}}{\alpha_{W,RSA,05}}\right) + \phi_{RSA}\right)\right)\right) + 0.5  \\
+    TRSA_{ts} &= \frac{B_{B, ts}}{B_{ts}} \cdot  rsa_s  \\
+    W_{p, t} &= \frac{W_{t} - PWP}{WHC-PWP}  
 \end{align}
 ```
 
@@ -50,21 +50,21 @@ The water stress growth reducer ``WAT_{txys}`` [-] is defined as:
 
 - ``\phi_{RSA}`` reference trait value [m² g⁻¹]
 - ``\beta_{W,RSA}`` slope of response function [-]
-- ``\alpha_{W,RSA,05}`` response at ``W_{p, txy} = 0.5`` for species with the reference trait value[-]
+- ``\alpha_{W,RSA,05}`` response at ``W_{p, t} = 0.5`` for species with the reference trait value[-]
 - ``\delta_{W,RSA}`` scales the difference in the growth reducer between species [g m⁻²]
 
 == Variables
 
 state variables:
-- ``B_{B, txys}`` belowground biomass of each species [kg ha⁻¹]
-- ``B_{txys}`` biomass of each species [kg ha⁻¹]
-- ``W_{txy}`` soil water content in the rooting zone [mm]
+- ``B_{B, ts}`` belowground biomass of each species [kg ha⁻¹]
+- ``B_{ts}`` biomass of each species [kg ha⁻¹]
+- ``W_{t}`` soil water content in the rooting zone [mm]
 
 intermediate variables:
-- ``WHC_{xy}`` water holding capacity [mm]
-- ``PWP_{xy}`` permanent wilting point [mm]
-- ``TRSA_{txys}`` root surface area per total biomass of each species [m² g⁻¹] 
-- ``W_{p, txy} \in [0, 1]`` plant available water [-]
+- ``WHC`` water holding capacity [mm]
+- ``PWP`` permanent wilting point [mm]
+- ``TRSA_{ts}`` root surface area per total biomass of each species [m² g⁻¹] 
+- ``W_{p, t} \in [0, 1]`` plant available water [-]
 
 morphological traits:
 - ``rsa_s`` root surface area per belowground biomass of each species [m² g⁻¹]

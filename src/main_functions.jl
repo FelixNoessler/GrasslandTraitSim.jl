@@ -7,7 +7,7 @@ All input variables are explained in a tutorial:
 There is also a tutorial on the model output:
 [How to analyse the model output](@ref)
 """
-function solve_prob(; input_obj, p, prealloc = nothing, trait_input = nothing,
+function solve_prob(; input_obj, p, prealloc = nothing,
                     callback = (; t = []))
 
     if ! (p isa SimulationParameter)
@@ -20,7 +20,7 @@ function solve_prob(; input_obj, p, prealloc = nothing, trait_input = nothing,
         prealloc = preallocate_vectors(; input_obj)
     end
 
-    container = initialization(; input_obj, p, prealloc, trait_input, callback)
+    container = initialization(; input_obj, p, prealloc, callback)
     main_loop!(; container)
 
     return container
@@ -31,34 +31,28 @@ Run the main loop for all days. Calls the function [`one_day!`](@ref) for each d
 and set the calculated density differences to the output variables.
 """
 function main_loop!(; container)
-    @unpack u_biomass, u_above_biomass, u_below_biomass, u_water, u_height,
-            du_biomass, du_above_biomass, du_below_biomass, du_water, du_height = container.u
-    @unpack output = container
-    @unpack ts, patch_xdim, patch_ydim, nspecies = container.simp
-    @unpack senescence = container.calc
+    @unpack u_biomass, u_above_biomass, u_below_biomass, u_height,
+            du_biomass, du_above_biomass, du_below_biomass, du_height = container.u
+    @unpack output, state_water = container
+    @unpack ts, nspecies = container.simp
 
     for t in ts
         one_day!(; t, container)
 
-        for x in Base.OneTo(patch_xdim)
-            for y in Base.OneTo(patch_ydim)
-                for s in Base.OneTo(nspecies)
-                    u_biomass[x, y, s] += du_biomass[x, y, s]
-                    output.biomass[t+1, x, y, s] = max(u_biomass[x, y, s], 0.0u"kg/ha")
+        u_biomass .+= du_biomass
+        u_above_biomass .+= du_above_biomass
+        u_below_biomass .+= du_below_biomass
+        u_height .+= du_height
 
-                    u_above_biomass[x, y, s] += du_above_biomass[x, y, s]
-                    u_below_biomass[x, y, s] += du_below_biomass[x, y, s]
-                    output.above_biomass[t+1, x, y, s] = max(u_above_biomass[x, y, s], 0.0u"kg/ha")
-                    output.below_biomass[t+1, x, y, s] = max(u_below_biomass[x, y, s], 0.0u"kg/ha")
-
-                    u_height[x, y, s] += du_height[x, y, s]
-                    output.height[t+1, x, y, s] = u_height[x, y, s]
-                end
-
-                u_water[x, y] += du_water[x, y]
-                output.water[t+1, x, y] = u_water[x, y]
-            end
+        for s in Base.OneTo(nspecies)
+            output.biomass[t+1, s] = max(u_biomass[s], 0.0u"kg/ha")
+            output.above_biomass[t+1, s] = max(u_above_biomass[s], 0.0u"kg/ha")
+            output.below_biomass[t+1, s] = max(u_below_biomass[s], 0.0u"kg/ha")
+            output.height[t+1, s] = u_height[s]
         end
+
+        state_water.u_water += state_water.du_water
+        output.water[t+1] = state_water.u_water
 
         callback_above_biomass!(; t, container)
     end
@@ -69,12 +63,29 @@ end
 function callback_above_biomass!(; t, container)
     @unpack callback = container
     @unpack u_above_biomass, u_below_biomass, u_biomass = container.u
+    @unpack nspecies = container.simp
+    @unpack above_divided_below = container.calc
 
     if t ∈ callback.t
-        ab_bb = u_above_biomass ./ u_below_biomass
-        @. u_above_biomass = callback.above_biomass[t = At(t)]
-        @. u_below_biomass = u_above_biomass / ab_bb
-        @. u_biomass = u_above_biomass + u_below_biomass
+        for s in 1:nspecies
+            above_divided_below[s] = u_above_biomass[s] / u_below_biomass[s]
+
+            if iszero(above_divided_below[s]) || isinf(above_divided_below[s]) || isnan(above_divided_below[s])
+                above_divided_below[s] = 1.0
+            end
+        end
+
+        if hasdim(callback.above_biomass, :species)
+            for s in 1:nspecies
+                u_above_biomass[s] = callback.above_biomass[time = At(t), species = s]
+                u_below_biomass[s] = u_above_biomass[s] / above_divided_below[s]
+                u_biomass[s] = u_above_biomass[s] + u_below_biomass[s]
+            end
+        else
+            @. u_above_biomass = callback.above_biomass[time = At(t)]
+            @. u_below_biomass = u_above_biomass / above_divided_below
+            @. u_biomass = u_above_biomass + u_below_biomass
+        end
     end
 end
 

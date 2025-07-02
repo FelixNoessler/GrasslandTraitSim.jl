@@ -4,16 +4,16 @@ CurrentModule=GrasslandTraitSim
 
 # Potential growth of the community
 
-The potential growth of the plant community ``G_{pot, txy}`` [kg ha⁻¹] is described by: 
+The potential growth of the plant community ``G_{pot, t}`` [kg ha⁻¹] is described by: 
 
 ```math
 \begin{align}
-    G_{pot, txy} &= PAR_{txy} \cdot \gamma_{RUE\max} \cdot FPAR_{txy} \\
-    FPAR_{txy} &= \left(1 - \exp\left(-\gamma_{RUE,k} \cdot LAI_{tot, txy}\right)\right) \cdot  
-    \exp\left(\frac{\log(\alpha_{RUE, cwmH}) \cdot 0.2 m}{H_{cwm, txy}}\right)\\
-    H_{cwm, txy} &= \sum_{s=1}^{S}\frac{B_{A, txys}}{B_{totA, txy}} \cdot H_{txys} \\
-    LAI_{tot, txy} &= \sum_{s=1}^{S} LAI_{txys} \\
-    LAI_{txys} &= B_{A, txys} \cdot sla_s \cdot \frac{lbp_s}{abp_s} \cdot 0.1
+    G_{pot, t} &= PAR_{t} \cdot \gamma_{RUE\max} \cdot FPAR_{t} \\
+    FPAR_{t} &= \left(1 - \exp\left(-\gamma_{RUE,k} \cdot LAI_{tot, t}\right)\right) \cdot  
+    \exp\left(\frac{\log(\alpha_{RUE, cwmH}) \cdot 0.2 m}{H_{cwm, t}}\right)\\
+    H_{cwm, t} &= \sum_{s=1}^{S}\frac{B_{A, ts}}{B_{totA, t}} \cdot H_{ts} \\
+    LAI_{tot, t} &= \sum_{s=1}^{S} LAI_{ts} \\
+    LAI_{ts} &= B_{A, ts} \cdot sla_s \cdot lbp_s \cdot 0.1
 \end{align}
 ```
 
@@ -25,27 +25,26 @@ In the last equation the values are converted to the dimensionless leaf area ind
 
 - ``\gamma_{RUE\max}`` maximum radiation use efficiency [kg MJ⁻¹]
 - ``\gamma_{RUE,k}`` light extinction coefficient [-]
-- ``\alpha_{RUE, cwmH} \in [0, 1]`` is the reduction factor of ``FPAR_{txy}`` if the community weighted mean height equals 0.2 m [-]
+- ``\alpha_{RUE, cwmH} \in [0, 1]`` is the reduction factor of ``FPAR_{t}`` if the community weighted mean height equals 0.2 m [-]
 
 == Variables
 
 inputs:
-- ``PAR_{txy}`` photosynthetically active radiation [MJ ha⁻¹]
+- ``PAR_{t}`` photosynthetically active radiation [MJ ha⁻¹]
 
 state variables:
-- ``B_{A, txys}`` aboveground biomass of each species [kg ha⁻¹] and the sum of all species ``B_{totA, txy}`` [kg ha⁻¹]
-- ``H_{txys}`` height of each species [m]
+- ``B_{A, ts}`` aboveground biomass of each species [kg ha⁻¹] and the sum of all species ``B_{totA, t}`` [kg ha⁻¹]
+- ``H_{ts}`` height of each species [m]
 
 intermediate variables:
-- ``LAI_{tot, txy}`` total leaf area index [-]
-- ``LAI_{txys}`` leaf area index of each species [-]
-- ``FPAR_{txy}`` fraction of the photosynthetically active radiation that is intercepted by the plants
-- ``H_{cwm, txy}`` community weighted mean height [m]
+- ``LAI_{tot, t}`` total leaf area index [-]
+- ``LAI_{ts}`` leaf area index of each species [-]
+- ``FPAR_{t}`` fraction of the photosynthetically active radiation that is intercepted by the plants
+- ``H_{cwm, t}`` community weighted mean height [m]
 
 morphological traits:
 - ``sla_s`` specific leaf area [m² g⁻¹]
 - ``lbp_s`` leaf biomass per aboveground plant biomass [-]
-- ``abp_s`` aboveground biomass per plant biomass [-]
 
 :::
 
@@ -100,7 +99,7 @@ morphological traits:
 
 ---
 
-- Influence of specific leaf area and aboveground biomass proportion on the leaf area index, all species have a total biomass of 2000 [kg ha⁻¹] and the aboveground biomass is assumed to be total biomass times aboveground biomass proportion: ``B_{A, txys} = B_{txys} \cdot abp_s``. Note, that during the simulation the aboveground biomass proportion is often lower than the trait ``abp_s``.
+- Influence of specific leaf area and aboveground biomass proportion on the leaf area index, all species have a total biomass of 2000 [kg ha⁻¹] and the aboveground biomass is assumed to be total biomass times aboveground biomass proportion: ``B_{A, ts} = B_{ts} \cdot abp_s``. Note, that during the simulation the aboveground biomass proportion is often lower than the trait ``abp_s``.
 
 
 ```@raw html
@@ -121,7 +120,7 @@ let
     above_biomass = traits.abp   .* biomass
         
     for s in eachindex(LAIs)
-        LAIs[s] = uconvert(NoUnits, traits.sla[s] * above_biomass[s] * traits.lbp[s] / traits.abp[s])
+        LAIs[s] = uconvert(NoUnits, traits.sla[s] * above_biomass[s] * traits.lbp[s])
     end
     
     idx = sortperm(traits.sla)

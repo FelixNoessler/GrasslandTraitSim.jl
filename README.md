@@ -32,10 +32,10 @@ Pkg.add("GrasslandTraitSim")
 ```julia
 import GrasslandTraitSim as sim
 
-trait_input = sim.input_traits();
-input_obj = sim.validation_input("HEG01");
+# sim.load_data("your_directory_with_input_data")
+input_obj = sim.create_input("HEG01");
 p = sim.optim_parameter();
-sol = sim.solve_prob(; input_obj, p, trait_input);
+sol = sim.solve_prob(; input_obj, p);
 sol.output.biomass
 ```
 

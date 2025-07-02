@@ -15,25 +15,12 @@ CurrentModule=GrasslandTraitSim
 </script>
 ```
 
-We define two different methods for distributing the total potential growth of the community among all species. In both methods, the result is defined in the light comptetition factor ``LIG_{txys}`` [-].
-
-**Method 1:** Simple light competition, implemented in [`light_competition_simple!`](@ref)
-
-```math
-\begin{align*}
-    LIG_{txys} &= \frac{LAI_{txys}}{LAI_{tot, txy}} \cdot \left(\frac{H_{txys}}{H_{cwm, txy}} \right) ^ {\beta_{LIG,H}} \\
-    H_{cwm, txy} &= \sum_{s=1}^{S}\frac{B_{txys}}{B_{tot, txy}} \cdot H_{txys}
-\end{align*}
-```
-
-**Method 2:** Use vertical height layers, implemented in [`light_competition_height_layer!`](@ref)
-
-In the second method, we derive the proportion of light intercepted by each species out of the total light intercepted by dividing the sward into vertical height layers of constant width, by default $0.05 m$: 
+We derive the proportion of light intercepted by each species out of the total light intercepted by dividing the sward into vertical height layers of constant width, by default $0.05 m$: 
 ```math
 \begin{align}
-    LIG_{txys} &= \sum_{z = l}^{L} LIG_{txy,l} \\
-    LIG_{txys,l} &= INT_{txy,l} \cdot \frac{LAI_{txys,l}}{LAI_{tot,txy,l}} \cdot \frac{1}{1 - \exp(\gamma_{RUE,k} \cdot LAI_{tot,txy})} \\
-    INT_{txy,l} &= \exp\left(\gamma_{RUE,k} \cdot \sum_{z = l+1}^{L} LAI_{tot,txy,z}\right) \cdot \left(1 - \exp\left(\gamma_{RUE,k} \cdot LAI_{tot,txy,l}\right)\right) 
+    LIG_{ts} &= \sum_{z = l}^{L} LIG_{t,l} \\
+    LIG_{ts,l} &= INT_{t,l} \cdot \frac{LAI_{ts,l}}{LAI_{tot,t,l}} \cdot \frac{1}{1 - \exp(\gamma_{RUE,k} \cdot LAI_{tot,t})} \\
+    INT_{t,l} &= \exp\left(\gamma_{RUE,k} \cdot \sum_{z = l+1}^{L} LAI_{tot,t,z}\right) \cdot \left(1 - \exp\left(\gamma_{RUE,k} \cdot LAI_{tot,t,l}\right)\right) 
 \end{align}
 ```
 
@@ -47,24 +34,24 @@ In the second method, we derive the proportion of light intercepted by each spec
 == Variables
 
 state variables:
-- ``B_{txys}`` biomass of each species [kg ha⁻¹]
-- ``H_{txys}`` plant height of each species [m]
+- ``B_{ts}`` biomass of each species [kg ha⁻¹]
+- ``H_{ts}`` plant height of each species [m]
 
 intermediate variables:
-- ``LAI_{txys}`` leaf area index of each species [-]
-- ``LAI_{tot, txy}`` total leaf area index of the community [-]
-- ``H_{cwm, txy}`` community weighted mean height [m]
-- ``LIG_{txys,l}`` light competition factor in the vertical layer ``l`` [-]
-- ``LAI_{txys, l}`` leaf area index of each species in the vertical layer ``l`` [-]
-- ``LAI_{tot, txy, l}`` total leaf area index of the community in the vertical layer ``l`` [-]
-- ``INT_{txy,l}`` light interception in the vertical layer ``l`` [-]
+- ``LAI_{ts}`` leaf area index of each species [-]
+- ``LAI_{tot, t}`` total leaf area index of the community [-]
+- ``H_{cwm, t}`` community weighted mean height [m]
+- ``LIG_{ts,l}`` light competition factor in the vertical layer ``l`` [-]
+- ``LAI_{ts, l}`` leaf area index of each species in the vertical layer ``l`` [-]
+- ``LAI_{tot, t, l}`` total leaf area index of the community in the vertical layer ``l`` [-]
+- ``INT_{t,l}`` light interception in the vertical layer ``l`` [-]
 
 :::
 
 
 ### Visualization
 
-- Effect of plant height on light competition for the simple method (darker colours) and the method with height layers (brighter colours). To simplify matters in the visualization for the simple method, we use the leaf area index fraction to calculate the community-weighted mean height.
+- Effect of plant height on light competition:
 ```@raw html
 <table>
     <colgroup>
@@ -73,11 +60,6 @@ intermediate variables:
         <col>
     </colgroup>
     <tbody>
-     <tr>
-        <td>simple method: control how strongly taller plants get more light β_LIG_H</td>
-        <td><span id="beta_H-value"></span></td>
-        <td><input type="range" min="0" max="2" step="0.01" value="1" id="beta_H" class="light_competition_input"></td>
-    </tr>
     <tr>
         <td>layer method: light extinction coefficient γ_RUE_k [-]</td>
         <td><span id="γRUEk-value"></span></td>
@@ -100,18 +82,6 @@ intermediate variables:
     </tr>
     </tbody>
 </table>
-simple method:
-<div class="legend" style="margin-top: 10px;">
-    <svg width="500" height="37">
-        <g>
-            <rect x="10" y="0" width="15" height="15" style="fill: steelblue;"></rect>
-            <text x="30" y="12" class="legend-text">species 1, height varied on x-Axis</text>
-            <rect x="10" y="20" width="15" height="15" style="fill: red;"></rect>
-            <text x="30" y="32" class="legend-text">species 2</text>
-        </g>
-    </svg>
-</div>
-layer method:
 <div class="legend" style="margin-top: 10px;">
     <svg width="500" height="37">
         <g>
@@ -167,6 +137,5 @@ layer method:
 ### API
 ```@docs	
 light_competition!
-light_competition_simple!
 light_competition_height_layer!
 ```

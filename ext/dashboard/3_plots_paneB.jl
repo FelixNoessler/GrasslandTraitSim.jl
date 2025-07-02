@@ -41,10 +41,8 @@ function trait_time_plot(; sol, valid_data, plot_obj, trait, kwargs...)
     t = sol.simp.output_date_num
     trait_vals = ustrip.(sol.traits[trait])
 
-    species_biomass = dropdims(
-        mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims =(:x, :y))
-    total_biomass = sum(species_biomass, dims = :species)
-    relative_biomass = species_biomass ./ total_biomass
+    total_biomass = sum(sol.output.biomass, dims = :species)
+    relative_biomass = sol.output.biomass ./ total_biomass
 
     ##  mean
     weighted_trait = Matrix(trait_vals .* relative_biomass')
@@ -92,8 +90,7 @@ function trait_share_plot(; plot_obj, sol, kwargs...)
             for co in color[is]]
 
     # calculate biomass proportion of each species
-    biomass_site = dropdims(mean(sol.output.biomass; dims=(:x, :y)); dims = (:x, :y))
-    biomass_ordered = biomass_site[:, sortperm(color)]
+    biomass_ordered = sol.output.biomass[:, sortperm(color)]
     biomass_fraction = biomass_ordered ./ sum(biomass_ordered; dims = :species)
     biomass_cumfraction = cumsum(biomass_fraction; dims = 2)
 

@@ -5,7 +5,7 @@ area index and the height of each species.
 function light_competition!(; container, above_biomass, actual_height)
     @unpack lais_heightinfluence, LIG, LAIs = container.calc
     @unpack LAItot = container.calc.com
-    @unpack included, variations = container.simp
+    @unpack included = container.simp
 
     if iszero(LAItot)
         @. LIG = 0.0
@@ -18,38 +18,14 @@ function light_competition!(; container, above_biomass, actual_height)
         return nothing
     end
 
-    ### there are two methods for simulating light competition:
-    if variations.use_height_layers
-        light_competition_height_layer!(; container, actual_height)
-    else
-        light_competition_simple!(; container, above_biomass, actual_height)
-    end
+    light_competition_height_layer!(; container, actual_height)
 
     return nothing
 end
 
-"""
-Method 1: Simple light competition based on the height of each species.
-"""
-function light_competition_simple!(; container, above_biomass, actual_height)
-    @unpack lais_heightinfluence, LIG, LAIs,
-            relative_height = container.calc
-    @unpack LAItot = container.calc.com
-    @unpack included = container.simp
-    @unpack β_LIG_H = container.p
-
-    total_above_biomass = sum(above_biomass)
-    relative_height .= actual_height .* above_biomass ./ total_above_biomass
-    height_cwm = sum(relative_height)
-
-    @. lais_heightinfluence = LAIs .* (actual_height / height_cwm) ^ β_LIG_H
-    LIG .= lais_heightinfluence ./ sum(lais_heightinfluence)
-
-    return nothing
-end
 
 """
-Method 2: Divide the grassland into vertical layers and calculate
+Divide the grassland into vertical layers and calculate
 the light competition for each layer.
 """
 function light_competition_height_layer!(; container, actual_height)

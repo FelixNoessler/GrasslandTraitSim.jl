@@ -48,43 +48,43 @@ click O "growth_species_specific_nutrients#Growth-reducers" "Go"
 click L "growth_species_specific_nutrients#Plant-available-nutrients" "Go"
 ```
 
-The nutrient stress growth reducer ``NUT_{txys}`` [-] is defined as:
+The nutrient stress growth reducer ``NUT_{ts}`` [-] is defined as:
 
 ```math
-NUT_{txys} = \max(NUT_{AMC, txys},\,NUT_{RSA, txys})
+NUT_{ts} = \max(NUT_{AMC, ts},\,NUT_{RSA, ts})
 ```
 
-The growth reducers based on arbuscular mycorrhizal colonisation rate ``NUT_{AMC, txys}`` and the root surface area ``NUT_{RSA, txys}`` are described [below](@ref "Growth reducers"). The maximum of both response curves is used for the nutrient reduction function. It is assumed that the plants needs either many fine roots per above ground biomass or have a strong symbiosis with mycorrhizal fungi. Both functions use the calculation of the [plant available nutrients](@ref "Plant available nutrients").
+The growth reducers based on arbuscular mycorrhizal colonisation rate ``NUT_{AMC, ts}`` and the root surface area ``NUT_{RSA, ts}`` are described [below](@ref "Growth reducers"). The maximum of both response curves is used for the nutrient reduction function. It is assumed that the plants needs either many fine roots per above ground biomass or have a strong symbiosis with mycorrhizal fungi. Both functions use the calculation of the [plant available nutrients](@ref "Plant available nutrients").
 
 ## Growth reducers
 
-- the nutrient stress growth reducer based on the arbuscular mycorrhizal colonisation rate ``NUT_{AMC,txys}`` [-] is defined as:
+- the nutrient stress growth reducer based on the arbuscular mycorrhizal colonisation rate ``NUT_{AMC,ts}`` [-] is defined as:
 
 ```math
 \begin{align}
-    NUT_{AMC,txys} &= 
+    NUT_{AMC,ts} &= 
     \begin{cases}
         0 & \text{if } R = 0 \\
-        1 / \left(1 + \exp\left(-\beta_{NUT,amc}\cdot \left(N_{p, txys} - x_{0, N,AMC} \right)\right)\right) & \text{if } 0 < R < 1 \\
+        1 / \left(1 + \exp\left(-\beta_{NUT,amc}\cdot \left(N_{p, ts} - x_{0, N,AMC} \right)\right)\right) & \text{if } 0 < R < 1 \\
         1 & \text{if } R >= 1 \\
     \end{cases}  \\
-   x_{0, N,AMC} &= \frac{1}{\beta_{NUT,amc}} \cdot  \left(-\delta_{NUT,amc}\cdot \left(TAMC_{txys} - \left(\frac{1}{\delta_{NUT,amc}} \cdot \log\left(\frac{1 - \alpha_{NUT,amc,05}}{\alpha_{NUT,amc,05}}\right) + \phi_{TAMC}\right)\right)\right) + 0.5  \\
-    TAMC_{txys} &= \frac{B_{B, txys}}{B_{txys}} \cdot  amc_s  
+   x_{0, N,AMC} &= \frac{1}{\beta_{NUT,amc}} \cdot  \left(-\delta_{NUT,amc}\cdot \left(TAMC_{ts} - \left(\frac{1}{\delta_{NUT,amc}} \cdot \log\left(\frac{1 - \alpha_{NUT,amc,05}}{\alpha_{NUT,amc,05}}\right) + \phi_{TAMC}\right)\right)\right) + 0.5  \\
+    TAMC_{ts} &= \frac{B_{B, ts}}{B_{ts}} \cdot  amc_s  
 \end{align}
 ```
 
-- the nutrient stress growth reducer based on the root surface area ``NUT_{RSA,txys}`` [-] is defined as:
+- the nutrient stress growth reducer based on the root surface area ``NUT_{RSA,ts}`` [-] is defined as:
 
 ```math
 \begin{align}
-    NUT_{RSA,txys} &= 
+    NUT_{RSA,ts} &= 
     \begin{cases}
         0 & \text{if } R = 0 \\
-        1 / \left(1 + \exp\left(-\beta_{NUT,rsa}\cdot \left(N_{p, txys} - x_{0, N,RSA} \right)\right)\right) & \text{if } 0 < R < 1 \\
+        1 / \left(1 + \exp\left(-\beta_{NUT,rsa}\cdot \left(N_{p, ts} - x_{0, N,RSA} \right)\right)\right) & \text{if } 0 < R < 1 \\
         1 & \text{if } R >= 1 \\
     \end{cases}  \\
-   x_{0, N,RSA} &= \frac{1}{\beta_{NUT,rsa}} \cdot  \left(-\delta_{NUT,rsa}\cdot \left(TRSA_{txys} - \left(\frac{1}{\delta_{NUT,rsa}} \cdot \log\left(\frac{1 - \alpha_{NUT,rsa,05}}{\alpha_{NUT,rsa,05}}\right) + \phi_{TRSA}\right)\right)\right) + 0.5  \\
-    TRSA_{txys} &= \frac{B_{B, txys}}{B_{txys}} \cdot  rsa_s 
+   x_{0, N,RSA} &= \frac{1}{\beta_{NUT,rsa}} \cdot  \left(-\delta_{NUT,rsa}\cdot \left(TRSA_{ts} - \left(\frac{1}{\delta_{NUT,rsa}} \cdot \log\left(\frac{1 - \alpha_{NUT,rsa,05}}{\alpha_{NUT,rsa,05}}\right) + \phi_{TRSA}\right)\right)\right) + 0.5  \\
+    TRSA_{ts} &= \frac{B_{B, ts}}{B_{ts}} \cdot  rsa_s 
 \end{align}
 ```
 
@@ -94,23 +94,23 @@ The growth reducers based on arbuscular mycorrhizal colonisation rate ``NUT_{AMC
 
 - ``\phi_{TAMC}`` reference trait value [-]
 - ``\beta_{NUT,amc}`` slope of response function [-]
-- ``\alpha_{NUT,amc,05}`` response at ``N_{p, txys} = 0.5`` for species with the reference trait value [-]
+- ``\alpha_{NUT,amc,05}`` response at ``N_{p, ts} = 0.5`` for species with the reference trait value [-]
 - ``\delta_{NUT,amc}`` scales the difference in the growth reducer between species [-]
 - ``\phi_{TRSA}`` reference trait value [m² g⁻¹]
 - ``\beta_{NUT,rsa}`` slope of response function [-]
-- ``\alpha_{NUT,rsa,05}`` response at ``N_{p, txys} = 0.5`` for species with the reference trait value [-]
+- ``\alpha_{NUT,rsa,05}`` response at ``N_{p, ts} = 0.5`` for species with the reference trait value [-]
 - ``\delta_{NUT,rsa}`` scales the difference in the growth reducer between species [g m⁻²]
 
 == Variables
 
 state variables:
-- ``B_{B, txys}`` belowground biomass of each species [kg ha⁻¹]
-- ``B_{txys}`` biomass of each species [kg ha⁻¹]
+- ``B_{B, ts}`` belowground biomass of each species [kg ha⁻¹]
+- ``B_{ts}`` biomass of each species [kg ha⁻¹]
 
 intermediate variables:
-- ``TRSA_{txys}`` root surface area per total biomass of each species [m² g⁻¹] 
-- ``TAMC_{txys}`` arbuscular mycorrhizal colonisation rate per total biomass of each species [-] 
-- ``N_{p, txy}`` plant available nutrients, see [next section](@ref "Plant available nutrients") [-]
+- ``TRSA_{ts}`` root surface area per total biomass of each species [m² g⁻¹] 
+- ``TAMC_{ts}`` arbuscular mycorrhizal colonisation rate per total biomass of each species [-] 
+- ``N_{p, t}`` plant available nutrients, see [next section](@ref "Plant available nutrients") [-]
 
 morphological traits:
 - ``rsa_s`` root surface area per belowground biomass of each species [m² g⁻¹]
@@ -197,12 +197,12 @@ nutrient_reduction!
 
 ## Plant available nutrients
 
-The plant available nutrients ``N_{p, txys}`` [-] are descriped by:
+The plant available nutrients ``N_{p, ts}`` [-] are described by:
 
 ```math
 \begin{align}
-    N_{p, txys} &= \frac{N_{xy}}{\alpha_{NUT,Nmax}} \cdot NUT_{adj,txys} \\
-    NUT_{adj,txys} &= \alpha_{NUT,maxadj} \cdot \exp\left(\frac{\log\left(\frac{1}{\alpha_{NUT,maxadj}}\right) \cdot \sum_{i=1}^{S} TS_{s,i} \cdot B_{txyi}}{\alpha_{NUT,TSB}} \right) \\
+    N_{p, ts} &= \left(1 - \exp\left(-\omega_{NUT,N} \cdot N -\omega_{NUT,F}\cdot F\right)\right) \cdot NUT_{adj,ts} \\
+    NUT_{adj,ts} &= \alpha_{NUT,maxadj} \cdot \exp\left(\frac{\log\left(\frac{1}{\alpha_{NUT,maxadj}}\right) \cdot \sum_{i=1}^{S} TS_{s,i} \cdot B_{ti}}{\alpha_{NUT,TSB}} \right) \\
     \mathbf{TS} &= 
         \begin{bmatrix}
             1 & TS_{1,2} & \dots &  & TS_{1,S} \\
@@ -222,20 +222,22 @@ The plant available nutrients ``N_{p, txys}`` [-] are descriped by:
 
 == Parameter
 
-- ``\alpha_{NUT,Nmax}`` maximum total soil nitrogen [g kg⁻¹]
+- ``\omega_{NUT,N}`` controls the influence of the total soil nitrogen on the nutrient index [kg gN⁻¹]
+- ``\omega_{NUT,F}`` controls the influence of the fertilization rate on the nutrient index [kg N⁻¹]
 - ``\alpha_{NUT,maxadj}`` maximum nutrient adjustment factor [-]
-- ``\alpha_{NUT,TSB}`` reference value, at ``\alpha_{NUT,TSB} = TS_{s,i} \cdot B_{txyi}`` is the nutrient adjustment factor ``NUT_{adj,txys} = 1`` [kg ha⁻¹]
+- ``\alpha_{NUT,TSB}`` reference value, at ``\alpha_{NUT,TSB} = TS_{s,i} \cdot B_{ti}`` is the nutrient adjustment factor ``NUT_{adj,ts} = 1`` [kg ha⁻¹]
 
 == Variables
 
 inputs:
-- ``N_{xy}`` total soil nitrogen [g kg⁻¹]
+- ``N`` total soil nitrogen [g kg⁻¹]
+- ``F`` fertilization [kg ha⁻¹]
 
 state variables:
-- ``B_{txys}`` biomass of each species [kg ha⁻¹]
+- ``B_{ts}`` biomass of each species [kg ha⁻¹]
 
 intermediate variables:
-- ``NUT_{adj,txys}`` density dependent nutrient adjustment factor [-]
+- ``NUT_{adj,ts}`` density dependent nutrient adjustment factor [-]
 - ``TS_{s,i} \in [0, 1]`` trait similarity 
 - ``TD_{s,i}`` trait dissimilarity 
 - ``RSA_{\text{norm}, s}`` normalized root surface area per belowground biomass [-]

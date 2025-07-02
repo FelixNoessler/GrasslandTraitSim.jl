@@ -28,6 +28,9 @@ function water_reduction!(; container, W, PWP, WHC)
         x0_R_05 = ϕ_TRSA + 1.0 / δ_WAT_rsa * log((1.0 - α_WAT_rsa05) / α_WAT_rsa05)
 
         ## growth reduction at 0.5 of Wsc ∈ [0, 1]
+        # above_proportion = aboveground biomass / total biomass
+        # 1 - above_proportion = belowground biomass / total biomass
+        # rsa/belowground biomass  * belowground biomass/total biomass = rsa/total biomass
         @. R_05 = 1.0 / (1.0 + exp(-δ_WAT_rsa * ((1.0 - above_proportion) * rsa - x0_R_05)))
 
         ###### growth reduction due to water stress for different Wsc

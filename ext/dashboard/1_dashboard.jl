@@ -1,9 +1,5 @@
 function GrasslandTraitSim.dashboard(; variable_p = (;), path = nothing)
 
-    if ! isdefined(gts, :measured_data)
-        gts.load_measured_data()
-    end
-
     set_theme!(
         Theme(
             colgap = 5,
@@ -23,24 +19,18 @@ function GrasslandTraitSim.dashboard(; variable_p = (;), path = nothing)
     mean_input_date = nothing
     valid_data = nothing
     biomass_stats = nothing
-    trait_input = gts.input_traits()
 
     on(plot_obj.obs.run_button.clicks) do n
         if !still_running
             still_running = true
 
             p, input_obj = prepare_input(; plot_obj)
-            sol = gts.solve_prob(; input_obj, p, trait_input)
+            sol = gts.solve_prob(; input_obj, p)
 
             mean_input_date = input_obj.simp.mean_input_date
-            valid_data = get_valid_data(; plot_obj)
 
-            show_validdata = plot_obj.obs.toggle_validdata.active.val
-            if show_validdata
-                update_plots(; sol, plot_obj, valid_data)
-            else
-                update_plots(; sol, plot_obj, valid_data = nothing)
-            end
+            update_plots(; sol, plot_obj, valid_data = nothing)
+
 
             still_running = false
         end
@@ -64,23 +54,11 @@ function GrasslandTraitSim.dashboard(; variable_p = (;), path = nothing)
         update_plots(; sol, plot_obj, valid_data)
     end
 
-    on(plot_obj.obs.toggle_standingbiomass.active) do n
-        update_plots(; sol, plot_obj, valid_data)
-    end
-
     on(plot_obj.obs.menu_abiotic.selection) do n
         update_plots(; sol, plot_obj, valid_data)
     end
 
     on(plot_obj.obs.menu_traits.selection) do _
-        update_plots(; sol, plot_obj, valid_data)
-    end
-
-    on(plot_obj.obs.toggle_validdata.active) do n
-        valid_data = nothing
-        if n
-            valid_data = get_valid_data(; plot_obj)
-        end
         update_plots(; sol, plot_obj, valid_data)
     end
 
@@ -127,11 +105,6 @@ function GrasslandTraitSim.dashboard(; variable_p = (;), path = nothing)
     end
 
     return nothing
-end
-
-function get_valid_data(; plot_obj)
-    plotID = plot_obj.obs.menu_plotID.selection.val
-    return gts.measured_data[Symbol(plotID)]
 end
 
 

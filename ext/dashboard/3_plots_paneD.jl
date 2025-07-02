@@ -16,18 +16,10 @@ function functional_dispersion_plot(; plot_obj, sol, valid_data, kwargs...)
     traits = (; rsa = sol.traits.rsa, amc = sol.traits.amc,
                abp = sol.traits.abp, sla = sol.traits.sla,
                maxheight = sol.traits.maxheight,  lnc = sol.traits.lnc)
-    biomass = dropdims(
-        mean(ustrip.(sol.output.biomass); dims = (:x, :y)); dims =(:x, :y))
 
-    fdis = functional_dispersion(traits, biomass; )
-
+    fdis = functional_dispersion(traits, sol.output.biomass; )
     lines!(ax, sol.simp.output_date_num, fdis; color = :red)
 
-    if !isnothing(valid_data)
-        num_t = gts.to_numeric.(LookupArrays.index(valid_data.CWM_traits, :t))
-        y = vec(valid_data.CWM_traits.fdis)
-        scatter!(ax, num_t, y, color = :black, markersize = 8)
-    end
 
     return nothing
 end
