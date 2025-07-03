@@ -145,7 +145,8 @@ makedocs(;
         ]
     )
 
-deploydocs(repo = "github.com/FelixNoessler/GrasslandTraitSim.jl",
-           devbranch="master",
-           branch = "gh-pages",
-           target = "build")
+DocumenterVitepress.deploydocs(
+    repo = "github.com/FelixNoessler/GrasslandTraitSim.jl",
+    devbranch = "master",
+    branch = "gh-pages",
+    target = "build")
