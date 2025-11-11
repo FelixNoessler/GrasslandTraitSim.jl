@@ -1,9 +1,12 @@
-####### Build the documentation locally
+####### build the documentation locally
 # julia --project=docs
 # import Pkg; Pkg.develop(path="."); Pkg.instantiate(); include("docs/make.jl")
-## to clean everything for commits/push:
+####### to clean everything for commits/push:
+# julia --project=docs
 # include("docs/clean_local_doc.jl")
-# using DocumenterVitepress; DocumenterVitepress.dev_docs("build", md_output_path = "")
+####### local preview:
+# julia --project=docs
+# using LiveServer; LiveServer.serve(dir = "docs/build/1")
 
 using CairoMakie
 using Glob
@@ -98,6 +101,15 @@ end
 parameter_in_methods()
 
 ####### Create documentation
+deploy_config = Documenter.auto_detect_deploy_system()
+deploy_decision = Documenter.deploy_folder(
+    deploy_config;
+    repo = "github.com/FelixNoessler/GrasslandTraitSim.jl",
+    devbranch = "master",
+    devurl = "dev",
+    push_preview = true,
+)
+
 makedocs(;
     draft = false,
     warnonly  = true,
@@ -112,6 +124,7 @@ makedocs(;
         repo = "github.com/FelixNoessler/GrasslandTraitSim.jl",
         devurl = "dev",
         devbranch = "master",
+        deploy_decision,
         # md_output_path = ".",
         # build_vitepress = false
     ),
@@ -149,4 +162,5 @@ DocumenterVitepress.deploydocs(
     repo = "github.com/FelixNoessler/GrasslandTraitSim.jl",
     devbranch = "master",
     branch = "gh-pages",
-    target = "build")
+    target = "build",
+    push_preview = true)
