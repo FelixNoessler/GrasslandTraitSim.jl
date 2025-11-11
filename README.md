@@ -12,9 +12,11 @@ Please refer to the documentation for more information about the grassland simul
 |:---|:---|
 | in development | [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://felixnoessler.github.io/GrasslandTraitSim.jl/dev/)  |  
 | newest stable version  |  [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://felixnoessler.github.io/GrasslandTraitSim.jl/)    | 
-| version 0.3 | [![](https://img.shields.io/badge/docs-0.3.0-blue.svg)](https://felixnoessler.github.io/GrasslandTraitSim.jl/v0.3.0/) | 
+| version 1.0.0 | [![](https://img.shields.io/badge/docs-1.0.0-blue.svg)](https://felixnoessler.github.io/GrasslandTraitSim.jl/v1.0.0/) | 
 
+When using the package, please cite the following publication:  
 
+Nößler, F., Moulin, T., Buzhdygan, O., Tietjen, B., and May, F.: A trait-based model to describe plant community dynamics in managed grasslands (GrasslandTraitSim.jl v1.0.0), Geosci. Model Dev., 18, 7077–7128, https://doi.org/10.5194/gmd-18-7077-2025, 2025. 
 
 ## Quick install
 
