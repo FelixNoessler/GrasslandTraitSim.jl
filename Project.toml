@@ -1,7 +1,7 @@
 name = "GrasslandTraitSim"
 uuid = "45e22d02-e628-441d-a1c7-54dcb4b48aca"
 authors = ["Felix Nößler"]
-version = "0.3.0"
+version = "1.0.0"
 
 [deps]
 Accessors = "7d9f7c33-5ae7-4f3b-8dc6-eff91059b697"
