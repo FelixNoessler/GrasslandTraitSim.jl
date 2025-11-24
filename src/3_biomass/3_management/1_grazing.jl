@@ -5,7 +5,7 @@ function grazing!(; container, LD, above_biomass, actual_height)
     @unpack lnc = container.traits
     @unpack η_GRZ, β_GRZ_lnc, β_GRZ_H, κ_GRZ, ϵ_GRZ_minH = container.p
     @unpack defoliation, grazed_share, relative_lnc, lncinfluence, relative_height, grazed,
-            trampled, heightinfluence, biomass_scaled, feedible_biomass = container.calc
+            heightinfluence, biomass_scaled, feedible_biomass = container.calc
     @unpack nspecies = container.simp
 
     for s in 1:nspecies
@@ -43,16 +43,8 @@ function grazing!(; container, LD, above_biomass, actual_height)
     grazed_share .= biomass_scaled ./ sum(biomass_scaled)
     @. grazed = grazed_share * total_grazed
 
-    #################################### Trampling
-    # Parameter: β_TRM_height, α_TRM_LD
-    # for s in 1:nspecies
-    #     height_effect_trampling = min((actual_height[s] / 2.0u"m") ^ β_TRM_height, 1.0)
-    #     proportion_trampled = min(height_effect_trampling * LD * α_TRM_LD, 0.5)
-    #     trampled[s] = feedible_biomass[s] * proportion_trampled
-    # end
-
-    #################################### Add grazed and trampled biomass to defoliation
-    defoliation .+= grazed .+ trampled
+    #################################### Add grazed biomass to defoliation
+    defoliation .+= grazed
 
     return nothing
 end
